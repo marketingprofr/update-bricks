@@ -4,18 +4,21 @@
 Generateur du Hero 2026 (meilleurtest.fr) au format bricksCopiedElements.
 Cible : template-hero.html  — perimetre HERO SEUL.
 
-METHODE (v3, demandee par le client) :
+METHODE (v4, validee client) :
   - COLONNE GAUCHE = UN SEUL gros bloc `code` PHP autonome (breadcrumb inclus) :
     breadcrumb + eyebrow + titre(+SEO) + byline + chapo + photo. Styles inline,
     et classes globales existantes (bnxvav/wyopqz) portees par l'element code pour
-    que .titre-principal (serif) et .text-content (typo chapo) soient emis. 1 seule
-    signature a approuver.
-  - COLONNE DROITE (encart "Notre enquete") = ELEMENTS NATIFS Bricks (block/grid,
-    icon Font Awesome, heading, text, shortcode). 0 bloc code. Valeurs dynamiques
-    via dynamic data Bricks : {post_modified_date}, {post_reading_time} (natifs)
-    et {acf_*} pour les 4 stats.
+    que .titre-principal (serif) et .text-content (typo chapo) soient emis.
+    => 1 SEULE signature a approuver.
+  - COLONNE DROITE (encart "Notre enquete") = ELEMENTS NATIFS Bricks
+    (block/grid/heading/text-basic/shortcode). PAS d'element `icon` : sous AT,
+    Bricks 2.0 rend les icones FA en SVG inline traite comme du CODE a signer.
+    => On met Font Awesome en <i class="fas fa-..."> (CSS, comme deja fait sur le
+       site) DANS des text-basic natifs : pas de SVG, RIEN a signer cote encart.
+    Valeurs dynamiques via dynamic data : {post_modified_date}, {post_reading_time}
+    (natifs) et {acf_*} pour les 4 stats.
 
-=> On n'emiette PLUS en multiples petits code blocks (lecon des versions 1/2).
+=> 1 seul bloc code au total ; zero SVG ; on n'emiette plus en petits code blocks.
 """
 
 import json
@@ -155,17 +158,20 @@ add("heroCard", "block", "heroGrid", ["cardHead", "cardGrid", "cardTrust", "card
     "_alignSelf": "start", "_position:tablet_portrait": "static",
     "_widthMax:tablet_portrait": "520px"})
 
-def icon(eid, parent, fa, size, color, extra=None):
-    s = {"icon": {"library": "fontawesomeSolid", "icon": fa},
-         "_typography": {"font-size": size, "color": col(color)}}
+def fa(eid, parent, cls, size, color, extra=None):
+    # Icone Font Awesome via <i class> (CSS, comme dans le site) DANS un text-basic
+    # natif -> pas d'element `icon` -> pas de SVG inline -> rien a signer.
+    s = {"text": '<i class="%s"></i>' % cls, "tag": "span",
+         "_typography": {"font-size": size, "color": col(color)},
+         "_display": "flex", "_alignItems": "center"}
     if extra: s.update(extra)
-    add(eid, "icon", parent, [], s)
+    add(eid, "text-basic", parent, [], s)
 
 # En-tete
 add("cardHead", "block", "heroCard", ["cardHeadIco", "cardHeadH"], {
     "_display": "flex", "_direction": "row", "_alignItems": "center", "_gap": "8px",
     "_margin": {"bottom": "18px"}})
-icon("cardHeadIco", "cardHead", "fas fa-shield-alt", "16px", ACCENT)
+fa("cardHeadIco", "cardHead", "fas fa-shield-alt", "16px", ACCENT)
 add("cardHeadH", "heading", "cardHead", [], {
     "text": "Notre enquête", "tag": "h3",
     "_typography": {"font-size": "12px", "font-weight": "700", "letter-spacing": "0.07em",
@@ -177,11 +183,11 @@ add("cardGrid", "block", "heroCard", ["cellA", "cellB", "cellC", "cellD"], {
     "_display": "grid", "_gridTemplateColumns": "1fr 1fr", "_gridGap": "1px",
     "_background": bg(LINE), "_border": border_all(1, LINE, radius=10), "_overflow": "hidden"})
 
-def stat_cell(cid, fa, value, label):
+def stat_cell(cid, fa_cls, value, label):
     add(cid, "block", "cardGrid", [cid+"i", cid+"t"], {
         "_background": bg(WHITE), "_display": "flex", "_direction": "row",
         "_alignItems": "center", "_gap": "11px", "_padding": pad(14,16,14,16)})
-    icon(cid+"i", cid, fa, "19px", ACCENT, extra={"_flexShrink": "0"})
+    fa(cid+"i", cid, fa_cls, "19px", ACCENT, extra={"_flexShrink": "0"})
     add(cid+"t", "block", cid, [cid+"n", cid+"l"], {"_display": "flex", "_direction": "column"})
     add(cid+"n", "text-basic", cid+"t", [], {
         "text": value, "tag": "div",
@@ -203,7 +209,7 @@ add("cardTrust", "block", "heroCard", ["trA", "trB", "trC"], {
     "_margin": {"top": "18px"}, "_padding": {"top": "16px"},
     "_border": {"width": {"top": "1"}, "style": "solid", "color": col(LINE)}})
 
-def trust_row(rid, fa, text):
+def trust_row(rid, fa_cls, text):
     add(rid, "block", "cardTrust", [rid+"tile", rid+"t"], {
         "_display": "flex", "_direction": "row", "_alignItems": "center", "_gap": "10px",
         "_typography": {"font-size": "12.5px", "color": col(INK2)}})
@@ -211,7 +217,7 @@ def trust_row(rid, fa, text):
         "_width": "30px", "_height": "30px", "_flexShrink": "0",
         "_border": {"radius": rad(8)}, "_background": bg(ACCENT_SOFT),
         "_display": "flex", "_alignItems": "center", "_justifyContent": "center"})
-    icon(rid+"i", rid+"tile", fa, "16px", ACCENT)
+    fa(rid+"i", rid+"tile", fa_cls, "16px", ACCENT)
     add(rid+"t", "text-basic", rid, [], {"text": text, "tag": "span"})
 
 trust_row("trA", "fas fa-check-circle", "<b>100&nbsp;% indépendant</b> — sans pub ni sponsor")
