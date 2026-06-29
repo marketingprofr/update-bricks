@@ -145,18 +145,24 @@ blocs `code`.** Deux options propres, jamais l'entre-deux :
 
 Piège vérifié : une **icône SVG en bloc `code` `executeCode:false`** n'apparaît
 PAS dans la Code review → reste bloquée et **vide tout le sous-arbre** parent.
-Pour des icônes natives, utiliser l'élément **`icon`** avec **Font Awesome**
-(`{library:"fontawesomeSolid", icon:"fas fa-clock"}`) — FA est déjà chargé sur le
-site — ou Themify ; pas besoin d'uploader des SVG.
+
+**⚠️ Icônes : NE PAS utiliser l'élément `icon` Font Awesome.** Sous Advanced
+Themer, Bricks 2.0 rend les icônes FA en **SVG inline**, et le SVG inline est
+**traité comme du code à signer** → les éléments « sautent » au collage.
+**→ Mettre Font Awesome en `<i class="fas fa-...">` (CSS) DANS un `text-basic`
+natif** (couleur/taille via `_typography` natif). FA est déjà chargé sur le site
+(cf. `<i class="far fa-heart">` du bouton favoris) → rendu immédiat, **rien à
+signer, pas de SVG**.
 
 **Architecture hero retenue :**
 - **Colonne gauche = 1 seul gros bloc `code`** (breadcrumb inclus) : ariane +
   eyebrow + titre(+SEO) + byline + chapô + photo, en **styles inline**. L'élément
   code porte les classes globales **`bnxvav`/`wyopqz`** pour émettre leur CSS
   (`.titre-principal` serif, `.text-content`) sans recompilation.
-- **Colonne droite (encart) = 100 % natif** : `block` grid 2×2, `icon` (FA),
-  `heading`, `text-basic`, `shortcode [ratemypost]`. Valeurs dynamiques via
-  **dynamic data** : `{post_modified_date}`, `{post_reading_time}` (natifs) et
-  `{acf_*}` pour les 4 stats (vérifier les vrais noms de champs).
+- **Colonne droite (encart) = 100 % natif** : `block` grid 2×2, `heading`,
+  `text-basic` (icônes FA en `<i class="fas">` dedans, pas d'élément `icon`),
+  `shortcode [ratemypost]`. Valeurs dynamiques via **dynamic data** :
+  `{post_modified_date}`, `{post_reading_time}` (natifs) et `{acf_*}` pour les
+  4 stats (vérifier les vrais noms de champs).
 
 **Après collage : approuver le bloc `code` gauche dans la Code review Bricks.**
