@@ -137,6 +137,15 @@ Structure : `section > container` (boxé) → fil d'ariane (`rank_math`) → gri
   `$avis_etudies`) → 3 signaux de confiance (indépendance / date / temps de
   lecture calculé) → note lecteurs `[ratemypost]`.
 
-Layout 100 % natif ; dynamique en blocs `code` (PHP) avec **styles inline** pour
-le markup ; icônes = SVG inline (lucide). **Après collage : approuver les blocs
-`code` dans la Code review Bricks** (signatures à revalider).
+**⚠️ Leçon (test réel) : les éléments granulaires se collent VIDES.** Un bloc
+`code` `executeCode:false` (ex. une icône SVG seule) **n'apparaît pas dans la
+Code review** → reste bloqué et **vide tout le sous-arbre** du conteneur (eyebrow,
+byline, grille de stats, signaux… apparaissaient vides). De même, multiplier les
+`text-basic`/`code` imbriqués est fragile.
+**→ RÈGLE hero : reconstruire chaque section riche en UN SEUL bloc `code` PHP
+autonome** (signable, donc rendu), avec **styles inline** + **SVG en chaîne HTML**
+dans le `echo`. C'est le pattern qui marche (titre, chapô, ariane rendus OK).
+Garder en natif seulement ce qui s'est avéré fiable : grille 2 col, photo
+(image+badge), zone vote (heading + shortcode + texte). Classes existantes du site
+réutilisées par ID (`bnxvav`→serif titre, `wyopqz`→lien chapô) : OK sans recompil.
+**Après collage : approuver les blocs `code` dans la Code review Bricks.**
