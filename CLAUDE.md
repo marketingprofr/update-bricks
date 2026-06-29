@@ -34,16 +34,24 @@ du framework, PAS l'arbre interne.)
 
 ## ⚠️ Pièges Bricks appris (IMPORTANT)
 
-1. **Réglages natifs vs CSS perso :**
+1. **Réglages natifs vs CSS perso (LE point central) :**
    - Les **réglages natifs** (`_background`, `_padding`, `_margin`, `_display`,
      `_direction`, flex/grid, `_typography`, `menuBorder:hover`, visibilité
-     responsive `_display:breakpoint`, etc.) → appliqués **dès le collage**.
+     responsive `_display:breakpoint`, etc.) → appliqués **immédiatement dès le
+     collage**. Rien à « réveiller ». ✅
    - Le **CSS personnalisé** (`_cssCustom`) est **INERTE après collage** : il
-     n'est compilé qu'après avoir édité le champ, ou **Save + recharge**
-     (+ purge de cache). Chaque nouveau collage = nouveaux IDs = CSS de nouveau
-     inerte. **→ Minimiser le CSS perso, tout faire en natif si possible.**
-   - Chez ce client, même après Save, il faut souvent **couper/coller le champ
-     CSS puis ré-enregistrer** pour que ça « prenne ».
+     n'est compilé qu'après avoir **édité le champ** (chez ce client il faut
+     souvent **couper/coller le contenu du champ CSS puis ré-enregistrer**).
+     Chaque nouveau collage = nouveaux IDs = CSS de nouveau inerte.
+   - **⚠️ Conséquence piège :** un CSS perso inerte peut **casser le layout
+     indirectement**. Ex. vécu : le masquage des libellés d'icônes
+     (`.lbl{display:none}`) non compilé → libellés visibles → boutons trop
+     larges → passage à la ligne qui ressemblait à un empilement vertical. Ce
+     n'était PAS un souci de `flex-direction` natif.
+   - **→ RÈGLE : tout ce qui touche au layout (masquer/afficher, dimensions)
+     doit être fait en NATIF** (visibilité responsive, éléments dédoublés
+     icône-seule, etc.). Réserver le CSS perso à du purement cosmétique non
+     structurel, et le minimiser au maximum.
 
 2. **Classes globales : pas écrasées au re-collage.** Bricks les reconnaît par
    **ID** et garde l'ancienne définition. Pour itérer le style, soit **renommer**
