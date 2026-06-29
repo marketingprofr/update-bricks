@@ -65,6 +65,16 @@ du framework, PAS l'arbre interne.)
 4. **`container` = boxé** (max-width centré). Pour du pleine largeur → utiliser
    **`block`**.
 
+   **→ Architecture à respecter : `section` (fond pleine largeur) > `wrapper`
+   (max-width centré) > contenu.** La section/bande porte le **fond pleine
+   largeur** (barre noire, bandeau vert…) ; un **wrapper interne** limite le
+   contenu et le centre :
+   `_widthMax:"var(--at-site-box-max-width)"` (= 1140px) + `_margin` left/right
+   `auto` + `_width:"100%"`. La **mise en page (flex/grid) et le padding
+   horizontal** vont sur le **wrapper**, pas sur la bande. Mettre un wrapper dès
+   qu'une bande contient du contenu à borner. (Bordures basses : sur la bande =
+   pleine largeur ; sur le wrapper = largeur du contenu.)
+
 5. **CSS perso d'élément → utiliser `%root%`** (résolu par Bricks, survit à la
    régénération d'ID), JAMAIS `.brxe-<id>` (l'ID change au collage).
 
