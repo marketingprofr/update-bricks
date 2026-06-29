@@ -5,7 +5,7 @@ $mod = date_i18n('j F Y', get_the_modified_time('U'));
 
 // Temps de lecture (mots / 200)
 $wc = str_word_count(strip_tags(strip_shortcodes(get_post_field('post_content', $this_id))));
-$rt = max(1, (int) round($wc / 200));
+$rt = 15 + (int) round($wc / 100);
 
 // Libelle "produits analyses" (accord en genre)
 $tp = $type_de_produit_au_pluriel ?? '';
