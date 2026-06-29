@@ -137,15 +137,26 @@ Structure : `section > container` (boxé) → fil d'ariane (`rank_math`) → gri
   `$avis_etudies`) → 3 signaux de confiance (indépendance / date / temps de
   lecture calculé) → note lecteurs `[ratemypost]`.
 
-**⚠️ Leçon (test réel) : les éléments granulaires se collent VIDES.** Un bloc
-`code` `executeCode:false` (ex. une icône SVG seule) **n'apparaît pas dans la
-Code review** → reste bloqué et **vide tout le sous-arbre** du conteneur (eyebrow,
-byline, grille de stats, signaux… apparaissaient vides). De même, multiplier les
-`text-basic`/`code` imbriqués est fragile.
-**→ RÈGLE hero : reconstruire chaque section riche en UN SEUL bloc `code` PHP
-autonome** (signable, donc rendu), avec **styles inline** + **SVG en chaîne HTML**
-dans le `echo`. C'est le pattern qui marche (titre, chapô, ariane rendus OK).
-Garder en natif seulement ce qui s'est avéré fiable : grille 2 col, photo
-(image+badge), zone vote (heading + shortcode + texte). Classes existantes du site
-réutilisées par ID (`bnxvav`→serif titre, `wyopqz`→lien chapô) : OK sans recompil.
-**Après collage : approuver les blocs `code` dans la Code review Bricks.**
+**⚠️ Règle de méthode (validée client) : NE PAS émietter en multiples petits
+blocs `code`.** Deux options propres, jamais l'entre-deux :
+- soit **un (ou quelques) GROS bloc(s) `code`** PHP autonome(s) ;
+- soit des **éléments natifs Bricks spécifiques** (`heading`, `text-basic`,
+  `image`, `icon`, `shortcode`, `block`/`grid`…).
+
+Piège vérifié : une **icône SVG en bloc `code` `executeCode:false`** n'apparaît
+PAS dans la Code review → reste bloquée et **vide tout le sous-arbre** parent.
+Pour des icônes natives, utiliser l'élément **`icon`** avec **Font Awesome**
+(`{library:"fontawesomeSolid", icon:"fas fa-clock"}`) — FA est déjà chargé sur le
+site — ou Themify ; pas besoin d'uploader des SVG.
+
+**Architecture hero retenue :**
+- **Colonne gauche = 1 seul gros bloc `code`** (breadcrumb inclus) : ariane +
+  eyebrow + titre(+SEO) + byline + chapô + photo, en **styles inline**. L'élément
+  code porte les classes globales **`bnxvav`/`wyopqz`** pour émettre leur CSS
+  (`.titre-principal` serif, `.text-content`) sans recompilation.
+- **Colonne droite (encart) = 100 % natif** : `block` grid 2×2, `icon` (FA),
+  `heading`, `text-basic`, `shortcode [ratemypost]`. Valeurs dynamiques via
+  **dynamic data** : `{post_modified_date}`, `{post_reading_time}` (natifs) et
+  `{acf_*}` pour les 4 stats (vérifier les vrais noms de champs).
+
+**Après collage : approuver le bloc `code` gauche dans la Code review Bricks.**
