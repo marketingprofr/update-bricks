@@ -1,5 +1,8 @@
 .mt-card { background: #fafbfc; border: 1px solid #e8eaed; border-radius: 16px; padding: 24px; position: sticky; top: 20px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; color: #2a3038; }
 
+/* Titres en Inter (sinon ils heritent de la police de titre du theme) */
+.mt-card-h, .mt-sc-vote h4 { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; }
+
 .mt-card-h { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--at-primary); margin: 0 0 18px; }
 .mt-card-hi { display: flex; }
 .mt-card-hi svg { width: 16px; height: 16px; }
@@ -18,5 +21,23 @@
 .mt-ti svg { width: 16px; height: 16px; }
 
 .mt-sc-vote { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e8eaed; }
-.mt-sc-vote h4 { margin: 0 0 9px; font-size: 13.5px; font-weight: 600; color: #14181d; }
-.mt-sc-note { margin: 7px 0 0; font-size: 11.5px; line-height: 1.5; color: #6b7480; }
+.mt-sc-vote h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 600; color: #14181d; }
+.mt-sc-note { margin: 10px 0 0; font-size: 11.5px; line-height: 1.5; color: #6b7480; }
+
+/* ----- Widget [ratemypost] recale sur le template ----- */
+.mt-sc-vote .rmp-main-container { margin: 0; padding: 0; }
+.mt-sc-vote .rmp-rating-widget { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.mt-sc-vote .rmp-rating-widget__icons { order: 1; margin: 0; }
+.mt-sc-vote .rmp-rating-widget__icons-list { display: inline-flex; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.mt-sc-vote .rmp-rating-widget__icons-list__icon { margin: 0; padding: 0; }
+.mt-sc-vote .rmp-icon--star { font-size: 17px; line-height: 1; color: #d7d9de; }
+.mt-sc-vote .rmp-icon--full-highlight { color: #b48a3a; }
+.mt-sc-vote .rmp-icon--half-highlight { background: linear-gradient(90deg, #b48a3a 50%, #d7d9de 50%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.mt-sc-vote .rmp-rating-widget__results { order: 2; font-size: 12.5px; color: #6b7480; margin: 0; }
+.mt-sc-vote .rmp-rating-widget__results__rating,
+.mt-sc-vote .rmp-rating-widget__results__votes { color: #14181d; font-weight: 600; }
+.mt-sc-vote .rmp-rating-widget__hover-text { display: none; }
+.mt-sc-vote .rmp-rating-widget__submit-btn { order: 3; font-size: 11px; font-weight: 600; line-height: 1.3; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--at-primary); background: var(--at-primary); color: #fff; cursor: pointer; }
+.mt-sc-vote .rmp-rating-widget__submit-btn:hover { background: var(--at-primary-d-1); border-color: var(--at-primary-d-1); }
+.mt-sc-vote .rmp-rating-widget__not-rated,
+.mt-sc-vote .rmp-rating-widget__msg { order: 4; width: 100%; margin: 0; font-size: 11.5px; color: #6b7480; }
