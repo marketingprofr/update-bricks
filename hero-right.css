@@ -1,12 +1,12 @@
 .mt-card { background: #fafbfc; border: 1px solid #e8eaed; border-radius: 16px; padding: 24px; position: sticky; top: 20px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; color: #2a3038; }
 
-.mt-card-h { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #0f6b54; margin: 0 0 18px; }
+.mt-card-h { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--at-primary); margin: 0 0 18px; }
 .mt-card-hi { display: flex; }
 .mt-card-hi svg { width: 16px; height: 16px; }
 
 .mt-sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e8eaed; border: 1px solid #e8eaed; border-radius: 10px; overflow: hidden; }
 .mt-sc-cell { background: #fff; padding: 14px 16px; display: flex; align-items: center; gap: 11px; }
-.mt-sc-ico { color: #0f6b54; flex-shrink: 0; display: flex; }
+.mt-sc-ico { color: var(--at-primary); flex-shrink: 0; display: flex; }
 .mt-sc-ico svg { width: 19px; height: 19px; display: block; }
 .mt-sc-num { font-family: ui-monospace, monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: #14181d; }
 .mt-sc-lbl { font-size: 10.5px; color: #6b7480; margin-top: 4px; line-height: 1.2; }
@@ -14,7 +14,7 @@
 .mt-sc-trust { margin-top: 18px; padding-top: 16px; border-top: 1px solid #e8eaed; display: flex; flex-direction: column; gap: 11px; }
 .mt-sc-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #2a3038; }
 .mt-sc-row b { color: #14181d; font-weight: 600; }
-.mt-ti { width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: #e5f1ec; color: #0f6b54; display: flex; align-items: center; justify-content: center; }
+.mt-ti { width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--at-primary-l-6); color: var(--at-primary); display: flex; align-items: center; justify-content: center; }
 .mt-ti svg { width: 16px; height: 16px; }
 
 .mt-sc-vote { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e8eaed; }
