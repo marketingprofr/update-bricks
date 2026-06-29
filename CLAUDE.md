@@ -78,6 +78,17 @@ du framework, PAS l'arbre interne.)
 5. **CSS perso d'élément → utiliser `%root%`** (résolu par Bricks, survit à la
    régénération d'ID), JAMAIS `.brxe-<id>` (l'ID change au collage).
 
+   **→ Astuce blocs `code` : styler en `style="…"` INLINE dans le HTML PHP**
+   (attribut HTML, pas `_cssCustom`) → rendu **immédiat dès le collage**, jamais
+   inerte. Idéal pour le markup généré en PHP (avatar arrondi, liens, etc.).
+   Et **réutiliser les classes globales EXISTANTES du site par leur ID**
+   (`bnxvav`, `wyopqz`, `uemizu`…) : reconnues, déjà compilées → leur CSS
+   (`.titre-principal`, `.text-content`) marche **sans recompilation**.
+
+   **⚠️ Signature des blocs `code` :** un `code` (PHP) collé avec un contenu
+   modifié a une **nouvelle signature invalide** → Bricks demande de le
+   **ré-approuver** (Code review / signature) avant exécution. Normal.
+
 6. **Recherche (search) :** position de la loupe = pas de réglage natif →
    `%root% form{flex-direction:row-reverse}` (loupe à gauche). Pilule = natif
    (`_background`, `_border` radius 999, padding).
@@ -108,3 +119,24 @@ Logo réel = image `merrilowgo.png` (id `245022`). Boutons : Favoris postId
 
 À partir de juin 2026, le calage fin se fait **à la main dans le builder**
 (le cycle collage↔régénération CSS étant trop lent pour les micro-ajustements).
+
+## État du hero (cf. `template-hero.html`)
+
+Générateur : **`build-hero.py`** → `component-hero-2026-updated.json`. Périmètre =
+**hero seul** (les blocs hors maquette — sélection produits, TOC, favoris, partage,
+méthodo — ont été **abandonnés** sur décision client).
+
+Structure : `section > container` (boxé) → fil d'ariane (`rank_math`) → grille
+**2 colonnes** `minmax(0,1fr) 350px` (≤991 → 1 col) :
+- **gauche** : eyebrow (pill « Vérifié » + date modif) → H1 (code titre + effets
+  SEO `update_post_meta`, classes `bnxvav`/`uemizu`) → byline (auteur+avatar+date)
+  → chapô (`$introduction`, classes `wyopqz`/`vrjaxu`) → photo (`{featured_image}`
+  + badge comparatif) ;
+- **droite** : carte « Notre enquête » sticky = grille **2×2** native (4 stats :
+  `$heures_investies`, `$sources_consultees`, `$produits_analyses`,
+  `$avis_etudies`) → 3 signaux de confiance (indépendance / date / temps de
+  lecture calculé) → note lecteurs `[ratemypost]`.
+
+Layout 100 % natif ; dynamique en blocs `code` (PHP) avec **styles inline** pour
+le markup ; icônes = SVG inline (lucide). **Après collage : approuver les blocs
+`code` dans la Code review Bricks** (signatures à revalider).
