@@ -28,10 +28,12 @@
 .mt-astuces-intro { font-size: 16px; line-height: 1.65; color: var(--ink-2); max-width: 740px; margin: 0 0 24px; }
 
 /* === Liste des astuces === */
-.mt-tips { display: grid; gap: 14px; }
+/* Hors vedette : 2 colonnes > 992px, 1 colonne en dessous (cf. maquette). */
+.mt-tips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-items: start; }
 
-/* Carte vedette « Conseil principal » */
+/* Carte vedette « Conseil principal » (pleine largeur) */
 .mt-tip.featured {
+  grid-column: 1 / -1;
   background: linear-gradient(180deg, var(--accent-soft) 0%, #fff 100%);
   border: 1px solid var(--accent-soft);
   border-left: 3px solid var(--accent);
@@ -93,6 +95,9 @@ details.mt-tip > .mt-tip-body { padding: 16px 20px 18px; }
 }
 
 /* === Responsive === */
+@media (max-width: 991px) {
+  .mt-tips { grid-template-columns: 1fr; }
+}
 @media (max-width: 767px) {
   .mt-astuces-h2 { font-size: 26px; }
   .mt-astuces-intro { font-size: 15px; }
