@@ -23,11 +23,18 @@ if ( ! function_exists( 'mt_guide_cache_id' ) ) {
   /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
      puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
   function mt_guide_cache_id( $page_id, $suffix ) {
-    foreach ( array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix ) as $f ) {
+    $keys = array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix );
+    foreach ( $keys as $f ) {                            /* 1) ACF */
       $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
-      if ( is_array( $v ) ) { $v = reset( $v ); }       /* relation/post-object multiple */
-      if ( is_object( $v ) ) { return (int) $v->ID; }     /* Post Object */
-      if ( $v ) { return (int) $v; }                      /* ID scalaire */
+      if ( is_array( $v ) ) { $v = reset( $v ); }
+      if ( is_object( $v ) ) { return (int) $v->ID; }
+      if ( $v ) { return (int) $v; }
+    }
+    foreach ( $keys as $f ) {                            /* 2) meta brut (hors ACF) */
+      $v = function_exists( 'get_post_meta' ) ? get_post_meta( $page_id, $f, true ) : '';
+      if ( is_array( $v ) ) { $v = reset( $v ); }
+      if ( is_object( $v ) ) { return (int) $v->ID; }
+      if ( $v ) { return (int) $v; }
     }
     return 0;
   }
@@ -104,11 +111,19 @@ if ( $intro === '' ) { $intro = '<p>Voici les diff&eacute;rents types de produit
 if ( empty( $types ) ) {
   if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' ) ) {
     $rr = function_exists( 'get_field' ) ? get_field( 'mltv5_types_de_produits', $page_id ) : null;
+    $probe = array();
+    foreach ( get_post_meta( $page_id ) as $mk => $mv ) {
+      if ( stripos( $mk, 'cache' ) !== false || stripos( $mk, 'type' ) !== false ) {
+        $mvv = is_array( $mv ) ? reset( $mv ) : $mv;
+        $probe[] = $mk . '=' . ( is_scalar( $mvv ) ? $mvv : gettype( $mvv ) );
+      }
+    }
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-types — diagnostic (admin only)</strong> : aucun type trouv&eacute;.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
        . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'types' ) . ' (brut mltv5_cached_id_types : ' . gettype( get_field( 'mltv5_cached_id_types', $page_id ) ) . ')<br>'
+       . 'meta(cache|type) : ' . esc_html( $probe ? implode( '  |  ', $probe ) : '(aucune)' ) . '<br>'
        . 'repeater mltv5_types_de_produits = ' . esc_html( gettype( $rr ) )
        . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
        . '</div>';
