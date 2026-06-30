@@ -1,0 +1,135 @@
+/* =====================================================================
+   MEILLEURTEST — Tableau comparatif (onglet CSS de l'élément Code)
+   Scope : .mt-cmp-root  (cf. tableau-comparatif.code.php)
+   Palette alignée hero/resume/tests : accent -> tokens Advanced Themer.
+     #0f6b54 -> var(--at-primary-d-1) | #0a4f3e -> var(--at-primary-d-2)
+     #e7f1ec -> var(--at-primary-l-6)
+   ===================================================================== */
+
+.mt-cmp-root {
+  --ink: #14181d; --ink-2: #2a3038;
+  --muted: #6b7480; --muted-2: #9aa3ad;
+  --line: #e8eaed; --line-2: #f1f3f5;
+  --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f4f5f7;
+  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --radius: 10px; --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink);
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.mt-cmp-root * { box-sizing: border-box; }
+.mt-cmp-root a { color: inherit; text-decoration: none; }
+
+/* === En-tête de section === */
+.mt-cmp-head { margin: 0 0 22px; }
+.mt-cmp-h2 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 32px; line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 12px;
+}
+.mt-cmp-sub { font-size: 16px; color: var(--ink-2); line-height: 1.6; max-width: 740px; margin: 0; }
+
+/* === Conteneur scrollable (mobile) === */
+.mt-cmp-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+}
+
+/* === Table === */
+.mt-cmp { width: 100%; min-width: 720px; border-collapse: collapse; font-size: 13px; background: #fff; }
+.mt-cmp th, .mt-cmp td {
+  padding: 14px; text-align: left; vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.mt-cmp tbody tr:last-child td { border-bottom: 0; }
+
+/* Colonne label (gauche) */
+.mt-cmp .row-label {
+  background: var(--bg-2); width: 180px; min-width: 150px;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.03em;
+  border-right: 1px solid var(--line);
+}
+
+/* Cellule marque (fusionnée) */
+.mt-cmp .brand-cell { vertical-align: top; text-transform: none; }
+.mt-cmp-brand { display: flex; flex-direction: column; gap: 10px; }
+.mt-cmp-brand-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: var(--ink); }
+.mt-cmp-brand-mark { width: 24px; height: 24px; border-radius: 6px; background: var(--accent); display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 12px; }
+.mt-cmp-brand-note { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; font-weight: 500; color: var(--accent); line-height: 1.4; text-transform: none; letter-spacing: 0; }
+.mt-cmp-brand-note i { margin-top: 1px; font-size: 12px; }
+
+/* Rang */
+.mt-cmp .pos-cell { width: 60px; text-align: center; padding: 16px 8px; }
+.mt-cmp .pos-cell .rank { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 13px; }
+.mt-cmp .pos-cell .rank.r2 { background: #6c8b82; }
+.mt-cmp .pos-cell .rank.r3 { background: #8a99a6; }
+.mt-cmp .pos-cell .rank.r4 { background: #b6bfc8; }
+.mt-cmp .pos-cell .rank.r5 { background: #c8cfd6; }
+
+/* Image produit (fond gris + multiply, comme partout sur le site) */
+.mt-cmp .product-cell { padding: 18px 14px; }
+.mt-cmp .product-thumb { display: block; aspect-ratio: 1; background: var(--bg-3); border-radius: 8px; margin-bottom: 10px; position: relative; overflow: hidden; }
+.mt-cmp .product-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: multiply; }
+.mt-cmp .product-thumb.empty::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,0.03) 8px 9px); }
+.mt-cmp .product-name { display: block; font-weight: 600; font-size: 13.5px; line-height: 1.3; color: var(--ink); }
+.mt-cmp .product-name:hover { color: var(--accent); }
+
+/* Verdict */
+.mt-cmp .verdict-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--accent); color: #fff; border-radius: 8px; font-size: 12px; font-weight: 600; line-height: 1.25; }
+.mt-cmp .verdict-pill::before { content: "\2605"; font-size: 10px; }
+.mt-cmp .verdict-pill.alt { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+.mt-cmp .verdict-pill.alt::before { content: ""; display: none; }
+
+/* Note globale */
+.mt-cmp .score-cell { padding: 18px 14px; }
+.mt-cmp .score-block { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+.mt-cmp .score-block b { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; line-height: 1; }
+.mt-cmp .score-block small { font-size: 11px; color: var(--muted); }
+.mt-cmp .score-gauge { height: 6px; background: var(--bg-3); border-radius: 99px; overflow: hidden; margin: 4px 0 6px; }
+.mt-cmp .score-gauge-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #4ea689); border-radius: 99px; }
+.mt-cmp .score-tag { font-size: 11px; font-weight: 600; color: var(--accent); }
+
+/* Texte (résumé / points) */
+.mt-cmp .pp { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+.mt-cmp .pp .dot { color: var(--accent); margin: 0 4px; }
+
+/* Offres */
+.mt-cmp .price-cell .price { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); }
+.mt-cmp .price-cell .merchant { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.mt-cmp .price-cell .extra { font-size: 11px; color: var(--ink-2); margin-top: 4px; line-height: 1.4; }
+.mt-cmp .cmp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; padding: 9px 14px; background: var(--ink); color: #fff; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; border: none; font-family: inherit; }
+.mt-cmp .cmp-btn:hover { background: var(--accent); }
+
+/* Séparateur de section */
+.mt-cmp .mt-cmp-sep .section-head {
+  background: var(--bg-3); color: var(--ink);
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  width: auto; border-right: 0;
+}
+
+/* Specs */
+.mt-cmp .spec-cell { font-size: 12.5px; color: var(--ink-2); }
+
+/* Cellule vide */
+.mt-cmp .mt-cmp-empty { color: var(--muted-2); }
+
+/* Bouton « afficher plus » */
+.mt-cmp-more { text-align: center; padding: 16px 0 0; }
+.mt-cmp-more-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: all .2s; font-family: inherit; }
+.mt-cmp-more-btn:hover { background: var(--bg-3); border-color: var(--muted-2); }
+.mt-cmp-more-btn .chevron { transition: transform .3s ease; }
+
+/* === Responsive === */
+@media (max-width: 767px) {
+  .mt-cmp-h2 { font-size: 26px; }
+  .mt-cmp-sub { font-size: 15px; }
+  .mt-cmp .row-label { width: 130px; min-width: 120px; padding: 10px; }
+  .mt-cmp th, .mt-cmp td { padding: 10px; }
+  .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .price-cell { padding: 12px 10px; }
+}
