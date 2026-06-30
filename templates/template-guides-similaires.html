@@ -1,0 +1,108 @@
+<meta charset="utf-8">
+<!-- ============================================================
+     MEILLEURTEST — Tous les guides tablettes (bloc « related »)
+     Grille de 12 cartes guides connexes. Pleine largeur, fond gris.
+     À coller dans un élément CODE de Bricks Builder. Scope CSS : .mt
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #fafbfc; }
+
+  .mt {
+    --ink: #14181d; --ink-2: #2a3038;
+    --muted: #6b7480; --muted-2: #9aa3ad;
+    --line: #e8eaed; --line-2: #f1f3f5;
+    --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
+    --accent: #0f6b54; --accent-soft: #e5f1ec;
+    --gold: #b48a3a; --warn: #b54848;
+    --radius: 10px; --radius-lg: 16px;
+    font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    color: var(--ink);
+    width: 100%; max-width: 1280px; margin: 0 auto;
+    -webkit-font-smoothing: antialiased; line-height: 1.5;
+  }
+  .mt * { box-sizing: border-box; }
+  .mt a { color: inherit; text-decoration: none; }
+
+  /* === Guides connexes === */
+  .mt-related { padding: 56px 40px; background: var(--bg-2); border-top: 1px solid var(--line); }
+  .mt-related h2 { font-size: 24px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.02em; }
+  .mt-related-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .mt-rel-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .mt-rel-card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+  .mt-rel-thumb { aspect-ratio: 4/3; background: var(--bg-3); border-radius: 8px; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .mt-rel-thumb::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 10px, rgba(0,0,0,0.025) 10px 11px); }
+  .mt-rel-card h4 { font-size: 14px; font-weight: 600; margin: 0 0 6px; line-height: 1.3; letter-spacing: -0.01em; }
+  .mt-rel-card p { font-size: 12.5px; line-height: 1.5; color: var(--muted); margin: 0; }
+</style>
+
+<div class="mt">
+  <section class="mt-related">
+    <h2>Tous les guides tablettes</h2>
+    <div class="mt-related-sub">20 autres guides plus spécifiques pour affiner votre choix</div>
+    <div class="mt-rel-grid">
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes pour la prise de notes</h4>
+        <p>Vous prenez fréquemment des notes dans le cadre de votre travail ou de vos études…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes Microsoft Surface</h4>
+        <p>Vous aimez la compacité et la mobilité d'une tablette, mais désirez en même temps profiter…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes tactiles pour jouer</h4>
+        <p>Avec le temps, la tablette est devenue une astucieuse alternative à la fois compacte et…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes Archos</h4>
+        <p>Archos est une marque française qui se spécialise dans la fabrication et la vente de…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes Lenovo</h4>
+        <p>Lenovo n'est plus à présenter sur le marché de l'informatique. Si les PC portables, les…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes Huawei</h4>
+        <p>À mi-chemin entre le smartphone et l'ordinateur portable, la tablette tactile est un outil…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes Samsung</h4>
+        <p>Vous cherchez la tablette Samsung qui ne vous laissera jamais en plan, même lors de…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes 9 pouces</h4>
+        <p>Avec une tablette dotée d'un écran de 9 pouces, vous obtenez le bon compromis entre…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes GPS</h4>
+        <p>Pour définir le bon itinéraire sur la route, en randonnée ou lors d'expéditions…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes 8 pouces</h4>
+        <p>Pratique et compacte, la tablette 8 pouces figure parmi les mini-tablettes les plus appréciées…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes à moins de 200 €</h4>
+        <p>Depuis l'arrivée de l'iPad d'Apple, de l'eau a coulé sous les ponts et les prix…</p>
+      </div>
+      <div class="mt-rel-card">
+        <div class="mt-rel-thumb"></div>
+        <h4>Les meilleures tablettes rapport qualité-prix</h4>
+        <p>La tablette tactile n'est pas meilleure que l'ordinateur portable en termes de praticité…</p>
+      </div>
+    </div>
+  </section>
+</div>

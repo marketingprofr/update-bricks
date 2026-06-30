@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Aperçu — Fiche Bricks</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #eceef1; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 48px 24px 96px; }
+  .note { font-family: ui-monospace, monospace; font-size: 12px; color: #6b7480; margin: 0 0 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="note">Aperçu du snippet bricks/fiche-produit.html (rendu identique dans un élément Code Bricks)</p>
+  <div id="host"></div>
+</div>
+<script>
+  fetch('fiche-produit.html').then(r => r.text()).then(html => {
+    document.getElementById('host').innerHTML = html;
+  });
+</script>
+</body>
+</html>
