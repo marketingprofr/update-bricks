@@ -1,0 +1,104 @@
+/* =====================================================================
+   MEILLEURTEST — « Astuces et conseils » (onglet CSS de l'élément Code)
+   Scope : .mt-astuces  (cf. astuces.code.php)
+   Palette/typo alignées (Source Serif titres, Inter corps, accent --at-primary-*).
+   ===================================================================== */
+
+.mt-astuces {
+  --ink: #14181d; --ink-2: #2a3038;
+  --muted: #6b7480; --muted-2: #9aa3ad;
+  --line: #e8eaed; --line-2: #f1f3f5;
+  --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f4f5f7;
+  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --radius: 10px; --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink);
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.mt-astuces * { box-sizing: border-box; }
+.mt-astuces a { color: inherit; text-decoration: none; }
+
+.mt-astuces-h2 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 32px; line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 12px;
+}
+.mt-astuces-intro { font-size: 16px; line-height: 1.65; color: var(--ink-2); max-width: 740px; margin: 0 0 24px; }
+
+/* === Liste des astuces === */
+.mt-tips { display: grid; gap: 14px; }
+
+/* Carte vedette « Conseil principal » */
+.mt-tip.featured {
+  background: linear-gradient(180deg, var(--accent-soft) 0%, #fff 100%);
+  border: 1px solid var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 26px 30px;
+}
+.mt-tip-kicker {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 8px;
+}
+.mt-tip-h {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 22px; font-weight: 600; letter-spacing: -0.015em;
+  color: var(--ink); margin: 0 0 10px;
+}
+.mt-tip-body { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
+.mt-tip-body p, .mt-tip-body ul, .mt-tip-body ol { margin: 0 0 12px; }
+.mt-tip-body ul, .mt-tip-body ol { padding-left: 20px; }
+.mt-tip-body li { margin-bottom: 6px; }
+.mt-tip-body strong, .mt-tip-body b { color: var(--ink); font-weight: 600; }
+.mt-tip-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.mt-tip-body > :last-child { margin-bottom: 0; }
+
+/* Astuces suivantes : accordéon natif <details> */
+.mt-tip:not(.featured) {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+}
+details.mt-tip > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+}
+details.mt-tip > summary::-webkit-details-marker { display: none; }
+details.mt-tip > summary:hover { background: var(--bg-2); border-radius: var(--radius); }
+details.mt-tip > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: var(--radius); }
+
+.mt-tip-num {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  flex: none; min-width: 20px;
+}
+.mt-tip-title { font-size: 15.5px; font-weight: 600; color: var(--ink); }
+.mt-tip-arrow {
+  margin-left: auto; flex: none; color: var(--muted);
+  transition: transform .2s ease, color .2s ease;
+}
+details.mt-tip[open] > summary { border-bottom: 1px solid var(--line-2); }
+details.mt-tip[open] .mt-tip-arrow { transform: rotate(90deg); color: var(--accent); }
+details.mt-tip > .mt-tip-body { padding: 16px 20px 18px; }
+
+/* Astuce sans contenu : ligne simple non dépliable */
+.mt-tip.static {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px;
+}
+
+/* === Responsive === */
+@media (max-width: 767px) {
+  .mt-astuces-h2 { font-size: 26px; }
+  .mt-astuces-intro { font-size: 15px; }
+  .mt-tip.featured { padding: 22px 20px; }
+  .mt-tip-h { font-size: 20px; }
+  .mt-tip-body { font-size: 14.5px; }
+  details.mt-tip > summary, .mt-tip.static { padding: 14px 16px; gap: 12px; }
+  .mt-tip-title { font-size: 15px; }
+}

@@ -378,3 +378,23 @@ titres, Inter corps, accent `--at-primary-*`).
   critères). UID unique par instance (`$GLOBALS['mt_marques_uid']`) pour les ids
   tab/panel.
 - **Responsive** : grille 4 → 3 (≤991px) → 2 colonnes (≤767px).
+
+## État de « Astuces et conseils » (cf. `template-astuces.html`)
+
+Livrables : **`php-css/astuces.code.php`** (onglet Code = markup PHP + boucle) +
+**`php-css/astuces.css`** (onglet CSS). UN seul élément Code Bricks. Scope
+`.mt-astuces`. Reprend l'esprit de la maquette (1 conseil vedette + astuces
+compactes), palette/typo des autres sections.
+
+- **Source** : intro `mltv5_introduction_astuces` (fallback + phrase d'appel
+  communauté ajoutée en dur) + REPEATER `mltv5_astuces_comparatif` →
+  `mltv5_titre_de_lastuce` + `mltv5_contenu_de_lastuce` (WYSIWYG).
+- **Lecture robuste** : page courante → repli `mltv5_cached_id_astuces` (+ diag admin).
+  L'intro est lue sur le **même** post source que le repeater (`$src_id`).
+- **Ancre** : `<section class="mt-astuces contenu-principal" id="partie-astuces">`
+  → ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-astuces` ».
+- **UI** : 1re astuce = carte **vedette** « Conseil principal » (contenu déplié) ;
+  suivantes = **accordéon natif `<details>/<summary>`** (titre + flèche → contenu),
+  donc accessible et **sans JS** (rien à re-signer). Astuce sans contenu = ligne
+  simple non dépliable. Numérotation `02`, `03`… (la vedette = 1re).
+- Helper `mt_guide_rich` partagé (`function_exists`). Responsive : paddings réduits ≤767px.
