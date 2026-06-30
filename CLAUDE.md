@@ -200,8 +200,10 @@ sinon les liens du sommaire et le scrollspy ne s'accrochent à rien.
   `data-min` = minutes cumulées à son début ; le JS interpole entre jalons →
   « 10 min » pile au début de Guide d'achat. Repli scroll plein page tant que
   les sections `partie-*` / `.contenu-principal` n'existent pas encore.
-- **Sticky** : porté par `%root%` (wrapper Bricks) ET `.mt-toc`. Si ça
-  n'accroche pas → poser `position:sticky;top:24px` sur la colonne gauche en
-  natif + vérifier qu'aucun parent n'a `overflow:hidden/auto`.
+- **Sticky** : porté par `%root%` (wrapper Bricks) ET `.mt-toc`. ⚠️ **Piège
+  résolu** : pour que le sticky « voyage », la colonne gauche doit être plus
+  haute que l'aside → mettre **`align-items: stretch`** sur le wrapper des 2
+  colonnes (sinon la colonne épouse la hauteur du sommaire = aucune marge pour
+  coller). Vérifier aussi qu'aucun parent n'a `overflow:hidden/auto`.
 - Accent sur **`--at-primary`** (cohérent top5). `HEADER_OFFSET = 30` (pas de
   header sticky sur le site).
