@@ -29,6 +29,29 @@ if ( ! function_exists( 'mt5_reviews_label' ) ) {
     return $n > 0 ? number_format( $n, 0, ',', ' ' ) . ' avis' : '';
   }
 }
+if ( ! function_exists( 'mt5_merchant_name' ) ) {
+  /* Extrait le nom du marchand depuis le domaine d'une URL.
+     https://cdiscount.fr/sdf -> "Cdiscount" ; amazon.fr -> "Amazon". */
+  function mt5_merchant_name( $url ) {
+    $host = parse_url( (string) $url, PHP_URL_HOST );
+    if ( ! $host ) { return ''; }
+    $host  = preg_replace( '/^www\./i', '', $host );
+    $parts = explode( '.', $host );
+    $label = isset( $parts[0] ) ? $parts[0] : '';
+    return $label !== '' ? ucfirst( $label ) : '';
+  }
+}
+if ( ! function_exists( 'mt5_join_et' ) ) {
+  /* Joint des chaînes : "A", "A et B", "A, B et C". */
+  function mt5_join_et( $items ) {
+    $items = array_values( array_filter( $items, function ( $v ) { return $v !== ''; } ) );
+    $n     = count( $items );
+    if ( $n === 0 ) { return ''; }
+    if ( $n === 1 ) { return $items[0]; }
+    $last = array_pop( $items );
+    return implode( ', ', $items ) . ' et ' . $last;
+  }
+}
 if ( ! function_exists( 'mt5_points' ) ) {
   /* Repeater de points -> tableau de chaînes nettoyées. */
   function mt5_points( $field, $pid, $subkey ) {
@@ -140,22 +163,32 @@ foreach ( $ids as $pid ) {
   $pros = array_slice( mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' ), 0, 2 );
   $cons = array_slice( mt5_points( 'mltv5_points_negatifs_produit', $pid, 'mltv5_point_negatif' ), 0, 1 );
 
-  /* --- Offres (Amazon prioritaire, puis liens perso) --- */
-  $offers = array();
-  $asin   = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
-  $prix   = get_field( 'mltv5_prix_indicatif', $pid );
+  /* --- Offres : URL prioritaire Amazon (ASIN), sinon liens perso ---
+     - Lien   : ASIN renseigné -> URL Amazon ; sinon 1er lien ACF.
+     - Libellé bouton : prix présent -> "Vérifier le prix" ;
+                        sinon -> texte du bouton ACF.
+     - Marchands sous le bouton : nom extrait du DOMAINE de chaque URL. */
+  $asin      = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
+  $prix      = get_field( 'mltv5_prix_indicatif', $pid );
+  $has_price = ( $prix !== '' && $prix !== null && mt5_num( $prix ) > 0 );
+
+  $offer_urls   = array();
+  $btn_fallback = '';
   if ( $asin !== '' ) {
-    $offers[] = array( 'name' => 'Amazon', 'url' => 'https://www.amazon.fr/dp/' . esc_attr( $asin ) . '?tag=' . $T5_AMAZON_TAG );
+    $offer_urls[] = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=' . $T5_AMAZON_TAG;
   }
   for ( $i = 1; $i <= 3; $i++ ) {
     $u = trim( (string) get_field( 'mltv5_lien_du_produit_' . $i, $pid ) );
     $t = trim( (string) get_field( 'mltv5_texte_du_bouton_' . $i, $pid ) );
-    if ( $u !== '' && $t !== '' && ( strpos( $u, 'http' ) === 0 ) ) {
-      $offers[] = array( 'name' => $t, 'url' => $u );
+    if ( $u !== '' && strpos( $u, 'http' ) === 0 ) {
+      $offer_urls[] = $u;
+      if ( $btn_fallback === '' && $t !== '' ) { $btn_fallback = $t; }
     }
   }
-  $primary    = ! empty( $offers ) ? $offers[0] : null;
-  $review_url = '#produit-n-' . $pos; // ancre avis détaillé (cf. bloc titre)
+  $offer_urls  = array_values( array_unique( $offer_urls ) );
+  $primary_url = ! empty( $offer_urls ) ? $offer_urls[0] : '';
+  $cta_text    = $has_price ? 'Vérifier le prix' : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" );
+  $review_url  = '#produit-n-' . $pos; // ancre avis détaillé (cf. bloc titre)
 
   /* --- Données de tri --- */
   $d_rank   = $pos;
@@ -173,7 +206,7 @@ foreach ( $ids as $pid ) {
             <?php else : ?>
               <span class="ph-cap"><?php echo esc_html( $name ); ?></span>
             <?php endif; ?>
-            <span class="t5-laurel" aria-label="Meilleur choix"><img src="/wp-content/uploads/laurel-gold.svg" alt="" width="44" height="44"></span>
+            <span class="t5-laurel" aria-label="Meilleur choix"><img src="https://meilleurtest.fr/wp-content/uploads/2026/06/badge-laurel.svg" alt="" width="44" height="44"></span>
           </div>
         </div>
         <div class="t5-body">
@@ -209,15 +242,19 @@ foreach ( $ids as $pid ) {
             <?php endif; ?>
           </div>
           <div class="t5-buy">
-            <?php if ( $primary ) : ?>
-            <a class="t5-cta" href="<?php echo esc_url( $primary['url'] ); ?>" target="_blank" rel="nofollow sponsored noopener">V&eacute;rifier le prix<span class="sr-only"> de <?php echo esc_attr( $name ); ?> (lien commercial)</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+            <?php if ( $primary_url !== '' ) : ?>
+            <a class="t5-cta" href="<?php echo esc_url( $primary_url ); ?>" target="_blank" rel="nofollow sponsored noopener"><?php echo esc_html( $cta_text ); ?><span class="sr-only"> &mdash; <?php echo esc_attr( $name ); ?> (lien commercial)</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
             <?php endif; ?>
-            <?php if ( count( $offers ) > 1 ) : ?>
-            <div class="t5-merchants">chez <?php
-              $names = array();
-              foreach ( $offers as $o ) { $names[] = '<a href="' . esc_url( $o['url'] ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $o['name'] ) . '</a>'; }
-              echo implode( ', ', $names );
-            ?></div>
+            <?php
+            $links = array();
+            foreach ( $offer_urls as $u ) {
+              $mn = mt5_merchant_name( $u );
+              if ( $mn !== '' ) {
+                $links[] = '<a href="' . esc_url( $u ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $mn ) . '</a>';
+              }
+            }
+            if ( ! empty( $links ) ) : ?>
+            <div class="t5-merchants">chez <?php echo mt5_join_et( $links ); ?></div>
             <?php endif; ?>
           </div>
         </div>

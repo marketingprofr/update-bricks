@@ -17,6 +17,8 @@
   color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased;
 }
 .mt-top5 *, .mt-top5 *::before, .mt-top5 *::after { box-sizing: border-box; }
+/* Force Inter sur TOUT, titres compris (sinon h2/h3/h4 héritent du serif du thème). */
+.mt-top5, .mt-top5 *, .mt-top5 h1, .mt-top5 h2, .mt-top5 h3, .mt-top5 h4, .mt-top5 h5, .mt-top5 h6 { font-family: "Inter", "Helvetica Neue", system-ui, sans-serif !important; }
 .mt-top5 a { color: inherit; text-decoration: none; }
 .mt-top5 button { font-family: inherit; }
 .mt-top5 :is(a, button):focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
@@ -82,7 +84,7 @@
 .mt-top5 .t5-name { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; margin: 0 0 2px; }
 .mt-top5 .t5-name a { transition: color .15s; }
 .mt-top5 .t5-name a:hover { color: var(--accent); }
-.mt-top5 .t5-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); margin: 0 0 4px; }
+.mt-top5 .t5-label { font-size: 14px; font-weight: 700; color: var(--ink); margin: 0 0 3px; }
 .mt-top5 .t5-tagline { font-size: 13px; font-weight: 600; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-summary { display: none; }
 .mt-top5 .t5-readmore { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
@@ -149,7 +151,7 @@
 .mt-top5 .t5-list > li:first-child .t5-eyebrow { display: block; font-size: 14px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 3px; }
 .mt-top5 .t5-list > li:first-child .t5-name { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; margin: 0 0 7px; }
 .mt-top5 .t5-list > li:first-child .t5-name a:hover { color: inherit; }
-.mt-top5 .t5-list > li:first-child .t5-label { font-size: 12px; margin: 0 0 6px; }
+.mt-top5 .t5-list > li:first-child .t5-label { font-size: 16px; margin: 0 0 5px; }
 .mt-top5 .t5-list > li:first-child .t5-tagline { font-size: 16px; margin: 0 0 10px; }
 .mt-top5 .t5-list > li:first-child .t5-summary { display: block; font-size: 14.5px; line-height: 1.65; color: var(--ink-2); margin: 0 0 14px; text-wrap: pretty; }
 .mt-top5 .t5-list > li:first-child .t5-pc { gap: 6px; }
