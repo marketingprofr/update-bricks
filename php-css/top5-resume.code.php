@@ -169,7 +169,7 @@ foreach ( $ids as $pid ) {
     'cons'        => $cons,
     'offer_urls'  => $offer_urls,
     'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
-    'cta_text'    => $has_price ? 'Vérifier le prix' : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" ),
+    'cta_text'    => $has_price ? 'Voir le prix' : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" ),
     'price_num'   => mt5_num( $prix ),
     'rating_num'  => mt5_num( $cust_rating ),
     'modified'    => (int) get_post_modified_time( 'U', true, $pid ),
@@ -205,7 +205,7 @@ $head_title = 'Les ' . $nb . ' ' . esc_html( lcfirst( $mf ) )
   <header class="t5-head">
     <div>
       <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
-      <p class="t5-meta">Notre classement <?php echo esc_html( date_i18n( 'Y' ) ); ?>, v&eacute;rifi&eacute; par la r&eacute;daction</p>
+      <p class="t5-meta">Notre classement <?php echo esc_html( date_i18n( 'Y' ) ); ?>, totalement impartial et v&eacute;rifi&eacute; par la r&eacute;daction</p>
     </div>
   </header>
 
@@ -229,7 +229,7 @@ $head_title = 'Les ' . $nb . ' ' . esc_html( lcfirst( $mf ) )
 
   <ol class="t5-list" data-t5-list>
 <?php foreach ( $products as $it ) : ?>
-    <li class="t5-item" data-rank="<?php echo esc_attr( $it['pos'] ); ?>" data-price="<?php echo esc_attr( $it['price_num'] ); ?>" data-rating="<?php echo esc_attr( $it['rating_num'] ); ?>" data-modified="<?php echo esc_attr( $it['modified'] ); ?>">
+    <li class="t5-item<?php echo ( trim( (string) $it['cust_rating'] ) === '' ? ' t5-no-cust' : '' ); ?>" data-rank="<?php echo esc_attr( $it['pos'] ); ?>" data-price="<?php echo esc_attr( $it['price_num'] ); ?>" data-rating="<?php echo esc_attr( $it['rating_num'] ); ?>" data-modified="<?php echo esc_attr( $it['modified'] ); ?>">
       <article class="t5-card">
         <p class="t5-banner"><span class="b-num">N&deg;<?php echo $it['pos']; ?></span> <span class="b-label">Le choix de la r&eacute;daction</span></p>
         <span class="t5-rnum" aria-hidden="true"><?php echo $it['pos']; ?></span>

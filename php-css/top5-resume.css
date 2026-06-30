@@ -173,7 +173,7 @@
 .mt-top5 .t5-list > li:first-child .t5-ratings { display: contents; }
 .mt-top5 .t5-list > li:first-child .t5-ed { text-align: left; }
 .mt-top5 .t5-list > li:first-child .r-lbl { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-.mt-top5 .t5-list > li:first-child .t5-ed .r-line { display: flex; align-items: center; gap: 10px; }
+.mt-top5 .t5-list > li:first-child .t5-ed .r-line { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .n { font-size: 36px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .n small { font-size: 14px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); background: var(--at-primary-l-5); padding: 3px 9px; border-radius: 999px; }
@@ -196,10 +196,18 @@
   .mt-top5 .t5-list > li:first-child .ph { max-width: 320px; }
   .mt-top5 .t5-list > li:first-child .t5-aside { border-left: 0; border-top: 1px solid var(--line-2); }
 
-  .mt-top5 .t5-card { grid-template-columns: 44px 1fr; grid-template-areas: "rnum body" "aside aside"; gap: 6px 12px; padding: 14px 16px 14px 0; align-items: start; }
+  .mt-top5 .t5-card { grid-template-columns: 44px 1fr; grid-template-areas: "rnum body" "aside aside"; gap: 6px 12px; padding: 14px 16px 14px; align-items: start; }
   .mt-top5 .t5-media { display: none; }
   .mt-top5 .t5-aside { justify-content: space-between; width: 100%; padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--line-2); }
   .mt-top5 .t5-ratings { text-align: left; }
+
+  /* Pas d'avis clients : "Notre note" centré horizontalement, pastille dessous */
+  .mt-top5 .t5-item.t5-no-cust .t5-aside { justify-content: center; }
+  .mt-top5 .t5-item.t5-no-cust .t5-ratings { text-align: center; }
+  .mt-top5 .t5-item.t5-no-cust .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .mt-top5 .t5-list > li:first-child.t5-no-cust .t5-ed { text-align: center; }
+  .mt-top5 .t5-list > li:first-child.t5-no-cust .t5-ed .r-line { align-items: center; }
+  .mt-top5 .t5-list > li:first-child.t5-no-cust .r-lbl { text-align: center; }
 }
 @media (max-width: 600px) {
   .mt-top5 .t5-h2 { font-size: 21px; }
