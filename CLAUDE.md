@@ -439,4 +439,24 @@ Code Bricks. Scope `.mt-faq`.
     exclue du JSON-LD.
 - **Ancre** : `<section class="mt-faq contenu-principal" id="partie-faq">` →
   ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-faq` ».
-- Intro statique (pas de champ ACF) reprenant l'appel communauté de la maquette.
+- Intro statique : « Voici les questions les plus fréquemment posées par nos
+  lecteurs et la communauté. »
+- **3 Q/R AUTOMATIQUES en tête** (avant les manuelles), pensées **type-agnostiques**
+  (smartphones, chaussures, huile d'olive, couches…) — ne s'affichent que si le
+  guide a des produits (`top_avis_ids` → fallback `mltv5_best_products`, même
+  sourcing + passe `setup_postdata` que resume/comparatif) :
+  - **Q1** « Quel(le) est (le/la/les) meilleur(e)(s) {type} ? » : interrogatif +
+    accord dérivés de **`lalalesmeilleur`** (« le meilleur »/« la meilleure »/
+    « les meilleurs »/« les meilleures » → Quel est/Quelle est/Quels sont/Quelles
+    sont, + nom singulier/pluriel assorti). Réponse = #1 du classement (note /10)
+    + podium #2/#3. Repli si `lalalesmeilleur` vide.
+  - **Q2** = budget si **≥2 prix** (`mltv5_prix_indicatif` : fourchette + option la
+    plus accessible ; article un/une/des dérivé du genre/nombre) → sinon avis
+    clients si **≥2 notes** (`mltv5_score_avis_clients`) → sinon « confiance /
+    indépendance » (générique).
+  - **Q3** = méthodologie : stats `produits_analyses`/`avis_etudies`/
+    `sources_consultees`/`heures_investies` si présentes (assemblées via
+    `mt_faq_join_et`), sinon générique.
+  - Tournures choisies pour **éviter les accords genrés piégeux**, normalisation
+    des espaces, montants `number_format` + nbsp + €. Les 3 autos sont **incluses
+    dans le JSON-LD FAQPage** (`name` re-décodé en texte brut pour le schema).
