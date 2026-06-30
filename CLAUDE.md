@@ -207,3 +207,38 @@ sinon les liens du sommaire et le scrollspy ne s'accrochent à rien.
   coller). Vérifier aussi qu'aucun parent n'a `overflow:hidden/auto`.
 - Accent sur **`--at-primary`** (cohérent top5). `HEADER_OFFSET = 30` (pas de
   header sticky sur le site).
+
+## État des « tests complets » (avis détaillés — cf. `template-top5-tests.html`)
+
+Livrables : **`php-css/top5-tests.code.php`** (onglet Code = markup PHP + boucle)
++ **`php-css/top5-tests.css`** (onglet CSS). UN seul élément Code Bricks.
+Version éditoriale « magazine » (scope `.ed-a`), **un article par produit**.
+
+- **Sourcing des IDs identique au top5-resume / build-hero** :
+  `get_all_template_variables($page_id)['top_avis_ids']` (liste ordonnée),
+  fallback `mltv5_best_products`. **Helpers partagés** avec `top5-resume.code.php`
+  (`mt5_num`, `mt5_merchant_name`, `mt5_join_et`, `mt5_points`) → tous protégés
+  par `function_exists` (les deux blocs cohabitent sans redéclaration).
+- **Ancre par produit = `id="produit-n-{rang}"`** → cible des liens « Lire l'avis
+  complet » du top5-resume (`#produit-n-1`…). Cohérence cross-section.
+- **Ancre de section** : la `<section class="ed-a contenu-principal"
+  id="partie-tests-complets">` porte **déjà** l'`id` du sommaire **et** la classe
+  `.contenu-principal` (jauge de lecture) → rien à reposer en natif pour cette
+  partie.
+- **Champs** : identité (`mltv5_marque/modele_du_produit`, `mltv5_sous_titre`,
+  `mltv5_resume_produit`), score `mltv5_score_recent` (via
+  `get_acf_score_divided_by_10` + `get_acf_score_label`), avis clients
+  `mltv5_score_avis_clients` /5 + `mltv5_nombre_avis_clients`, points +/-
+  (répéteurs `mltv5_points_positifs/negatifs_produit`), offres (ASIN Amazon
+  prioritaire puis `mltv5_lien/texte_du_bouton_1..3`).
+  **Corps de l'avis = `post_content`** du produit (filtré `the_content`) ; le 1er
+  paragraphe reçoit chapô + lettrine **en CSS** (pas de classe à poser).
+- **Champs à confirmer côté site** (constantes en tête du fichier, sections
+  masquées si vides) : `mltv5_verdict_court` (libellé récompense eyebrow),
+  `mltv5_public_cible` (encart « À qui ça s'adresse »), répéteur fiche technique
+  `mltv5_caracteristiques_du_produit` (sous-clés `_intitule`/`_valeur` ;
+  `mt5_specs` retombe sur les 2 premières valeurs scalaires si les sous-clés
+  diffèrent).
+- **Typo** : design serif (Source Serif) pour titres/nom/chapô/corps, Inter pour
+  labels/points/specs. `!important` sur les familles Inter des titres internes
+  (h2/h3/h4 du `post_content`, h5) pour battre le serif du thème.
