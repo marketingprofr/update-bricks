@@ -113,9 +113,7 @@ if ( empty( $duels ) ) {
   return;
 }
 ?>
-<section class="mt-choix contenu-principal" id="partie-choix" aria-labelledby="mt-choix-title">
-  <h2 class="mt-choix-h2" id="mt-choix-title">Quel choix faire&nbsp;?</h2>
-
+<section class="mt-choix contenu-principal" id="partie-choix" aria-label="Quel choix faire">
   <div class="mt-choix-list">
     <?php foreach ( $duels as $d ) :
       $has1 = ( $d['t1'] !== '' || $d['d1'] !== '' );
@@ -123,7 +121,7 @@ if ( empty( $duels ) ) {
       $both = ( $has1 && $has2 );
     ?>
     <article class="mt-duel">
-      <?php if ( $d['title'] !== '' ) : ?><h3 class="mt-duel-title"><?php echo esc_html( $d['title'] ); ?></h3><?php endif; ?>
+      <?php if ( $d['title'] !== '' ) : ?><h2 class="mt-duel-title"><?php echo esc_html( $d['title'] ); ?></h2><?php endif; ?>
       <?php if ( $d['intro'] !== '' ) : ?><div class="mt-duel-intro"><?php echo $d['intro']; ?></div><?php endif; ?>
 
       <?php if ( $has1 || $has2 ) : ?>

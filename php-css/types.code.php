@@ -80,6 +80,7 @@ if ( ! function_exists( 'mt_types_read' ) ) {
 $page_id   = get_the_ID();
 $page_tv   = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
 $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
+$type_sing = isset( $page_tv['type_de_produit_au_singulier'] ) ? trim( (string) $page_tv['type_de_produit_au_singulier'] ) : '';
 
 $src_id = $page_id;
 $data   = mt_types_read( $src_id );
@@ -134,7 +135,11 @@ if ( empty( $types ) ) {
   return;
 }
 
-$title = 'Les ' . ( $type_plur !== '' ? esc_html( $type_plur ) : 'produits' ) . '&nbsp;: quel type choisir&nbsp;?';
+/* « Quel type de {produit} choisir ? » avec élision de/d'. */
+$noun  = $type_sing !== '' ? $type_sing : ( $type_plur !== '' ? $type_plur : 'produit' );
+$first = function_exists( 'mb_substr' ) ? mb_strtolower( mb_substr( $noun, 0, 1, 'UTF-8' ), 'UTF-8' ) : strtolower( $noun[0] );
+$de    = ( mb_strpos( 'aàâäeéèêëiîïoôöuùûühyœæ', $first ) !== false ) ? 'd&rsquo;' : 'de ';
+$title = 'Quel type ' . $de . esc_html( $noun ) . ' choisir&nbsp;?';
 ?>
 <section class="mt-types contenu-principal" id="partie-types" aria-labelledby="mt-types-title">
   <h2 class="mt-types-h2" id="mt-types-title"><?php echo $title; ?></h2>
