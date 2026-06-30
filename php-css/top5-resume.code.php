@@ -7,11 +7,11 @@
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
-   CONFIG — à ajuster si besoin (noms de variables note clients)
+   CONFIG — noms des champs ACF (note clients) + tag Amazon
    --------------------------------------------------------------------- */
-$T5_CUST_RATING_VAR = 'note_clients';      // valeur /5 (étoile)  -> get_all_template_variables()
-$T5_CUST_COUNT_VAR  = 'nbr_avis_clients';  // nombre d'avis clients
-$T5_AMAZON_TAG      = 'mlt00-21';          // tag affilié Amazon
+$T5_CUST_RATING_FIELD = 'mltv5_score_avis_clients';    // note clients /5 (étoile)
+$T5_CUST_COUNT_FIELD  = 'mltv5_nombre_avis_clients';   // nombre d'avis clients
+$T5_AMAZON_TAG        = 'mlt00-21';                     // tag affilié Amazon
 
 /* ---------------------------------------------------------------------
    Helpers (déclarés une fois)
@@ -120,10 +120,9 @@ foreach ( $ids as $pid ) {
     ? trim( (string) get_default_product_label( $pid, get_field( 'mltv5_score_recent', $pid ) ) )
     : '';
 
-  /* Note clients */
-  $ptv         = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $pid ) : array();
-  $cust_rating = isset( $ptv[ $T5_CUST_RATING_VAR ] ) ? $ptv[ $T5_CUST_RATING_VAR ] : '';
-  $cust_count  = isset( $ptv[ $T5_CUST_COUNT_VAR ] )  ? $ptv[ $T5_CUST_COUNT_VAR ]  : '';
+  /* Note clients (champs ACF du produit) */
+  $cust_rating = trim( (string) get_field( $T5_CUST_RATING_FIELD, $pid ) );
+  $cust_count  = trim( (string) get_field( $T5_CUST_COUNT_FIELD, $pid ) );
 
   /* Points + / - (max 2 / 1) */
   $pros = array_slice( mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' ), 0, 2 );

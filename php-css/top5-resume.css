@@ -171,9 +171,9 @@
 
 .mt-top5 .t5-list > li:first-child .t5-aside { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 14px; background: var(--bg-2); border-left: 1px solid var(--line-2); padding: 22px; }
 .mt-top5 .t5-list > li:first-child .t5-ratings { display: contents; }
-.mt-top5 .t5-list > li:first-child .t5-ed { text-align: left; }
+.mt-top5 .t5-list > li:first-child .t5-ed { text-align: center; }
 .mt-top5 .t5-list > li:first-child .r-lbl { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-.mt-top5 .t5-list > li:first-child .t5-ed .r-line { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.mt-top5 .t5-list > li:first-child .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .n { font-size: 36px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .n small { font-size: 14px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); background: var(--at-primary-l-5); padding: 3px 9px; border-radius: 999px; }
