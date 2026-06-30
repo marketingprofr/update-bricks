@@ -36,7 +36,10 @@
 }
 .mt-cmp-sub { font-size: 16px; color: var(--ink-2); line-height: 1.6; max-width: 740px; margin: 0; }
 
-/* === Conteneur scrollable (mobile) === */
+/* Indice de scroll (mobile uniquement) */
+.mt-cmp-hint { display: none; }
+
+/* === Conteneur scrollable (scroll horizontal sur mobile) === */
 .mt-cmp-wrap {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
@@ -44,24 +47,31 @@
   -webkit-overflow-scrolling: touch;
   background: #fff;
 }
+.mt-cmp-wrap::-webkit-scrollbar { height: 9px; }
+.mt-cmp-wrap::-webkit-scrollbar-track { background: var(--bg-3); }
+.mt-cmp-wrap::-webkit-scrollbar-thumb { background: var(--muted-2); border-radius: 99px; border: 2px solid var(--bg-3); }
 
-/* === Table : 1re colonne fixe, colonnes produits égales (table-layout fixed) === */
-.mt-cmp { width: 100%; min-width: 800px; table-layout: fixed; border-collapse: collapse; font-size: 13px; background: #fff; }
+/* === Table : 1re colonne fixe (160px), colonnes produits >= 190px et égales.
+   La largeur mini totale (160 + nb*190) est posée en inline sur la table -> les
+   colonnes produits ne descendent jamais sous 190px et le tableau scrolle. === */
+.mt-cmp { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; background: #fff; }
 .mt-cmp th, .mt-cmp td {
   padding: 14px; text-align: left; vertical-align: top;
   border-bottom: 1px solid var(--line);
 }
 .mt-cmp tbody tr:last-child td { border-bottom: 0; }
 
-/* Colonne label (gauche) */
+/* Colonne label (gauche) — STICKY : reste visible pendant le scroll horizontal */
 .mt-cmp .row-label {
   width: 160px;
+  position: sticky; left: 0; z-index: 3;
   background: var(--bg-2);
   font-size: 11px; font-weight: 600; color: var(--muted);
   text-transform: uppercase; letter-spacing: 0.02em;
   border-right: 1px solid var(--line);
   padding: 12px 12px;
 }
+.mt-cmp .row-label.section-head { position: static; }
 
 /* Pastille « engagement » (laurier recoloré en primary) + mention */
 .mt-cmp .brand-cell { vertical-align: top; text-transform: none; }
@@ -190,12 +200,14 @@
 .mt-cmp-more-btn:hover { background: var(--bg-3); border-color: var(--muted-2); }
 .mt-cmp-more-btn .chevron { transition: transform .3s ease; }
 
-/* === Responsive === */
+/* === Responsive ===
+   Les colonnes gardent leur largeur (≥190px) : on NE rétrécit pas la table,
+   on scrolle. On allège juste les marges et on affiche l'indice de glissement. */
 @media (max-width: 767px) {
   .mt-cmp-h2 { font-size: 26px; }
   .mt-cmp-sub { font-size: 15px; }
-  .mt-cmp .row-label { width: 124px; padding: 10px 8px; }
-  .mt-cmp th, .mt-cmp td { padding: 10px; }
-  .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 12px 10px; }
-  .mt-cmp .col-banner { font-size: 9px; }
+  .mt-cmp-hint { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin: 0 0 10px; }
+  .mt-cmp th, .mt-cmp td { padding: 11px; }
+  .mt-cmp .row-label { padding: 11px 10px; }
+  .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 14px 11px; }
 }

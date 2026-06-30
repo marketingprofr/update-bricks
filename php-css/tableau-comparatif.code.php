@@ -282,8 +282,10 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
     <p class="mt-cmp-sub"><?php echo $sub; ?></p>
   </header>
 
+  <p class="mt-cmp-hint" aria-hidden="true">Faites glisser le tableau pour comparer &rarr;</p>
+
   <div class="mt-cmp-wrap">
-    <table class="mt-cmp">
+    <table class="mt-cmp" style="min-width: <?php echo (int) ( 160 + $nb * 190 ); ?>px;">
       <tbody>
 
         <!-- Rang (médaille + banderoles) + pastille engagement (1re colonne, rowspan 2) -->
