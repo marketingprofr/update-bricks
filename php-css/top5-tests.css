@@ -25,7 +25,7 @@
 /* En-tête de section */
 .ed-a-head { max-width: 720px; margin: 0 auto 8px; text-align: center; }
 .ed-a-head .kick { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
-.ed-a-head h2 { font-family: "Source Serif 4", Georgia, serif !important; font-size: 40px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 16px; line-height: 1.1; }
+.ed-a-head h2 { font-family: "Source Serif 4", Georgia, serif !important; font-size: 40px !important; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 16px; line-height: 1.1; }
 .ed-a-head p { font-size: 17px; line-height: 1.65; color: var(--muted); margin: 0; }
 .ed-a-head .rule { width: 56px; height: 3px; background: var(--accent); border-radius: 3px; margin: 26px auto 0; }
 
@@ -42,7 +42,7 @@
 .ed-a-eyebrow .award.gold { color: var(--gold); }
 .ed-a-eyebrow .sep { width: 4px; height: 4px; border-radius: 50%; background: var(--line); }
 
-.ed-a-name { font-family: "Source Serif 4", Georgia, serif !important; font-size: 44px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.05; text-align: center; margin: 0 0 16px; }
+.ed-a-name { font-family: "Source Serif 4", Georgia, serif !important; font-size: 36px !important; font-weight: 600; letter-spacing: -0.025em; line-height: 1.08; text-align: center; margin: 0 0 16px; }
 .ed-a-name span { color: var(--ink); font-weight: 600; }
 .ed-a-deck { font-family: "Source Serif 4", Georgia, serif; font-size: 22px; font-style: italic; line-height: 1.45; color: var(--ink-2); text-align: center; margin: 0 0 22px; }
 
@@ -55,7 +55,8 @@
 .ed-a-buy .cust-line { display: flex; align-items: center; gap: 8px; }
 .ed-a-buy .n { font-size: 28px; font-weight: 700; color: var(--accent); letter-spacing: -0.03em; line-height: 1; }
 .ed-a-buy .n small { font-size: 13px; color: var(--muted); font-weight: 500; }
-.ed-a-buy .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 3px 9px; border-radius: 999px; }
+/* Pastille sur fond gris (--bg-2) : primary-l-5 pour garder du contraste */
+.ed-a-buy .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); background: var(--at-primary-l-5); padding: 3px 9px; border-radius: 999px; }
 .ed-a-buy .stars-gauge { position: relative; display: inline-block; color: var(--line); font-size: 15px; line-height: 1; letter-spacing: 1px; white-space: nowrap; }
 .ed-a-buy .stars-gauge .fill { position: absolute; top: 0; left: 0; overflow: hidden; color: var(--gold); white-space: nowrap; }
 .ed-a-buy .cust-val { font-size: 15px; font-weight: 700; color: var(--ink); }
@@ -96,8 +97,8 @@
 /* Corps de l'article (= post_content WordPress) */
 .ed-a-body { font-family: "Source Serif 4", Georgia, serif; }
 .ed-a-body p { font-size: 18px; line-height: 1.75; color: var(--ink-2); margin: 0 0 20px; }
-/* Le 1er paragraphe joue le rôle de chapô avec lettrine (pas de classe requise) */
-.ed-a-body > p:first-of-type { font-size: 20px; line-height: 1.7; color: var(--ink); }
+/* Le 1er paragraphe joue le rôle de chapô avec lettrine (même font-size que la suite) */
+.ed-a-body > p:first-of-type { color: var(--ink); }
 .ed-a-body > p:first-of-type::first-letter { initial-letter: 2; -webkit-initial-letter: 2; font-weight: 400; color: var(--accent); margin-right: 10px; }
 .ed-a-body p b, .ed-a-body p strong { color: var(--ink); font-weight: 600; }
 .ed-a-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
@@ -137,7 +138,6 @@
   .ed-a-name { font-size: 32px; }
   .ed-a-deck { font-size: 19px; }
   .ed-a-body p { font-size: 17px; }
-  .ed-a-body > p:first-of-type { font-size: 17px; }
   .ed-a-body blockquote p { font-size: 21px; }
   .ed-a-buy { flex-direction: row; flex-wrap: wrap; }
   .ed-a-buy .note-block { flex: 1; align-items: center; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
