@@ -47,11 +47,18 @@ if ( ! function_exists( 'mt_guide_cache_id' ) ) {
   /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
      puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
   function mt_guide_cache_id( $page_id, $suffix ) {
-    foreach ( array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix ) as $f ) {
+    $keys = array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix );
+    foreach ( $keys as $f ) {                            /* 1) ACF */
       $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
-      if ( is_array( $v ) ) { $v = reset( $v ); }       /* relation/post-object multiple */
-      if ( is_object( $v ) ) { return (int) $v->ID; }     /* Post Object */
-      if ( $v ) { return (int) $v; }                      /* ID scalaire */
+      if ( is_array( $v ) ) { $v = reset( $v ); }
+      if ( is_object( $v ) ) { return (int) $v->ID; }
+      if ( $v ) { return (int) $v; }
+    }
+    foreach ( $keys as $f ) {                            /* 2) meta brut (hors ACF) */
+      $v = function_exists( 'get_post_meta' ) ? get_post_meta( $page_id, $f, true ) : '';
+      if ( is_array( $v ) ) { $v = reset( $v ); }
+      if ( is_object( $v ) ) { return (int) $v->ID; }
+      if ( $v ) { return (int) $v; }
     }
     return 0;
   }
