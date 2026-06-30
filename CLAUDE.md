@@ -288,7 +288,22 @@ Inter corps, accent `--at-primary-*`).
   s'affichent que si ≥ 1 produit a la donnée (pas de rangée vide). Specs absentes
   d'un produit → cellule `—`.
 - **Images en `mix-blend-mode: multiply`** sur fond gris porté par `.product-thumb`
-  (même règle que partout). Inline SVG remplacé par `<i class="fas fa-circle-check">`
-  (FA déjà chargé, rien à signer).
-- Score : jauge largeur = `score10 × 10 %` ; pastille verdict pleine pour rangs
-  1-2, contour (`.alt`) au-delà. Tableau en `overflow-x:auto` (scroll mobile).
+  (même règle que partout), avec **`padding:12px`** pour ne pas coller au bord gris.
+- **Layout colonnes** : `table-layout:fixed` → 1re colonne (labels) fixe **118px**
+  (font 11px), toutes les **colonnes produits à largeur égale** + vignettes de
+  taille identique. Tableau en `overflow-x:auto` (scroll mobile).
+- **Banderoles au-dessus du rang** (dans la `.pos-cell`, anti-clip) : « ★ Meilleur
+  choix » (rang 1, primary) + « € Meilleur prix » (le moins cher hors rang 1,
+  bleu) ; sans prix exploitable → « ♥ Meilleure alternative » (rang 2, orange).
+  Pastilles de rang en **dégradé visible** vert→jaune→orange→rouge (r1..r5).
+- **1re colonne** = laurier `.t5-laurel` (réutilisé du resume mais **recoloré en
+  primary via `mask`**, pas gold) + mention « aucun produit sponsorisé ».
+- **Note globale monochrome** (classe `.sc-{p/g/y/o/r}`) : ≥9 primary, ≥8 vert,
+  ≥7 jaune, ≥6 orange, sinon rouge (jauge + chiffre + libellé).
+- **Verdict** = texte « quote » serif italique primary (`«  »`), pas de bouton.
+- **Points +/-** : listes avec icônes `fa-check` (vert) / `fa-times` (rouge),
+  texte vert sombre / rouge sombre.
+- **« Où l'acheter »** = bouton primary « Voir l'offre » + marchands sous le
+  bouton (« chez X et Y »), **sans prix affiché** (le prix ne sert qu'à la
+  banderole « Meilleur prix »).
+- **Nom produit centré** : marque en uppercase gris au-dessus, modèle en dessous.

@@ -8,7 +8,7 @@
    Source : top_avis_ids (liste ordonnée du guide) -> 1 post = 1 produit.
    ↳ Même sourcing d'ID + même passe de collecte que top5-resume / top5-tests.
    Ancre de section : id="partie-tableau-comparatif" (lien du sommaire).
-   Liens internes : nom produit -> #produit-n-{rang} (avis détaillé).
+   Liens internes : nom produit + vignette -> #produit-n-{rang} (avis détaillé).
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
@@ -80,6 +80,18 @@ if ( ! function_exists( 'mtc_score_label' ) ) {
     return 'Tr&egrave;s mauvais';
   }
 }
+if ( ! function_exists( 'mtc_score_level' ) ) {
+  /* Couleur monochrome de la jauge selon la note /10 :
+     >=9 primary | >=8 vert | >=7 jaune | >=6 orange | sinon rouge. */
+  function mtc_score_level( $s10 ) {
+    $s = (float) $s10;
+    if ( $s >= 9 ) { return 'p'; }
+    if ( $s >= 8 ) { return 'g'; }
+    if ( $s >= 7 ) { return 'y'; }
+    if ( $s >= 6 ) { return 'o'; }
+    return 'r';
+  }
+}
 
 /* ---------------------------------------------------------------------
    Liste ordonnée des produits du guide (même source que top5-resume/tests)
@@ -116,10 +128,11 @@ foreach ( $ids as $pid ) {
   setup_postdata( $post );
   $pos++;
 
-  /* Identité */
-  $brand = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
-  $model = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
-  $name  = $model !== '' ? trim( $brand . ' ' . $model ) : get_the_title( $pid );
+  /* Identité (marque + modèle séparés pour l'affichage centré) */
+  $brand   = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
+  $model   = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
+  $modname = $model !== '' ? $model : get_the_title( $pid );
+  $name    = trim( $brand . ' ' . $modname );
 
   /* Image */
   $img = get_the_post_thumbnail_url( $pid, 'medium' );
@@ -155,10 +168,10 @@ foreach ( $ids as $pid ) {
     }
   }
 
-  /* Offres : ASIN Amazon prioritaire, puis liens perso ACF */
+  /* Offres : ASIN Amazon prioritaire, puis liens perso ACF (prix = banderole seulement) */
   $asin      = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
   $prix      = get_field( 'mltv5_prix_indicatif', $pid );
-  $has_price = ( $prix !== '' && $prix !== null && mt5_num( $prix ) > 0 );
+  $price_num = mt5_num( $prix );
 
   $offer_urls = array();
   if ( $asin !== '' ) {
@@ -173,10 +186,13 @@ foreach ( $ids as $pid ) {
   $products[] = array(
     'pos'         => $pos,
     'name'        => $name,
+    'brand'       => $brand,
+    'modname'     => $modname,
     'img'         => $img,
     'score10'     => $score10,
     'score_tag'   => $score_tag,
     'score_pct'   => max( 0, min( 100, (int) round( $score10 * 10 ) ) ),
+    'score_lvl'   => mtc_score_level( $score10 ),
     'label'       => $label,
     'summary'     => $summary,
     'pros'        => $pros,
@@ -184,7 +200,7 @@ foreach ( $ids as $pid ) {
     'specs'       => $specs,
     'offer_urls'  => $offer_urls,
     'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
-    'price'       => $has_price ? trim( (string) $prix ) : '',
+    'price_num'   => $price_num,
   );
 }
 $post = $tc_saved_post;
@@ -203,6 +219,21 @@ foreach ( $specs_order as $sname ) {
 $nb_specs        = count( $ref_specs );
 $has_hidden_spec = ( $nb_specs > $TC_SPEC_VISIBLE );
 
+/* ---------------------------------------------------------------------
+   Banderoles : « Meilleur choix » (rang 1, primary) + « Meilleur prix »
+   (le moins cher hors rang 1, autre couleur). Sans prix exploitable ->
+   « Meilleure alternative » sur le rang 2.
+   --------------------------------------------------------------------- */
+$price_rank = null; $cheapest = PHP_INT_MAX; $n_price = 0;
+foreach ( $products as $it ) {
+  if ( $it['price_num'] > 0 ) {
+    $n_price++;
+    if ( $it['pos'] !== 1 && $it['price_num'] < $cheapest ) { $cheapest = $it['price_num']; $price_rank = $it['pos']; }
+  }
+}
+$show_price = ( $n_price >= 2 && $price_rank !== null );
+$alt_rank   = $show_price ? null : 2;
+
 /* Lignes éditoriales : n'afficher une rangée que si au moins un produit a la donnée */
 $any_verdict = false; $any_summary = false; $any_pros = false; $any_cons = false; $any_offer = false;
 foreach ( $products as $it ) {
@@ -210,15 +241,18 @@ foreach ( $products as $it ) {
   if ( $it['summary'] !== '' )   { $any_summary = true; }
   if ( ! empty( $it['pros'] ) )  { $any_pros = true; }
   if ( ! empty( $it['cons'] ) )  { $any_cons = true; }
-  if ( $it['price'] !== '' || $it['primary_url'] !== '' ) { $any_offer = true; }
+  if ( $it['primary_url'] !== '' ) { $any_offer = true; }
 }
 
 /* ---------------------------------------------------------------------
-   Titre dynamique
+   Titre + sous-titre (adaptés au type de produit)
    --------------------------------------------------------------------- */
 $nb        = count( $products );
 $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
 $head_title = 'Tableau comparatif' . ( $type_plur !== '' ? ' : top ' . $nb . ' ' . esc_html( lcfirst( $type_plur ) ) : '' );
+$sub = ( $type_plur !== '' )
+  ? 'Nos ' . $nb . ' ' . esc_html( lcfirst( $type_plur ) ) . ', en face &agrave; face sur les crit&egrave;res qui comptent vraiment.'
+  : 'Nos ' . $nb . ' laur&eacute;ats, en face &agrave; face sur les crit&egrave;res qui comptent vraiment.';
 
 $colspan = $nb + 1;
 $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
@@ -226,57 +260,70 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
 <section class="mt-cmp-root" id="partie-tableau-comparatif" aria-labelledby="<?php echo esc_attr( $uid ); ?>-title">
   <header class="mt-cmp-head">
     <h2 class="mt-cmp-h2" id="<?php echo esc_attr( $uid ); ?>-title"><?php echo $head_title; ?></h2>
-    <p class="mt-cmp-sub">Tous les mod&egrave;les, class&eacute;s et confront&eacute;s sur les crit&egrave;res qui comptent vraiment.</p>
+    <p class="mt-cmp-sub"><?php echo $sub; ?></p>
   </header>
 
   <div class="mt-cmp-wrap">
     <table class="mt-cmp">
       <tbody>
 
-        <!-- Rang + marque (1re colonne fusionnée sur 2 lignes) -->
+        <!-- Rang (+ banderoles) + marque (1re colonne fusionnée sur 2 lignes) -->
         <tr>
           <td class="row-label brand-cell" rowspan="2">
             <div class="mt-cmp-brand">
-              <div class="mt-cmp-brand-logo"><span class="mt-cmp-brand-mark">M</span> Meilleurtest</div>
-              <div class="mt-cmp-brand-note"><i class="fas fa-circle-check" aria-hidden="true"></i> Ce comparatif ne contient aucun produit sponsoris&eacute;</div>
+              <span class="t5-laurel" aria-label="Notre engagement"><i class="t5-laurel-ic" aria-hidden="true"></i></span>
+              <p class="mt-cmp-brand-note">Ce comparatif ne contient aucun produit sponsoris&eacute;</p>
             </div>
           </td>
-          <?php foreach ( $products as $it ) : ?>
-          <td class="pos-cell"><span class="rank r<?php echo (int) $it['pos']; ?>"><?php echo (int) $it['pos']; ?></span></td>
+          <?php foreach ( $products as $it ) :
+            $banner = '';
+            if ( $it['pos'] === 1 )                         { $banner = 'best'; }
+            elseif ( $show_price && $it['pos'] === $price_rank ) { $banner = 'price'; }
+            elseif ( $alt_rank !== null && $it['pos'] === $alt_rank ) { $banner = 'alt'; }
+          ?>
+          <td class="pos-cell">
+            <?php if ( $banner === 'best' ) : ?><span class="col-banner b-best">&#9733; Meilleur choix</span>
+            <?php elseif ( $banner === 'price' ) : ?><span class="col-banner b-price">&euro; Meilleur prix</span>
+            <?php elseif ( $banner === 'alt' ) : ?><span class="col-banner b-alt">&#9829; Meilleure alternative</span>
+            <?php endif; ?>
+            <span class="rank r<?php echo (int) $it['pos']; ?>"><?php echo (int) $it['pos']; ?></span>
+          </td>
           <?php endforeach; ?>
         </tr>
 
-        <!-- Image + nom (lien vers l'avis détaillé) -->
+        <!-- Image + nom (marque au-dessus, modèle en dessous) -->
         <tr>
           <?php foreach ( $products as $it ) : ?>
           <td class="product-cell">
             <a class="product-thumb<?php echo $it['img'] ? '' : ' empty'; ?>" href="#produit-n-<?php echo (int) $it['pos']; ?>">
               <?php if ( $it['img'] ) : ?><img src="<?php echo esc_url( $it['img'] ); ?>" alt="<?php echo esc_attr( $it['name'] ); ?>" loading="lazy"><?php endif; ?>
             </a>
-            <a class="product-name" href="#produit-n-<?php echo (int) $it['pos']; ?>"><?php echo esc_html( $it['name'] ); ?></a>
+            <a class="product-name" href="#produit-n-<?php echo (int) $it['pos']; ?>">
+              <?php if ( $it['brand'] !== '' ) : ?><span class="pn-brand"><?php echo esc_html( $it['brand'] ); ?></span><?php endif; ?>
+              <span class="pn-model"><?php echo esc_html( $it['modname'] ); ?></span>
+            </a>
           </td>
           <?php endforeach; ?>
         </tr>
 
         <?php if ( $any_verdict ) : ?>
-        <!-- Verdict -->
+        <!-- Verdict (texte « quote », primary) -->
         <tr>
           <td class="row-label">Verdict</td>
           <?php foreach ( $products as $it ) : ?>
-          <td>
-            <?php if ( $it['label'] !== '' ) : ?>
-              <span class="verdict-pill<?php echo $it['pos'] <= 2 ? '' : ' alt'; ?>"><?php echo esc_html( $it['label'] ); ?></span>
+          <td class="verdict-cell">
+            <?php if ( $it['label'] !== '' ) : ?><span class="verdict-txt"><?php echo esc_html( $it['label'] ); ?></span>
             <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
           </td>
           <?php endforeach; ?>
         </tr>
         <?php endif; ?>
 
-        <!-- Note globale -->
+        <!-- Note globale (jauge monochrome) -->
         <tr>
           <td class="row-label">Note globale</td>
           <?php foreach ( $products as $it ) : ?>
-          <td class="score-cell">
+          <td class="score-cell sc-<?php echo esc_attr( $it['score_lvl'] ); ?>">
             <div class="score-block"><b><?php echo esc_html( number_format( (float) $it['score10'], 1, ',', '' ) ); ?></b><small>/10</small></div>
             <div class="score-gauge"><div class="score-gauge-fill" style="width: <?php echo (int) $it['score_pct']; ?>%;"></div></div>
             <?php if ( $it['score_tag'] !== '' ) : ?><div class="score-tag"><?php echo $it['score_tag']; ?></div><?php endif; ?>
@@ -295,13 +342,15 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
         <?php endif; ?>
 
         <?php if ( $any_pros ) : ?>
-        <!-- Points positifs -->
+        <!-- Points positifs (check vert, texte vert sombre) -->
         <tr>
           <td class="row-label">Positif</td>
           <?php foreach ( $products as $it ) : ?>
-          <td class="pp">
+          <td class="pc-cell">
             <?php if ( ! empty( $it['pros'] ) ) : ?>
-              <?php echo implode( ' <span class="dot">&bull;</span> ', array_map( 'esc_html', $it['pros'] ) ); ?>
+            <ul class="pc-list pc-pos">
+              <?php foreach ( $it['pros'] as $pt ) : ?><li><i class="fas fa-check" aria-hidden="true"></i> <?php echo esc_html( $pt ); ?></li><?php endforeach; ?>
+            </ul>
             <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
           </td>
           <?php endforeach; ?>
@@ -309,13 +358,15 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
         <?php endif; ?>
 
         <?php if ( $any_cons ) : ?>
-        <!-- Points négatifs -->
+        <!-- Points négatifs (croix rouge, texte rouge sombre) -->
         <tr>
           <td class="row-label">N&eacute;gatif</td>
           <?php foreach ( $products as $it ) : ?>
-          <td class="pp">
+          <td class="pc-cell">
             <?php if ( ! empty( $it['cons'] ) ) : ?>
-              <?php echo implode( ' <span class="dot">&bull;</span> ', array_map( 'esc_html', $it['cons'] ) ); ?>
+            <ul class="pc-list pc-neg">
+              <?php foreach ( $it['cons'] as $pt ) : ?><li><i class="fas fa-times" aria-hidden="true"></i> <?php echo esc_html( $pt ); ?></li><?php endforeach; ?>
+            </ul>
             <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
           </td>
           <?php endforeach; ?>
@@ -323,23 +374,21 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
         <?php endif; ?>
 
         <?php if ( $any_offer ) : ?>
-        <!-- Meilleures offres -->
+        <!-- Où l'acheter (bouton + marchands, sans prix) -->
         <tr>
-          <td class="row-label">Meilleures offres</td>
+          <td class="row-label">O&ugrave; l'acheter</td>
           <?php foreach ( $products as $it ) :
-            $merchants = array();
-            foreach ( $it['offer_urls'] as $u ) { $m = mt5_merchant_name( $u ); if ( $m !== '' ) { $merchants[] = $m; } }
-            $primary_merchant = ! empty( $merchants ) ? $merchants[0] : '';
-            $extra_merchants  = array_slice( array_values( array_unique( $merchants ) ), 1 );
+            $links = array();
+            foreach ( $it['offer_urls'] as $u ) {
+              $m = mt5_merchant_name( $u );
+              if ( $m !== '' ) { $links[] = '<a href="' . esc_url( $u ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $m ) . '</a>'; }
+            }
           ?>
-          <td class="price-cell">
-            <?php if ( $it['price'] !== '' ) : ?><div class="price"><?php echo esc_html( $it['price'] ); ?>&nbsp;&euro;</div><?php endif; ?>
-            <?php if ( $primary_merchant !== '' ) : ?><div class="merchant"><?php echo esc_html( $primary_merchant ); ?></div><?php endif; ?>
-            <?php if ( ! empty( $extra_merchants ) ) : ?><div class="extra">Aussi chez <?php echo esc_html( mt5_join_et( $extra_merchants ) ); ?></div><?php endif; ?>
+          <td class="buy-cell">
             <?php if ( $it['primary_url'] !== '' ) : ?>
             <a class="cmp-btn" href="<?php echo esc_url( $it['primary_url'] ); ?>" target="_blank" rel="nofollow sponsored noopener">Voir l'offre <span aria-hidden="true">&rarr;</span></a>
-            <?php endif; ?>
-            <?php if ( $it['price'] === '' && $it['primary_url'] === '' ) : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
+            <?php if ( ! empty( $links ) ) : ?><div class="buy-merchants">chez <?php echo mt5_join_et( $links ); ?></div><?php endif; ?>
+            <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
           </td>
           <?php endforeach; ?>
         </tr>
