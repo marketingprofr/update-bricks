@@ -118,10 +118,13 @@ if ( empty( $types ) ) {
         $probe[] = $mk . '=' . ( is_scalar( $mvv ) ? $mvv : gettype( $mvv ) );
       }
     }
+    global $wpdb;
+    $db_raw = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s LIMIT 1", $page_id, 'mltv5_cached_id_types' ) );
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-types — diagnostic (admin only)</strong> : aucun type trouv&eacute;.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
+       . 'SQL direct mltv5_cached_id_types = ' . ( $db_raw === null ? '(absent en base)' : esc_html( (string) $db_raw ) ) . '<br>'
        . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'types' ) . ' (brut mltv5_cached_id_types : ' . gettype( get_field( 'mltv5_cached_id_types', $page_id ) ) . ')<br>'
        . 'meta(cache|type) : ' . esc_html( $probe ? implode( '  |  ', $probe ) : '(aucune)' ) . '<br>'
        . 'repeater mltv5_types_de_produits = ' . esc_html( gettype( $rr ) )
