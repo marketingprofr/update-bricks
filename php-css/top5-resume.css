@@ -11,7 +11,7 @@
   --muted: #6b7480; --muted-2: #8d96a0;
   --line: #e8eaed; --line-2: #f1f3f5;
   --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
-  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
   --gold: #b48a3a; --warn: #b54848;
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased;
@@ -56,10 +56,10 @@
 /* ===== Liste ===== */
 .mt-top5 .t5-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
 
-/* placeholder image */
+/* image produit (carrée côté boîte, image NON croppée : object-fit contain) */
 .mt-top5 .ph { position: relative; width: 100%; aspect-ratio: 1; background: var(--bg-3); border-radius: 10px; display: grid; place-items: center; overflow: hidden; }
-.mt-top5 .ph::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: repeating-linear-gradient(45deg, transparent 0 12px, rgba(0,0,0,0.028) 12px 13px); }
-.mt-top5 .ph-cap { position: relative; z-index: 1; font-family: ui-monospace, monospace; font-size: 10px; color: var(--muted-2); text-align: center; padding: 0 8px; }
+.mt-top5 .ph img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
+.mt-top5 .ph-cap { position: relative; z-index: 1; font-size: 10px; color: var(--muted-2); text-align: center; padding: 0 8px; }
 
 /* ===== MODE RANGÉE (positions 2 à 5) ===== */
 .mt-top5 .t5-card {
@@ -84,7 +84,7 @@
 .mt-top5 .t5-name { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; margin: 0 0 2px; }
 .mt-top5 .t5-name a { transition: color .15s; }
 .mt-top5 .t5-name a:hover { color: var(--accent); }
-.mt-top5 .t5-label { font-size: 14px; font-weight: 700; color: var(--ink); margin: 0 0 3px; }
+.mt-top5 .t5-label { font-size: 14px; font-weight: 700; color: var(--accent); margin: 0 0 3px; }
 .mt-top5 .t5-tagline { font-size: 13px; font-weight: 600; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-summary { display: none; }
 .mt-top5 .t5-readmore { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
@@ -142,10 +142,15 @@
 .mt-top5 .t5-list > li:first-child .ph { border-radius: 12px; overflow: visible; }
 .mt-top5 .t5-list > li:first-child .t5-laurel {
   display: grid; place-items: center; position: absolute; top: -8px; left: -8px; z-index: 2;
-  width: 60px; height: 60px; color: var(--gold);
+  width: 60px; height: 60px;
   background: white; border: 1px solid #ece0c4; border-radius: 50%; box-shadow: 0 1px 4px rgba(20,24,29,.1);
 }
-.mt-top5 .t5-list > li:first-child .t5-laurel img { width: 44px; height: 44px; display: block; }
+/* Le badge SVG est recoloré en OR via mask (peu importe sa couleur d'origine). */
+.mt-top5 .t5-list > li:first-child .t5-laurel-ic {
+  width: 44px; height: 44px; display: block; background-color: var(--gold);
+  -webkit-mask: url("https://meilleurtest.fr/wp-content/uploads/2026/06/badge-laurel.svg") center / contain no-repeat;
+          mask: url("https://meilleurtest.fr/wp-content/uploads/2026/06/badge-laurel.svg") center / contain no-repeat;
+}
 
 .mt-top5 .t5-list > li:first-child .t5-body { padding: 22px 26px; }
 .mt-top5 .t5-list > li:first-child .t5-eyebrow { display: block; font-size: 14px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 3px; }

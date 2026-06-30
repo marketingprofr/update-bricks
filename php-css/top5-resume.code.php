@@ -71,11 +71,9 @@ if ( ! function_exists( 'mt5_points' ) ) {
    Liste ordonnée des produits du guide
    --------------------------------------------------------------------- */
 $page_id = get_the_ID();
-$ids     = array();
-if ( function_exists( 'get_all_template_variables' ) ) {
-  $tv  = get_all_template_variables( $page_id );
-  $ids = isset( $tv['top_avis_ids'] ) && is_array( $tv['top_avis_ids'] ) ? $tv['top_avis_ids'] : array();
-}
+$page_tv = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
+
+$ids = isset( $page_tv['top_avis_ids'] ) && is_array( $page_tv['top_avis_ids'] ) ? $page_tv['top_avis_ids'] : array();
 if ( empty( $ids ) ) {
   $rel = get_field( 'mltv5_best_products', $page_id ); // fallback : champ relation
   if ( is_array( $rel ) ) {
@@ -83,91 +81,55 @@ if ( empty( $ids ) ) {
   }
 }
 $ids = array_values( array_filter( array_map( 'intval', $ids ) ) );
-
 if ( empty( $ids ) ) { return; }
 
-/* Titres dynamiques de l'en-tête */
-$nb_produits = count( $ids );
-$type_plur   = '';
-if ( function_exists( 'get_all_template_variables' ) ) {
-  $tvp       = get_all_template_variables( $page_id );
-  $type_plur = isset( $tvp['type_de_produit_au_pluriel'] ) ? $tvp['type_de_produit_au_pluriel'] : '';
-}
-$head_title = 'Les ' . $nb_produits . ' ' . ( $type_plur !== '' ? esc_html( $type_plur ) : 'meilleures' ) . ' en un coup d&rsquo;&oelig;il';
-
+/* ---------------------------------------------------------------------
+   PASSE 1 : collecte des données (contexte post requis pour les helpers)
+   --------------------------------------------------------------------- */
 global $post;
 $mt5_saved_post = $post;
-?>
-<section class="mt-top5" aria-labelledby="mt-top5-title">
-  <header class="t5-head">
-    <div>
-      <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
-      <p class="t5-meta">Notre classement <?php echo esc_html( date_i18n( 'Y' ) ); ?>, v&eacute;rifi&eacute; par la r&eacute;daction</p>
-    </div>
-  </header>
 
-  <div class="t5-bar">
-    <span class="lbl" id="mt-top5-sortlbl">Trier par</span>
-    <div class="t5-tabs" role="group" aria-labelledby="mt-top5-sortlbl">
-      <button type="button" class="t5-tab" aria-pressed="true"  data-sort="rank"><span class="ico" aria-hidden="true">&#9733;</span> Notre s&eacute;lection</button>
-      <button type="button" class="t5-tab" aria-pressed="false" data-sort="price"><span class="ico" aria-hidden="true">&euro;</span> Prix</button>
-      <button type="button" class="t5-tab" aria-pressed="false" data-sort="rating"><span class="ico" aria-hidden="true">&#9829;</span> Avis des clients</button>
-    </div>
-    <a class="t5-howto" href="#methodologie">Comment nous &eacute;valuons <span class="arr" aria-hidden="true">&rarr;</span></a>
-  </div>
-  <p class="sr-only" role="status" data-t5-status></p>
+$products      = array();
+$count_price   = 0;
+$count_rating  = 0;
+$pos           = 0;
 
-  <ol class="t5-list" data-t5-list>
-<?php
-$pos = 0;
 foreach ( $ids as $pid ) {
-  $post = get_post( $pid );
-  if ( ! $post ) { continue; }
+  $p = get_post( $pid );
+  if ( ! $p ) { continue; }
+  $post = $p;
   setup_postdata( $post );
   $pos++;
 
-  /* --- Identité --- */
+  /* Identité */
   $brand   = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
   $model   = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
   $name    = $model !== '' ? $model : get_the_title( $pid );
   $tagline = trim( (string) get_field( 'mltv5_sous_titre', $pid ) );
   $summary = trim( (string) get_field( 'mltv5_resume_produit', $pid ) );
 
-  /* --- Image --- */
+  /* Image */
   $img = get_the_post_thumbnail_url( $pid, 'medium' );
 
-  /* --- Score rédac /10 + libellé --- */
-  if ( function_exists( 'get_acf_score_divided_by_10' ) ) {
-    $score10 = get_acf_score_divided_by_10();
-  } else {
-    $score10 = round( mt5_num( get_field( 'mltv5_score_recent', $pid ) ) / 10, 1 );
-  }
-  $score_tag = function_exists( 'get_acf_score_label' ) ? get_acf_score_label() : '';
+  /* Score rédac /10 + libellés */
+  $score10 = function_exists( 'get_acf_score_divided_by_10' )
+    ? get_acf_score_divided_by_10()
+    : round( mt5_num( get_field( 'mltv5_score_recent', $pid ) ) / 10, 1 );
+  $score_tag  = function_exists( 'get_acf_score_label' ) ? get_acf_score_label() : '';
+  $prod_label = function_exists( 'get_default_product_label' )
+    ? trim( (string) get_default_product_label( $pid, get_field( 'mltv5_score_recent', $pid ) ) )
+    : '';
 
-  /* --- Label verdict (sous le nom) --- */
-  $prod_label = '';
-  if ( function_exists( 'get_default_product_label' ) ) {
-    $prod_label = trim( (string) get_default_product_label( $pid, get_field( 'mltv5_score_recent', $pid ) ) );
-  }
+  /* Note clients */
+  $ptv         = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $pid ) : array();
+  $cust_rating = isset( $ptv[ $T5_CUST_RATING_VAR ] ) ? $ptv[ $T5_CUST_RATING_VAR ] : '';
+  $cust_count  = isset( $ptv[ $T5_CUST_COUNT_VAR ] )  ? $ptv[ $T5_CUST_COUNT_VAR ]  : '';
 
-  /* --- Note clients (étoile + nb avis) --- */
-  $cust_rating = '';
-  $cust_count  = '';
-  if ( function_exists( 'get_all_template_variables' ) ) {
-    $ptv         = get_all_template_variables( $pid );
-    $cust_rating = isset( $ptv[ $T5_CUST_RATING_VAR ] ) ? $ptv[ $T5_CUST_RATING_VAR ] : '';
-    $cust_count  = isset( $ptv[ $T5_CUST_COUNT_VAR ] )  ? $ptv[ $T5_CUST_COUNT_VAR ]  : '';
-  }
-
-  /* --- Points positifs / négatifs (max 2 + / 1 -) --- */
+  /* Points + / - (max 2 / 1) */
   $pros = array_slice( mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' ), 0, 2 );
   $cons = array_slice( mt5_points( 'mltv5_points_negatifs_produit', $pid, 'mltv5_point_negatif' ), 0, 1 );
 
-  /* --- Offres : URL prioritaire Amazon (ASIN), sinon liens perso ---
-     - Lien   : ASIN renseigné -> URL Amazon ; sinon 1er lien ACF.
-     - Libellé bouton : prix présent -> "Vérifier le prix" ;
-                        sinon -> texte du bouton ACF.
-     - Marchands sous le bouton : nom extrait du DOMAINE de chaque URL. */
+  /* Offres : lien ASIN Amazon prioritaire, sinon liens perso ACF */
   $asin      = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
   $prix      = get_field( 'mltv5_prix_indicatif', $pid );
   $has_price = ( $prix !== '' && $prix !== null && mt5_num( $prix ) > 0 );
@@ -185,69 +147,141 @@ foreach ( $ids as $pid ) {
       if ( $btn_fallback === '' && $t !== '' ) { $btn_fallback = $t; }
     }
   }
-  $offer_urls  = array_values( array_unique( $offer_urls ) );
-  $primary_url = ! empty( $offer_urls ) ? $offer_urls[0] : '';
-  $cta_text    = $has_price ? 'Vérifier le prix' : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" );
-  $review_url  = '#produit-n-' . $pos; // ancre avis détaillé (cf. bloc titre)
+  $offer_urls = array_values( array_unique( $offer_urls ) );
 
-  /* --- Données de tri --- */
-  $d_rank   = $pos;
-  $d_price  = mt5_num( $prix );
-  $d_rating = mt5_num( $cust_rating );
-  ?>
-    <li class="t5-item" data-rank="<?php echo esc_attr( $d_rank ); ?>" data-price="<?php echo esc_attr( $d_price ); ?>" data-rating="<?php echo esc_attr( $d_rating ); ?>">
+  $has_rating = ( trim( (string) $cust_rating ) !== '' && mt5_num( $cust_rating ) > 0 );
+  if ( $has_price )  { $count_price++; }
+  if ( $has_rating ) { $count_rating++; }
+
+  $products[] = array(
+    'pos'         => $pos,
+    'name'        => $name,
+    'brand'       => $brand,
+    'tagline'     => $tagline,
+    'summary'     => $summary,
+    'label'       => $prod_label,
+    'img'         => $img,
+    'score10'     => $score10,
+    'score_tag'   => $score_tag,
+    'cust_rating' => $cust_rating,
+    'cust_count'  => $cust_count,
+    'pros'        => $pros,
+    'cons'        => $cons,
+    'offer_urls'  => $offer_urls,
+    'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
+    'cta_text'    => $has_price ? 'Vérifier le prix' : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" ),
+    'price_num'   => mt5_num( $prix ),
+    'rating_num'  => mt5_num( $cust_rating ),
+    'modified'    => (int) get_post_modified_time( 'U', true, $pid ),
+  );
+}
+$post = $mt5_saved_post;
+wp_reset_postdata();
+
+if ( empty( $products ) ) { return; }
+
+/* ---------------------------------------------------------------------
+   Onglets de tri (conditionnels)
+   - Prix : au moins 3 produits avec prix
+   - Avis clients : au moins 3 produits avec note clients
+   - Aucun des deux -> bouton "Le plus récent" (tri par date de modif)
+   --------------------------------------------------------------------- */
+$show_price  = ( $count_price >= 3 );
+$show_rating = ( $count_rating >= 3 );
+$show_recent = ( ! $show_price && ! $show_rating );
+
+/* ---------------------------------------------------------------------
+   Titre dynamique : "Les {n} {meilleures/meilleurs} {type} en un coup d'œil"
+   --------------------------------------------------------------------- */
+$nb        = count( $products );
+$mf        = isset( $page_tv['masculinsfeminins'] ) ? trim( (string) $page_tv['masculinsfeminins'] ) : '';
+$type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
+if ( $mf === '' ) { $mf = 'meilleures'; }
+$head_title = 'Les ' . $nb . ' ' . esc_html( lcfirst( $mf ) )
+  . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : '' )
+  . ' en un coup d&rsquo;&oelig;il';
+?>
+<section class="mt-top5" aria-labelledby="mt-top5-title">
+  <header class="t5-head">
+    <div>
+      <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
+      <p class="t5-meta">Notre classement <?php echo esc_html( date_i18n( 'Y' ) ); ?>, v&eacute;rifi&eacute; par la r&eacute;daction</p>
+    </div>
+  </header>
+
+  <div class="t5-bar">
+    <span class="lbl" id="mt-top5-sortlbl">Trier par</span>
+    <div class="t5-tabs" role="group" aria-labelledby="mt-top5-sortlbl">
+      <button type="button" class="t5-tab" aria-pressed="true" data-sort="rank"><span class="ico" aria-hidden="true">&#9733;</span> Notre s&eacute;lection</button>
+      <?php if ( $show_price ) : ?>
+      <button type="button" class="t5-tab" aria-pressed="false" data-sort="price"><span class="ico" aria-hidden="true">&euro;</span> Prix</button>
+      <?php endif; ?>
+      <?php if ( $show_rating ) : ?>
+      <button type="button" class="t5-tab" aria-pressed="false" data-sort="rating"><span class="ico" aria-hidden="true">&#9829;</span> Avis des clients</button>
+      <?php endif; ?>
+      <?php if ( $show_recent ) : ?>
+      <button type="button" class="t5-tab" aria-pressed="false" data-sort="recent"><span class="ico" aria-hidden="true">&#8635;</span> Le plus r&eacute;cent</button>
+      <?php endif; ?>
+    </div>
+    <a class="t5-howto" href="#methodologie">Comment nous &eacute;valuons <span class="arr" aria-hidden="true">&rarr;</span></a>
+  </div>
+  <p class="sr-only" role="status" data-t5-status></p>
+
+  <ol class="t5-list" data-t5-list>
+<?php foreach ( $products as $it ) : ?>
+    <li class="t5-item" data-rank="<?php echo esc_attr( $it['pos'] ); ?>" data-price="<?php echo esc_attr( $it['price_num'] ); ?>" data-rating="<?php echo esc_attr( $it['rating_num'] ); ?>" data-modified="<?php echo esc_attr( $it['modified'] ); ?>">
       <article class="t5-card">
-        <p class="t5-banner"><span class="b-num">N&deg;<?php echo $pos; ?></span> <span class="b-label">Le choix de la r&eacute;daction</span></p>
-        <span class="t5-rnum" aria-hidden="true"><?php echo $pos; ?></span>
+        <p class="t5-banner"><span class="b-num">N&deg;<?php echo $it['pos']; ?></span> <span class="b-label">Le choix de la r&eacute;daction</span></p>
+        <span class="t5-rnum" aria-hidden="true"><?php echo $it['pos']; ?></span>
         <div class="t5-media">
           <div class="ph">
-            <?php if ( $img ) : ?>
-              <img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $name ); ?>" loading="lazy" style="width:100%;height:100%;object-fit:contain;display:block;">
+            <?php if ( $it['img'] ) : ?>
+              <img src="<?php echo esc_url( $it['img'] ); ?>" alt="<?php echo esc_attr( $it['name'] ); ?>" loading="lazy">
             <?php else : ?>
-              <span class="ph-cap"><?php echo esc_html( $name ); ?></span>
+              <span class="ph-cap"><?php echo esc_html( $it['name'] ); ?></span>
             <?php endif; ?>
-            <span class="t5-laurel" aria-label="Meilleur choix"><img src="https://meilleurtest.fr/wp-content/uploads/2026/06/badge-laurel.svg" alt="" width="44" height="44"></span>
+            <span class="t5-laurel" aria-label="Meilleur choix"><i class="t5-laurel-ic" aria-hidden="true"></i></span>
           </div>
         </div>
         <div class="t5-body">
-          <?php if ( $brand !== '' ) : ?><p class="t5-eyebrow"><?php echo esc_html( $brand ); ?></p><?php endif; ?>
-          <h3 class="t5-name"><a href="<?php echo esc_url( $review_url ); ?>"><?php echo esc_html( $name ); ?></a></h3>
-          <?php if ( $prod_label !== '' ) : ?><p class="t5-label"><?php echo esc_html( $prod_label ); ?></p><?php endif; ?>
-          <?php if ( $tagline !== '' ) : ?><p class="t5-tagline"><?php echo esc_html( $tagline ); ?></p><?php endif; ?>
-          <?php if ( $summary !== '' ) : ?><p class="t5-summary"><?php echo esc_html( $summary ); ?></p><?php endif; ?>
-          <?php if ( $pros || $cons ) : ?>
+          <?php if ( $it['brand'] !== '' ) : ?><p class="t5-eyebrow"><?php echo esc_html( $it['brand'] ); ?></p><?php endif; ?>
+          <h3 class="t5-name"><a href="#produit-n-<?php echo esc_attr( $it['pos'] ); ?>"><?php echo esc_html( $it['name'] ); ?></a></h3>
+          <?php if ( $it['label'] !== '' ) : ?><p class="t5-label"><?php echo esc_html( $it['label'] ); ?></p><?php endif; ?>
+          <?php if ( $it['tagline'] !== '' ) : ?><p class="t5-tagline"><?php echo esc_html( $it['tagline'] ); ?></p><?php endif; ?>
+          <?php if ( $it['summary'] !== '' ) : ?><p class="t5-summary"><?php echo esc_html( $it['summary'] ); ?></p><?php endif; ?>
+          <?php if ( $it['pros'] || $it['cons'] ) : ?>
           <ul class="t5-pc">
-            <?php foreach ( $pros as $p ) : ?>
+            <?php foreach ( $it['pros'] as $p ) : ?>
               <li class="pro"><span class="sr-only">Avantage : </span><?php echo esc_html( $p ); ?></li>
             <?php endforeach; ?>
-            <?php foreach ( $cons as $c ) : ?>
+            <?php foreach ( $it['cons'] as $c ) : ?>
               <li class="con"><span class="sr-only">Inconv&eacute;nient : </span><?php echo esc_html( $c ); ?></li>
             <?php endforeach; ?>
           </ul>
           <?php endif; ?>
-          <a class="t5-readmore" href="<?php echo esc_url( $review_url ); ?>">Lire l'avis complet <span class="arr" aria-hidden="true">&darr;</span></a>
+          <a class="t5-readmore" href="#produit-n-<?php echo esc_attr( $it['pos'] ); ?>">Lire l'avis complet <span class="arr" aria-hidden="true">&darr;</span></a>
         </div>
         <div class="t5-aside">
           <div class="t5-ratings">
             <div class="t5-ed">
               <span class="r-lbl">Notre note</span>
-              <div class="r-line"><span class="n"><?php echo esc_html( number_format( (float) $score10, 1, ',', '' ) ); ?><small>/10</small></span><?php if ( $score_tag !== '' ) : ?><span class="tag"><?php echo esc_html( $score_tag ); ?></span><?php endif; ?></div>
+              <div class="r-line"><span class="n"><?php echo esc_html( number_format( (float) $it['score10'], 1, ',', '' ) ); ?><small>/10</small></span><?php if ( $it['score_tag'] !== '' ) : ?><span class="tag"><?php echo esc_html( $it['score_tag'] ); ?></span><?php endif; ?></div>
             </div>
-            <?php if ( $cust_rating !== '' ) : ?>
+            <?php if ( trim( (string) $it['cust_rating'] ) !== '' ) : ?>
             <div class="t5-cust">
               <span class="r-lbl">Avis clients</span>
-              <span class="stars" aria-hidden="true">&#9733;</span> <span class="cust-val"><?php echo esc_html( number_format( mt5_num( $cust_rating ), 1, ',', '' ) ); ?></span>
-              <?php $cl = mt5_reviews_label( $cust_count ); if ( $cl !== '' ) : ?><span class="cust-count">&middot; <?php echo esc_html( $cl ); ?></span><?php endif; ?>
+              <span class="stars" aria-hidden="true">&#9733;</span> <span class="cust-val"><?php echo esc_html( number_format( mt5_num( $it['cust_rating'] ), 1, ',', '' ) ); ?></span>
+              <?php $cl = mt5_reviews_label( $it['cust_count'] ); if ( $cl !== '' ) : ?><span class="cust-count">&middot; <?php echo esc_html( $cl ); ?></span><?php endif; ?>
             </div>
             <?php endif; ?>
           </div>
           <div class="t5-buy">
-            <?php if ( $primary_url !== '' ) : ?>
-            <a class="t5-cta" href="<?php echo esc_url( $primary_url ); ?>" target="_blank" rel="nofollow sponsored noopener"><?php echo esc_html( $cta_text ); ?><span class="sr-only"> &mdash; <?php echo esc_attr( $name ); ?> (lien commercial)</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
+            <?php if ( $it['primary_url'] !== '' ) : ?>
+            <a class="t5-cta" href="<?php echo esc_url( $it['primary_url'] ); ?>" target="_blank" rel="nofollow sponsored noopener"><?php echo esc_html( $it['cta_text'] ); ?><span class="sr-only"> &mdash; <?php echo esc_attr( $it['name'] ); ?> (lien commercial)</span> <span class="arr" aria-hidden="true">&rarr;</span></a>
             <?php endif; ?>
             <?php
             $links = array();
-            foreach ( $offer_urls as $u ) {
+            foreach ( $it['offer_urls'] as $u ) {
               $mn = mt5_merchant_name( $u );
               if ( $mn !== '' ) {
                 $links[] = '<a href="' . esc_url( $u ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $mn ) . '</a>';
@@ -260,11 +294,7 @@ foreach ( $ids as $pid ) {
         </div>
       </article>
     </li>
-  <?php
-}
-$post = $mt5_saved_post;
-wp_reset_postdata();
-?>
+<?php endforeach; ?>
   </ol>
 
   <p class="t5-disclosure">Liens commerciaux : Meilleurtest peut percevoir une commission sur les achats effectu&eacute;s via ces liens, sans impact sur le prix ni sur nos verdicts.</p>
@@ -280,13 +310,14 @@ wp_reset_postdata();
     var tabs = root.querySelectorAll('.t5-tab');
     var status = root.querySelector('[data-t5-status]');
     var items = Array.prototype.slice.call(list.querySelectorAll('.t5-item'));
-    var labels = { rank: 'notre sélection', price: 'prix croissant', rating: 'avis des clients' };
-    var bannerLabels = { rank: 'Le choix de la rédaction', price: 'Le meilleur pas cher', rating: 'Le choix de la communauté' };
+    var labels = { rank: 'notre sélection', price: 'prix croissant', rating: 'avis des clients', recent: 'le plus récent' };
+    var bannerLabels = { rank: 'Le choix de la rédaction', price: 'Le meilleur pas cher', rating: 'Le choix de la communauté', recent: 'Le plus récent' };
     function num(el, key) { return parseFloat(el.getAttribute('data-' + key)) || 0; }
     var comparators = {
       rank:   function (a, b) { return num(a, 'rank') - num(b, 'rank'); },
       price:  function (a, b) { return num(a, 'price') - num(b, 'price'); },
-      rating: function (a, b) { return num(b, 'rating') - num(a, 'rating'); }
+      rating: function (a, b) { return num(b, 'rating') - num(a, 'rating'); },
+      recent: function (a, b) { return num(b, 'modified') - num(a, 'modified'); }
     };
     function sortBy(key) {
       var first = items.map(function (c) { return c.getBoundingClientRect().top; });
