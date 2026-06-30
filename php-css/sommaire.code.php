@@ -26,15 +26,15 @@ $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $p
 $guide_label = "Guide d&rsquo;achat" . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : '' );
 
 $sections_cfg = array(
-  array( 'label' => 'Notre s&eacute;lection',     'anchor' => 'mt-top5-title',      'show' => true ),
-  array( 'label' => 'Tests complets',             'anchor' => 'tests-complets',     'show' => true ),
-  array( 'label' => 'Tableau comparatif',         'anchor' => 'tableau-comparatif', 'show' => true ),
-  array( 'label' => $guide_label,                 'anchor' => 'guide-achat',        'show' => 'mltv5_cached_id_criteres' ),
-  array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'types',              'show' => 'mltv5_cached_id_types' ),
-  array( 'label' => 'Quelle marque choisir&nbsp;?','anchor' => 'marques',           'show' => 'mltv5_cached_id_marques' ),
-  array( 'label' => 'Astuces et conseils',        'anchor' => 'astuces',            'show' => 'mltv5_cached_id_astuces' ),
-  array( 'label' => 'Pourquoi acheter&nbsp;?',    'anchor' => 'raisons',            'show' => 'mltv5_cached_id_raisons' ),
-  array( 'label' => 'Questions fr&eacute;quentes','anchor' => 'faq',                'show' => 'mltv5_cached_id_faq' ),
+  array( 'label' => 'Notre s&eacute;lection',     'anchor' => 'mt-top5-title',            'show' => true ),
+  array( 'label' => 'Tests complets',             'anchor' => 'partie-tests-complets',    'show' => true ),
+  array( 'label' => 'Tableau comparatif',         'anchor' => 'partie-tableau-comparatif','show' => true ),
+  array( 'label' => $guide_label,                 'anchor' => 'partie-guide-achat',       'show' => 'mltv5_cached_id_criteres' ),
+  array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'partie-types',             'show' => 'mltv5_cached_id_types' ),
+  array( 'label' => 'Quelle marque choisir&nbsp;?','anchor' => 'partie-marques',          'show' => 'mltv5_cached_id_marques' ),
+  array( 'label' => 'Astuces et conseils',        'anchor' => 'partie-astuces',           'show' => 'mltv5_cached_id_astuces' ),
+  array( 'label' => 'Pourquoi acheter&nbsp;?',    'anchor' => 'partie-raisons',           'show' => 'mltv5_cached_id_raisons' ),
+  array( 'label' => 'Questions fr&eacute;quentes','anchor' => 'partie-faq',               'show' => 'mltv5_cached_id_faq' ),
 );
 
 /* Résolution des sections présentes */
@@ -47,12 +47,12 @@ if ( empty( $sections ) ) { return; }
 
 /* ---------------------------------------------------------------------
    Temps de lecture estimé
-   10 min pour la partie produit (Notre sélection + Tests complets)
+   10 min pour la partie produit (Notre sélection + Tests complets + Tableau comparatif)
    + 2 min par section supplémentaire présente.
    --------------------------------------------------------------------- */
 $T5_READ_BASE = 10; // partie produit
 $T5_READ_PER  = 2;  // par section supplémentaire
-$product_anchors = array( 'mt-top5-title', 'tests-complets' );
+$product_anchors = array( 'mt-top5-title', 'partie-tests-complets', 'partie-tableau-comparatif' );
 $extra = 0;
 foreach ( $sections as $s ) {
   if ( ! in_array( $s['anchor'], $product_anchors, true ) ) { $extra++; }
@@ -79,7 +79,7 @@ $reading_total = $T5_READ_BASE + $T5_READ_PER * $extra;
      CONFIG — à adapter au DOM réel de la page Bricks
      ---------------------------------------------------------------- */
   var CONTENT_SELECTOR = '.contenu-principal'; // 👉 colonnes du contenu (plusieurs autorisées)
-  var HEADER_OFFSET    = 100;                  // hauteur du header sticky (px) pour le scroll d'ancre
+  var HEADER_OFFSET    = 30;                   // marge au-dessus de l'ancre au scroll (px)
 
   function init(root) {
     if (root.dataset.mtTocInit) return;        // garde anti double-init
