@@ -398,3 +398,22 @@ compactes), palette/typo des autres sections.
   donc accessible et **sans JS** (rien à re-signer). Astuce sans contenu = ligne
   simple non dépliable. Numérotation `02`, `03`… (la vedette = 1re).
 - Helper `mt_guide_rich` partagé (`function_exists`). Responsive : paddings réduits ≤767px.
+
+## État de « Pourquoi acheter ? » (cf. `template-raisons.html`)
+
+Livrables : **`php-css/raisons.code.php`** + **`php-css/raisons.css`**. UN seul
+élément Code Bricks. Scope `.mt-raisons`.
+
+- **Source** : GROUPE `mltv5_partie_pourquoi_acheter` → `mltv5_titre_pourquoi_acheter`
+  (titre) + `mltv5_image_pourquoi_acheter` (image) + `mltv5_raisons_acheter`
+  (**TOUTES les raisons en un seul WYSIWYG**, pas de repeater).
+- **Pas de cartes numérotées** (maquette = 8 raisons en grille, mais on n'a qu'un
+  bloc unique) → décision client « fais au mieux » : on rend le **contenu riche
+  stylé** + l'**image en illustration flottée à droite** (le texte l'enrobe ;
+  mobile → image pleine largeur en haut). Les titres internes du WYSIWYG (1 par
+  raison si posés) sont stylés serif.
+- **Lecture robuste** : page courante → repli `mltv5_cached_id_raisons` (+ diag admin).
+- **Ancre** : `<section class="mt-raisons contenu-principal" id="partie-raisons">`
+  → ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-raisons` ».
+- Titre = champ `mltv5_titre_pourquoi_acheter` (repli « Pourquoi acheter ? »).
+  Helpers partagés `mt_guide_rich`/`mt_guide_img_url`/`mt_guide_img_alt` (`function_exists`).
