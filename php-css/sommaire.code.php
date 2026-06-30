@@ -14,9 +14,11 @@ if ( ! function_exists( 'mt_guide_cache_id' ) ) {
   /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
      puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
   function mt_guide_cache_id( $page_id, $suffix ) {
-    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+    foreach ( array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix ) as $f ) {
       $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
-      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+      if ( is_array( $v ) ) { $v = reset( $v ); }       /* relation/post-object multiple */
+      if ( is_object( $v ) ) { return (int) $v->ID; }     /* Post Object */
+      if ( $v ) { return (int) $v; }                      /* ID scalaire */
     }
     return 0;
   }
