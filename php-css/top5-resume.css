@@ -58,7 +58,7 @@
 
 /* image produit (carrée côté boîte, image NON croppée : object-fit contain) */
 .mt-top5 .ph { position: relative; width: 100%; aspect-ratio: 1; background: var(--bg-3); border-radius: 10px; display: grid; place-items: center; overflow: hidden; }
-.mt-top5 .ph img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: block; }
+.mt-top5 .ph img { width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; object-fit: contain !important; object-position: center; display: block; }
 .mt-top5 .ph-cap { position: relative; z-index: 1; font-size: 10px; color: var(--muted-2); text-align: center; padding: 0 8px; }
 
 /* ===== MODE RANGÉE (positions 2 à 5) ===== */
@@ -173,11 +173,11 @@
 .mt-top5 .t5-list > li:first-child .t5-ratings { display: contents; }
 .mt-top5 .t5-list > li:first-child .t5-ed { text-align: center; }
 .mt-top5 .t5-list > li:first-child .r-lbl { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
-.mt-top5 .t5-list > li:first-child .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mt-top5 .t5-list > li:first-child .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .n { font-size: 36px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .n small { font-size: 14px; }
 .mt-top5 .t5-list > li:first-child .t5-ed .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); background: var(--at-primary-l-5); padding: 3px 9px; border-radius: 999px; }
-.mt-top5 .t5-list > li:first-child .t5-cust { text-align: left; margin-top: 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; }
+.mt-top5 .t5-list > li:first-child .t5-cust { text-align: center; margin-top: 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; }
 .mt-top5 .t5-list > li:first-child .t5-cust .cust-val { font-size: 13.5px; font-weight: 700; color: var(--ink); }
 .mt-top5 .t5-list > li:first-child .t5-buy { width: 100%; margin-top: 0; padding-top: 16px; border-top: 1px solid var(--line); }
 .mt-top5 .t5-list > li:first-child .t5-cta { padding: 13px 16px; font-size: 14px; border-radius: 10px; background: var(--accent); border-color: var(--accent); }
@@ -204,7 +204,7 @@
   /* Pas d'avis clients : "Notre note" centré horizontalement, pastille dessous */
   .mt-top5 .t5-item.t5-no-cust .t5-aside { justify-content: center; }
   .mt-top5 .t5-item.t5-no-cust .t5-ratings { text-align: center; }
-  .mt-top5 .t5-item.t5-no-cust .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .mt-top5 .t5-item.t5-no-cust .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 10px; }
   .mt-top5 .t5-list > li:first-child.t5-no-cust .t5-ed { text-align: center; }
   .mt-top5 .t5-list > li:first-child.t5-no-cust .t5-ed .r-line { align-items: center; }
   .mt-top5 .t5-list > li:first-child.t5-no-cust .r-lbl { text-align: center; }
