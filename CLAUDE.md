@@ -166,3 +166,42 @@ signer, pas de SVG**.
   4 stats (vérifier les vrais noms de champs).
 
 **Après collage : approuver le bloc `code` gauche dans la Code review Bricks.**
+
+## État du sommaire (« Sur cette page » + encart Lecture)
+
+Livrables : **`php-css/sommaire.code.php`** (onglet Code = markup + JS) +
+**`php-css/sommaire.css`** (onglet CSS). UN seul élément Code Bricks. Approche
+retenue = **liste fixe conditionnelle pilotée en PHP** (PAS un scan des H2).
+
+Sections (ordre figé) — chacune affichée selon un champ ACF, et pointant vers
+un **`id` HTML d'ancre à poser sur le wrapper de section dans Bricks** :
+
+| Section | Condition (ACF) | `id` d'ancre à poser |
+|---|---|---|
+| Notre sélection | toujours | `mt-top5-title` *(existe déjà = `<h2>` du top5)* |
+| Tests complets | toujours | `partie-tests-complets` |
+| Tableau comparatif | toujours | `partie-tableau-comparatif` |
+| Guide d'achat {type pluriel} | `mltv5_cached_id_criteres` | `partie-guide-achat` |
+| Quel type choisir ? | `mltv5_cached_id_types` | `partie-types` |
+| Quelle marque choisir ? | `mltv5_cached_id_marques` | `partie-marques` |
+| Astuces et conseils | `mltv5_cached_id_astuces` | `partie-astuces` |
+| Pourquoi acheter ? | `mltv5_cached_id_raisons` | `partie-raisons` |
+| Questions fréquentes | `mltv5_cached_id_faq` | `partie-faq` |
+
+⚠️ **Préfixe `partie-` obligatoire** (≠ des sections Bricks pleine largeur).
+**TODO quand on construira ces parties : poser ces `id` sur chaque section**,
+sinon les liens du sommaire et le scrollspy ne s'accrochent à rien.
+
+- **`CONTENT_SELECTOR = '.contenu-principal'`** : classe à mettre sur **toutes**
+  les colonnes de contenu (le texte est coupé par le tableau pleine page).
+- **Temps de lecture** : base **10 min** = Notre sélection + Tests complets +
+  Tableau comparatif ; **+2 min** par section supplémentaire présente.
+- **Jauge pondérée par section** (pas linéaire au scroll) : chaque section porte
+  `data-min` = minutes cumulées à son début ; le JS interpole entre jalons →
+  « 10 min » pile au début de Guide d'achat. Repli scroll plein page tant que
+  les sections `partie-*` / `.contenu-principal` n'existent pas encore.
+- **Sticky** : porté par `%root%` (wrapper Bricks) ET `.mt-toc`. Si ça
+  n'accroche pas → poser `position:sticky;top:24px` sur la colonne gauche en
+  natif + vérifier qu'aucun parent n'a `overflow:hidden/auto`.
+- Accent sur **`--at-primary`** (cohérent top5). `HEADER_OFFSET = 30` (pas de
+  header sticky sur le site).
