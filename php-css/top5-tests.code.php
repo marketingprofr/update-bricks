@@ -311,19 +311,23 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
       </div>
 
       <?php if ( $it['pros'] || $it['cons'] ) : ?>
-      <div class="ed-a-pc">
+      <div class="ed-a-pc<?php echo ( $it['pros'] && $it['cons'] ) ? '' : ' single'; ?>">
+        <?php if ( $it['pros'] ) : ?>
         <div class="col pros">
           <h5>Points positifs</h5>
           <ul>
             <?php foreach ( $it['pros'] as $pp ) : ?><li><?php echo esc_html( $pp ); ?></li><?php endforeach; ?>
           </ul>
         </div>
+        <?php endif; ?>
+        <?php if ( $it['cons'] ) : ?>
         <div class="col cons">
           <h5>Points n&eacute;gatifs</h5>
           <ul>
             <?php foreach ( $it['cons'] as $cc ) : ?><li><?php echo esc_html( $cc ); ?></li><?php endforeach; ?>
           </ul>
         </div>
+        <?php endif; ?>
       </div>
       <?php endif; ?>
 
