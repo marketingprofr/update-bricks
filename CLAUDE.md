@@ -319,3 +319,36 @@ Inter corps, accent `--at-primary-*`).
   **sans prix affiché**. Label conditionnel : **« Où l'acheter »** si ≥ 1 produit a
   un prix ACF, sinon **« Meilleures offres »** (classements sans prix : séries…).
 - **Nom produit centré** : marque uppercase grise (13px) au-dessus, modèle dessous.
+
+## État du guide d'achat « Critères de choix » (cf. `template-criteres.html`)
+
+Livrables : **`php-css/criteres.code.php`** (onglet Code = markup PHP + boucle) +
+**`php-css/criteres.css`** (onglet CSS). UN seul élément Code Bricks. Scope
+`.mt-guide`. Refonte éditoriale de la maquette (intro + critères numérotés) avec
+la palette/typo des autres sections (Source Serif titres, Inter corps, accent
+`--at-primary-*`).
+
+- **Source des données (ACF de la page courante, pas un post lié)** — les `cached_id`
+  servent juste de condition d'affichage dans le sommaire ; le contenu vit
+  directement sur la page :
+  - GROUPE `mltv5_partie_criteres_de_choix` → `mltv5_image_criteres_de_choix`
+    (image d'illustration) + `mltv5_introduction_criteres_de_choix` (chapô).
+  - REPEATER `mltv5_criteres_de_choix` (1 ligne = 1 critère) →
+    `mltv5_critere_de_choix` (titre) + `mltv5_description_du_critere` (description
+    WYSIWYG). Numérotation = index de boucle (`01`, `02`… via `str_pad`).
+- **Ancre de section** : la `<section class="mt-guide contenu-principal"
+  id="partie-guide-achat">` porte **déjà** l'`id` du sommaire **et** la classe
+  `.contenu-principal` (jauge de lecture) → rien à reposer en natif ici (≠ tableau
+  comparatif qui est pleine page). Couvre le TODO « poser l'ancre `partie-guide-achat` ».
+- **En-tête** : intro + image **côte à côte** (`grid minmax(0,1fr) 380px`, image
+  en `aspect-ratio:4/3` `object-fit:cover`) → 1 colonne ≤991px. L'image vient des
+  données (absente de la maquette) ; `.no-img` si vide.
+- **Critères** : grille `92px | 1fr`, eyebrow mono « Critère » + gros numéro Inter
+  `tabular-nums`, titre `h3` serif, description rendue en HTML. ≤767px → 1 colonne,
+  numéro en ligne (label + chiffre côte à côte).
+- **Description = WYSIWYG** rendu tel quel (HTML de confiance) ; repli `wpautop` si
+  textarea sans balise de bloc. Pas de champ « À savoir » dédié (encart de la
+  maquette **abandonné**) — mais un `<blockquote>` dans la description est stylé en
+  encart accent au cas où l'éditeur en pose un.
+- Helpers `mt_guide_img_url` / `mt_guide_img_alt` / `mt_guide_rich` (gèrent image
+  ACF array|ID|URL), tous `function_exists`.
