@@ -52,7 +52,7 @@ $sections_cfg = array(
   array( 'label' => 'Tests complets',             'anchor' => 'partie-tests-complets',    'show' => true ),
   array( 'label' => 'Tableau comparatif',         'anchor' => 'partie-tableau-comparatif','show' => true ),
   array( 'label' => $guide_label,                 'anchor' => 'partie-guide-achat',       'show' => 'criteres' ),
-  array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'partie-types',             'show' => 'types' ),
+  array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'partie-types',             'show' => 'choix' ),
   array( 'label' => 'Quelle marque choisir&nbsp;?','anchor' => 'partie-marques',          'show' => 'marques' ),
   array( 'label' => 'Astuces et conseils',        'anchor' => 'partie-astuces',           'show' => 'astuces' ),
   array( 'label' => 'Pourquoi acheter&nbsp;?',    'anchor' => 'partie-raisons',           'show' => 'raisons' ),
