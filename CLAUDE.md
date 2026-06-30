@@ -250,3 +250,45 @@ Version éditoriale « magazine » (scope `.ed-a`), **un article par produit**.
   (`.ph-img { background: var(--bg-3) }`), sinon le gris ne transparaît jamais.
   (Invisible en maquette tant qu'on a un placeholder ; n'apparaît qu'avec une
   vraie image.)
+
+## État du tableau comparatif (cf. `template-tableau-comparatif.html`)
+
+Livrables : **`php-css/tableau-comparatif.code.php`** (onglet Code = markup PHP +
+boucle) + **`php-css/tableau-comparatif.css`** (onglet CSS). UN seul élément Code
+Bricks. Refonte éditoriale (scope `.mt-cmp-root`) de l'ancien tableau de prod
+« TechGearLab » : même palette/typo que hero/resume/tests (Source Serif titres,
+Inter corps, accent `--at-primary-*`).
+
+- **Sourcing des IDs identique** à top5-resume / top5-tests :
+  `get_all_template_variables($page_id)['top_avis_ids']`, fallback
+  `mltv5_best_products`, **passe 1 `setup_postdata`** (contexte post requis pour
+  `get_acf_score_divided_by_10` / `get_acf_score_label` / `get_default_product_label`).
+  ⚠️ On a **abandonné l'ancienne priorité `produits_comparatif`** pour que les
+  ancres `#produit-n-{rang}` restent cohérentes avec resume/tests. Helpers
+  partagés (`mt5_num`, `mt5_merchant_name`, `mt5_join_et`, `mt5_points`) +
+  `mtc_score_label` (fallback libellé), tous `function_exists`.
+- **Ancre de section** : la `<section class="mt-cmp-root"
+  id="partie-tableau-comparatif">` porte déjà l'`id` du sommaire. **Pas** de
+  `.contenu-principal` ici : le tableau est pleine page, il *coupe* le contenu, ce
+  n'est pas une colonne de texte de la jauge. Nom produit + vignette = liens vers
+  `#produit-n-{rang}` (avis détaillé) ; bouton « Voir l'offre » = lien affilié.
+- **Caractéristiques techniques (le cœur de la demande client)** : seules les
+  specs **partagées par ≥ 3 produits** sont affichées (`$TC_SPEC_MIN_SHARE = 3` ;
+  l'ancien tableau était à 2). Collecte keyée par intitulé + compteur de partage ;
+  ordre = **première apparition** (plus lisible que tri par fréquence). Au-delà de
+  10 specs → repliées derrière un bouton « afficher plus » (JS vanilla, `data-uid`).
+- ⚠️ **Sous-clés specs éprouvées** (issues de l'ancien tableau de PROD, donc
+  fiables) : repeater `mltv5_caracteristiques_du_produit`, intitulé
+  `mltv5_caracteristique_produit`, valeur `mltv5_valeur_caracteristique_produit`.
+  **Divergent des noms devinés dans `top5-tests.code.php`**
+  (`_caracteristique_intitule`/`_caracteristique_valeur`) → si la fiche technique
+  n'apparaît pas dans les tests complets, recaler ces deux sous-clés sur les noms
+  ci-dessus.
+- **Lignes conditionnelles** : verdict / résumé / positif / négatif / offres ne
+  s'affichent que si ≥ 1 produit a la donnée (pas de rangée vide). Specs absentes
+  d'un produit → cellule `—`.
+- **Images en `mix-blend-mode: multiply`** sur fond gris porté par `.product-thumb`
+  (même règle que partout). Inline SVG remplacé par `<i class="fas fa-circle-check">`
+  (FA déjà chargé, rien à signer).
+- Score : jauge largeur = `score10 × 10 %` ; pastille verdict pleine pour rangs
+  1-2, contour (`.alt`) au-delà. Tableau en `overflow-x:auto` (scroll mobile).

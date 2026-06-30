@@ -1,0 +1,400 @@
+<?php
+/* =====================================================================
+   MEILLEURTEST — Tableau comparatif (confrontation des produits du guide)
+   Version éditoriale (cf. templates/template-tableau-comparatif.html).
+   À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
+   Le CSS correspondant va dans l'onglet CSS du même élément
+   (tableau-comparatif.css).
+   Source : top_avis_ids (liste ordonnée du guide) -> 1 post = 1 produit.
+   ↳ Même sourcing d'ID + même passe de collecte que top5-resume / top5-tests.
+   Ancre de section : id="partie-tableau-comparatif" (lien du sommaire).
+   Liens internes : nom produit -> #produit-n-{rang} (avis détaillé).
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   CONFIG — noms des champs ACF + tag Amazon
+   (specs : noms éprouvés de l'ancien tableau de prod, à conserver tels quels)
+   --------------------------------------------------------------------- */
+$TC_SPECS_FIELD     = 'mltv5_caracteristiques_du_produit';      // repeater fiche technique
+$TC_SPEC_LABEL_KEY  = 'mltv5_caracteristique_produit';          // sous-champ intitulé
+$TC_SPEC_VALUE_KEY  = 'mltv5_valeur_caracteristique_produit';   // sous-champ valeur
+$TC_SPEC_MIN_SHARE  = 3;   // une caractéristique n'est affichée que si partagée par >= N produits
+$TC_SPEC_VISIBLE    = 10;  // au-delà : repliées derrière le bouton « afficher plus »
+$TC_MAX_PRODUCTS    = 5;
+$TC_AMAZON_TAG      = 'mlt00-21';
+
+/* ---------------------------------------------------------------------
+   Helpers (partagés avec top5-resume / top5-tests — guards anti-redéclaration)
+   --------------------------------------------------------------------- */
+if ( ! function_exists( 'mt5_num' ) ) {
+  function mt5_num( $v ) {
+    $v = str_replace( array( ' ', "\xc2\xa0", '€' ), '', (string) $v );
+    $v = str_replace( ',', '.', $v );
+    return is_numeric( $v ) ? (float) $v : 0.0;
+  }
+}
+if ( ! function_exists( 'mt5_merchant_name' ) ) {
+  function mt5_merchant_name( $url ) {
+    $host = parse_url( (string) $url, PHP_URL_HOST );
+    if ( ! $host ) { return ''; }
+    $host  = preg_replace( '/^www\./i', '', $host );
+    $parts = explode( '.', $host );
+    $label = isset( $parts[0] ) ? $parts[0] : '';
+    return $label !== '' ? ucfirst( $label ) : '';
+  }
+}
+if ( ! function_exists( 'mt5_join_et' ) ) {
+  function mt5_join_et( $items ) {
+    $items = array_values( array_filter( $items, function ( $v ) { return $v !== ''; } ) );
+    $n     = count( $items );
+    if ( $n === 0 ) { return ''; }
+    if ( $n === 1 ) { return $items[0]; }
+    $last = array_pop( $items );
+    return implode( ', ', $items ) . ' et ' . $last;
+  }
+}
+if ( ! function_exists( 'mt5_points' ) ) {
+  function mt5_points( $field, $pid, $subkey ) {
+    $rows = get_field( $field, $pid );
+    $out  = array();
+    if ( is_array( $rows ) ) {
+      foreach ( $rows as $r ) {
+        $p = isset( $r[ $subkey ] ) ? trim( (string) $r[ $subkey ] ) : '';
+        if ( $p !== '' ) { $out[] = $p; }
+      }
+    }
+    return $out;
+  }
+}
+if ( ! function_exists( 'mtc_score_label' ) ) {
+  /* Libellé de note /10 (fallback si get_acf_score_label() indisponible). */
+  function mtc_score_label( $s10 ) {
+    $s = (float) $s10;
+    if ( $s >= 9 ) { return 'Exceptionnel'; }
+    if ( $s >= 8 ) { return 'Excellent'; }
+    if ( $s >= 7 ) { return 'Tr&egrave;s bien'; }
+    if ( $s >= 6 ) { return 'Bien'; }
+    if ( $s >= 5 ) { return 'Moyen'; }
+    if ( $s >= 4 ) { return 'Passable'; }
+    if ( $s >= 2 ) { return 'Mauvais'; }
+    return 'Tr&egrave;s mauvais';
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Liste ordonnée des produits du guide (même source que top5-resume/tests)
+   --------------------------------------------------------------------- */
+$page_id = get_the_ID();
+$page_tv = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
+
+$ids = isset( $page_tv['top_avis_ids'] ) && is_array( $page_tv['top_avis_ids'] ) ? $page_tv['top_avis_ids'] : array();
+if ( empty( $ids ) ) {
+  $rel = get_field( 'mltv5_best_products', $page_id ); // fallback : champ relation
+  if ( is_array( $rel ) ) {
+    foreach ( $rel as $r ) { $ids[] = is_object( $r ) ? $r->ID : (int) $r; }
+  }
+}
+$ids = array_values( array_filter( array_map( 'intval', $ids ) ) );
+$ids = array_slice( $ids, 0, $TC_MAX_PRODUCTS );
+if ( count( $ids ) < 2 ) { return; } // un comparatif a besoin d'au moins 2 produits
+
+/* ---------------------------------------------------------------------
+   PASSE 1 : collecte (contexte post requis pour les helpers de score)
+   --------------------------------------------------------------------- */
+global $post;
+$tc_saved_post = $post;
+
+$products    = array();
+$specs_order = array(); // intitulés dans l'ordre de première apparition
+$specs_count = array(); // intitulé => nb de produits qui le renseignent
+$pos         = 0;
+
+foreach ( $ids as $pid ) {
+  $p = get_post( $pid );
+  if ( ! $p ) { continue; }
+  $post = $p;
+  setup_postdata( $post );
+  $pos++;
+
+  /* Identité */
+  $brand = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
+  $model = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
+  $name  = $model !== '' ? trim( $brand . ' ' . $model ) : get_the_title( $pid );
+
+  /* Image */
+  $img = get_the_post_thumbnail_url( $pid, 'medium' );
+
+  /* Score rédac /10 + libellés (helpers en contexte post) */
+  $raw_score = get_field( 'mltv5_score_recent', $pid );
+  $score10   = function_exists( 'get_acf_score_divided_by_10' )
+    ? (float) get_acf_score_divided_by_10()
+    : round( mt5_num( $raw_score ) / 10, 1 );
+  $score_tag = function_exists( 'get_acf_score_label' ) ? trim( (string) get_acf_score_label() ) : '';
+  if ( $score_tag === '' ) { $score_tag = mtc_score_label( $score10 ); }
+  $label = function_exists( 'get_default_product_label' )
+    ? trim( (string) get_default_product_label( $pid, $raw_score ) )
+    : '';
+
+  /* Résumé + points +/- */
+  $summary = trim( (string) get_field( 'mltv5_resume_produit', $pid ) );
+  $pros    = mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' );
+  $cons    = mt5_points( 'mltv5_points_negatifs_produit', $pid, 'mltv5_point_negatif' );
+
+  /* Caractéristiques techniques (keyées par intitulé + compteur de partage) */
+  $specs = array();
+  $seen  = array();
+  if ( have_rows( $TC_SPECS_FIELD, $pid ) ) {
+    while ( have_rows( $TC_SPECS_FIELD, $pid ) ) {
+      the_row();
+      $sname = trim( (string) get_sub_field( $TC_SPEC_LABEL_KEY ) );
+      $sval  = trim( (string) get_sub_field( $TC_SPEC_VALUE_KEY ) );
+      if ( $sname === '' || $sval === '' ) { continue; }
+      $specs[ $sname ] = $sval;
+      if ( ! isset( $specs_count[ $sname ] ) ) { $specs_count[ $sname ] = 0; $specs_order[] = $sname; }
+      if ( ! in_array( $sname, $seen, true ) ) { $specs_count[ $sname ]++; $seen[] = $sname; }
+    }
+  }
+
+  /* Offres : ASIN Amazon prioritaire, puis liens perso ACF */
+  $asin      = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
+  $prix      = get_field( 'mltv5_prix_indicatif', $pid );
+  $has_price = ( $prix !== '' && $prix !== null && mt5_num( $prix ) > 0 );
+
+  $offer_urls = array();
+  if ( $asin !== '' ) {
+    $offer_urls[] = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=' . $TC_AMAZON_TAG;
+  }
+  for ( $i = 1; $i <= 3; $i++ ) {
+    $u = trim( (string) get_field( 'mltv5_lien_du_produit_' . $i, $pid ) );
+    if ( $u !== '' && strpos( $u, 'http' ) === 0 ) { $offer_urls[] = $u; }
+  }
+  $offer_urls = array_values( array_unique( $offer_urls ) );
+
+  $products[] = array(
+    'pos'         => $pos,
+    'name'        => $name,
+    'img'         => $img,
+    'score10'     => $score10,
+    'score_tag'   => $score_tag,
+    'score_pct'   => max( 0, min( 100, (int) round( $score10 * 10 ) ) ),
+    'label'       => $label,
+    'summary'     => $summary,
+    'pros'        => $pros,
+    'cons'        => $cons,
+    'specs'       => $specs,
+    'offer_urls'  => $offer_urls,
+    'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
+    'price'       => $has_price ? trim( (string) $prix ) : '',
+  );
+}
+$post = $tc_saved_post;
+wp_reset_postdata();
+
+if ( count( $products ) < 2 ) { return; }
+
+/* ---------------------------------------------------------------------
+   Caractéristiques de référence : partagées par >= TC_SPEC_MIN_SHARE produits,
+   dans l'ordre de première apparition (lecture plus naturelle).
+   --------------------------------------------------------------------- */
+$ref_specs = array();
+foreach ( $specs_order as $sname ) {
+  if ( $specs_count[ $sname ] >= $TC_SPEC_MIN_SHARE ) { $ref_specs[] = $sname; }
+}
+$nb_specs        = count( $ref_specs );
+$has_hidden_spec = ( $nb_specs > $TC_SPEC_VISIBLE );
+
+/* Lignes éditoriales : n'afficher une rangée que si au moins un produit a la donnée */
+$any_verdict = false; $any_summary = false; $any_pros = false; $any_cons = false; $any_offer = false;
+foreach ( $products as $it ) {
+  if ( $it['label'] !== '' )     { $any_verdict = true; }
+  if ( $it['summary'] !== '' )   { $any_summary = true; }
+  if ( ! empty( $it['pros'] ) )  { $any_pros = true; }
+  if ( ! empty( $it['cons'] ) )  { $any_cons = true; }
+  if ( $it['price'] !== '' || $it['primary_url'] !== '' ) { $any_offer = true; }
+}
+
+/* ---------------------------------------------------------------------
+   Titre dynamique
+   --------------------------------------------------------------------- */
+$nb        = count( $products );
+$type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
+$head_title = 'Tableau comparatif' . ( $type_plur !== '' ? ' : top ' . $nb . ' ' . esc_html( lcfirst( $type_plur ) ) : '' );
+
+$colspan = $nb + 1;
+$uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
+?>
+<section class="mt-cmp-root" id="partie-tableau-comparatif" aria-labelledby="<?php echo esc_attr( $uid ); ?>-title">
+  <header class="mt-cmp-head">
+    <h2 class="mt-cmp-h2" id="<?php echo esc_attr( $uid ); ?>-title"><?php echo $head_title; ?></h2>
+    <p class="mt-cmp-sub">Tous les mod&egrave;les, class&eacute;s et confront&eacute;s sur les crit&egrave;res qui comptent vraiment.</p>
+  </header>
+
+  <div class="mt-cmp-wrap">
+    <table class="mt-cmp">
+      <tbody>
+
+        <!-- Rang + marque (1re colonne fusionnée sur 2 lignes) -->
+        <tr>
+          <td class="row-label brand-cell" rowspan="2">
+            <div class="mt-cmp-brand">
+              <div class="mt-cmp-brand-logo"><span class="mt-cmp-brand-mark">M</span> Meilleurtest</div>
+              <div class="mt-cmp-brand-note"><i class="fas fa-circle-check" aria-hidden="true"></i> Ce comparatif ne contient aucun produit sponsoris&eacute;</div>
+            </div>
+          </td>
+          <?php foreach ( $products as $it ) : ?>
+          <td class="pos-cell"><span class="rank r<?php echo (int) $it['pos']; ?>"><?php echo (int) $it['pos']; ?></span></td>
+          <?php endforeach; ?>
+        </tr>
+
+        <!-- Image + nom (lien vers l'avis détaillé) -->
+        <tr>
+          <?php foreach ( $products as $it ) : ?>
+          <td class="product-cell">
+            <a class="product-thumb<?php echo $it['img'] ? '' : ' empty'; ?>" href="#produit-n-<?php echo (int) $it['pos']; ?>">
+              <?php if ( $it['img'] ) : ?><img src="<?php echo esc_url( $it['img'] ); ?>" alt="<?php echo esc_attr( $it['name'] ); ?>" loading="lazy"><?php endif; ?>
+            </a>
+            <a class="product-name" href="#produit-n-<?php echo (int) $it['pos']; ?>"><?php echo esc_html( $it['name'] ); ?></a>
+          </td>
+          <?php endforeach; ?>
+        </tr>
+
+        <?php if ( $any_verdict ) : ?>
+        <!-- Verdict -->
+        <tr>
+          <td class="row-label">Verdict</td>
+          <?php foreach ( $products as $it ) : ?>
+          <td>
+            <?php if ( $it['label'] !== '' ) : ?>
+              <span class="verdict-pill<?php echo $it['pos'] <= 2 ? '' : ' alt'; ?>"><?php echo esc_html( $it['label'] ); ?></span>
+            <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
+          </td>
+          <?php endforeach; ?>
+        </tr>
+        <?php endif; ?>
+
+        <!-- Note globale -->
+        <tr>
+          <td class="row-label">Note globale</td>
+          <?php foreach ( $products as $it ) : ?>
+          <td class="score-cell">
+            <div class="score-block"><b><?php echo esc_html( number_format( (float) $it['score10'], 1, ',', '' ) ); ?></b><small>/10</small></div>
+            <div class="score-gauge"><div class="score-gauge-fill" style="width: <?php echo (int) $it['score_pct']; ?>%;"></div></div>
+            <?php if ( $it['score_tag'] !== '' ) : ?><div class="score-tag"><?php echo $it['score_tag']; ?></div><?php endif; ?>
+          </td>
+          <?php endforeach; ?>
+        </tr>
+
+        <?php if ( $any_summary ) : ?>
+        <!-- Résumé -->
+        <tr>
+          <td class="row-label">R&eacute;sum&eacute;</td>
+          <?php foreach ( $products as $it ) : ?>
+          <td class="pp"><?php echo $it['summary'] !== '' ? esc_html( $it['summary'] ) : '<span class="mt-cmp-empty">&mdash;</span>'; ?></td>
+          <?php endforeach; ?>
+        </tr>
+        <?php endif; ?>
+
+        <?php if ( $any_pros ) : ?>
+        <!-- Points positifs -->
+        <tr>
+          <td class="row-label">Positif</td>
+          <?php foreach ( $products as $it ) : ?>
+          <td class="pp">
+            <?php if ( ! empty( $it['pros'] ) ) : ?>
+              <?php echo implode( ' <span class="dot">&bull;</span> ', array_map( 'esc_html', $it['pros'] ) ); ?>
+            <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
+          </td>
+          <?php endforeach; ?>
+        </tr>
+        <?php endif; ?>
+
+        <?php if ( $any_cons ) : ?>
+        <!-- Points négatifs -->
+        <tr>
+          <td class="row-label">N&eacute;gatif</td>
+          <?php foreach ( $products as $it ) : ?>
+          <td class="pp">
+            <?php if ( ! empty( $it['cons'] ) ) : ?>
+              <?php echo implode( ' <span class="dot">&bull;</span> ', array_map( 'esc_html', $it['cons'] ) ); ?>
+            <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
+          </td>
+          <?php endforeach; ?>
+        </tr>
+        <?php endif; ?>
+
+        <?php if ( $any_offer ) : ?>
+        <!-- Meilleures offres -->
+        <tr>
+          <td class="row-label">Meilleures offres</td>
+          <?php foreach ( $products as $it ) :
+            $merchants = array();
+            foreach ( $it['offer_urls'] as $u ) { $m = mt5_merchant_name( $u ); if ( $m !== '' ) { $merchants[] = $m; } }
+            $primary_merchant = ! empty( $merchants ) ? $merchants[0] : '';
+            $extra_merchants  = array_slice( array_values( array_unique( $merchants ) ), 1 );
+          ?>
+          <td class="price-cell">
+            <?php if ( $it['price'] !== '' ) : ?><div class="price"><?php echo esc_html( $it['price'] ); ?>&nbsp;&euro;</div><?php endif; ?>
+            <?php if ( $primary_merchant !== '' ) : ?><div class="merchant"><?php echo esc_html( $primary_merchant ); ?></div><?php endif; ?>
+            <?php if ( ! empty( $extra_merchants ) ) : ?><div class="extra">Aussi chez <?php echo esc_html( mt5_join_et( $extra_merchants ) ); ?></div><?php endif; ?>
+            <?php if ( $it['primary_url'] !== '' ) : ?>
+            <a class="cmp-btn" href="<?php echo esc_url( $it['primary_url'] ); ?>" target="_blank" rel="nofollow sponsored noopener">Voir l'offre <span aria-hidden="true">&rarr;</span></a>
+            <?php endif; ?>
+            <?php if ( $it['price'] === '' && $it['primary_url'] === '' ) : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
+          </td>
+          <?php endforeach; ?>
+        </tr>
+        <?php endif; ?>
+
+        <?php if ( $nb_specs > 0 ) : ?>
+        <!-- Séparateur caractéristiques techniques -->
+        <tr class="mt-cmp-sep"><td class="row-label section-head" colspan="<?php echo (int) $colspan; ?>">Caract&eacute;ristiques techniques</td></tr>
+
+        <?php foreach ( $ref_specs as $i => $sname ) :
+          $hidden = ( $i >= $TC_SPEC_VISIBLE );
+        ?>
+        <tr class="spec-row<?php echo $hidden ? ' spec-hidden' : ''; ?>"<?php echo $hidden ? ' style="display:none;"' : ''; ?> data-uid="<?php echo esc_attr( $uid ); ?>">
+          <td class="row-label"><?php echo esc_html( $sname ); ?></td>
+          <?php foreach ( $products as $it ) :
+            $sv = isset( $it['specs'][ $sname ] ) ? $it['specs'][ $sname ] : '';
+          ?>
+          <td class="spec-cell"><?php echo $sv !== '' ? wp_kses_post( $sv ) : '<span class="mt-cmp-empty">&mdash;</span>'; ?></td>
+          <?php endforeach; ?>
+        </tr>
+        <?php endforeach; ?>
+        <?php endif; ?>
+
+      </tbody>
+    </table>
+  </div>
+
+  <?php if ( $has_hidden_spec ) : ?>
+  <div class="mt-cmp-more">
+    <button type="button" class="mt-cmp-more-btn" data-uid="<?php echo esc_attr( $uid ); ?>" aria-expanded="false">
+      <span class="more-on">Afficher toutes les caract&eacute;ristiques (<?php echo (int) $nb_specs; ?>)</span>
+      <span class="more-off" style="display:none;">Masquer les caract&eacute;ristiques</span>
+      <i class="fas fa-chevron-down chevron" aria-hidden="true"></i>
+    </button>
+  </div>
+  <script>
+  (function () {
+    var uid = <?php echo wp_json_encode( $uid ); ?>;
+    function init() {
+      var btn = document.querySelector('.mt-cmp-more-btn[data-uid="' + uid + '"]');
+      if (!btn) { return; }
+      var rows = document.querySelectorAll('.spec-row.spec-hidden[data-uid="' + uid + '"]');
+      var on = btn.querySelector('.more-on'), off = btn.querySelector('.more-off'), chev = btn.querySelector('.chevron');
+      var open = false;
+      btn.addEventListener('click', function () {
+        open = !open;
+        for (var i = 0; i < rows.length; i++) { rows[i].style.display = open ? 'table-row' : 'none'; }
+        if (on)  { on.style.display  = open ? 'none' : 'inline'; }
+        if (off) { off.style.display = open ? 'inline' : 'none'; }
+        if (chev) { chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)'; }
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    }
+    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+  })();
+  </script>
+  <?php endif; ?>
+</section>
