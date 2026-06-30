@@ -11,6 +11,7 @@
   --muted: #6b7480; --muted-2: #9aa3ad;
   --line: #e8eaed; --line-2: #f1f3f5;
   --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f4f5f7;
+  --track: #d8dde3;                          /* gris des jauges (assombri pour la visibilité) */
   --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
   /* Notes monochromes */
   --sc-p: var(--at-primary-d-1); --sc-g: #2e9e5b; --sc-y: #d4a017; --sc-o: #e08a3c; --sc-r: #cf4a3c;
@@ -47,21 +48,21 @@
 }
 
 /* === Table : 1re colonne fixe, colonnes produits égales (table-layout fixed) === */
-.mt-cmp { width: 100%; min-width: 760px; table-layout: fixed; border-collapse: collapse; font-size: 13px; background: #fff; }
+.mt-cmp { width: 100%; min-width: 800px; table-layout: fixed; border-collapse: collapse; font-size: 13px; background: #fff; }
 .mt-cmp th, .mt-cmp td {
   padding: 14px; text-align: left; vertical-align: top;
   border-bottom: 1px solid var(--line);
 }
 .mt-cmp tbody tr:last-child td { border-bottom: 0; }
 
-/* Colonne label (gauche) — compacte */
+/* Colonne label (gauche) */
 .mt-cmp .row-label {
-  width: 118px;
+  width: 160px;
   background: var(--bg-2);
   font-size: 11px; font-weight: 600; color: var(--muted);
   text-transform: uppercase; letter-spacing: 0.02em;
   border-right: 1px solid var(--line);
-  padding: 12px 10px;
+  padding: 12px 12px;
 }
 
 /* Pastille « engagement » (laurier recoloré en primary) + mention */
@@ -75,23 +76,37 @@
 }
 .mt-cmp-brand-note { font-size: 11px; font-weight: 500; color: var(--accent); line-height: 1.4; text-transform: none; letter-spacing: 0; margin: 0; }
 
-/* Rang + banderoles */
-.mt-cmp .pos-cell { text-align: center; padding: 16px 8px; vertical-align: top; }
+/* === Rang : banderole collée en haut (+ flèche) puis médaille alignée === */
+.mt-cmp .pos-cell { padding: 0 0 16px; text-align: center; vertical-align: top; }
+/* Réserve la hauteur de la banderole dans TOUTES les colonnes -> rangs alignés */
+.mt-cmp .banner-slot { position: relative; height: 26px; margin-bottom: 20px; }
 .mt-cmp .col-banner {
-  display: block; margin: 0 auto 10px; max-width: 100%;
+  position: absolute; top: 0; left: 0; right: 0; height: 26px;
+  display: flex; align-items: center; justify-content: center;
   font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
-  color: #fff; padding: 5px 8px; border-radius: 6px; line-height: 1.2;
+  color: #fff; line-height: 1.1; padding: 0 6px; background: var(--bn);
 }
-.mt-cmp .col-banner.b-best  { background: var(--accent); }
-.mt-cmp .col-banner.b-price { background: var(--bn-price); }
-.mt-cmp .col-banner.b-alt   { background: var(--bn-alt); }
-.mt-cmp .pos-cell .rank { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 13px; }
-/* Dégradé visible de la 1re à la dernière place (vert -> jaune -> orange -> rouge) */
-.mt-cmp .pos-cell .rank.r1 { background: var(--accent); }
-.mt-cmp .pos-cell .rank.r2 { background: #5a9e3f; }
-.mt-cmp .pos-cell .rank.r3 { background: #c9a227; }
-.mt-cmp .pos-cell .rank.r4 { background: #e08a3c; }
-.mt-cmp .pos-cell .rank.r5 { background: #cf5a4e; }
+.mt-cmp .col-banner.b-best  { --bn: var(--accent); }
+.mt-cmp .col-banner.b-price { --bn: var(--bn-price); }
+.mt-cmp .col-banner.b-alt   { --bn: var(--bn-alt); }
+/* Petite flèche vers le bas, centrée sous la banderole */
+.mt-cmp .col-banner::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent;
+  border-top: 6px solid var(--bn);
+}
+
+/* Médaille (double cercle) : or / argent / bronze puis gris clair */
+.mt-cmp .pos-cell .rank {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.5), 0 1px 3px rgba(20,24,29,.22);
+}
+.mt-cmp .pos-cell .rank-n { font-weight: 700; font-size: 13px; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.28); }
+.mt-cmp .pos-cell .rank.r1 { background: radial-gradient(circle at 35% 30%, #f7da53, #c8920e); }
+.mt-cmp .pos-cell .rank.r2 { background: radial-gradient(circle at 35% 30%, #e7ecf0, #9aa3ad); }
+.mt-cmp .pos-cell .rank.r3 { background: radial-gradient(circle at 35% 30%, #e3a96a, #a9682c); }
+.mt-cmp .pos-cell .rank.r4,
+.mt-cmp .pos-cell .rank.r5 { background: radial-gradient(circle at 35% 30%, #d7dce1, #aab2ba); }
 
 /* Image produit (fond gris + multiply + padding pour ne pas coller au bord) */
 .mt-cmp .product-cell { padding: 18px 14px; text-align: center; }
@@ -99,9 +114,9 @@
 .mt-cmp .product-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: multiply; }
 .mt-cmp .product-thumb.empty::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,0.03) 8px 9px); }
 
-/* Nom : marque (uppercase, gris) au-dessus, modèle en dessous, centré */
+/* Nom : marque (uppercase, gris, plus gros) au-dessus, modèle en dessous, centré */
 .mt-cmp .product-name { display: block; text-align: center; }
-.mt-cmp .pn-brand { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 2px; }
+.mt-cmp .pn-brand { display: block; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 3px; }
 .mt-cmp .pn-model { display: block; font-weight: 600; font-size: 14px; line-height: 1.25; color: var(--ink); }
 .mt-cmp .product-name:hover .pn-model { color: var(--accent); }
 
@@ -111,12 +126,12 @@
 .mt-cmp .verdict-txt::before { content: "\00AB\00A0"; }
 .mt-cmp .verdict-txt::after  { content: "\00A0\00BB"; }
 
-/* Note globale (monochrome via .sc-*) */
-.mt-cmp .score-cell { padding: 18px 14px; }
-.mt-cmp .score-block { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+/* Note globale (monochrome via .sc-*) — score + libellé centrés */
+.mt-cmp .score-cell { padding: 18px 14px; text-align: center; }
+.mt-cmp .score-block { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-bottom: 8px; }
 .mt-cmp .score-block b { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
 .mt-cmp .score-block small { font-size: 11px; color: var(--muted); }
-.mt-cmp .score-gauge { height: 6px; background: var(--bg-3); border-radius: 99px; overflow: hidden; margin: 4px 0 6px; }
+.mt-cmp .score-gauge { height: 6px; background: var(--track); border-radius: 99px; overflow: hidden; margin: 4px 0 6px; }
 .mt-cmp .score-gauge-fill { height: 100%; border-radius: 99px; }
 .mt-cmp .score-tag { font-size: 11px; font-weight: 600; }
 .mt-cmp .sc-p .score-block b, .mt-cmp .sc-p .score-tag { color: var(--sc-p); }
@@ -130,20 +145,24 @@
 .mt-cmp .sc-r .score-block b, .mt-cmp .sc-r .score-tag { color: var(--sc-r); }
 .mt-cmp .sc-r .score-gauge-fill { background: var(--sc-r); }
 
+/* Avis clients (centré) */
+.mt-cmp .cust-cell { text-align: center; }
+.mt-cmp .cust-line { display: flex; align-items: baseline; justify-content: center; gap: 5px; }
+.mt-cmp .cust-star { color: #e8a93b; font-size: 14px; }
+.mt-cmp .cust-val { font-size: 16px; font-weight: 700; color: var(--ink); }
+.mt-cmp .cust-val small { font-size: 11px; font-weight: 600; color: var(--muted); }
+.mt-cmp .cust-count { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
 /* Résumé */
 .mt-cmp .pp { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
 
-/* Points + / - (listes avec icônes check/croix) */
-.mt-cmp .pc-list { list-style: none; margin: 0; padding: 0; }
-.mt-cmp .pc-list li { font-size: 12.5px; line-height: 1.4; margin-bottom: 5px; }
-.mt-cmp .pc-list li:last-child { margin-bottom: 0; }
-.mt-cmp .pc-list i { font-size: 11px; margin-right: 4px; }
-.mt-cmp .pc-pos li { color: var(--pos-ink); }
-.mt-cmp .pc-pos i  { color: var(--pos-ic); }
-.mt-cmp .pc-neg li { color: var(--neg-ink); }
-.mt-cmp .pc-neg i  { color: var(--neg-ic); }
+/* Points + / - : texte coloré + puces de séparation */
+.mt-cmp .pp.pos { color: var(--pos-ink); }
+.mt-cmp .pp.pos .dot { color: var(--pos-ic); margin: 0 4px; }
+.mt-cmp .pp.neg { color: var(--neg-ink); }
+.mt-cmp .pp.neg .dot { color: var(--neg-ic); margin: 0 4px; }
 
-/* Où l'acheter : bouton + marchands (comme ailleurs sur la page) */
+/* Achat : bouton + marchands (comme ailleurs sur la page) */
 .mt-cmp .buy-cell { text-align: center; }
 .mt-cmp .cmp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 16px; background: var(--accent); color: #fff; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; border: none; font-family: inherit; }
 .mt-cmp .cmp-btn:hover { background: var(--accent-dark); }
@@ -158,8 +177,10 @@
   border-right: 0;
 }
 
-/* Specs */
+/* Specs + icônes check/croix colorées (valeurs ACF en Font Awesome) */
 .mt-cmp .spec-cell { font-size: 12.5px; color: var(--ink-2); }
+.mt-cmp .spec-cell .fa-check, .mt-cmp .spec-cell .fa-circle-check { color: var(--pos-ic); }
+.mt-cmp .spec-cell .fa-xmark, .mt-cmp .spec-cell .fa-times, .mt-cmp .spec-cell .fa-circle-xmark { color: var(--neg-ic); }
 
 /* Cellule vide */
 .mt-cmp .mt-cmp-empty { color: var(--muted-2); }
@@ -174,8 +195,8 @@
 @media (max-width: 767px) {
   .mt-cmp-h2 { font-size: 26px; }
   .mt-cmp-sub { font-size: 15px; }
-  .mt-cmp .row-label { width: 104px; padding: 10px 8px; }
+  .mt-cmp .row-label { width: 124px; padding: 10px 8px; }
   .mt-cmp th, .mt-cmp td { padding: 10px; }
   .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 12px 10px; }
-  .mt-cmp .col-banner { font-size: 9.5px; padding: 4px 5px; }
+  .mt-cmp .col-banner { font-size: 9px; }
 }

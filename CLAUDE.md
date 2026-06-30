@@ -289,21 +289,29 @@ Inter corps, accent `--at-primary-*`).
   d'un produit → cellule `—`.
 - **Images en `mix-blend-mode: multiply`** sur fond gris porté par `.product-thumb`
   (même règle que partout), avec **`padding:12px`** pour ne pas coller au bord gris.
-- **Layout colonnes** : `table-layout:fixed` → 1re colonne (labels) fixe **118px**
+- **Layout colonnes** : `table-layout:fixed` → 1re colonne (labels) fixe **160px**
   (font 11px), toutes les **colonnes produits à largeur égale** + vignettes de
   taille identique. Tableau en `overflow-x:auto` (scroll mobile).
-- **Banderoles au-dessus du rang** (dans la `.pos-cell`, anti-clip) : « ★ Meilleur
-  choix » (rang 1, primary) + « € Meilleur prix » (le moins cher hors rang 1,
-  bleu) ; sans prix exploitable → « ♥ Meilleure alternative » (rang 2, orange).
-  Pastilles de rang en **dégradé visible** vert→jaune→orange→rouge (r1..r5).
+- **Banderoles « rubans »** : collées **en haut de la `.pos-cell`** (pleine largeur,
+  petite flèche `::after` vers le bas), dans une `.banner-slot` de **hauteur fixe
+  rendue dans TOUTES les colonnes** (slot vide si pas de ruban) → les médailles
+  restent **alignées verticalement**. « ★ Meilleur choix » (rang 1, primary) +
+  « € Meilleur prix » (moins cher hors rang 1, bleu) ; sans prix → « ♥ Meilleure
+  alternative » (rang 2, orange).
+- **Rang = médaille** (double cercle via `box-shadow inset` + dégradé radial) :
+  or (r1) / argent (r2) / bronze (r3) / gris clair (r4-r5).
 - **1re colonne** = laurier `.t5-laurel` (réutilisé du resume mais **recoloré en
   primary via `mask`**, pas gold) + mention « aucun produit sponsorisé ».
 - **Note globale monochrome** (classe `.sc-{p/g/y/o/r}`) : ≥9 primary, ≥8 vert,
-  ≥7 jaune, ≥6 orange, sinon rouge (jauge + chiffre + libellé).
+  ≥7 jaune, ≥6 orange, sinon rouge (jauge + chiffre + libellé, **centrés**). Track
+  de jauge assombri (`--track:#d8dde3`) pour la visibilité.
 - **Verdict** = texte « quote » serif italique primary (`«  »`), pas de bouton.
-- **Points +/-** : listes avec icônes `fa-check` (vert) / `fa-times` (rouge),
-  texte vert sombre / rouge sombre.
-- **« Où l'acheter »** = bouton primary « Voir l'offre » + marchands sous le
-  bouton (« chez X et Y »), **sans prix affiché** (le prix ne sert qu'à la
-  banderole « Meilleur prix »).
-- **Nom produit centré** : marque en uppercase gris au-dessus, modèle en dessous.
+- **Ligne « Avis clients »** (note `mltv5_score_avis_clients` /5 + nombre
+  `mltv5_nombre_avis_clients`, helper `mt5_reviews_label`) — masquée si aucun avis.
+- **Points +/-** = texte coloré (vert sombre / rouge sombre) + **puces `•` de
+  séparation** (inline). Les **icônes FA des cellules specs** (`fa-check` /
+  `fa-xmark` issues des valeurs ACF) sont recolorées vert / rouge.
+- **Ligne d'achat** = bouton primary « Voir l'offre » + marchands sous le bouton,
+  **sans prix affiché**. Label conditionnel : **« Où l'acheter »** si ≥ 1 produit a
+  un prix ACF, sinon **« Meilleures offres »** (classements sans prix : séries…).
+- **Nom produit centré** : marque uppercase grise (13px) au-dessus, modèle dessous.

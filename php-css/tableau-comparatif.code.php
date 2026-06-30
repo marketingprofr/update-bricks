@@ -15,13 +15,15 @@
    CONFIG — noms des champs ACF + tag Amazon
    (specs : noms éprouvés de l'ancien tableau de prod, à conserver tels quels)
    --------------------------------------------------------------------- */
-$TC_SPECS_FIELD     = 'mltv5_caracteristiques_du_produit';      // repeater fiche technique
-$TC_SPEC_LABEL_KEY  = 'mltv5_caracteristique_produit';          // sous-champ intitulé
-$TC_SPEC_VALUE_KEY  = 'mltv5_valeur_caracteristique_produit';   // sous-champ valeur
-$TC_SPEC_MIN_SHARE  = 3;   // une caractéristique n'est affichée que si partagée par >= N produits
-$TC_SPEC_VISIBLE    = 10;  // au-delà : repliées derrière le bouton « afficher plus »
-$TC_MAX_PRODUCTS    = 5;
-$TC_AMAZON_TAG      = 'mlt00-21';
+$TC_SPECS_FIELD       = 'mltv5_caracteristiques_du_produit';      // repeater fiche technique
+$TC_SPEC_LABEL_KEY    = 'mltv5_caracteristique_produit';          // sous-champ intitulé
+$TC_SPEC_VALUE_KEY    = 'mltv5_valeur_caracteristique_produit';   // sous-champ valeur
+$TC_CUST_RATING_FIELD = 'mltv5_score_avis_clients';               // note clients /5
+$TC_CUST_COUNT_FIELD  = 'mltv5_nombre_avis_clients';              // nombre d'avis clients
+$TC_SPEC_MIN_SHARE    = 3;   // une caractéristique n'est affichée que si partagée par >= N produits
+$TC_SPEC_VISIBLE      = 10;  // au-delà : repliées derrière le bouton « afficher plus »
+$TC_MAX_PRODUCTS      = 5;
+$TC_AMAZON_TAG        = 'mlt00-21';
 
 /* ---------------------------------------------------------------------
    Helpers (partagés avec top5-resume / top5-tests — guards anti-redéclaration)
@@ -31,6 +33,12 @@ if ( ! function_exists( 'mt5_num' ) ) {
     $v = str_replace( array( ' ', "\xc2\xa0", '€' ), '', (string) $v );
     $v = str_replace( ',', '.', $v );
     return is_numeric( $v ) ? (float) $v : 0.0;
+  }
+}
+if ( ! function_exists( 'mt5_reviews_label' ) ) {
+  function mt5_reviews_label( $c ) {
+    $n = (int) preg_replace( '/[^0-9]/', '', (string) $c );
+    return $n > 0 ? number_format( $n, 0, ',', ' ' ) . ' avis' : '';
   }
 }
 if ( ! function_exists( 'mt5_merchant_name' ) ) {
@@ -148,6 +156,10 @@ foreach ( $ids as $pid ) {
     ? trim( (string) get_default_product_label( $pid, $raw_score ) )
     : '';
 
+  /* Avis clients (note /5 + nombre) */
+  $cust_rating = trim( (string) get_field( $TC_CUST_RATING_FIELD, $pid ) );
+  $cust_count  = trim( (string) get_field( $TC_CUST_COUNT_FIELD, $pid ) );
+
   /* Résumé + points +/- */
   $summary = trim( (string) get_field( 'mltv5_resume_produit', $pid ) );
   $pros    = mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' );
@@ -193,6 +205,8 @@ foreach ( $ids as $pid ) {
     'score_tag'   => $score_tag,
     'score_pct'   => max( 0, min( 100, (int) round( $score10 * 10 ) ) ),
     'score_lvl'   => mtc_score_level( $score10 ),
+    'cust_rating' => $cust_rating,
+    'cust_count'  => $cust_count,
     'label'       => $label,
     'summary'     => $summary,
     'pros'        => $pros,
@@ -235,14 +249,19 @@ $show_price = ( $n_price >= 2 && $price_rank !== null );
 $alt_rank   = $show_price ? null : 2;
 
 /* Lignes éditoriales : n'afficher une rangée que si au moins un produit a la donnée */
-$any_verdict = false; $any_summary = false; $any_pros = false; $any_cons = false; $any_offer = false;
+$any_verdict = false; $any_summary = false; $any_pros = false; $any_cons = false; $any_offer = false; $any_cust = false;
 foreach ( $products as $it ) {
   if ( $it['label'] !== '' )     { $any_verdict = true; }
   if ( $it['summary'] !== '' )   { $any_summary = true; }
   if ( ! empty( $it['pros'] ) )  { $any_pros = true; }
   if ( ! empty( $it['cons'] ) )  { $any_cons = true; }
   if ( $it['primary_url'] !== '' ) { $any_offer = true; }
+  if ( $it['cust_rating'] !== '' && mt5_num( $it['cust_rating'] ) > 0 ) { $any_cust = true; }
 }
+
+/* Libellé de la ligne d'achat : « Où l'acheter » si au moins un prix ACF,
+   sinon « Meilleures offres » (classements sans prix : séries, etc.). */
+$buy_label = ( $n_price >= 1 ) ? "O&ugrave; l'acheter" : 'Meilleures offres';
 
 /* ---------------------------------------------------------------------
    Titre + sous-titre (adaptés au type de produit)
@@ -267,7 +286,7 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
     <table class="mt-cmp">
       <tbody>
 
-        <!-- Rang (+ banderoles) + marque (1re colonne fusionnée sur 2 lignes) -->
+        <!-- Rang (médaille + banderoles) + pastille engagement (1re colonne, rowspan 2) -->
         <tr>
           <td class="row-label brand-cell" rowspan="2">
             <div class="mt-cmp-brand">
@@ -277,16 +296,18 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
           </td>
           <?php foreach ( $products as $it ) :
             $banner = '';
-            if ( $it['pos'] === 1 )                         { $banner = 'best'; }
-            elseif ( $show_price && $it['pos'] === $price_rank ) { $banner = 'price'; }
+            if ( $it['pos'] === 1 )                              { $banner = 'best'; }
+            elseif ( $show_price && $it['pos'] === $price_rank )  { $banner = 'price'; }
             elseif ( $alt_rank !== null && $it['pos'] === $alt_rank ) { $banner = 'alt'; }
           ?>
           <td class="pos-cell">
-            <?php if ( $banner === 'best' ) : ?><span class="col-banner b-best">&#9733; Meilleur choix</span>
-            <?php elseif ( $banner === 'price' ) : ?><span class="col-banner b-price">&euro; Meilleur prix</span>
-            <?php elseif ( $banner === 'alt' ) : ?><span class="col-banner b-alt">&#9829; Meilleure alternative</span>
-            <?php endif; ?>
-            <span class="rank r<?php echo (int) $it['pos']; ?>"><?php echo (int) $it['pos']; ?></span>
+            <div class="banner-slot">
+              <?php if ( $banner === 'best' ) : ?><span class="col-banner b-best">&#9733; Meilleur choix</span>
+              <?php elseif ( $banner === 'price' ) : ?><span class="col-banner b-price">&euro; Meilleur prix</span>
+              <?php elseif ( $banner === 'alt' ) : ?><span class="col-banner b-alt">&#9829; Meilleure alternative</span>
+              <?php endif; ?>
+            </div>
+            <span class="rank r<?php echo (int) $it['pos']; ?>"><span class="rank-n"><?php echo (int) $it['pos']; ?></span></span>
           </td>
           <?php endforeach; ?>
         </tr>
@@ -331,6 +352,21 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
           <?php endforeach; ?>
         </tr>
 
+        <?php if ( $any_cust ) : ?>
+        <!-- Avis clients (note /5 + nombre) -->
+        <tr>
+          <td class="row-label">Avis clients</td>
+          <?php foreach ( $products as $it ) : ?>
+          <td class="cust-cell">
+            <?php if ( $it['cust_rating'] !== '' && mt5_num( $it['cust_rating'] ) > 0 ) : ?>
+              <div class="cust-line"><span class="cust-star" aria-hidden="true">&#9733;</span> <span class="cust-val"><?php echo esc_html( number_format( mt5_num( $it['cust_rating'] ), 1, ',', '' ) ); ?><small>/5</small></span></div>
+              <?php $cl = mt5_reviews_label( $it['cust_count'] ); if ( $cl !== '' ) : ?><div class="cust-count"><?php echo esc_html( $cl ); ?></div><?php endif; ?>
+            <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
+          </td>
+          <?php endforeach; ?>
+        </tr>
+        <?php endif; ?>
+
         <?php if ( $any_summary ) : ?>
         <!-- Résumé -->
         <tr>
@@ -342,15 +378,13 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
         <?php endif; ?>
 
         <?php if ( $any_pros ) : ?>
-        <!-- Points positifs (check vert, texte vert sombre) -->
+        <!-- Points positifs (vert sombre, puces de séparation) -->
         <tr>
           <td class="row-label">Positif</td>
           <?php foreach ( $products as $it ) : ?>
-          <td class="pc-cell">
+          <td class="pp pos">
             <?php if ( ! empty( $it['pros'] ) ) : ?>
-            <ul class="pc-list pc-pos">
-              <?php foreach ( $it['pros'] as $pt ) : ?><li><i class="fas fa-check" aria-hidden="true"></i> <?php echo esc_html( $pt ); ?></li><?php endforeach; ?>
-            </ul>
+              <?php echo implode( ' <span class="dot">&bull;</span> ', array_map( 'esc_html', $it['pros'] ) ); ?>
             <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
           </td>
           <?php endforeach; ?>
@@ -358,15 +392,13 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
         <?php endif; ?>
 
         <?php if ( $any_cons ) : ?>
-        <!-- Points négatifs (croix rouge, texte rouge sombre) -->
+        <!-- Points négatifs (rouge sombre, puces de séparation) -->
         <tr>
           <td class="row-label">N&eacute;gatif</td>
           <?php foreach ( $products as $it ) : ?>
-          <td class="pc-cell">
+          <td class="pp neg">
             <?php if ( ! empty( $it['cons'] ) ) : ?>
-            <ul class="pc-list pc-neg">
-              <?php foreach ( $it['cons'] as $pt ) : ?><li><i class="fas fa-times" aria-hidden="true"></i> <?php echo esc_html( $pt ); ?></li><?php endforeach; ?>
-            </ul>
+              <?php echo implode( ' <span class="dot">&bull;</span> ', array_map( 'esc_html', $it['cons'] ) ); ?>
             <?php else : ?><span class="mt-cmp-empty">&mdash;</span><?php endif; ?>
           </td>
           <?php endforeach; ?>
@@ -374,9 +406,9 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
         <?php endif; ?>
 
         <?php if ( $any_offer ) : ?>
-        <!-- Où l'acheter (bouton + marchands, sans prix) -->
+        <!-- Achat (bouton + marchands, sans prix) -->
         <tr>
-          <td class="row-label">O&ugrave; l'acheter</td>
+          <td class="row-label"><?php echo $buy_label; ?></td>
           <?php foreach ( $products as $it ) :
             $links = array();
             foreach ( $it['offer_urls'] as $u ) {
