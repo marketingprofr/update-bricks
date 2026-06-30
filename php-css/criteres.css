@@ -1,0 +1,124 @@
+/* =====================================================================
+   MEILLEURTEST — Guide d'achat « Critères de choix » (onglet CSS de l'élément Code)
+   Scope : .mt-guide  (cf. criteres.code.php)
+   Palette alignée hero/resume/tests/comparatif : accent -> tokens Advanced Themer.
+     #0f6b54 -> var(--at-primary-d-1) | #0a4f3e -> var(--at-primary-d-2)
+     #e5f1ec -> var(--at-primary-l-6)
+   Titres Source Serif, corps Inter (cohérent avec les autres sections).
+   ===================================================================== */
+
+.mt-guide {
+  --ink: #14181d; --ink-2: #2a3038;
+  --muted: #6b7480; --muted-2: #9aa3ad;
+  --line: #e8eaed; --line-2: #f1f3f5;
+  --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f4f5f7;
+  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --radius: 10px; --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink);
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.mt-guide * { box-sizing: border-box; }
+.mt-guide a { color: inherit; text-decoration: none; }
+
+/* === En-tête du guide : intro + image d'illustration côte à côte === */
+.mt-guide-lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 40px;
+  align-items: start;
+  margin: 0 0 6px;
+}
+.mt-guide-lead.no-img { display: block; }
+
+.mt-guide-h2 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 32px; line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 14px;
+}
+.mt-guide-intro { font-size: 16px; line-height: 1.65; color: var(--ink-2); max-width: 740px; }
+.mt-guide-intro p { margin: 0 0 14px; }
+.mt-guide-intro p:last-child { margin-bottom: 0; }
+.mt-guide-intro a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+.mt-guide-fig {
+  margin: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  aspect-ratio: 4 / 3;
+}
+.mt-guide-fig img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* === Liste des critères numérotés === */
+.mt-guide-list { margin-top: 14px; }
+
+.mt-crit {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 30px;
+  padding: 30px 0;
+  border-top: 1px solid var(--line);
+}
+.mt-crit:first-child { border-top: 0; }
+
+.mt-crit-num { line-height: 1; }
+.mt-crit-num .lbl {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 11.5px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--accent);
+}
+.mt-crit-num .big {
+  display: block; margin-top: 6px;
+  font-size: 46px; line-height: 1; font-weight: 700;
+  letter-spacing: -0.04em; color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.mt-crit-body h3 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 22px; font-weight: 600; letter-spacing: -0.015em;
+  margin: 2px 0 12px; color: var(--ink);
+}
+.mt-crit-body p,
+.mt-crit-body ul,
+.mt-crit-body ol {
+  font-size: 15px; line-height: 1.7; color: var(--ink-2);
+  margin: 0 0 12px; max-width: 760px;
+}
+.mt-crit-body ul,
+.mt-crit-body ol { padding-left: 20px; }
+.mt-crit-body li { margin-bottom: 6px; }
+.mt-crit-body li b,
+.mt-crit-body li strong,
+.mt-crit-body strong { color: var(--ink); font-weight: 600; }
+.mt-crit-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.mt-crit-body > :last-child { margin-bottom: 0; }
+
+/* Encart « À savoir » : si l'éditeur utilise un <blockquote> dans la description */
+.mt-crit-body blockquote {
+  background: var(--bg-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 16px 22px; margin: 18px 0; max-width: 760px;
+}
+.mt-crit-body blockquote p { font-size: 14px; line-height: 1.6; margin: 0; color: var(--ink-2); }
+
+/* === Responsive === */
+@media (max-width: 991px) {
+  .mt-guide-lead { grid-template-columns: 1fr; gap: 24px; }
+  .mt-guide-fig { max-width: 560px; }
+}
+@media (max-width: 767px) {
+  .mt-guide-h2 { font-size: 26px; }
+  .mt-guide-intro { font-size: 15px; }
+  .mt-guide-list { margin-top: 8px; }
+  .mt-crit { grid-template-columns: 1fr; gap: 10px; padding: 24px 0; }
+  .mt-crit-num { display: flex; align-items: baseline; gap: 8px; }
+  .mt-crit-num .big { margin-top: 0; font-size: 30px; }
+  .mt-crit-body h3 { font-size: 20px; }
+  .mt-crit-body p, .mt-crit-body ul, .mt-crit-body ol { font-size: 14.5px; }
+}
