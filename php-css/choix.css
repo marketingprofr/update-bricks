@@ -15,54 +15,43 @@
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink);
   width: 100%;
+  margin-top: 32px;            /* ne pas coller à la partie précédente */
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
 }
 .mt-choix * { box-sizing: border-box; }
 .mt-choix a { color: inherit; text-decoration: none; }
 
-.mt-choix-h2 {
-  font-family: "Source Serif 4", Georgia, serif;
-  font-size: 32px; line-height: 1.15; font-weight: 600;
-  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 22px;
-}
+/* === Un duel (sobre : pas de carte) === */
+.mt-choix-list { display: grid; gap: 44px; }
 
-/* === Un duel === */
-.mt-choix-list { display: grid; gap: 26px; }
-.mt-duel {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 26px 28px;
-  background: #fff;
-}
+/* Titre du duel = H2 « X ou X ? » */
 .mt-duel-title {
   font-family: "Source Serif 4", Georgia, serif;
-  font-size: 23px; font-weight: 600; letter-spacing: -0.015em;
-  color: var(--ink); margin: 0 0 10px;
+  font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--ink); margin: 0 0 12px;
 }
-.mt-duel-intro { font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 800px; margin: 0 0 20px; }
+.mt-duel-intro { font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 800px; margin: 0 0 22px; }
 .mt-duel-intro p { margin: 0 0 12px; }
 .mt-duel-intro > :last-child { margin-bottom: 0; }
 
-/* Grille des 2 options + badge VS */
+/* Grille des 2 options + badge VS (sans bordure ni fond) */
 .mt-duel-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  align-items: stretch;
+  align-items: start;
   gap: 0;
 }
 .mt-duel-grid.single { grid-template-columns: 1fr; }
 
-.mt-duel-col {
-  background: var(--bg-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 20px 22px;
-}
+.mt-duel-col { padding: 0 26px; }
+.mt-duel-grid > .mt-duel-col:first-child { padding-left: 0; }
+.mt-duel-grid > .mt-duel-col:last-child { padding-right: 0; }
+
 .mt-duel-ch {
   font-family: "Inter", sans-serif;
   font-size: 17px; font-weight: 700; letter-spacing: -0.01em;
-  color: var(--accent-dark); margin: 0 0 10px;
+  color: var(--accent-dark); margin: 0 0 12px;
   padding-bottom: 10px; border-bottom: 1px solid var(--line);
 }
 .mt-duel-d { font-size: 14.5px; line-height: 1.65; color: var(--ink-2); }
@@ -73,7 +62,7 @@
 .mt-duel-d > :last-child { margin-bottom: 0; }
 
 /* Badge VS au centre */
-.mt-duel-vs { display: grid; place-items: center; padding: 0 18px; }
+.mt-duel-vs { display: grid; place-items: center; padding: 0 20px; }
 .mt-duel-vs span {
   width: 46px; height: 46px; border-radius: 50%;
   display: grid; place-items: center;
@@ -82,28 +71,28 @@
   box-shadow: 0 0 0 5px var(--accent-soft);
 }
 
-/* Verdict */
+/* Verdict — sobre : libellé + texte, séparé par un filet (pas d'encart) */
 .mt-duel-verdict {
-  margin-top: 20px;
-  background: var(--accent-soft);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  padding: 16px 20px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 .mt-duel-verdict-lbl {
-  font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--accent-dark); margin: 0 0 6px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 6px;
 }
-.mt-duel-verdict-body { font-size: 14.5px; line-height: 1.65; color: var(--ink-2); }
+.mt-duel-verdict-body {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 16px; line-height: 1.6; color: var(--ink-2); font-style: italic;
+}
 .mt-duel-verdict-body p { margin: 0 0 10px; }
 .mt-duel-verdict-body > :last-child { margin-bottom: 0; }
 
 /* === Responsive === */
 @media (max-width: 767px) {
-  .mt-choix-h2 { font-size: 26px; }
-  .mt-duel { padding: 20px 18px; }
-  .mt-duel-title { font-size: 21px; }
+  .mt-duel-title { font-size: 23px; }
   /* Empilement vertical : le badge VS devient un séparateur horizontal */
   .mt-duel-grid { grid-template-columns: 1fr; }
-  .mt-duel-vs { padding: 4px 0; }
+  .mt-duel-col, .mt-duel-grid > .mt-duel-col:first-child, .mt-duel-grid > .mt-duel-col:last-child { padding: 0; }
+  .mt-duel-vs { padding: 8px 0; }
 }

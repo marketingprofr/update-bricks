@@ -25,7 +25,7 @@
 .mt-types-h2 {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 32px; line-height: 1.15; font-weight: 600;
-  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 12px;
+  letter-spacing: -0.025em; color: var(--ink); margin: 32px 0 12px;
 }
 .mt-types-intro { font-size: 16px; line-height: 1.65; color: var(--ink-2); max-width: 740px; margin: 0 0 26px; }
 .mt-types-intro p { margin: 0 0 12px; }
@@ -59,17 +59,26 @@
 }
 .mt-type-h {
   font-family: "Source Serif 4", Georgia, serif;
-  font-size: 23px; font-weight: 600; letter-spacing: -0.015em;
-  color: var(--ink); margin: 0 0 12px;
+  font-size: 26px; font-weight: 600; letter-spacing: -0.015em;
+  color: var(--ink); margin: 0 0 14px; line-height: 1.2;
 }
 .mt-type-desc { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
 .mt-type-desc p { margin: 0 0 12px; }
 .mt-type-desc ul, .mt-type-desc ol { margin: 0 0 12px; padding-left: 20px; }
+/* Titres internes (WYSIWYG) : même taille que le titre du type + marges aérées */
+.mt-type-desc h2, .mt-type-desc h3, .mt-type-desc h4 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 26px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2;
+  color: var(--ink); margin: 32px 0 14px;
+}
+.mt-type-desc > :first-child { margin-top: 0; }
 .mt-type-desc > :last-child { margin-bottom: 0; }
 
 /* Points forts / faibles */
-.mt-type-pc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+.mt-type-pc { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 22px; }
 .mt-pc { border-radius: var(--radius); padding: 14px 16px; border: 1px solid; }
+/* Un seul encart (pas de points faibles, p.ex.) -> pleine largeur */
+.mt-pc:only-child { grid-column: 1 / -1; }
 .mt-pc-pro { background: var(--pos-soft); border-color: var(--pos-bd); }
 .mt-pc-con { background: var(--neg-soft); border-color: var(--neg-bd); }
 .mt-pc-lbl {
@@ -89,19 +98,17 @@
 .mt-pc-con .mt-pc-body ul li { padding-left: 18px; }
 .mt-pc-con .mt-pc-body ul li::before { content: "\2715"; position: absolute; left: 0; color: var(--neg-ink); font-weight: 700; }
 
-/* Pour qui ? */
+/* Pour qui ? — sobre : juste un libellé + texte, séparé par un filet (pas d'encart) */
 .mt-type-who {
-  margin-top: 16px;
-  background: var(--accent-soft);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  padding: 14px 18px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 .mt-type-who-lbl {
-  font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--accent-dark); margin: 0 0 4px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 5px;
 }
-.mt-type-who-body { font-size: 14px; line-height: 1.6; color: var(--ink-2); }
+.mt-type-who-body { font-size: 14.5px; line-height: 1.6; color: var(--ink-2); }
 .mt-type-who-body p { margin: 0 0 8px; }
 .mt-type-who-body > :last-child { margin-bottom: 0; }
 
@@ -110,6 +117,7 @@
   .mt-types-h2 { font-size: 26px; }
   .mt-types-intro { font-size: 15px; }
   .mt-type-main { padding: 18px 18px; }
-  .mt-type-h { font-size: 21px; }
+  .mt-type-h,
+  .mt-type-desc h2, .mt-type-desc h3, .mt-type-desc h4 { font-size: 22px; }
   .mt-type-pc { grid-template-columns: 1fr; }
 }
