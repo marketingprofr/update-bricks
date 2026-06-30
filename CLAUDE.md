@@ -290,8 +290,12 @@ Inter corps, accent `--at-primary-*`).
 - **Images en `mix-blend-mode: multiply`** sur fond gris porté par `.product-thumb`
   (même règle que partout), avec **`padding:12px`** pour ne pas coller au bord gris.
 - **Layout colonnes** : `table-layout:fixed` → 1re colonne (labels) fixe **160px**
-  (font 11px), toutes les **colonnes produits à largeur égale** + vignettes de
-  taille identique. Tableau en `overflow-x:auto` (scroll mobile).
+  (font 11px), toutes les **colonnes produits à largeur égale et ≥ 190px**. La
+  largeur mini de la table (`160 + nb×190`) est posée **en inline** sur `<table>`
+  (le `nb` est dynamique) → les colonnes ne descendent jamais sous 190px, sinon
+  scroll. **1re colonne `position:sticky; left:0`** (sauf `.section-head`) : les
+  libellés restent visibles pendant le scroll horizontal mobile. Indice
+  « glisser pour comparer » + scrollbar visibles ≤767px.
 - **Banderoles « rubans »** : collées **en haut de la `.pos-cell`** (pleine largeur,
   petite flèche `::after` vers le bas), dans une `.banner-slot` de **hauteur fixe
   rendue dans TOUTES les colonnes** (slot vide si pas de ruban) → les médailles
