@@ -14,9 +14,25 @@
   --accent: var(--at-primary); --accent-soft: var(--at-primary-l-6);
   --gold: #b48a3a; --warn: #b54848;
   --radius: 10px; --radius-lg: 16px;
-  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+}
 
-  /* Colonne sticky — calée sur le scroll réel de la page Bricks */
+/* Force Inter sur tout le sommaire (le h4 héritait de la police du thème) */
+.mt-toc,
+.mt-toc * {
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif !important;
+}
+
+/* Sticky : appliqué au wrapper Bricks (%root%) ET à .mt-toc.
+   Le sticky doit porter sur l'enfant direct de la grille 2 colonnes ; selon
+   ta structure, c'est l'élément Code (%root%) ou sa colonne. Si ça ne
+   s'accroche pas, pose position:sticky;top:24px sur la COLONNE gauche en natif
+   et vérifie qu'aucun parent n'a overflow:hidden/auto. */
+%root% {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+}
+.mt-toc {
   position: sticky;
   top: 24px;
   align-self: start;
@@ -88,5 +104,6 @@
 
 /* Responsive : en colonne empilée, le sticky n'a plus de sens */
 @media (max-width: 991px) {
+  %root%,
   .mt-toc { position: static; top: auto; }
 }

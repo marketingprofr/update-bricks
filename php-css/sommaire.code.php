@@ -58,12 +58,36 @@ foreach ( $sections as $s ) {
   if ( ! in_array( $s['anchor'], $product_anchors, true ) ) { $extra++; }
 }
 $reading_total = $T5_READ_BASE + $T5_READ_PER * $extra;
+
+/* ---------------------------------------------------------------------
+   Jalons de minutes cumulées (début de section) pour la jauge de lecture.
+   - Notre sélection (1re section) = 0.
+   - La partie produit s'étale de 0 à BASE (10) : on ne pose donc PAS de
+     jalon sur Tests complets / Tableau comparatif (la rampe 0→10 les couvre
+     au prorata de leur hauteur).
+   - 1re section supplémentaire = BASE (10), puis +PER (2) à chacune.
+   Émis en data-min ; la fin (= total) est gérée en JS via le bas du contenu.
+   --------------------------------------------------------------------- */
+$cum_opt = $T5_READ_BASE;
+$first   = true;
+foreach ( $sections as $k => $s ) {
+  $is_product = in_array( $s['anchor'], $product_anchors, true );
+  if ( $first ) {
+    $sections[ $k ]['min'] = 0;
+  } elseif ( ! $is_product ) {
+    $sections[ $k ]['min'] = $cum_opt;
+    $cum_opt += $T5_READ_PER;
+  } else {
+    $sections[ $k ]['min'] = null; // produit intérieur : pas de jalon
+  }
+  $first = false;
+}
 ?>
 <aside class="mt-toc" data-mt-toc>
   <h4>Sur cette page</h4>
   <ul>
 <?php foreach ( $sections as $s ) : ?>
-    <li><a href="#<?php echo esc_attr( $s['anchor'] ); ?>"><?php echo $s['label']; ?></a></li>
+    <li><a href="#<?php echo esc_attr( $s['anchor'] ); ?>"<?php if ( isset( $s['min'] ) && $s['min'] !== null ) { echo ' data-min="' . esc_attr( $s['min'] ) . '"'; } ?>><?php echo $s['label']; ?></a></li>
 <?php endforeach; ?>
   </ul>
   <div class="mt-toc-progress">
@@ -119,25 +143,63 @@ $reading_total = $T5_READ_BASE + $T5_READ_PER * $extra;
       targets.forEach(function (t) { if (t.el) io.observe(t.el); });
     }
 
-    /* Barre de progression + minutes courantes (scroll réel du contenu) */
+    /* Barre de progression + minutes courantes.
+       Modèle pondéré par section : chaque jalon (data-min) = minutes cumulées
+       au DÉBUT de sa section ; on interpole linéairement entre deux jalons
+       selon la position de scroll. Ainsi « 10 min » tombe pile au début de la
+       1re section supplémentaire, quelle que soit la hauteur réelle en pixels. */
     var content = [].slice.call(document.querySelectorAll(CONTENT_SELECTOR));
     var bar     = root.querySelector('.mt-toc-progress-bar div');
     var elCur   = root.querySelector('.mt-toc-cur');
     var elTotal = root.querySelector('.mt-toc-total');
     var totalMin = parseInt(elTotal && elTotal.textContent, 10) || 0;
-    if (!content.length) return;
+
+    /* Jalons issus de data-min (résolus en position absolue à chaque update) */
+    var milestones = targets
+      .filter(function (t) { return t.el && t.a.hasAttribute('data-min'); })
+      .map(function (t) { return { el: t.el, min: parseFloat(t.a.getAttribute('data-min')) || 0 }; });
+
+    function absTop(el) { return window.scrollY + el.getBoundingClientRect().top; }
+
+    function buildBps() {
+      var bps = milestones.map(function (m) { return { y: absTop(m.el), min: m.min }; });
+      if (content.length) {
+        var lastRect = content[content.length - 1].getBoundingClientRect();
+        bps.push({ y: window.scrollY + lastRect.bottom - window.innerHeight, min: totalMin });
+      }
+      bps.sort(function (a, b) { return a.y - b.y; });
+      return bps;
+    }
+
+    function minutesAt(y, bps) {
+      if (y <= bps[0].y) { return bps[0].min; }
+      for (var i = 1; i < bps.length; i++) {
+        if (y <= bps[i].y) {
+          var seg = bps[i].y - bps[i - 1].y;
+          if (seg <= 0) { return bps[i].min; }
+          var f = (y - bps[i - 1].y) / seg;
+          return bps[i - 1].min + f * (bps[i].min - bps[i - 1].min);
+        }
+      }
+      return bps[bps.length - 1].min;
+    }
 
     var ticking = false;
     function update() {
       ticking = false;
-      var first  = content[0].getBoundingClientRect();
-      var last   = content[content.length - 1].getBoundingClientRect();
-      var startY = window.scrollY + first.top;
-      var endY   = window.scrollY + last.bottom;
-      var dist   = Math.max(1, (endY - window.innerHeight) - startY);
-      var p      = Math.min(1, Math.max(0, (window.scrollY - startY) / dist));
+      var bps = buildBps();
+      var cur, p;
+      if (bps.length >= 2) {
+        cur = minutesAt(window.scrollY, bps);          // jalons pondérés
+        p   = totalMin ? cur / totalMin : 0;
+      } else {                                          // repli : scroll plein page
+        var docDist = document.documentElement.scrollHeight - window.innerHeight;
+        p   = docDist > 0 ? window.scrollY / docDist : 0;
+        cur = p * totalMin;
+      }
+      p = Math.min(1, Math.max(0, p));
       if (bar)   bar.style.width = (p * 100).toFixed(1) + '%';
-      if (elCur) elCur.textContent = Math.min(totalMin, Math.max(0, Math.round(p * totalMin)));
+      if (elCur) elCur.textContent = Math.min(totalMin, Math.max(0, Math.round(cur)));
     }
     function onScroll() {
       if (ticking) return;
