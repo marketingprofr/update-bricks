@@ -417,3 +417,26 @@ Livrables : **`php-css/raisons.code.php`** + **`php-css/raisons.css`**. UN seul
   → ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-raisons` ».
 - Titre = champ `mltv5_titre_pourquoi_acheter` (repli « Pourquoi acheter ? »).
   Helpers partagés `mt_guide_rich`/`mt_guide_img_url`/`mt_guide_img_alt` (`function_exists`).
+
+## État de la « FAQ » (cf. `template-faq.html`)
+
+Livrables : **`php-css/faq.code.php`** + **`php-css/faq.css`**. UN seul élément
+Code Bricks. Scope `.mt-faq`.
+
+- **Source** : REPEATER `mltv5_faq_comparatif` → `mltv5_faq_comparatif_question`
+  + `mltv5_faq_comparatif_reponse` (WYSIWYG). Lecture robuste page courante →
+  repli `mltv5_cached_id_faq` (+ diag admin).
+- **Standards web** :
+  - **Accordéon natif `<details>/<summary>`** (1re question ouverte, icône +/−
+    qui devient sombre à l'ouverture cf. maquette) → accessible, **sans JS**.
+  - **Données structurées schema.org `FAQPage` en JSON-LD** (format recommandé
+    Google). Réponses assainies par `wp_kses` (balises autorisées Google :
+    h1-h6, br, ol/ul/li, a[href], p, div, b/strong, i/em). Encodage durci
+    `JSON_HEX_TAG|JSON_HEX_AMP` (+`UNESCAPED_UNICODE`) → `<`/`>`/`&` échappés,
+    `</script>` neutralisé, **pas de breakout** possible dans le `<script>`.
+  - Une `Question` n'entre dans le schema que si elle a une réponse non vide
+    (`acceptedAnswer` obligatoire). Question sans réponse = ligne simple visible,
+    exclue du JSON-LD.
+- **Ancre** : `<section class="mt-faq contenu-principal" id="partie-faq">` →
+  ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-faq` ».
+- Intro statique (pas de champ ACF) reprenant l'appel communauté de la maquette.
