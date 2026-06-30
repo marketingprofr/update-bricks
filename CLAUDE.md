@@ -441,7 +441,7 @@ Code Bricks. Scope `.mt-faq`.
   ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-faq` ».
 - Intro statique : « Voici les questions les plus fréquemment posées par nos
   lecteurs et la communauté. »
-- **3 Q/R AUTOMATIQUES en tête** (avant les manuelles), pensées **type-agnostiques**
+- **Q/R AUTOMATIQUES en tête** (avant les manuelles), pensées **type-agnostiques**
   (smartphones, chaussures, huile d'olive, couches…) — ne s'affichent que si le
   guide a des produits (`top_avis_ids` → fallback `mltv5_best_products`, même
   sourcing + passe `setup_postdata` que resume/comparatif) :
@@ -450,6 +450,10 @@ Code Bricks. Scope `.mt-faq`.
     « les meilleurs »/« les meilleures » → Quel est/Quelle est/Quels sont/Quelles
     sont, + nom singulier/pluriel assorti). Réponse = #1 du classement (note /10)
     + podium #2/#3. Repli si `lalalesmeilleur` vide.
+  - **Q marques** (si ≥2 marques distinctes dans le top) : « Quelles sont les
+    meilleures marques [de/d'] {type} ? » (élision gérée ; « marque » toujours
+    féminin → accord safe). Réponse = marques distinctes du classement (ordre de
+    rang, max 4) ; phrasé neutre, pas d'accord genré sur le type.
   - **Q2** = budget si **≥2 prix** (`mltv5_prix_indicatif` : fourchette + option la
     plus accessible ; article un/une/des dérivé du genre/nombre) → sinon avis
     clients si **≥2 notes** (`mltv5_score_avis_clients`) → sinon « confiance /
