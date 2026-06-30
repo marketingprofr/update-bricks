@@ -201,13 +201,21 @@
 .mt-cmp-more-btn .chevron { transition: transform .3s ease; }
 
 /* === Responsive ===
-   Les colonnes gardent leur largeur (≥190px) : on NE rétrécit pas la table,
-   on scrolle. On allège juste les marges et on affiche l'indice de glissement. */
+   Les colonnes produits gardent leur largeur (≥190px) : on NE rétrécit pas la
+   table, on scrolle. Sous 992px on resserre la 1re colonne (max 120px) pour que
+   le 1er produit soit entièrement visible, et on affiche l'indice de glissement. */
+@media (max-width: 991px) {
+  /* 1re colonne réduite -> la colonne du 1er produit tient à l'écran */
+  .mt-cmp .row-label { width: 120px; padding: 11px 10px; }
+  .mt-cmp-hint {
+    display: inline-block; margin: 0 0 12px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); padding: 6px 13px; border-radius: 999px;
+  }
+}
 @media (max-width: 767px) {
   .mt-cmp-h2 { font-size: 26px; }
   .mt-cmp-sub { font-size: 15px; }
-  .mt-cmp-hint { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin: 0 0 10px; }
   .mt-cmp th, .mt-cmp td { padding: 11px; }
-  .mt-cmp .row-label { padding: 11px 10px; }
   .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 14px 11px; }
 }
