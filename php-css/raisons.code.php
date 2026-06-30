@@ -12,11 +12,22 @@
    on rend le contenu riche stylé, avec l'image en illustration flottée.
 
    Le contenu peut vivre sur la page courante OU sur le post lié dont l'ID est
-   mis en cache dans `mltv5_cached_id_raisons` -> lecture robuste avec repli.
+   mis en cache dans `mltv5_cache_id_raisons` -> lecture robuste avec repli.
    Section de texte -> `.contenu-principal` (jauge de lecture) + ancre
    `partie-raisons` (lien du sommaire / scrollspy).
    ===================================================================== */
 
+if ( ! function_exists( 'mt_guide_cache_id' ) ) {
+  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
+     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
+  function mt_guide_cache_id( $page_id, $suffix ) {
+    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
+      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+    }
+    return 0;
+  }
+}
 if ( ! function_exists( 'mt_guide_rich' ) ) {
   function mt_guide_rich( $html ) {
     $html = (string) $html;
@@ -65,7 +76,7 @@ $has = function ( $g ) {
 $src_id = $page_id;
 $grp    = mt_raisons_read( $src_id );
 if ( ! $has( $grp ) ) {
-  $cached = (int) get_field( 'mltv5_cached_id_raisons', $page_id );
+  $cached = mt_guide_cache_id( $page_id, 'raisons' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_raisons_read( $cached );
     if ( $has( $alt ) ) { $src_id = $cached; $grp = $alt; }
@@ -85,7 +96,7 @@ if ( $reasons === '' && $img_url === '' ) {
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-raisons — diagnostic (admin only)</strong> : aucun contenu trouvé.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'mltv5_cached_id_raisons = ' . esc_html( (string) get_field( 'mltv5_cached_id_raisons', $page_id ) ) . '<br>'
+       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'raisons' ) . '<br>'
        . 'groupe mltv5_partie_pourquoi_acheter = ' . esc_html( gettype( $g ) )
        . ( is_array( $g ) ? ' [' . esc_html( implode( ', ', array_keys( $g ) ) ) . ']' : '' )
        . '</div>';
