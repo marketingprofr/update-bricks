@@ -66,6 +66,7 @@ if ( ! function_exists( 'mt_guide_rich' ) ) {
 $page_id   = get_the_ID();
 $page_tv   = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
 $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
+$type_sing = isset( $page_tv['type_de_produit_au_singulier'] ) ? trim( (string) $page_tv['type_de_produit_au_singulier'] ) : '';
 
 if ( ! function_exists( 'mt_guide_read' ) ) {
   /* Lit groupe + repeater sur un post donné -> tableau normalisé. */
@@ -132,6 +133,15 @@ if ( empty( $crits ) && $intro === '' && $img_url === '' ) {
 $title       = 'Guide d&rsquo;achat' . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : '' );
 $img_alt     = mt_guide_img_alt( $img_raw, 'Guide d\'achat ' . $type_plur );
 $has_img     = ( $img_url !== '' );
+
+/* Titre des critères : « votre {singulier} » (neutre en genre), repli « vos {pluriel} ». */
+if ( $type_sing !== '' ) {
+  $crit_title = 'Les crit&egrave;res pour bien choisir votre ' . esc_html( $type_sing );
+} elseif ( $type_plur !== '' ) {
+  $crit_title = 'Les crit&egrave;res pour bien choisir vos ' . esc_html( $type_plur );
+} else {
+  $crit_title = 'Les crit&egrave;res pour bien choisir';
+}
 ?>
 <section class="mt-guide contenu-principal" id="partie-guide-achat" aria-labelledby="mt-guide-title">
   <div class="mt-guide-lead<?php echo $has_img ? '' : ' no-img'; ?>">
@@ -149,6 +159,7 @@ $has_img     = ( $img_url !== '' );
   </div>
 
   <?php if ( ! empty( $crits ) ) : ?>
+  <h2 class="mt-guide-h2 mt-guide-h2--crit"><?php echo $crit_title; ?></h2>
   <div class="mt-guide-list">
     <?php $n = 0; foreach ( $crits as $c ) : $n++; ?>
     <article class="mt-crit">
