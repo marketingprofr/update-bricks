@@ -134,11 +134,16 @@ $title       = 'Guide d&rsquo;achat' . ( $type_plur !== '' ? ' ' . esc_html( $ty
 $img_alt     = mt_guide_img_alt( $img_raw, 'Guide d\'achat ' . $type_plur );
 $has_img     = ( $img_url !== '' );
 
-/* Titre des critères : « votre {singulier} » (neutre en genre), repli « vos {pluriel} ». */
-if ( $type_sing !== '' ) {
-  $crit_title = 'Les crit&egrave;res pour bien choisir votre ' . esc_html( $type_sing );
-} elseif ( $type_plur !== '' ) {
-  $crit_title = 'Les crit&egrave;res pour bien choisir vos ' . esc_html( $type_plur );
+/* Titre des critères : « votre/vos {type} ».
+   `lalalesmeilleur` donne l'article+accord du type (« le meilleur » / « la
+   meilleure » / « les meilleurs » / « les meilleures »). « les … » = le type
+   est grammaticalement pluriel (croquettes, chaussures…) -> « vos », sinon
+   « votre ». Repli si la variable manque : déduit du couple singulier/pluriel. */
+$art       = isset( $page_tv['lalalesmeilleur'] ) ? strtolower( trim( wp_strip_all_tags( (string) $page_tv['lalalesmeilleur'] ) ) ) : '';
+$noun      = $type_sing !== '' ? $type_sing : $type_plur;
+$is_plural = ( $art !== '' ) ? ( strpos( $art, 'les ' ) === 0 ) : ( $type_sing === '' && $type_plur !== '' );
+if ( $noun !== '' ) {
+  $crit_title = 'Les crit&egrave;res pour bien choisir ' . ( $is_plural ? 'vos' : 'votre' ) . ' ' . esc_html( $noun );
 } else {
   $crit_title = 'Les crit&egrave;res pour bien choisir';
 }
