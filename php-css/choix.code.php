@@ -12,7 +12,7 @@
        . mltv5_titre_choix_2                (titre option 2)
        . mltv5_description_choix_2          (description option 2 — WYSIWYG)
        . mltv5_verdict_choix_1_ou_choix_2   (verdict — WYSIWYG)
-   Lecture robuste : page courante → repli `mltv5_cached_id_types` (le repeater
+   Lecture robuste : page courante → repli `mltv5_cached_id_choix` (le repeater
    des duels vit sur le post `type-de-produit`, comme les types ; `..._vs` = les
    VERSUS de produits, hors périmètre). Section -> `.contenu-principal`.
    ===================================================================== */
@@ -59,7 +59,7 @@ $page_id = get_the_ID();
 $src_id = $page_id;
 $rows   = mt_choix_read( $src_id );
 if ( empty( $rows ) ) {
-  $cached = mt_guide_cache_id( $page_id, 'types' );
+  $cached = mt_guide_cache_id( $page_id, 'choix' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_choix_read( $cached );
     if ( ! empty( $alt ) ) { $src_id = $cached; $rows = $alt; }
@@ -91,14 +91,14 @@ if ( empty( $duels ) ) {
       }
     }
     global $wpdb;
-    $db_raw = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s LIMIT 1", $page_id, 'mltv5_cached_id_types' ) );
+    $db_raw = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s LIMIT 1", $page_id, 'mltv5_cached_id_choix' ) );
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-choix — diagnostic (admin only)</strong> : aucun duel trouv&eacute;.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
        . 'meta(cache|type) : ' . esc_html( $probe ? implode( '  |  ', $probe ) : '(aucune)' ) . '<br>'
-       . 'SQL direct mltv5_cached_id_types = ' . ( $db_raw === null ? '(absent en base)' : esc_html( (string) $db_raw ) ) . '<br>'
-       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'types' ) . ' (brut mltv5_cached_id_types : ' . gettype( get_field( 'mltv5_cached_id_types', $page_id ) ) . ')<br>'
+       . 'SQL direct mltv5_cached_id_choix = ' . ( $db_raw === null ? '(absent en base)' : esc_html( (string) $db_raw ) ) . '<br>'
+       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'choix' ) . ' (brut mltv5_cached_id_choix : ' . gettype( get_field( 'mltv5_cached_id_choix', $page_id ) ) . ')<br>'
        . 'repeater mltv5_choix_comparatif = ' . esc_html( gettype( $rr ) )
        . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
        . '</div>';
