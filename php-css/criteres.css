@@ -120,9 +120,9 @@
   .mt-guide-h2--crit { font-size: 22px; margin-top: 34px; }
   .mt-guide-intro { font-size: 15px; }
   .mt-guide-list { margin-top: 8px; }
-  .mt-crit { grid-template-columns: 1fr; gap: 10px; padding: 24px 0; }
-  .mt-crit-num { display: flex; align-items: baseline; gap: 8px; }
-  .mt-crit-num .big { margin-top: 0; font-size: 30px; }
+  /* 1 colonne : « Critère » au-dessus de « XX », le tout au-dessus du contenu. */
+  .mt-crit { grid-template-columns: 1fr; gap: 4px; padding: 24px 0; }
+  .mt-crit-num .big { font-size: 34px; margin-top: 2px; }
   .mt-crit-body h3 { font-size: 20px; }
   .mt-crit-body p, .mt-crit-body ul, .mt-crit-body ol { font-size: 14.5px; }
 }
