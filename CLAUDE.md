@@ -352,3 +352,29 @@ la palette/typo des autres sections (Source Serif titres, Inter corps, accent
   encart accent au cas où l'éditeur en pose un.
 - Helpers `mt_guide_img_url` / `mt_guide_img_alt` / `mt_guide_rich` (gèrent image
   ACF array|ID|URL), tous `function_exists`.
+
+## État de « Quelle marque choisir ? » (cf. `template-marques.html`)
+
+Livrables : **`php-css/marques.code.php`** (onglet Code = markup PHP + boucle +
+JS onglets) + **`php-css/marques.css`** (onglet CSS). UN seul élément Code Bricks.
+Scope `.mt-marques`. Reprend l'interaction de la maquette (grille de marques
+cliquables → panneau détail), palette/typo des autres sections (Source Serif
+titres, Inter corps, accent `--at-primary-*`).
+
+- **Source** : REPEATER `mltv5_marques_comparatif` (1 ligne = 1 marque) →
+  `mltv5_nom_de_la_marque` + `mltv5_description_de_la_marque` (WYSIWYG). **Pas**
+  d'intro ni de méta « pays · segment » dans les données → ces éléments de la
+  maquette sont **abandonnés** (carte = nom seul).
+- **Lecture robuste** (comme critères) : page courante en priorité, **repli sur
+  `mltv5_cached_id_marques`** (le contenu vit souvent sur le post lié). Diagnostic
+  admin-only si rien trouvé.
+- **Ancre** : `<section class="mt-marques contenu-principal" id="partie-marques">`
+  porte l'`id` du sommaire + `.contenu-principal` (jauge de lecture). Couvre le
+  TODO « poser l'ancre `partie-marques` ».
+- **UI onglets accessibles** : `role=tablist/tab/tabpanel`, `aria-selected`,
+  navigation clavier (flèches/Home/End), 1re marque active par défaut. Tous les
+  panneaux sont rendus dans le DOM (WYSIWYG préservé), masqués via `hidden`.
+- Helper `mt_guide_rich` partagé (guardé `function_exists`, cohabite avec le bloc
+  critères). UID unique par instance (`$GLOBALS['mt_marques_uid']`) pour les ids
+  tab/panel.
+- **Responsive** : grille 4 → 3 (≤991px) → 2 colonnes (≤767px).
