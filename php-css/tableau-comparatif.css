@@ -17,8 +17,6 @@
   --sc-p: var(--at-primary-d-1); --sc-g: #2e9e5b; --sc-y: #d4a017; --sc-o: #e08a3c; --sc-r: #cf4a3c;
   /* Points + / - */
   --pos-ink: #15663f; --pos-ic: #1f9d63; --neg-ink: #9e3030; --neg-ic: #d14343;
-  /* Banderoles */
-  --bn-price: #2f6fb0; --bn-alt: #b1742a;
   --radius: 10px; --radius-lg: 16px;
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink);
@@ -86,9 +84,9 @@
   font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
   color: #fff; line-height: 1.1; padding: 0 6px; background: var(--bn);
 }
-.mt-cmp .col-banner.b-best  { --bn: var(--accent); }
-.mt-cmp .col-banner.b-price { --bn: var(--bn-price); }
-.mt-cmp .col-banner.b-alt   { --bn: var(--bn-alt); }
+.mt-cmp .col-banner.b-best  { --bn: var(--at-primary); }
+.mt-cmp .col-banner.b-price { --bn: var(--at-primary-d-1); }
+.mt-cmp .col-banner.b-alt   { --bn: var(--at-primary-d-1); }
 /* Petite flèche vers le bas, centrée sous la banderole */
 .mt-cmp .col-banner::after {
   content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
@@ -96,17 +94,18 @@
   border-top: 6px solid var(--bn);
 }
 
-/* Médaille (double cercle) : or / argent / bronze puis gris clair */
+/* Médailles : or / argent / bronze (texte blanc) puis gris (texte gris) */
 .mt-cmp .pos-cell .rank {
   display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,.5), 0 1px 3px rgba(20,24,29,.22);
 }
-.mt-cmp .pos-cell .rank-n { font-weight: 700; font-size: 13px; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.28); }
-.mt-cmp .pos-cell .rank.r1 { background: radial-gradient(circle at 35% 30%, #f7da53, #c8920e); }
-.mt-cmp .pos-cell .rank.r2 { background: radial-gradient(circle at 35% 30%, #e7ecf0, #9aa3ad); }
-.mt-cmp .pos-cell .rank.r3 { background: radial-gradient(circle at 35% 30%, #e3a96a, #a9682c); }
+.mt-cmp .pos-cell .rank-n { font-weight: 700; font-size: 13px; color: #fff; }
+.mt-cmp .pos-cell .rank.r1 { background: #e3a712; }  /* or */
+.mt-cmp .pos-cell .rank.r2 { background: #aab1b8; }  /* argent */
+.mt-cmp .pos-cell .rank.r3 { background: #b87333; }  /* bronze */
 .mt-cmp .pos-cell .rank.r4,
-.mt-cmp .pos-cell .rank.r5 { background: radial-gradient(circle at 35% 30%, #d7dce1, #aab2ba); }
+.mt-cmp .pos-cell .rank.r5 { background: #fff; border: 1px solid #c8ccd0; }
+.mt-cmp .pos-cell .rank.r4 .rank-n,
+.mt-cmp .pos-cell .rank.r5 .rank-n { color: #6b7280; }
 
 /* Image produit (fond gris + multiply + padding pour ne pas coller au bord) */
 .mt-cmp .product-cell { padding: 18px 14px; text-align: center; }
