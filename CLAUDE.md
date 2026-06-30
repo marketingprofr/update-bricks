@@ -464,3 +464,42 @@ Code Bricks. Scope `.mt-faq`.
   - Tournures choisies pour **éviter les accords genrés piégeux**, normalisation
     des espaces, montants `number_format` + nbsp + €. Les 3 autos sont **incluses
     dans le JSON-LD FAQPage** (`name` re-décodé en texte brut pour le schema).
+
+## État de « Quel type choisir ? » (types de produit — sans maquette)
+
+Livrables : **`php-css/types.code.php`** + **`php-css/types.css`**. UN seul élément
+Code Bricks. Scope `.mt-types`. Conçu from scratch (pas de template HTML), style
+cohérent avec les autres sections.
+
+- **Source** : GROUPE `mltv5_partie_types_de_produits` → `mltv5_introduction_types_de_produits`
+  (intro, fallback « Voici les différents types de produits. ») + REPEATER
+  `mltv5_types_de_produits` → `mltv5_type_de_produit` (nom), `mltv5_image_type_de_produit`,
+  `mltv5_description_du_type_de_produit`, `mltv5_points_positifs_type_de_produit`,
+  `mltv5_points_negatifs_type_de_produit`, `mltv5_pour_qui_est_ce_type_de_produit`
+  (tous WYSIWYG sauf nom/image).
+- **Lecture robuste** : page courante → repli `mltv5_cached_id_types` (+ diag admin).
+- **Ancre** : `<section class="mt-types contenu-principal" id="partie-types">` →
+  ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-types` ».
+- **Titre** : « Les {type pluriel} : quel type choisir ? ».
+- **Carte par type** : image (gauche, `aspect-ratio 4/3`) + contenu (eyebrow « Type 01 »,
+  `h3` serif, description) ; **Points forts / Points faibles** en 2 encarts vert/rouge
+  (puces ✓/✕ sur les `<ul>`) ; encart accent **« Pour qui ? »**. ≤767px → 1 colonne.
+
+## État de « Quel choix faire ? » (duels entre 2 alternatives — sans maquette)
+
+Livrables : **`php-css/choix.code.php`** + **`php-css/choix.css`**. UN seul élément
+Code Bricks. Scope `.mt-choix`. Conçu from scratch.
+
+- **Source** : REPEATER `mltv5_choix_comparatif` (1 ligne = 1 duel) →
+  `mltv5_choix_1_ou_choix_2` (titre du duel), `mltv5_introduction_choix_1_2`,
+  `mltv5_titre_choix_1` + `mltv5_description_choix_1`, `mltv5_titre_choix_2` +
+  `mltv5_description_choix_2`, `mltv5_verdict_choix_1_ou_choix_2`.
+- **Lecture robuste** : page courante → repli `mltv5_cached_id_types` (même post
+  source que les types ; + diag admin).
+- **Layout** : par duel = titre serif + intro, puis grille **option 1 / badge VS /
+  option 2** (`1fr auto 1fr`, empilée ≤767px), puis encart accent **« Notre verdict »**.
+  Si une seule option présente → grille `single` (pleine largeur, sans VS).
+- **Ancre** : `<section class="mt-choix contenu-principal" id="partie-choix">`.
+  ⚠️ **Pas d'entrée dans le sommaire** (le sommaire ne liste pas « choix ») — à
+  ajouter dans `sommaire.code.php` si on veut un lien TOC. `.contenu-principal`
+  posée pour la jauge de lecture.
