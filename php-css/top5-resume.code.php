@@ -121,6 +121,12 @@ foreach ( $ids as $pid ) {
   }
   $score_tag = function_exists( 'get_acf_score_label' ) ? get_acf_score_label() : '';
 
+  /* --- Label verdict (sous le nom) --- */
+  $prod_label = '';
+  if ( function_exists( 'get_default_product_label' ) ) {
+    $prod_label = trim( (string) get_default_product_label( $pid, get_field( 'mltv5_score_recent', $pid ) ) );
+  }
+
   /* --- Note clients (étoile + nb avis) --- */
   $cust_rating = '';
   $cust_count  = '';
@@ -130,9 +136,9 @@ foreach ( $ids as $pid ) {
     $cust_count  = isset( $ptv[ $T5_CUST_COUNT_VAR ] )  ? $ptv[ $T5_CUST_COUNT_VAR ]  : '';
   }
 
-  /* --- Points positifs / négatifs --- */
-  $pros = mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' );
-  $cons = mt5_points( 'mltv5_points_negatifs_produit', $pid, 'mltv5_point_negatif' );
+  /* --- Points positifs / négatifs (max 2 + / 1 -) --- */
+  $pros = array_slice( mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' ), 0, 2 );
+  $cons = array_slice( mt5_points( 'mltv5_points_negatifs_produit', $pid, 'mltv5_point_negatif' ), 0, 1 );
 
   /* --- Offres (Amazon prioritaire, puis liens perso) --- */
   $offers = array();
@@ -173,6 +179,7 @@ foreach ( $ids as $pid ) {
         <div class="t5-body">
           <?php if ( $brand !== '' ) : ?><p class="t5-eyebrow"><?php echo esc_html( $brand ); ?></p><?php endif; ?>
           <h3 class="t5-name"><a href="<?php echo esc_url( $review_url ); ?>"><?php echo esc_html( $name ); ?></a></h3>
+          <?php if ( $prod_label !== '' ) : ?><p class="t5-label"><?php echo esc_html( $prod_label ); ?></p><?php endif; ?>
           <?php if ( $tagline !== '' ) : ?><p class="t5-tagline"><?php echo esc_html( $tagline ); ?></p><?php endif; ?>
           <?php if ( $summary !== '' ) : ?><p class="t5-summary"><?php echo esc_html( $summary ); ?></p><?php endif; ?>
           <?php if ( $pros || $cons ) : ?>
