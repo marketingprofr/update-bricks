@@ -27,9 +27,11 @@ if ( ! function_exists( 'mt_guide_cache_id' ) ) {
   /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
      puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
   function mt_guide_cache_id( $page_id, $suffix ) {
-    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+    foreach ( array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix ) as $f ) {
       $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
-      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+      if ( is_array( $v ) ) { $v = reset( $v ); }       /* relation/post-object multiple */
+      if ( is_object( $v ) ) { return (int) $v->ID; }     /* Post Object */
+      if ( $v ) { return (int) $v; }                      /* ID scalaire */
     }
     return 0;
   }
@@ -274,7 +276,7 @@ if ( empty( $faqs ) ) {
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-faq — diagnostic (admin only)</strong> : aucune question (ni auto ni manuelle).<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; produits trouv&eacute;s = ' . count( $prods ) . '<br>'
-       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'faq' ) . '<br>'
+       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'faq' ) . ' (brut mltv5_cached_id_faq : ' . gettype( get_field( 'mltv5_cached_id_faq', $page_id ) ) . ')<br>'
        . 'repeater mltv5_faq_comparatif = ' . esc_html( gettype( $rr ) )
        . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
        . '</div>';
