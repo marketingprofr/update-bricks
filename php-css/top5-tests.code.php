@@ -260,7 +260,8 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
     </figure>
 
     <div class="ed-a-col">
-      <div class="ed-a-buy">
+      <?php $has_cust = ( $it['cust_rating'] !== '' && mt5_num( $it['cust_rating'] ) > 0 ); ?>
+      <div class="ed-a-buy<?php echo $has_cust ? '' : ' no-cust'; ?>">
         <div class="note-block">
           <span class="r-lbl">Notre note</span>
           <div class="r-line">
@@ -268,7 +269,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
             <?php if ( $it['score_tag'] !== '' ) : ?><span class="tag"><?php echo esc_html( $it['score_tag'] ); ?></span><?php endif; ?>
           </div>
         </div>
-        <?php if ( $it['cust_rating'] !== '' && mt5_num( $it['cust_rating'] ) > 0 ) : ?>
+        <?php if ( $has_cust ) : ?>
         <div class="cust-block">
           <span class="r-lbl">Avis clients</span>
           <div class="cust-line">

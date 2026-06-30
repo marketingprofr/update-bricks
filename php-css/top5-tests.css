@@ -61,6 +61,9 @@
 .ed-a-buy .stars-gauge .fill { position: absolute; top: 0; left: 0; overflow: hidden; color: var(--gold); white-space: nowrap; }
 .ed-a-buy .cust-val { font-size: 15px; font-weight: 700; color: var(--ink); }
 .ed-a-buy .cust-count { font-size: 12px; color: var(--muted); }
+/* Sans avis clients : « Notre note » sur une seule ligne (label inline) + pas de bordure droite */
+.ed-a-buy.no-cust .note-block { flex-direction: row; align-items: center; gap: 12px; border-right: 0; }
+.ed-a-buy.no-cust .note-block .r-lbl { margin-bottom: 0; }
 .ed-a-buy .cta-block { margin-left: auto; padding: 18px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 210px; }
 .ed-a-buy .cta { display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 10px; transition: background .15s; }
 .ed-a-buy .cta:hover { background: var(--accent-dark); }
