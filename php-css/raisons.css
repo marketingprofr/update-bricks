@@ -1,0 +1,83 @@
+/* =====================================================================
+   MEILLEURTEST — « Pourquoi acheter ? » (onglet CSS de l'élément Code)
+   Scope : .mt-raisons  (cf. raisons.code.php)
+   Pas de repeater : un seul WYSIWYG -> on stylise le contenu riche + image
+   d'illustration flottée. Palette/typo alignées (Source Serif titres, Inter
+   corps, accent --at-primary-*).
+   ===================================================================== */
+
+.mt-raisons {
+  --ink: #14181d; --ink-2: #2a3038;
+  --muted: #6b7480; --muted-2: #9aa3ad;
+  --line: #e8eaed; --line-2: #f1f3f5;
+  --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f4f5f7;
+  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --radius: 10px; --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink);
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.mt-raisons * { box-sizing: border-box; }
+.mt-raisons a { color: inherit; text-decoration: none; }
+
+.mt-raisons-h2 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 32px; line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 18px;
+}
+
+/* === Corps : contenu riche (toutes les raisons) + image flottée === */
+.mt-raisons-body {
+  display: flow-root;                 /* contient le float de l'image */
+  font-size: 15px; line-height: 1.7; color: var(--ink-2);
+}
+
+.mt-raisons-fig {
+  float: right;
+  width: 340px; max-width: 42%;
+  margin: 4px 0 18px 30px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg-3);
+}
+.mt-raisons-fig img { display: block; width: 100%; height: auto; }
+
+/* Le 1er élément de texte s'aligne en haut, à côté de l'image */
+.mt-raisons-body > :first-child { margin-top: 0; }
+.mt-raisons-body > figure + * { margin-top: 0; }
+
+/* Titres internes (1 par raison si l'éditeur en pose) */
+.mt-raisons-body h2,
+.mt-raisons-body h3,
+.mt-raisons-body h4 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 600; letter-spacing: -0.015em; color: var(--ink);
+  margin: 26px 0 8px; line-height: 1.25;
+}
+.mt-raisons-body h2 { font-size: 22px; }
+.mt-raisons-body h3 { font-size: 20px; }
+.mt-raisons-body h4 { font-size: 18px; }
+
+.mt-raisons-body p { margin: 0 0 14px; }
+.mt-raisons-body ul,
+.mt-raisons-body ol { margin: 0 0 14px; padding-left: 20px; }
+.mt-raisons-body li { margin-bottom: 6px; }
+.mt-raisons-body strong,
+.mt-raisons-body b { color: var(--ink); font-weight: 600; }
+.mt-raisons-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.mt-raisons-body > :last-child { margin-bottom: 0; }
+
+/* === Responsive === */
+@media (max-width: 767px) {
+  .mt-raisons-h2 { font-size: 26px; }
+  .mt-raisons-fig {
+    float: none; width: 100%; max-width: none; margin: 0 0 18px;
+  }
+  .mt-raisons-body { font-size: 14.5px; }
+  .mt-raisons-body h2 { font-size: 20px; }
+  .mt-raisons-body h3 { font-size: 19px; }
+  .mt-raisons-body h4 { font-size: 17px; }
+}
