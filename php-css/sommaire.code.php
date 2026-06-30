@@ -10,6 +10,18 @@
    Le scrollspy + la barre de progression sont gérés en JS (vrai scroll).
    ===================================================================== */
 
+if ( ! function_exists( 'mt_guide_cache_id' ) ) {
+  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
+     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
+  function mt_guide_cache_id( $page_id, $suffix ) {
+    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
+      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+    }
+    return 0;
+  }
+}
+
 $page_id = get_the_ID();
 $page_tv = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
 
@@ -20,7 +32,8 @@ $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $p
    CONFIG — sections du sommaire
    - label  : libellé affiché
    - anchor : slug d'ancre = `id` HTML à poser sur la section dans Bricks
-   - show   : true (toujours) OU nom d'un champ ACF (présent => affiché)
+   - show   : true (toujours) OU suffixe de cache (« criteres », « types »… ;
+              présent => affiché, via le post lié `mltv5_cache_id_{suffixe}`).
    ⚠️ Les slugs d'ancre ci-dessous sont à confirmer / poser dans Bricks.
    --------------------------------------------------------------------- */
 $guide_label = "Guide d&rsquo;achat" . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : '' );
@@ -29,18 +42,18 @@ $sections_cfg = array(
   array( 'label' => 'Notre s&eacute;lection',     'anchor' => 'mt-top5-title',            'show' => true ),
   array( 'label' => 'Tests complets',             'anchor' => 'partie-tests-complets',    'show' => true ),
   array( 'label' => 'Tableau comparatif',         'anchor' => 'partie-tableau-comparatif','show' => true ),
-  array( 'label' => $guide_label,                 'anchor' => 'partie-guide-achat',       'show' => 'mltv5_cached_id_criteres' ),
-  array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'partie-types',             'show' => 'mltv5_cached_id_types' ),
-  array( 'label' => 'Quelle marque choisir&nbsp;?','anchor' => 'partie-marques',          'show' => 'mltv5_cached_id_marques' ),
-  array( 'label' => 'Astuces et conseils',        'anchor' => 'partie-astuces',           'show' => 'mltv5_cached_id_astuces' ),
-  array( 'label' => 'Pourquoi acheter&nbsp;?',    'anchor' => 'partie-raisons',           'show' => 'mltv5_cached_id_raisons' ),
-  array( 'label' => 'Questions fr&eacute;quentes','anchor' => 'partie-faq',               'show' => 'mltv5_cached_id_faq' ),
+  array( 'label' => $guide_label,                 'anchor' => 'partie-guide-achat',       'show' => 'criteres' ),
+  array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'partie-types',             'show' => 'types' ),
+  array( 'label' => 'Quelle marque choisir&nbsp;?','anchor' => 'partie-marques',          'show' => 'marques' ),
+  array( 'label' => 'Astuces et conseils',        'anchor' => 'partie-astuces',           'show' => 'astuces' ),
+  array( 'label' => 'Pourquoi acheter&nbsp;?',    'anchor' => 'partie-raisons',           'show' => 'raisons' ),
+  array( 'label' => 'Questions fr&eacute;quentes','anchor' => 'partie-faq',               'show' => 'faq' ),
 );
 
-/* Résolution des sections présentes */
+/* Résolution des sections présentes (un suffixe => présent si le post lié existe) */
 $sections = array();
 foreach ( $sections_cfg as $s ) {
-  $present = ( $s['show'] === true ) || ( is_string( $s['show'] ) && trim( (string) get_field( $s['show'], $page_id ) ) !== '' );
+  $present = ( $s['show'] === true ) || ( is_string( $s['show'] ) && mt_guide_cache_id( $page_id, $s['show'] ) > 0 );
   if ( $present ) { $sections[] = $s; }
 }
 if ( empty( $sections ) ) { return; }

@@ -43,6 +43,17 @@ if ( ! function_exists( 'mt_guide_img_alt' ) ) {
     return $fallback;
   }
 }
+if ( ! function_exists( 'mt_guide_cache_id' ) ) {
+  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
+     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
+  function mt_guide_cache_id( $page_id, $suffix ) {
+    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
+      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+    }
+    return 0;
+  }
+}
 if ( ! function_exists( 'mt_guide_rich' ) ) {
   /* Contenu éditorial : un WYSIWYG ACF renvoie déjà du HTML formaté ;
      un textarea simple -> on reconstruit les paragraphes (wpautop). */
@@ -60,7 +71,7 @@ if ( ! function_exists( 'mt_guide_rich' ) ) {
    Données
    ---------------------------------------------------------------------
    Le contenu peut vivre sur la page courante OU sur un post lié dont l'ID
-   est mis en cache dans `mltv5_cached_id_criteres`. On lit donc la page
+   est mis en cache dans `mltv5_cache_id_criteres`. On lit donc la page
    courante en priorité, puis on bascule sur le post caché si vide.
    --------------------------------------------------------------------- */
 $page_id   = get_the_ID();
@@ -86,7 +97,7 @@ if ( ! function_exists( 'mt_guide_read' ) ) {
 $src_id = $page_id;
 $data   = mt_guide_read( $src_id );
 if ( empty( $data['rows'] ) && trim( (string) $data['intro'] ) === '' && empty( $data['img'] ) ) {
-  $cached = (int) get_field( 'mltv5_cached_id_criteres', $page_id );
+  $cached = mt_guide_cache_id( $page_id, 'criteres' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_guide_read( $cached );
     if ( ! empty( $alt['rows'] ) || trim( (string) $alt['intro'] ) !== '' || ! empty( $alt['img'] ) ) {
@@ -119,7 +130,7 @@ if ( empty( $crits ) && $intro === '' && $img_url === '' ) {
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-guide — diagnostic (admin only)</strong> : aucun contenu trouvé.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'mltv5_cached_id_criteres = ' . esc_html( (string) get_field( 'mltv5_cached_id_criteres', $page_id ) ) . '<br>'
+       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'criteres' ) . '<br>'
        . 'groupe mltv5_partie_criteres_de_choix = ' . esc_html( gettype( $g ) )
        . ( is_array( $g ) ? ' [' . esc_html( implode( ', ', array_keys( $g ) ) ) . ']' : '' ) . '<br>'
        . 'repeater mltv5_criteres_de_choix = ' . esc_html( gettype( $rr ) )

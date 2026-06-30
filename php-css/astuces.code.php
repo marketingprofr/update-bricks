@@ -10,7 +10,7 @@
        . mltv5_titre_de_lastuce            (titre)
        . mltv5_contenu_de_lastuce           (contenu — WYSIWYG)
    Le contenu peut vivre sur la page courante OU sur le post lié dont l'ID est
-   mis en cache dans `mltv5_cached_id_astuces` -> lecture robuste avec repli.
+   mis en cache dans `mltv5_cache_id_astuces` -> lecture robuste avec repli.
 
    UI : 1re astuce en vedette (« Conseil principal ») + suivantes en accordéon
    natif <details> (titre + contenu déroulant ; ligne simple si pas de contenu).
@@ -18,6 +18,17 @@
    `partie-astuces` (lien du sommaire / scrollspy).
    ===================================================================== */
 
+if ( ! function_exists( 'mt_guide_cache_id' ) ) {
+  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
+     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
+  function mt_guide_cache_id( $page_id, $suffix ) {
+    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
+      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+    }
+    return 0;
+  }
+}
 if ( ! function_exists( 'mt_guide_rich' ) ) {
   function mt_guide_rich( $html ) {
     $html = (string) $html;
@@ -41,7 +52,7 @@ $page_id = get_the_ID();
 $src_id = $page_id;
 $rows   = mt_astuces_read( $src_id );
 if ( empty( $rows ) ) {
-  $cached = (int) get_field( 'mltv5_cached_id_astuces', $page_id );
+  $cached = mt_guide_cache_id( $page_id, 'astuces' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_astuces_read( $cached );
     if ( ! empty( $alt ) ) { $src_id = $cached; $rows = $alt; }
@@ -64,7 +75,7 @@ if ( empty( $tips ) ) {
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-astuces — diagnostic (admin only)</strong> : aucune astuce trouvée.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'mltv5_cached_id_astuces = ' . esc_html( (string) get_field( 'mltv5_cached_id_astuces', $page_id ) ) . '<br>'
+       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'astuces' ) . '<br>'
        . 'repeater mltv5_astuces_comparatif = ' . esc_html( gettype( $rr ) )
        . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
        . '</div>';

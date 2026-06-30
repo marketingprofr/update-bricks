@@ -12,10 +12,21 @@
        . mltv5_titre_choix_2                (titre option 2)
        . mltv5_description_choix_2          (description option 2 — WYSIWYG)
        . mltv5_verdict_choix_1_ou_choix_2   (verdict — WYSIWYG)
-   Lecture robuste : page courante → repli `mltv5_cached_id_types` (même source
+   Lecture robuste : page courante → repli `mltv5_cache_id_types` (même source
    que les types de produit). Section -> `.contenu-principal` (jauge de lecture).
    ===================================================================== */
 
+if ( ! function_exists( 'mt_guide_cache_id' ) ) {
+  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
+     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
+  function mt_guide_cache_id( $page_id, $suffix ) {
+    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
+      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+    }
+    return 0;
+  }
+}
 if ( ! function_exists( 'mt_guide_rich' ) ) {
   function mt_guide_rich( $html ) {
     $html = (string) $html;
@@ -38,7 +49,7 @@ $page_id = get_the_ID();
 $src_id = $page_id;
 $rows   = mt_choix_read( $src_id );
 if ( empty( $rows ) ) {
-  $cached = (int) get_field( 'mltv5_cached_id_types', $page_id );
+  $cached = mt_guide_cache_id( $page_id, 'types' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_choix_read( $cached );
     if ( ! empty( $alt ) ) { $src_id = $cached; $rows = $alt; }
@@ -66,7 +77,7 @@ if ( empty( $duels ) ) {
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-choix — diagnostic (admin only)</strong> : aucun duel trouv&eacute;.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'mltv5_cached_id_types = ' . esc_html( (string) get_field( 'mltv5_cached_id_types', $page_id ) ) . '<br>'
+       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'types' ) . '<br>'
        . 'repeater mltv5_choix_comparatif = ' . esc_html( gettype( $rr ) )
        . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
        . '</div>';

@@ -8,7 +8,7 @@
    - REPEATER mltv5_faq_comparatif   (1 ligne = 1 Q/R)
        . mltv5_faq_comparatif_question  (question)
        . mltv5_faq_comparatif_reponse   (réponse — WYSIWYG)
-   Repli sur le post lié `mltv5_cached_id_faq` (lecture robuste).
+   Repli sur le post lié `mltv5_cache_id_faq` (lecture robuste).
 
    + 3 Q/R AUTOMATIQUES en tête, générées depuis les données dynamiques du
    guide (classement top, prix, avis clients, stats). Conçues pour fonctionner
@@ -23,6 +23,17 @@
    Section -> `.contenu-principal` (jauge de lecture) + ancre `partie-faq`.
    ===================================================================== */
 
+if ( ! function_exists( 'mt_guide_cache_id' ) ) {
+  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
+     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
+  function mt_guide_cache_id( $page_id, $suffix ) {
+    foreach ( array( 'mltv5_cache_id_' . $suffix, 'mltv5_cached_id_' . $suffix ) as $f ) {
+      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
+      if ( $v ) { return (int) ( is_object( $v ) ? $v->ID : $v ); }
+    }
+    return 0;
+  }
+}
 if ( ! function_exists( 'mt_guide_rich' ) ) {
   function mt_guide_rich( $html ) {
     $html = (string) $html;
@@ -228,7 +239,7 @@ if ( ! empty( $prods ) ) {
 $src_id = $page_id;
 $rows   = mt_faq_read( $src_id );
 if ( empty( $rows ) ) {
-  $cached = (int) get_field( 'mltv5_cached_id_faq', $page_id );
+  $cached = mt_guide_cache_id( $page_id, 'faq' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_faq_read( $cached );
     if ( ! empty( $alt ) ) { $src_id = $cached; $rows = $alt; }
@@ -263,7 +274,7 @@ if ( empty( $faqs ) ) {
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-faq — diagnostic (admin only)</strong> : aucune question (ni auto ni manuelle).<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; produits trouv&eacute;s = ' . count( $prods ) . '<br>'
-       . 'mltv5_cached_id_faq = ' . esc_html( (string) get_field( 'mltv5_cached_id_faq', $page_id ) ) . '<br>'
+       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'faq' ) . '<br>'
        . 'repeater mltv5_faq_comparatif = ' . esc_html( gettype( $rr ) )
        . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
        . '</div>';
