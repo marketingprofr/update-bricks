@@ -34,27 +34,23 @@
 /* === Carte d'un type === */
 .mt-types-list { display: grid; gap: 22px; }
 .mt-type {
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 28px;
-  padding: 24px;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: #fff;
-  align-items: start;
+  overflow: hidden;            /* coins arrondis sur le bandeau image */
 }
-/* Sans image : pas de colonne média -> contenu pleine largeur */
-.mt-type.no-img { display: block; }
 
+/* Image = bandeau pleine largeur en haut de la carte */
 .mt-type-fig {
   margin: 0;
-  border-radius: var(--radius);
-  overflow: hidden;
   background: var(--bg-3);
-  border: 1px solid var(--line);
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
+  border-bottom: 1px solid var(--line);
 }
 .mt-type-fig img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* Contenu */
+.mt-type-main { padding: 24px 28px; }
 
 .mt-type-eyebrow {
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -113,8 +109,7 @@
 @media (max-width: 767px) {
   .mt-types-h2 { font-size: 26px; }
   .mt-types-intro { font-size: 15px; }
-  .mt-type { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
-  .mt-type-fig { aspect-ratio: 16 / 9; }
+  .mt-type-main { padding: 18px 18px; }
   .mt-type-h { font-size: 21px; }
   .mt-type-pc { grid-template-columns: 1fr; }
 }
