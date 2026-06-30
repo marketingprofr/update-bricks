@@ -1,0 +1,284 @@
+<meta charset="utf-8">
+<!-- ============================================================
+     MEILLEURTEST — Tableau comparatif (Top 4 tablettes)
+     Tableau confrontant les modèles sur tous les critères.
+     1ʳᵉ colonne = bloc marque + mention « aucun produit sponsorisé ».
+     À coller dans un élément CODE de Bricks Builder. Scope CSS : .mt
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+
+  .mt {
+    --ink: #14181d; --ink-2: #2a3038;
+    --muted: #6b7480; --muted-2: #9aa3ad;
+    --line: #e8eaed; --line-2: #f1f3f5;
+    --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
+    --accent: #0f6b54; --accent-soft: #e5f1ec;
+    --gold: #b48a3a; --warn: #b54848;
+    --radius: 10px; --radius-lg: 16px;
+    font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    color: var(--ink); background: var(--bg);
+    width: 100%; max-width: 1280px; margin: 0 auto;
+    -webkit-font-smoothing: antialiased; line-height: 1.5;
+  }
+  .mt * { box-sizing: border-box; }
+  .mt a { color: inherit; text-decoration: none; }
+
+  /* === Titre de section === */
+  .mt-section { scroll-margin-top: 40px; }
+  .mt-section h2 { font-size: 32px; line-height: 1.15; margin: 0 0 16px; letter-spacing: -0.025em; font-weight: 600; }
+  .mt-section > p { font-size: 16px; color: var(--ink-2); line-height: 1.65; max-width: 740px; margin: 0 0 24px; }
+
+  /* === Tableau comparatif === */
+  .mt-cmp-wrap { border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: white; }
+  .mt-cmp { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .mt-cmp th, .mt-cmp td { padding: 14px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .mt-cmp tbody tr:last-child td { border-bottom: 0; }
+  .mt-cmp .row-label { background: var(--bg-2); width: 180px; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; border-right: 1px solid var(--line); }
+  .mt-cmp .pos-cell { width: 60px; text-align: center; padding: 16px 8px; }
+  .mt-cmp .pos-cell .rank { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: white; font-weight: 700; font-size: 13px; }
+  .mt-cmp .pos-cell .rank.r2 { background: #6c8b82; }
+  .mt-cmp .pos-cell .rank.r3 { background: #8a99a6; }
+  .mt-cmp .pos-cell .rank.r4 { background: #b6bfc8; }
+  .mt-cmp .product-cell { padding: 18px 14px; }
+  .mt-cmp .product-thumb { aspect-ratio: 1; background: var(--bg-3); border-radius: 8px; margin-bottom: 10px; position: relative; overflow: hidden; }
+  .mt-cmp .product-thumb::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,0.03) 8px 9px); }
+  .mt-cmp .product-name { font-weight: 600; font-size: 13.5px; line-height: 1.3; }
+  .mt-cmp .verdict-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--accent); color: white; border-radius: 8px; font-size: 12px; font-weight: 600; line-height: 1.25; }
+  .mt-cmp .verdict-pill::before { content: "★"; font-size: 10px; }
+  .mt-cmp .verdict-pill.alt { background: white; color: var(--ink); border: 1px solid var(--line); }
+  .mt-cmp .verdict-pill.alt::before { content: ""; display: none; }
+  .mt-cmp .score-cell { padding: 18px 14px; }
+  .mt-cmp .score-block { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
+  .mt-cmp .score-block b { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; line-height: 1; }
+  .mt-cmp .score-block small { font-size: 11px; color: var(--muted); }
+  .mt-cmp .score-gauge { height: 6px; background: var(--bg-3); border-radius: 99px; overflow: hidden; margin: 4px 0 6px; }
+  .mt-cmp .score-gauge-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #4ea689); border-radius: 99px; }
+  .mt-cmp .score-tag { font-size: 11px; font-weight: 600; color: var(--accent); }
+  .mt-cmp .pp { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+  .mt-cmp .pp .dot { color: var(--accent); margin: 0 5px; }
+  .mt-cmp .price-cell .price { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  .mt-cmp .price-cell .merchant { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .mt-cmp .price-cell .extra { font-size: 11px; color: var(--ink-2); margin-top: 4px; line-height: 1.4; }
+  .mt-cmp .cmp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; padding: 9px 14px; background: var(--ink); color: white; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; border: none; font-family: inherit; }
+  .mt-cmp .cmp-btn:hover { background: var(--accent); }
+
+  /* Cellule logo / marque */
+  .mt-cmp-brand { display: flex; flex-direction: column; gap: 10px; }
+  .mt-cmp-brand-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; letter-spacing: -0.02em; color: var(--ink); text-transform: none; }
+  .mt-cmp-brand-mark { width: 24px; height: 24px; border-radius: 6px; background: var(--accent); display: grid; place-items: center; color: white; font-weight: 700; font-size: 12px; }
+  .mt-cmp-brand-note { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; font-weight: 500; color: var(--accent); line-height: 1.4; text-transform: none; letter-spacing: 0; }
+  .mt-cmp-brand-note svg { flex-shrink: 0; margin-top: 1px; }
+</style>
+
+<div class="mt">
+  <section class="mt-section">
+    <h2>Tableau comparatif : Top 4 tablettes</h2>
+    <p>Tous les modèles, classés et confrontés sur les critères qui comptent vraiment.</p>
+
+    <div class="mt-cmp-wrap">
+      <table class="mt-cmp">
+        <tbody>
+          <tr>
+            <td class="row-label" rowspan="2" style="vertical-align: top; text-transform: none;">
+              <div class="mt-cmp-brand">
+                <div class="mt-cmp-brand-logo">
+                  <span class="mt-cmp-brand-mark">M</span>
+                  Meilleurtest
+                </div>
+                <div class="mt-cmp-brand-note">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z" fill="currentColor" opacity="0.15"/><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z" stroke="currentColor" stroke-width="1.6"/><path d="m8.5 12 2.3 2.3L15.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Ce comparatif ne contient aucun produit sponsorisé
+                </div>
+              </div>
+            </td>
+            <td class="pos-cell"><span class="rank">1</span></td>
+            <td class="pos-cell"><span class="rank r2">2</span></td>
+            <td class="pos-cell"><span class="rank r3">3</span></td>
+            <td class="pos-cell"><span class="rank r4">4</span></td>
+          </tr>
+          <tr>
+            <td class="product-cell">
+              <div class="product-thumb"></div>
+              <div class="product-name">Apple iPad Pro 13 (M4)</div>
+            </td>
+            <td class="product-cell">
+              <div class="product-thumb"></div>
+              <div class="product-name">Xiaomi Redmi Pad Pro + Folio</div>
+            </td>
+            <td class="product-cell">
+              <div class="product-thumb"></div>
+              <div class="product-name">Lenovo M10 Plus (3rd Gen)</div>
+            </td>
+            <td class="product-cell">
+              <div class="product-thumb"></div>
+              <div class="product-name">Samsung Galaxy Tab A9+</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="row-label">Verdict</td>
+            <td><span class="verdict-pill">La meilleure haut de gamme</span></td>
+            <td><span class="verdict-pill">La meilleure tablette</span></td>
+            <td><span class="verdict-pill alt">La meilleure entrée de gamme</span></td>
+            <td><span class="verdict-pill alt">Une excellente alternative</span></td>
+          </tr>
+          <tr>
+            <td class="row-label">Note globale</td>
+            <td class="score-cell">
+              <div class="score-block"><b>9,4</b><small>/10</small></div>
+              <div class="score-gauge"><div class="score-gauge-fill" style="width: 94%;"></div></div>
+              <div class="score-tag">Exceptionnel</div>
+            </td>
+            <td class="score-cell">
+              <div class="score-block"><b>9,4</b><small>/10</small></div>
+              <div class="score-gauge"><div class="score-gauge-fill" style="width: 94%;"></div></div>
+              <div class="score-tag">Exceptionnel</div>
+            </td>
+            <td class="score-cell">
+              <div class="score-block"><b>9,0</b><small>/10</small></div>
+              <div class="score-gauge"><div class="score-gauge-fill" style="width: 90%;"></div></div>
+              <div class="score-tag">Exceptionnel</div>
+            </td>
+            <td class="score-cell">
+              <div class="score-block"><b>8,8</b><small>/10</small></div>
+              <div class="score-gauge"><div class="score-gauge-fill" style="width: 88%;"></div></div>
+              <div class="score-tag">Excellent</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="row-label">Résumé</td>
+            <td class="pp">L'Apple iPad Pro 13 (M4) repousse les limites de la tablette tactile avec un écran XDR toujours plus lumineux et la nouvelle puce M4.</td>
+            <td class="pp">Grand écran 12,1″ en 2,5K à 120 Hz, Snapdragon 7s Gen 2 et batterie de 10 000 mAh qui tient largement plus d'une journée.</td>
+            <td class="pp">Écran 10,6″ en 2K net et bien calibré. Recharge lente, mais autonomie de plus de 14 h, rarissime sur une tablette.</td>
+            <td class="pp">Performances correctes, finition métallique élégante, longue autonomie et prix compétitif. Le modèle phare en entrée de gamme.</td>
+          </tr>
+          <tr>
+            <td class="row-label">Positif</td>
+            <td class="pp">Puce M4 ultra puissante <span class="dot">•</span> Écran XDR très lumineux <span class="dot">•</span> Autonomie de 10 h</td>
+            <td class="pp">Snapdragon 7s Gen 2 + 6/8 Go RAM <span class="dot">•</span> Autonomie impressionnante <span class="dot">•</span> Écran large et immersif <span class="dot">•</span> Format 16:10 <span class="dot">•</span> Audio et visio soignés</td>
+            <td class="pp">Écran fidèle pour lecture et vidéo <span class="dot">•</span> Autonomie de 14 h <span class="dot">•</span> Son clair <span class="dot">•</span> Caméras correctes pour visio</td>
+            <td class="pp">Autonomie de 13 h en vidéo <span class="dot">•</span> Performances correctes pour le prix <span class="dot">•</span> Aucun ralentissement</td>
+          </tr>
+          <tr>
+            <td class="row-label">Négatif</td>
+            <td class="pp">Prix élevé</td>
+            <td class="pp">Caméra arrière moyenne</td>
+            <td class="pp">Recharge très lente <span class="dot">•</span> Gamers hardcores, passez votre chemin</td>
+            <td class="pp">Recharge lente</td>
+          </tr>
+          <tr>
+            <td class="row-label">Meilleures offres</td>
+            <td class="price-cell">
+              <div class="price">1 620 €</div>
+              <div class="merchant">Amazon</div>
+              <button class="cmp-btn">Voir l'offre →</button>
+            </td>
+            <td class="price-cell">
+              <div class="price">330 €</div>
+              <div class="merchant">Boulanger</div>
+              <button class="cmp-btn">Voir l'offre →</button>
+            </td>
+            <td class="price-cell">
+              <div class="price">170 €</div>
+              <div class="merchant">Amazon</div>
+              <button class="cmp-btn">Voir l'offre →</button>
+            </td>
+            <td class="price-cell">
+              <div class="price">199 €</div>
+              <div class="merchant">Amazon</div>
+              <div class="extra">171 € Cdiscount<br />300 € Darty</div>
+              <button class="cmp-btn">Voir l'offre →</button>
+            </td>
+          </tr>
+          <tr>
+            <td class="row-label">Écran</td>
+            <td>13″ — 2752 × 2064</td>
+            <td>12,1″ — 2560 × 1600</td>
+            <td>10,61″ — 2000 × 1200</td>
+            <td>11″ — 1920 × 1200</td>
+          </tr>
+          <tr>
+            <td class="row-label">Fréquence</td>
+            <td>120 Hz</td>
+            <td>120 Hz AdaptiveSync</td>
+            <td>60 Hz</td>
+            <td>90 Hz</td>
+          </tr>
+          <tr>
+            <td class="row-label">Processeur</td>
+            <td>Apple M4 (10 cœurs)</td>
+            <td>Snapdragon 7s Gen 2</td>
+            <td>Snapdragon SDM680</td>
+            <td>Snapdragon 695 5G</td>
+          </tr>
+          <tr>
+            <td class="row-label">Stockage / RAM</td>
+            <td>256 Go / 8 Go</td>
+            <td>128 Go / 6 Go</td>
+            <td>64 Go / 4 Go</td>
+            <td>128 Go / 8 Go</td>
+          </tr>
+          <tr>
+            <td class="row-label">Autonomie</td>
+            <td>10 h</td>
+            <td>Jusqu'à 12 h</td>
+            <td>Jusqu'à 14 h</td>
+            <td>13 h</td>
+          </tr>
+          <tr>
+            <td class="row-label">Batterie</td>
+            <td>38,99 Wh</td>
+            <td>10 000 mAh</td>
+            <td>7 700 mAh</td>
+            <td>7 040 mAh</td>
+          </tr>
+          <tr>
+            <td class="row-label">OS</td>
+            <td>iPadOS</td>
+            <td>HyperOS (Android 14)</td>
+            <td>Android 12</td>
+            <td>Android 13, One UI 5.1.1</td>
+          </tr>
+          <tr>
+            <td class="row-label">Capteur photo</td>
+            <td>12 Mpx av. / 12 Mpx ar.</td>
+            <td>8 Mpx av. / 8 Mpx ar.</td>
+            <td>8 Mpx av. / 8 Mpx ar.</td>
+            <td>5 Mpx av. / 8 Mpx ar.</td>
+          </tr>
+          <tr>
+            <td class="row-label">Connectivité</td>
+            <td>Wi-Fi 6E + 5G, BT 5.3</td>
+            <td>Wi-Fi 6, BT 5.2</td>
+            <td>Wi-Fi 5, BT 5.0</td>
+            <td>Wi-Fi 5 + 5G, BT 5.3</td>
+          </tr>
+          <tr>
+            <td class="row-label">Connectiques</td>
+            <td>USB-C (Thunderbolt / USB 4)</td>
+            <td>USB-C (USB 2.0)</td>
+            <td>USB-C (USB 2.0)</td>
+            <td>USB-C + microSD</td>
+          </tr>
+          <tr>
+            <td class="row-label">Dimensions</td>
+            <td>281,6 × 215,5 × 5,1 mm</td>
+            <td>280 × 181,9 × 7,5 mm</td>
+            <td>251,2 × 158,8 × 7,5 mm</td>
+            <td>257,1 × 168,7 × 6,9 mm</td>
+          </tr>
+          <tr>
+            <td class="row-label">Poids</td>
+            <td>582 g</td>
+            <td>571 g</td>
+            <td>465 g</td>
+            <td>480 g</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

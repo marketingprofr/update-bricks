@@ -1,0 +1,75 @@
+<!-- ============================================================
+     MEILLEURTEST — Jeu d'icônes SVG du bloc Hero
+     Aucune couleur n'est codée en dur : chaque SVG utilise
+     fill="none" + stroke="currentColor". La couleur se règle
+     en CSS via la propriété `color` de l'élément (ou parent).
+     Ex :  .mon-icone { color: #0f6b54; width: 20px; height: 20px; }
+     ============================================================ -->
+<style>
+  body { margin: 0; padding: 32px; background: #fff; font-family: "Inter", system-ui, sans-serif; color: #14181d; }
+  .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; max-width: 1100px; }
+  .icon-card { border: 1px solid #e8eaed; border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 14px; }
+  .icon-card .glyph { width: 28px; height: 28px; flex-shrink: 0; color: #0f6b54; }   /* ← couleur réglée ici, en CSS */
+  .icon-card .glyph svg { width: 100%; height: 100%; display: block; }
+  .icon-card .meta { min-width: 0; }
+  .icon-card .name { font-size: 13.5px; font-weight: 600; }
+  .icon-card code { font-family: ui-monospace, monospace; font-size: 11px; color: #6b7480; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+  p.note { font-size: 13px; color: #6b7480; margin: 0 0 28px; max-width: 640px; line-height: 1.55; }
+</style>
+
+<h1>Icônes SVG — bloc Hero Meilleurtest</h1>
+<p class="note">8 icônes, sans couleur codée en dur (<code>fill="none"</code> + <code>stroke="currentColor"</code>).
+La couleur se définit en CSS via la propriété <code>color</code>, la taille via <code>width</code>/<code>height</code>.</p>
+
+<div class="icons">
+
+  <!-- 1. Bouclier vérifié — titre « Notre enquête » -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+    <div class="meta"><div class="name">shield-check</div><code>Notre enquête</code></div>
+  </div>
+
+  <!-- 2. Horloge — heures de recherche -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+    <div class="meta"><div class="name">clock</div><code>de recherche</code></div>
+  </div>
+
+  <!-- 3. Calques — sources consultées -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg></span>
+    <div class="meta"><div class="name">layers</div><code>sources consultées</code></div>
+  </div>
+
+  <!-- 4. Tablette — tablettes analysées -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="10.5" y1="17.5" x2="13.5" y2="17.5"/></svg></span>
+    <div class="meta"><div class="name">tablet</div><code>tablettes analysées</code></div>
+  </div>
+
+  <!-- 5. Bulle de discussion — avis étudiés -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-1.1 4.2A8.5 8.5 0 0 1 12.5 20a8.4 8.4 0 0 1-4.2-1.1L3 20l1.1-5.3A8.4 8.4 0 0 1 3 10.5 8.5 8.5 0 0 1 7.3 3a8.4 8.4 0 0 1 4.2-1.1h.5A8.5 8.5 0 0 1 21 11v.5Z"/></svg></span>
+    <div class="meta"><div class="name">message-circle</div><code>avis étudiés</code></div>
+  </div>
+
+  <!-- 6. Cercle coché — 100 % indépendant -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg></span>
+    <div class="meta"><div class="name">check-circle</div><code>100 % indépendant</code></div>
+  </div>
+
+  <!-- 7. Rafraîchir — mis à jour -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v5h-5"/></svg></span>
+    <div class="meta"><div class="name">refresh-cw</div><code>mis à jour</code></div>
+  </div>
+
+  <!-- 8. Livre ouvert — temps de lecture -->
+  <div class="icon-card">
+    <span class="glyph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-1.6-1.2-4-2-7-2v13c3 0 5.4.8 7 2 1.6-1.2 4-2 7-2V4c-3 0-5.4.8-7 2Z"/><path d="M12 6v13"/></svg></span>
+    <div class="meta"><div class="name">book-open</div><code>de lecture</code></div>
+  </div>
+
+</div>

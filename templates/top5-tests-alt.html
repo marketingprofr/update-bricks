@@ -1,0 +1,240 @@
+<!-- ============================================================
+     MEILLEURTEST — Top 5 : tests complets — VERSION ÉDITORIALE A
+     « Magazine éditorial » — article long-format, colonne de lecture
+     unique, prose narrative, encart d'achat sobre. Inspiration NYT
+     Wirecutter. CSS scopé (.ed-a) — se colle dans un élément Code Bricks.
+     Ancre #avis-01 conservée.
+     ============================================================ -->
+<style>
+  .ed-a {
+    --ink: #14181d;
+    --ink-2: #2e353d;
+    --muted: #6b7480;
+    --muted-2: #9aa3ad;
+    --line: #e6e8eb;
+    --line-2: #eef0f2;
+    --bg-2: #fafbfc;
+    --bg-3: #f4f5f7;
+    --accent: #0f6b54;
+    --accent-soft: #e7f1ec;
+    --gold: #9c7b34;
+    --warn: #b54848;
+    font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    color: var(--ink);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .ed-a *, .ed-a *::before, .ed-a *::after { box-sizing: border-box; }
+  .ed-a a { color: inherit; text-decoration: none; }
+  .ed-a-serif { font-family: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif; }
+
+  /* En-tête de section */
+  .ed-a-head { max-width: 720px; margin: 0 auto 8px; text-align: center; }
+  .ed-a-head .kick { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+  .ed-a-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: 40px; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 16px; line-height: 1.1; }
+  .ed-a-head p { font-size: 17px; line-height: 1.65; color: var(--muted); margin: 0; }
+  .ed-a-head .rule { width: 56px; height: 3px; background: var(--accent); border-radius: 3px; margin: 26px auto 0; }
+
+  /* Article produit */
+  .ed-a-piece { max-width: 1040px; margin: 0 auto; padding: 64px 0 8px; border-top: 1px solid var(--line); }
+  .ed-a-piece:first-of-type { border-top: 0; }
+  .ed-a-piece[id^="avis-"] { scroll-margin-top: 90px; }
+
+  .ed-a-col { max-width: 700px; margin: 0 auto; }
+
+  .ed-a-eyebrow { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 18px; }
+  .ed-a-eyebrow .num { font-family: ui-monospace, "SF Mono", monospace; font-size: 13px; font-weight: 700; color: var(--muted-2); }
+  .ed-a-eyebrow .award { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .ed-a-eyebrow .award.gold { color: var(--gold); }
+  .ed-a-eyebrow .sep { width: 4px; height: 4px; border-radius: 50%; background: var(--line); }
+
+  .ed-a-name { font-family: "Source Serif 4", Georgia, serif; font-size: 44px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.05; text-align: center; margin: 0 0 16px; }
+  .ed-a-name span { color: var(--muted); font-weight: 400; }
+  .ed-a-deck { font-family: "Source Serif 4", Georgia, serif; font-size: 22px; font-style: italic; line-height: 1.45; color: var(--ink-2); text-align: center; margin: 0 0 22px; }
+
+  .ed-a-byline { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; font-size: 12.5px; color: var(--muted); margin-bottom: 30px; }
+  .ed-a-byline b { color: var(--ink-2); font-weight: 600; }
+  .ed-a-byline .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted-2); }
+
+  /* Photo */
+  .ed-a-figure { margin: 0 0 14px; }
+  .ed-a-figure .ph { position: relative; aspect-ratio: 16 / 9; background: var(--bg-3); border-radius: 4px; display: grid; place-items: center; overflow: hidden; }
+  .ed-a-figure .ph::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 14px, rgba(0,0,0,0.022) 14px 15px); }
+  .ed-a-figure .ph-cap { position: relative; z-index: 1; font-family: ui-monospace, monospace; font-size: 12px; color: var(--muted-2); letter-spacing: .06em; text-transform: uppercase; }
+  .ed-a-figure figcaption { font-size: 12.5px; color: var(--muted); margin-top: 10px; line-height: 1.5; padding-left: 2px; border-left: 2px solid var(--line); padding-left: 12px; }
+
+  /* Encart achat sobre */
+  .ed-a-buy { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; margin: 30px 0 38px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .ed-a-buy .note-block,
+  .ed-a-buy .cust-block { padding: 18px 24px; flex: 0 0 auto; border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; }
+  .ed-a-buy .r-lbl { display: block; font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .ed-a-buy .r-line,
+  .ed-a-buy .cust-line { display: flex; align-items: center; gap: 8px; }
+  .ed-a-buy .n { font-size: 28px; font-weight: 700; color: var(--accent); letter-spacing: -0.03em; line-height: 1; }
+  .ed-a-buy .n small { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .ed-a-buy .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 3px 9px; border-radius: 999px; }
+  .ed-a-buy .stars { color: var(--gold); font-size: 15px; }
+  .ed-a-buy .stars-gauge { position: relative; display: inline-block; color: var(--line); font-size: 15px; line-height: 1; letter-spacing: 1px; }
+  .ed-a-buy .stars-gauge .fill { position: absolute; top: 0; left: 0; overflow: hidden; color: var(--gold); white-space: nowrap; }
+  .ed-a-buy .cust-val { font-size: 15px; font-weight: 700; color: var(--ink); }
+  .ed-a-buy .cust-count { font-size: 12px; color: var(--muted); }
+  .ed-a-buy .cta-block { margin-left: auto; padding: 18px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 210px; }
+  .ed-a-buy .cta { display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 10px; transition: background .15s; }
+  .ed-a-buy .cta:hover { background: #0a4f3e; }
+  .ed-a-buy .cta .arr { transition: transform .15s; }
+  .ed-a-buy .cta:hover .arr { transform: translateX(3px); }
+  .ed-a-buy .merchants { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.7; }
+  .ed-a-buy .merchants a { color: var(--muted); border-bottom: 1px solid var(--line); transition: color .15s, border-color .15s; }
+  .ed-a-buy .merchants a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Points positifs / negatifs */
+  .ed-a-pc { font-family: "Inter", sans-serif; display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0 0 38px; padding: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .ed-a-pc .col.pros { padding-right: 38px; }
+  .ed-a-pc .col.cons { padding-left: 38px; border-left: 1px solid var(--line-2); }
+  .ed-a-pc h5 { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 13px; display: flex; align-items: center; gap: 9px; }
+  .ed-a-pc h5::before { content: ""; width: 16px; height: 2px; border-radius: 2px; }
+  .ed-a-pc .pros h5 { color: var(--accent); }
+  .ed-a-pc .pros h5::before { background: var(--accent); }
+  .ed-a-pc .cons h5 { color: var(--warn); }
+  .ed-a-pc .cons h5::before { background: var(--warn); }
+  .ed-a-pc ul { list-style: none; margin: 0; padding: 0; }
+  .ed-a-pc li { position: relative; padding: 6px 0 6px 24px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+  .ed-a-pc .pros li::before { content: ""; position: absolute; left: 3px; top: 12px; width: 9px; height: 5px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+  .ed-a-pc .cons li::before { content: ""; position: absolute; left: 2px; top: 14px; width: 12px; height: 2px; background: var(--warn); border-radius: 2px; }
+
+  /* Corps de l'article */
+  .ed-a-body { font-family: "Source Serif 4", Georgia, serif; }
+  .ed-a-body p { font-size: 18px; line-height: 1.75; color: var(--ink-2); margin: 0 0 20px; }
+  .ed-a-body p.lead { font-size: 18px; line-height: 1.75; color: var(--ink); font-weight: 600; }
+  .ed-a-body p.lead::first-letter { initial-letter: 2; -webkit-initial-letter: 2; font-weight: 600; color: var(--accent); margin-right: 10px; }
+  .ed-a-body p b, .ed-a-body p strong { color: var(--ink); font-weight: 600; }
+  .ed-a-body h4 { font-family: "Inter", sans-serif; font-size: 13px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); margin: 38px 0 14px; display: flex; align-items: center; gap: 12px; }
+  .ed-a-body h4::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .ed-a-body h4.warn { color: var(--warn); }
+
+  .ed-a-body blockquote { margin: 32px 0; padding: 0 0 0 26px; border-left: 3px solid var(--accent); }
+  .ed-a-body blockquote p { font-size: 25px; line-height: 1.4; font-weight: 500; color: var(--ink); font-style: italic; margin: 0; }
+
+  /* À qui ça s'adresse */
+  .ed-a-forwho { font-family: "Inter", sans-serif; margin: 36px 0 8px; padding: 24px 26px; background: var(--accent-soft); border-radius: 14px; }
+  .ed-a-forwho h5 { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+  .ed-a-forwho p { font-size: 15.5px; line-height: 1.65; color: var(--ink-2); margin: 0; }
+  .ed-a-forwho p b { color: var(--ink); font-weight: 600; }
+
+  /* Specs repliables */
+  .ed-a-specs { font-family: "Inter", sans-serif; margin-top: 26px; border-top: 1px solid var(--line); }
+  .ed-a-specs summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 18px 2px; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
+  .ed-a-specs summary::-webkit-details-marker { display: none; }
+  .ed-a-specs summary .chev { margin-left: auto; transition: transform .2s; color: var(--muted); font-size: 16px; }
+  .ed-a-specs[open] summary .chev { transform: rotate(180deg); }
+  .ed-a-specs dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; margin: 0 0 10px; }
+  .ed-a-specs .row { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line-2); font-size: 13.5px; }
+  .ed-a-specs .row dt { color: var(--muted); }
+  .ed-a-specs .row dd { margin: 0; font-weight: 600; text-align: right; }
+
+  @media (max-width: 760px) {
+    .ed-a-head h2 { font-size: 30px; }
+    .ed-a-piece { padding: 44px 0 8px; }
+    .ed-a-name { font-size: 32px; }
+    .ed-a-deck { font-size: 19px; }
+    .ed-a-body p { font-size: 17px; }
+    .ed-a-body p.lead { font-size: 17px; }
+    .ed-a-body blockquote p { font-size: 21px; }
+    .ed-a-buy { flex-direction: column; }
+    .ed-a-buy .note-block,
+    .ed-a-buy .cust-block { border-right: 0; border-bottom: 1px solid var(--line); }
+    .ed-a-buy .cta-block { margin-left: 0; width: 100%; }
+    .ed-a-buy .cta { width: 100%; }
+    .ed-a-pc { grid-template-columns: 1fr; padding: 20px 0; }
+    .ed-a-pc .col.pros { padding-right: 0; padding-bottom: 16px; }
+    .ed-a-pc .col.cons { padding-left: 0; padding-top: 16px; border-left: 0; border-top: 1px solid var(--line-2); }
+    .ed-a-specs dl { grid-template-columns: 1fr; gap: 0; }
+  }
+</style>
+
+<div class="ed-a">
+  <div class="ed-a-head">
+    <p class="kick">Nos avis détaillés</p>
+    <h2 class="ed-a-serif">Le test complet de chaque tablette</h2>
+    <p>Notre rédaction a passé en revue <b>5 tablettes</b>, en analysant les caractéristiques techniques, les retours utilisateurs et le rapport qualité-prix. Voici leur avis complet, produit par produit.</p>
+    <div class="rule"></div>
+  </div>
+
+  <!-- ========== N°01 ========== -->
+  <article class="ed-a-piece" id="avis-01">
+    <div class="ed-a-col">
+      <div class="ed-a-eyebrow"><span class="num">N°01</span><span class="sep"></span><span class="award gold">Notre coup de cœur · Haut de gamme</span></div>
+      <h3 class="ed-a-name">Apple iPad Pro 13 <span>(M4)</span></h3>
+      <p class="ed-a-deck">La tablette la plus aboutie du marché — à condition d'en avoir vraiment l'usage, et le budget.</p>
+      <div class="ed-a-byline"><span>Par <b>la rédaction High-Tech</b></span><span class="dot"></span><span>Test rédigé le 12 juin 2026</span><span class="dot"></span><span>12 critères étudiés</span></div>
+    </div>
+
+    <figure class="ed-a-figure">
+      <div class="ph"><span class="ph-cap">Photo — iPad Pro 13 (M4)</span></div>
+      <figcaption>L'iPad Pro 13 (M4), de profil : 5,1 mm d'épaisseur, un record pour Apple.</figcaption>
+    </figure>
+
+    <div class="ed-a-col">
+      <div class="ed-a-buy">
+        <div class="note-block">
+          <span class="r-lbl">Notre note</span>
+          <div class="r-line">
+            <span class="n">9,4<small>/10</small></span>
+            <span class="tag">Excellent</span>
+          </div>
+        </div>
+        <div class="cust-block">
+          <span class="r-lbl">Avis clients</span>
+          <div class="cust-line">
+            <span class="cust-val">4,5</span>
+            <span class="stars-gauge" aria-label="4,5 sur 5 étoiles">
+              <span>★★★★★</span>
+              <span class="fill" style="width: 90%;">★★★★★</span>
+            </span>
+            <span class="cust-count">1&nbsp;248 avis</span>
+          </div>
+        </div>
+        <div class="cta-block">
+          <a class="cta" href="#" target="_blank" rel="nofollow sponsored noopener">V&eacute;rifier le prix <span class="arr">&#8594;</span></a>
+          <div class="merchants">chez <a href="#" target="_blank" rel="nofollow sponsored noopener">Amazon</a>, <a href="#" target="_blank" rel="nofollow sponsored noopener">Fnac</a>, <a href="#" target="_blank" rel="nofollow sponsored noopener">Rue du Commerce</a></div>
+        </div>
+      </div>
+
+      <div class="ed-a-pc">
+        <div class="col pros"><h5>Points positifs</h5><ul><li>Puce M4 d'une puissance inédite sur tablette</li><li>Écran XDR Tandem OLED très lumineux</li><li>Châssis record : 5,1 mm pour 582 g</li><li>Autonomie de 10 h en usage mixte</li></ul></div>
+        <div class="col cons"><h5>Points négatifs</h5><ul><li>Tarif de départ très élevé (1 620 €)</li><li>Clavier et Pencil onéreux, presque obligatoires</li></ul></div>
+      </div>
+
+      <div class="ed-a-body">
+        <p class="lead">L'iPad Pro 13 n'est pas une tablette de plus dans la gamme : c'est la première à donner réellement le sentiment de tenir un ordinateur entre les mains. La nouvelle puce M4 y est pour beaucoup.</p>
+        <p>Gravée en 3 nm et dotée d'un processeur à dix cœurs, elle se montre environ <b>50 % plus rapide que la M2</b> de la génération précédente. Concrètement : le montage vidéo en 4K, la retouche photo lourde et les jeux les plus exigeants ne lui posent aucun problème. On a poussé la machine pendant deux semaines sans jamais la sentir fléchir.</p>
+        <h4>Ce qui nous a convaincus</h4>
+        <p>L'écran, surtout. La dalle <b>Tandem OLED « XDR »</b> remplace le mini-LED et grimpe à des niveaux de luminosité et de contraste qu'aucune autre tablette n'atteint aujourd'hui. Avec ProMotion (120 Hz) et True Tone, l'affichage est d'une fluidité et d'un confort de lecture remarquables.</p>
+        <p>Le tout dans un châssis de <b>5,1 mm et 582 g</b> : pour un format 13 pouces, c'est étonnamment léger. L'autonomie annoncée — dix heures — tient en usage mixte, ce qui reste rare sur un appareil aussi puissant.</p>
+        <blockquote><p>Aucune tablette ne va aussi loin. La vraie question, c'est de savoir si vous irez jusque-là avec elle.</p></blockquote>
+        <h4 class="warn">Les défauts qu'on pardonne (ou pas)</h4>
+        <p>Le tarif, évidemment. <b>1 620 € pour la version 256 Go</b>, et la facture grimpe vite : le Magic Keyboard et l'Apple Pencil Pro, quasi indispensables pour en exploiter le potentiel, se paient au prix fort. À ce niveau de prix, on aurait aimé qu'ils soient moins anecdotiques dans le budget total.</p>
+
+        <div class="ed-a-forwho">
+          <h5>À qui s'adresse cette tablette ?</h5>
+          <p>Aux <b>professionnels créatifs et nomades</b> — monteurs, illustrateurs, photographes — qui exploiteront vraiment la M4 et l'écran XDR. Pour naviguer, regarder des séries ou prendre des notes, c'est beaucoup (trop) de tablette : l'iPad Air plus bas fait presque aussi bien pour moitié moins cher.</p>
+        </div>
+
+        <details class="ed-a-specs">
+          <summary>Fiche technique complète <span class="chev">⌄</span></summary>
+          <dl>
+            <div class="row"><dt>Écran</dt><dd>13″ OLED · 2752×2064</dd></div>
+            <div class="row"><dt>Fréquence</dt><dd>120 Hz ProMotion</dd></div>
+            <div class="row"><dt>Processeur</dt><dd>Apple M4 (10 cœurs)</dd></div>
+            <div class="row"><dt>Stockage / RAM</dt><dd>256 Go / 8 Go</dd></div>
+            <div class="row"><dt>Autonomie</dt><dd>10 h en usage mixte</dd></div>
+            <div class="row"><dt>Poids</dt><dd>582 g</dd></div>
+            <div class="row"><dt>Système</dt><dd>iPadOS</dd></div>
+            <div class="row"><dt>Connectique</dt><dd>USB-C Thunderbolt / USB 4</dd></div>
+          </dl>
+        </details>
+      </div>
+    </div>
+  </article>
+
+</div>

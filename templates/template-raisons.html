@@ -1,0 +1,90 @@
+<meta charset="utf-8">
+<!-- ============================================================
+     MEILLEURTEST — Pourquoi acheter une tablette ?
+     Grille de 8 raisons (libellé + titre + texte).
+     À coller dans un élément CODE de Bricks Builder. Scope CSS : .mt
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+
+  .mt {
+    --ink: #14181d; --ink-2: #2a3038;
+    --muted: #6b7480; --muted-2: #9aa3ad;
+    --line: #e8eaed; --line-2: #f1f3f5;
+    --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
+    --accent: #0f6b54; --accent-soft: #e5f1ec;
+    --gold: #b48a3a; --warn: #b54848;
+    --radius: 10px; --radius-lg: 16px;
+    font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    color: var(--ink); background: var(--bg);
+    width: 100%; max-width: 1280px; margin: 0 auto;
+    -webkit-font-smoothing: antialiased; line-height: 1.5;
+  }
+  .mt * { box-sizing: border-box; }
+  .mt a { color: inherit; text-decoration: none; }
+
+  /* === Titre de section === */
+  .mt-section { scroll-margin-top: 40px; }
+  .mt-section h2 { font-size: 32px; line-height: 1.15; margin: 0 0 16px; letter-spacing: -0.025em; font-weight: 600; }
+  .mt-section > p { font-size: 16px; color: var(--ink-2); line-height: 1.65; max-width: 740px; margin: 0 0 24px; }
+
+  /* === Raisons === */
+  .mt-reasons { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px 32px; }
+  .mt-reason { padding: 22px 0; border-top: 1px solid var(--line); }
+  .mt-reason-lbl { font-size: 12px; color: var(--accent); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; }
+  .mt-reason h4 { font-size: 19px; font-weight: 600; margin: 0 0 10px; letter-spacing: -0.015em; }
+  .mt-reason p { font-size: 14.5px; line-height: 1.6; color: var(--ink-2); margin: 0; }
+</style>
+
+<div class="mt">
+  <section class="mt-section">
+    <h2>Pourquoi acheter une tablette ?</h2>
+    <p>La tablette est un équipement qui s'impose de plus en plus dans les milieux professionnels comme dans la vie quotidienne. Découvrez ses atouts.</p>
+
+    <div class="mt-reasons">
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 01</div>
+        <h4>Pour le confort d'utilisation</h4>
+        <p>Légère et facile à manipuler, la tablette séduit grâce à son ergonomie. À la frontière entre le PC et le smartphone, elle se glisse facilement dans un sac, une sacoche ou une pochette. Debout, assis ou couché, vous pourrez lire, surfer ou écouter de la musique.</p>
+      </div>
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 02</div>
+        <h4>Pour la prise en main aisée</h4>
+        <p>D'une conception légère et ultraportable, elle ne nécessite pas de sac de transport particulier. Elle ne requiert aucun support et encore moins un grand espace pour être utilisée. L'écran tactile sans clavier permet de tenir la tablette d'une main et naviguer de l'autre.</p>
+      </div>
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 03</div>
+        <h4>Pour la mobilité</h4>
+        <p>Bien que concurrencée par le smartphone, la tablette reste dans la course grâce à la taille de son écran et à son autonomie remarquable — estimée à 10 h en moyenne, là où le PC portable n'offre qu'un temps très limité.</p>
+      </div>
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 04</div>
+        <h4>Pour la simplicité</h4>
+        <p>Utiliser une tablette tactile, même pour la première fois, c'est pratiquement un jeu d'enfant. Tout est simplifié — mise en marche, disposition des applications, navigation. Conçue de façon quasi intuitive, elle convient particulièrement aux seniors, aux technophobes et aux jeunes enfants.</p>
+      </div>
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 05</div>
+        <h4>Pour l'accès rapide aux données</h4>
+        <p>Avec une tablette, le temps de mise en route est beaucoup moins long qu'avec un ordinateur. Pour les déplacements sur le terrain, elle offre une plus grande commodité et une meilleure souplesse pour disposer du contenu sans faire attendre ses collègues ou ses clients.</p>
+      </div>
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 06</div>
+        <h4>Pour les fonctionnalités</h4>
+        <p>Hybridité parfaite entre l'ordinateur et le smartphone : navigation Internet, tâches bureautiques, applications, films, jeux vidéo. Connectique sans fil complète : Wi-Fi, Bluetooth, 3G/4G, GPS, NFC.</p>
+      </div>
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 07</div>
+        <h4>Pour la fiabilité</h4>
+        <p>Avec un iPad, une Surface ou une Nexus 7, on souffre beaucoup moins du phénomène du Blue Screen. Bien qu'elles ne soient pas totalement à l'abri des malwares, les tablettes sont moins exposées aux pertes de données.</p>
+      </div>
+      <div class="mt-reason">
+        <div class="mt-reason-lbl">— Raison 08</div>
+        <h4>Pour le prix abordable</h4>
+        <p>L'un des arguments qui expliquent le choix d'une tablette est le coût accessible. Bien que dépendant des marques et des gammes, le prix reste très abordable — une alternative pas chère au portable, plébiscitée même par les entreprises pour équiper leurs flottes commerciales.</p>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,80 @@
+<meta charset="utf-8">
+<!-- ============================================================
+     MEILLEURTEST — Astuces et conseils
+     Carte « conseil principal » en vedette + astuces compactes.
+     À coller dans un élément CODE de Bricks Builder. Scope CSS : .mt
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+
+  .mt {
+    --ink: #14181d; --ink-2: #2a3038;
+    --muted: #6b7480; --muted-2: #9aa3ad;
+    --line: #e8eaed; --line-2: #f1f3f5;
+    --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
+    --accent: #0f6b54; --accent-soft: #e5f1ec;
+    --gold: #b48a3a; --warn: #b54848;
+    --radius: 10px; --radius-lg: 16px;
+    font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    color: var(--ink); background: var(--bg);
+    width: 100%; max-width: 1280px; margin: 0 auto;
+    -webkit-font-smoothing: antialiased; line-height: 1.5;
+  }
+  .mt * { box-sizing: border-box; }
+  .mt a { color: inherit; text-decoration: none; }
+
+  /* === Titre de section === */
+  .mt-section { scroll-margin-top: 40px; }
+  .mt-section h2 { font-size: 32px; line-height: 1.15; margin: 0 0 16px; letter-spacing: -0.025em; font-weight: 600; }
+  .mt-section > p { font-size: 16px; color: var(--ink-2); line-height: 1.65; max-width: 740px; margin: 0 0 24px; }
+
+  /* === Astuces === */
+  .mt-tips { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .mt-tip { border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; background: white; }
+  .mt-tip.featured { background: linear-gradient(180deg, #fdf6e3 0%, white 100%); border-color: #e9d8a8; grid-column: span 2; padding: 28px; }
+  .mt-tip-num { font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+  .mt-tip h4 { font-size: 17px; font-weight: 600; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .mt-tip.featured h4 { font-size: 22px; }
+  .mt-tip p { font-size: 14px; line-height: 1.6; color: var(--ink-2); margin: 0; }
+  .mt-tip.short { display: flex; align-items: center; gap: 12px; padding: 16px 18px; }
+  .mt-tip.short h4 { margin: 0; font-size: 14.5px; }
+  .mt-tip.short .arrow { color: var(--muted); margin-left: auto; }
+</style>
+
+<div class="mt">
+  <section class="mt-section">
+    <h2>Astuces et conseils pour tablettes</h2>
+    <p>Découvrez nos astuces pour mieux utiliser votre produit. Vous connaissez une astuce intéressante ? Partagez-la avec la communauté.</p>
+
+    <div class="mt-tips">
+      <div class="mt-tip featured">
+        <div class="mt-tip-num">— Conseil principal</div>
+        <h4>Gare aux tablettes reconditionnées !</h4>
+        <p>En matière de tablette, l'économie n'est pas toujours synonyme de bonne affaire. Parce qu'il n'y a pas de normes reconnues pour le reconditionnement, on ne sait jamais ce que l'on peut obtenir quand on se procure une tablette reconditionnée. C'est particulièrement risqué parce que la batterie peut se dégrader assez rapidement et un modèle reconditionné peut être livré avec une batterie qui ne conserve plus une pleine charge. Autant dépenser le budget adéquat et se procurer un modèle neuf et sous garantie.</p>
+      </div>
+      <div class="mt-tip short">
+        <div class="mt-tip-num">02</div>
+        <h4>Équipez-vous d'une batterie externe.</h4>
+        <span class="arrow">→</span>
+      </div>
+      <div class="mt-tip short">
+        <div class="mt-tip-num">03</div>
+        <h4>Ne faites pas l'impasse sur l'espace de stockage supplémentaire.</h4>
+        <span class="arrow">→</span>
+      </div>
+      <div class="mt-tip short">
+        <div class="mt-tip-num">04</div>
+        <h4>Conseil pour retracer votre tablette perdue.</h4>
+        <span class="arrow">→</span>
+      </div>
+      <div class="mt-tip short">
+        <div class="mt-tip-num">05</div>
+        <h4>Ouvrez un compte sur Google's Cloud.</h4>
+        <span class="arrow">→</span>
+      </div>
+    </div>
+  </section>
+</div>
