@@ -29,24 +29,28 @@
 .mt-duel-title {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em;
-  color: var(--ink); margin: 0 0 12px;
+  color: var(--ink); margin: 0 0 20px;
 }
 .mt-duel-intro { font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 800px; margin: 0 0 22px; }
 .mt-duel-intro p { margin: 0 0 12px; }
 .mt-duel-intro > :last-child { margin-bottom: 0; }
 
-/* Grille des 2 options + badge VS (sans bordure ni fond) */
+/* Grille des 2 options + badge VS (VS centré verticalement via stretch) */
 .mt-duel-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  align-items: start;
+  align-items: stretch;
   gap: 0;
 }
 .mt-duel-grid.single { grid-template-columns: 1fr; }
 
-.mt-duel-col { padding: 0 26px; }
-.mt-duel-grid > .mt-duel-col:first-child { padding-left: 0; }
-.mt-duel-grid > .mt-duel-col:last-child { padding-right: 0; }
+/* Wrappers gris clairs autour des 2 options */
+.mt-duel-col {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
 
 .mt-duel-ch {
   font-family: "Inter", sans-serif;
@@ -93,6 +97,5 @@
   .mt-duel-title { font-size: 23px; }
   /* Empilement vertical : le badge VS devient un séparateur horizontal */
   .mt-duel-grid { grid-template-columns: 1fr; }
-  .mt-duel-col, .mt-duel-grid > .mt-duel-col:first-child, .mt-duel-grid > .mt-duel-col:last-child { padding: 0; }
   .mt-duel-vs { padding: 8px 0; }
 }
