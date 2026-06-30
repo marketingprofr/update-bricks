@@ -48,9 +48,16 @@ if ( ! function_exists( 'mt_guide_rich' ) ) {
   }
 }
 if ( ! function_exists( 'mt_choix_read' ) ) {
+  /* `mltv5_choix_comparatif` peut être un GROUPE (1 duel = tableau associatif de
+     sous-champs) OU un REPEATER (liste de duels). On normalise vers une liste. */
   function mt_choix_read( $pid ) {
-    $rows = function_exists( 'get_field' ) ? get_field( 'mltv5_choix_comparatif', $pid ) : null;
-    return is_array( $rows ) ? $rows : array();
+    $v = function_exists( 'get_field' ) ? get_field( 'mltv5_choix_comparatif', $pid ) : null;
+    if ( ! is_array( $v ) || empty( $v ) ) { return array(); }
+    $sub = array( 'mltv5_choix_1_ou_choix_2', 'mltv5_titre_choix_1', 'mltv5_titre_choix_2', 'mltv5_verdict_choix_1_ou_choix_2', 'mltv5_introduction_choix_1_2' );
+    foreach ( $sub as $k ) {
+      if ( array_key_exists( $k, $v ) ) { return array( $v ); } // groupe -> 1 duel
+    }
+    return $v; // repeater -> liste de duels
   }
 }
 
