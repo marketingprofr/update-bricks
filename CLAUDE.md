@@ -242,3 +242,11 @@ Version éditoriale « magazine » (scope `.ed-a`), **un article par produit**.
 - **Typo** : design serif (Source Serif) pour titres/nom/chapô/corps, Inter pour
   labels/points/specs. `!important` sur les familles Inter des titres internes
   (h2/h3/h4 du `post_content`, h5) pour battre le serif du thème.
+- **Images produit en `mix-blend-mode: multiply`** (règle récurrente du site :
+  laisser transparaître le fond gris clair). ⚠️ **Piège vérifié** : si le
+  conteneur de l'image crée un **contexte d'empilement** (`position` + `z-index`),
+  le multiply se mélange avec le fond de CE conteneur, pas avec le gris d'un
+  parent → mettre le **fond gris directement sur le conteneur de l'image**
+  (`.ph-img { background: var(--bg-3) }`), sinon le gris ne transparaît jamais.
+  (Invisible en maquette tant qu'on a un placeholder ; n'apparaît qu'avec une
+  vraie image.)
