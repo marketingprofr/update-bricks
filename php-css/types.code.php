@@ -142,7 +142,7 @@ $title = 'Les ' . ( $type_plur !== '' ? esc_html( $type_plur ) : 'produits' ) . 
 
   <div class="mt-types-list">
     <?php foreach ( $types as $i => $t ) : ?>
-    <article class="mt-type">
+    <article class="mt-type<?php echo $t['img'] === '' ? ' no-img' : ''; ?>">
       <?php if ( $t['img'] !== '' ) : ?>
       <figure class="mt-type-fig">
         <img src="<?php echo esc_url( $t['img'] ); ?>" alt="<?php echo esc_attr( $t['imga'] ); ?>" loading="lazy">

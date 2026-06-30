@@ -43,6 +43,8 @@
   background: #fff;
   align-items: start;
 }
+/* Sans image : pas de colonne média -> contenu pleine largeur */
+.mt-type.no-img { display: block; }
 
 .mt-type-fig {
   margin: 0;
