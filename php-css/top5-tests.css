@@ -61,8 +61,16 @@
 .ed-a-buy .stars-gauge .fill { position: absolute; top: 0; left: 0; overflow: hidden; color: var(--gold); white-space: nowrap; }
 .ed-a-buy .cust-val { font-size: 15px; font-weight: 700; color: var(--ink); }
 .ed-a-buy .cust-count { font-size: 12px; color: var(--muted); }
-/* Sans avis clients : pas de bordure droite (rien à séparer). « Notre note » reste empilé. */
+/* Sans avis clients : « Notre note » reste empilé. Bordure droite seulement s'il
+   reste un bloc à séparer (le point fort) ; sinon « Notre note » est seul → pas de trait. */
 .ed-a-buy.no-cust .note-block { border-right: 0; }
+.ed-a-buy.no-cust.has-pro .note-block { border-right: 1px solid var(--line); }
+
+/* Bloc « Son point fort » (remplace les avis clients) : s'étire pour combler l'espace. */
+.ed-a-buy .pro-block { flex: 1 1 240px; min-width: 0; padding: 18px 24px; border-right: 1px solid var(--line); display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.ed-a-buy .pro-block .r-lbl { margin-bottom: 0; }
+.ed-a-buy .pro-line { position: relative; margin: 0; padding-left: 22px; font-size: 13.5px; line-height: 1.45; font-weight: 600; color: var(--ink-2); }
+.ed-a-buy .pro-line::before { content: ""; position: absolute; left: 2px; top: 5px; width: 9px; height: 5px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
 .ed-a-buy .cta-block { margin-left: auto; padding: 18px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 210px; }
 .ed-a-buy .cta { display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 10px; transition: background .15s; }
 .ed-a-buy .cta:hover { background: var(--accent-dark); }
@@ -147,6 +155,9 @@
   .ed-a-buy { flex-direction: row; flex-wrap: wrap; }
   .ed-a-buy .note-block { flex: 1; align-items: center; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .ed-a-buy .cust-block { flex: 1; align-items: center; border-right: 0; border-bottom: 1px solid var(--line); }
+  .ed-a-buy .pro-block { flex: 1 1 100%; border-right: 0; border-bottom: 1px solid var(--line); }
+  .ed-a-buy.no-cust .note-block,
+  .ed-a-buy.no-cust.has-pro .note-block { border-right: 0; border-bottom: 1px solid var(--line); }
   .ed-a-buy .cta-block { flex: 0 0 100%; margin-left: 0; width: 100%; }
   .ed-a-buy .cta { width: 100%; }
   .ed-a-pc { grid-template-columns: 1fr; padding: 20px 0; }

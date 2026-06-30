@@ -260,8 +260,13 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
     </figure>
 
     <div class="ed-a-col">
-      <?php $has_cust = ( $it['cust_rating'] !== '' && mt5_num( $it['cust_rating'] ) > 0 ); ?>
-      <div class="ed-a-buy<?php echo $has_cust ? '' : ' no-cust'; ?>">
+      <?php
+      $has_cust  = ( $it['cust_rating'] !== '' && mt5_num( $it['cust_rating'] ) > 0 );
+      /* Pas d'avis clients : on comble le slot avec le 1er point fort. */
+      $first_pro = ( ! $has_cust && ! empty( $it['pros'] ) ) ? $it['pros'][0] : '';
+      $buy_class = $has_cust ? '' : ( $first_pro !== '' ? ' no-cust has-pro' : ' no-cust' );
+      ?>
+      <div class="ed-a-buy<?php echo $buy_class; ?>">
         <div class="note-block">
           <span class="r-lbl">Notre note</span>
           <div class="r-line">
@@ -280,6 +285,11 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
             </span>
             <?php $cl = mt5_reviews_label( $it['cust_count'] ); if ( $cl !== '' ) : ?><span class="cust-count"><?php echo esc_html( $cl ); ?></span><?php endif; ?>
           </div>
+        </div>
+        <?php elseif ( $first_pro !== '' ) : ?>
+        <div class="pro-block">
+          <span class="r-lbl">Son point fort</span>
+          <p class="pro-line"><?php echo esc_html( $first_pro ); ?></p>
         </div>
         <?php endif; ?>
         <div class="cta-block">
