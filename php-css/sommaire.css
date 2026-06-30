@@ -11,7 +11,7 @@
   --muted: #6b7480; --muted-2: #9aa3ad;
   --line: #e8eaed; --line-2: #f1f3f5;
   --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
-  --accent: #0f6b54; --accent-soft: #e5f1ec;
+  --accent: var(--at-primary); --accent-soft: var(--at-primary-l-6);
   --gold: #b48a3a; --warn: #b54848;
   --radius: 10px; --radius-lg: 16px;
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
