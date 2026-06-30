@@ -58,7 +58,7 @@
 
 /* image produit (carrée côté boîte, image NON croppée : object-fit contain) */
 .mt-top5 .ph { position: relative; width: 100%; aspect-ratio: 1; background: var(--bg-3); border-radius: 10px; display: grid; place-items: center; overflow: hidden; }
-.mt-top5 .ph img { width: 100% !important; height: 100% !important; max-width: 100% !important; max-height: 100% !important; object-fit: contain !important; object-position: center; display: block; }
+.mt-top5 .ph img { max-width: 100%; max-height: 100px; object-fit: contain; object-position: center; display: block; mix-blend-mode: multiply; }
 .mt-top5 .ph-cap { position: relative; z-index: 1; font-size: 10px; color: var(--muted-2); text-align: center; padding: 0 8px; }
 
 /* ===== MODE RANGÉE (positions 2 à 5) ===== */
@@ -84,7 +84,7 @@
 .mt-top5 .t5-name { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; margin: 0 0 2px; }
 .mt-top5 .t5-name a { transition: color .15s; }
 .mt-top5 .t5-name a:hover { color: var(--accent); }
-.mt-top5 .t5-label { font-size: 14px; font-weight: 700; color: var(--accent); margin: 0 0 3px; }
+.mt-top5 .t5-label { font-size: 14px; font-weight: 700; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-tagline { font-size: 13px; font-weight: 600; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-summary { display: none; }
 .mt-top5 .t5-readmore { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
@@ -140,6 +140,7 @@
 .mt-top5 .t5-list > li:first-child .t5-rnum { display: none; }
 .mt-top5 .t5-list > li:first-child .t5-media { padding: 22px; display: grid; place-items: center; border-right: 1px solid var(--line-2); }
 .mt-top5 .t5-list > li:first-child .ph { border-radius: 12px; overflow: visible; }
+.mt-top5 .t5-list > li:first-child .ph img { max-height: 195px; }
 .mt-top5 .t5-list > li:first-child .t5-laurel {
   display: grid; place-items: center; position: absolute; top: -8px; left: -8px; z-index: 2;
   width: 60px; height: 60px;
@@ -156,7 +157,9 @@
 .mt-top5 .t5-list > li:first-child .t5-eyebrow { display: block; font-size: 14px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 3px; }
 .mt-top5 .t5-list > li:first-child .t5-name { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.12; margin: 0 0 7px; }
 .mt-top5 .t5-list > li:first-child .t5-name a:hover { color: inherit; }
-.mt-top5 .t5-list > li:first-child .t5-label { font-size: 16px; margin: 0 0 5px; }
+/* Hero : la marque est déjà affichée en eyebrow -> on la masque dans le titre. */
+.mt-top5 .t5-list > li:first-child .t5-name .t5-brand-inline { display: none; }
+.mt-top5 .t5-list > li:first-child .t5-label { font-size: 16px; margin: 0 0 6px; }
 .mt-top5 .t5-list > li:first-child .t5-tagline { font-size: 16px; margin: 0 0 10px; }
 .mt-top5 .t5-list > li:first-child .t5-summary { display: block; font-size: 14.5px; line-height: 1.65; color: var(--ink-2); margin: 0 0 14px; text-wrap: pretty; }
 .mt-top5 .t5-list > li:first-child .t5-pc { gap: 6px; }
