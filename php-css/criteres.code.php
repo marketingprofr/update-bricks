@@ -58,34 +58,76 @@ if ( ! function_exists( 'mt_guide_rich' ) ) {
 
 /* ---------------------------------------------------------------------
    Données
+   ---------------------------------------------------------------------
+   Le contenu peut vivre sur la page courante OU sur un post lié dont l'ID
+   est mis en cache dans `mltv5_cached_id_criteres`. On lit donc la page
+   courante en priorité, puis on bascule sur le post caché si vide.
    --------------------------------------------------------------------- */
 $page_id   = get_the_ID();
 $page_tv   = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
 $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
 
-/* Groupe « Partie critères de choix » (image + intro) */
-$grp = function_exists( 'get_field' ) ? get_field( 'mltv5_partie_criteres_de_choix', $page_id ) : array();
-$grp = is_array( $grp ) ? $grp : array();
-$intro_raw = isset( $grp['mltv5_introduction_criteres_de_choix'] ) ? $grp['mltv5_introduction_criteres_de_choix'] : '';
-$img_raw   = isset( $grp['mltv5_image_criteres_de_choix'] ) ? $grp['mltv5_image_criteres_de_choix'] : '';
+if ( ! function_exists( 'mt_guide_read' ) ) {
+  /* Lit groupe + repeater sur un post donné -> tableau normalisé. */
+  function mt_guide_read( $pid ) {
+    $grp  = function_exists( 'get_field' ) ? get_field( 'mltv5_partie_criteres_de_choix', $pid ) : null;
+    $grp  = is_array( $grp ) ? $grp : array();
+    $rows = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $pid ) : null;
+    $rows = is_array( $rows ) ? $rows : array();
+    return array(
+      'intro' => isset( $grp['mltv5_introduction_criteres_de_choix'] ) ? $grp['mltv5_introduction_criteres_de_choix'] : '',
+      'img'   => isset( $grp['mltv5_image_criteres_de_choix'] ) ? $grp['mltv5_image_criteres_de_choix'] : '',
+      'rows'  => $rows,
+    );
+  }
+}
 
-/* Repeater des critères */
-$rows = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $page_id ) : array();
-$rows = is_array( $rows ) ? $rows : array();
+$src_id = $page_id;
+$data   = mt_guide_read( $src_id );
+if ( empty( $data['rows'] ) && trim( (string) $data['intro'] ) === '' && empty( $data['img'] ) ) {
+  $cached = (int) get_field( 'mltv5_cached_id_criteres', $page_id );
+  if ( $cached && $cached !== $page_id ) {
+    $alt = mt_guide_read( $cached );
+    if ( ! empty( $alt['rows'] ) || trim( (string) $alt['intro'] ) !== '' || ! empty( $alt['img'] ) ) {
+      $src_id = $cached;
+      $data   = $alt;
+    }
+  }
+}
 
 $crits = array();
-foreach ( $rows as $r ) {
+foreach ( $data['rows'] as $r ) {
   $t = trim( (string) ( isset( $r['mltv5_critere_de_choix'] ) ? $r['mltv5_critere_de_choix'] : '' ) );
   $d = (string) ( isset( $r['mltv5_description_du_critere'] ) ? $r['mltv5_description_du_critere'] : '' );
   if ( $t === '' && trim( $d ) === '' ) { continue; }
   $crits[] = array( 'title' => $t, 'desc' => mt_guide_rich( $d ) );
 }
 
-$intro   = mt_guide_rich( $intro_raw );
+$intro   = mt_guide_rich( $data['intro'] );
+$img_raw = $data['img'];
 $img_url = mt_guide_img_url( $img_raw );
 
-/* Rien à afficher -> on ne sort rien (la section reste vide / masquée). */
-if ( empty( $crits ) && $intro === '' ) { return; }
+/* Rien à afficher -> on ne sort rien (la section reste vide / masquée).
+   Diagnostic visible UNIQUEMENT pour les éditeurs connectés (builder/preview),
+   pour identifier d'où le contenu doit être lu. Invisible pour les visiteurs. */
+if ( empty( $crits ) && $intro === '' && $img_url === '' ) {
+  if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' ) ) {
+    $g = function_exists( 'get_field' ) ? get_field( 'mltv5_partie_criteres_de_choix', $page_id ) : null;
+    $rr = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $page_id ) : null;
+    echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
+       . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
+       . '<strong>mt-guide — diagnostic (admin only)</strong> : aucun contenu trouvé.<br>'
+       . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
+       . 'mltv5_cached_id_criteres = ' . esc_html( (string) get_field( 'mltv5_cached_id_criteres', $page_id ) ) . '<br>'
+       . 'groupe mltv5_partie_criteres_de_choix = ' . esc_html( gettype( $g ) )
+       . ( is_array( $g ) ? ' [' . esc_html( implode( ', ', array_keys( $g ) ) ) . ']' : '' ) . '<br>'
+       . 'repeater mltv5_criteres_de_choix = ' . esc_html( gettype( $rr ) )
+       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' ) . '<br>'
+       . 'ACF actif = ' . ( function_exists( 'get_field' ) ? 'oui' : 'NON' )
+       . '</div>';
+  }
+  return;
+}
 
 $title       = 'Guide d&rsquo;achat' . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : '' );
 $img_alt     = mt_guide_img_alt( $img_raw, 'Guide d\'achat ' . $type_plur );
