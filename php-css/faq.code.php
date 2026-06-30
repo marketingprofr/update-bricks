@@ -108,6 +108,7 @@ if ( ! empty( $ids ) ) {
       : ( mt5_num( get_field( 'mltv5_score_recent', $pid ) ) / 10 );
     $prods[] = array(
       'name'   => $disp,
+      'brand'  => $brand,
       'score'  => $score,
       'price'  => mt5_num( get_field( 'mltv5_prix_indicatif', $pid ) ),
       'crate'  => mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ),
@@ -126,6 +127,13 @@ if ( ! empty( $prods ) ) {
   $plural = ( strpos( $low, 'les ' ) === 0 );
   $fem    = $plural ? ( strpos( $low, 'meilleures' ) !== false ) : ( strpos( $low, 'la ' ) === 0 );
   $euro   = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0&euro;"; };
+  /* Élision « de » / « d' » devant voyelle ou h (ex. d'huiles d'olive). */
+  $de = function ( $w ) {
+    $w = ltrim( (string) $w );
+    if ( $w === '' ) { return 'de '; }
+    $first = function_exists( 'mb_substr' ) ? mb_strtolower( mb_substr( $w, 0, 1, 'UTF-8' ), 'UTF-8' ) : strtolower( $w[0] );
+    return ( mb_strpos( 'aàâäeéèêëiîïoôöuùûühyœæ', $first ) !== false ) ? 'd&rsquo;' : 'de ';
+  };
 
   /* --- Q1 : le meilleur produit --------------------------------------- */
   $best_noun = $plural ? ( $type_plur !== '' ? $type_plur : $type_sing ) : ( $type_sing !== '' ? $type_sing : $type_plur );
@@ -147,6 +155,21 @@ if ( ! empty( $prods ) ) {
   }
   $a1 .= ' Retrouvez le classement complet et nos avis d&eacute;taill&eacute;s plus haut sur cette page.</p>';
   $autos[] = array( 'q' => $q1, 'a' => $a1 );
+
+  /* --- Q « marques » : marques distinctes du classement (ordre de rang) --- */
+  $brands_ord = array();
+  foreach ( $prods as $p ) {
+    $bn = trim( (string) $p['brand'] );
+    if ( $bn !== '' && ! in_array( $bn, $brands_ord, true ) ) { $brands_ord[] = $bn; }
+  }
+  if ( count( $brands_ord ) >= 2 ) {
+    $top_brands = array_slice( $brands_ord, 0, 4 );
+    $bstr = array_map( function ( $b ) { return '<strong>' . esc_html( $b ) . '</strong>'; }, $top_brands );
+    $qm = 'Quelles sont les meilleures marques' . ( $type_plur !== '' ? ' ' . $de( $type_plur ) . esc_html( $type_plur ) : '' ) . '&nbsp;?';
+    $am = '<p>Les marques les plus repr&eacute;sent&eacute;es dans notre s&eacute;lection sont ' . mt_faq_join_et( $bstr )
+        . '. Le meilleur choix d&eacute;pend toutefois de vos besoins&nbsp;: mieux vaut comparer les produits que les marques.</p>';
+    $autos[] = array( 'q' => $qm, 'a' => $am );
+  }
 
   /* --- Slot 2 : budget (prix) -> avis clients -> confiance ------------- */
   $priced = array_values( array_filter( $prods, function ( $p ) { return $p['price'] > 0; } ) );
