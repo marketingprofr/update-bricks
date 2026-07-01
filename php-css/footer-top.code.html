@@ -1,0 +1,72 @@
+<!-- =====================================================================
+     MEILLEURTEST — Rangée de confiance du footer (logo + badges SVG)
+     À coller dans UN élément CODE Bricks, langage = HTML (PAS de PHP →
+     rien à signer). Styles dans le <style> interne (scope .mt-ftrust) →
+     rendus dès le collage. Badges = <img> vers les SVG de la médiathèque
+     (aucun SVG inline → rien ne « saute »). Fond du footer = blanc.
+     Le badge « expert » est un cercle : agrandi pour équilibrer les
+     rectangles allongés.
+     ===================================================================== -->
+<div class="mt-ftrust">
+  <a class="mt-ftrust-logo" href="https://meilleurtest.fr/" aria-label="Meilleurtest.fr — accueil">
+    <img src="https://meilleurtest.fr/wp-content/uploads/2025/11/merrilowgo.png"
+         alt="Meilleurtest.fr" width="150" height="40" loading="lazy" decoding="async">
+  </a>
+
+  <span class="mt-ftrust-sep" aria-hidden="true"></span>
+
+  <ul class="mt-ftrust-badges">
+    <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-expert.svg"
+             alt="Testé par des experts" class="is-round" loading="lazy" decoding="async"></li>
+    <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-cloudflare.svg"
+             alt="Protégé par Cloudflare" loading="lazy" decoding="async"></li>
+    <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-gdpr.svg"
+             alt="Conforme au RGPD" loading="lazy" decoding="async"></li>
+    <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-ssl.svg"
+             alt="Sécurisé par SSL" loading="lazy" decoding="async"></li>
+  </ul>
+
+  <style>
+    .mt-ftrust{
+      display:flex; align-items:center; flex-wrap:wrap;
+      gap:18px 28px; width:100%;
+      padding-bottom:22px;
+      border-bottom:1px solid #eef0f2;   /* léger filet de séparation avec le contenu du footer */
+    }
+    .mt-ftrust *{ box-sizing:border-box; }
+    .mt-ftrust-logo{ display:inline-flex; align-items:center; }
+    .mt-ftrust-logo img{ height:40px; width:auto; display:block; }
+
+    /* Séparateur vertical logo | badges */
+    .mt-ftrust-sep{
+      align-self:stretch; width:1px; min-height:46px;
+      background:#e8eaed; flex:0 0 auto;
+    }
+
+    /* Badges — poussés à droite comme la maquette, alignés par la hauteur */
+    .mt-ftrust-badges{
+      list-style:none; margin:0 0 0 auto; padding:0;
+      display:flex; align-items:center; flex-wrap:wrap;
+      gap:14px 26px;
+    }
+    .mt-ftrust-badges li{ display:inline-flex; align-items:center; }
+    /* Rectangles (cloudflare/gdpr/ssl) : hauteur ~ taille native, largeur auto */
+    .mt-ftrust-badges img{ height:28px; width:auto; display:block; }
+    /* Sceau circulaire (expert) : carré agrandi pour équilibrer les logos larges */
+    .mt-ftrust-badges img.is-round{ height:46px; width:46px; object-fit:contain; }
+
+    /* Tablette : les badges passent sous le logo si ça serre */
+    @media (max-width:991px){
+      .mt-ftrust-badges{ gap:14px 22px; }
+    }
+    /* Mobile : logo centré au-dessus, badges centrés dessous, séparateur masqué */
+    @media (max-width:767px){
+      .mt-ftrust{ justify-content:center; gap:16px; }
+      .mt-ftrust-logo{ width:100%; justify-content:center; }
+      .mt-ftrust-sep{ display:none; }
+      .mt-ftrust-badges{ margin-left:0; justify-content:center; gap:12px 20px; }
+      .mt-ftrust-badges img{ height:24px; }
+      .mt-ftrust-badges img.is-round{ height:40px; width:40px; }
+    }
+  </style>
+</div>
