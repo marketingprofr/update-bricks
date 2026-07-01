@@ -21,7 +21,7 @@
 $GS_TAX_PRODUCT = 'post-type-produit';    // taxonomie « produit »
 $GS_TAX_ATTR    = 'post-type-attribut';   // taxonomie « attributs »
 $GS_TAX_CAT     = 'category';             // catégorie principale (WP standard)
-$GS_MAX         = 20;                     // nb de guides affichés (courant EXCLU)
+$GS_MAX         = 12;                     // nb de guides affichés (courant EXCLU) — top N plus proches, sous-ensemble des pastilles
 $GS_DESC_ACF    = '';                     // champ ACF pour l'extrait ; vide = extrait auto
 $GS_DESC_WORDS  = 22;                     // longueur de l'extrait (mots)
 $GS_ANCHOR      = 'partie-guides-similaires';
