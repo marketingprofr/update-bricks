@@ -339,6 +339,26 @@ s'additionne au `margin-top` (d'où 30px et non 50px). Ne pas confondre avec le
 `scroll-margin-top` (inline via JS du sommaire, `HEADER_OFFSET = 30`) qui n'est
 qu'un décalage d'ancre au clic, sans effet sur l'espacement visuel.
 
+### Largeur de lecture : 700px centrés + `.breakout` (comme « tests complets »)
+
+La colonne Bricks du guide fait **~954px**. Le contenu « normal » (texte) est
+**borné à `700px` et centré** → `(954-700)/2 ≈ 127px` de marge de chaque côté
+(même logique que `.ed-a-col { max-width:700px; margin:0 auto }` des tests
+complets, où seule la figure image déborde). Mécanisme : sur chaque scope à
+enfants directs (`types`, `marques`, `raisons`, `faq`, `astuces`) →
+`<scope> > * { max-width:700px; margin-left/right:auto }`, placé **après** les
+règles d'éléments (même spécificité → l'ordre source gagne).
+- **Débordent en pleine largeur (954px)** : la grille VS de `choix`
+  (`.mt-duel-grid`), les blocs d'astuces (`.mt-tips`), l'en-tête image+intro de
+  `criteres` (`.mt-guide-lead`), et **tout élément `.breakout`** (classe à poser
+  à la main ; `<scope> .breakout { max-width:none }`).
+- **`criteres`** : pas de `> *` (structure à gouttière). La **colonne numéro
+  passe à `97px`** + `gap 30px` = **127px** à gauche ; `.mt-crit-body` +
+  `.mt-guide-h2--crit` bornés à `700px` → contenu centré (127px chaque côté),
+  numéro dans la gouttière gauche. `choix` : bornage ciblé sur
+  `.mt-duel-title/-intro/-verdict` (le contenu vit dans `.mt-duel`, pas en
+  enfant direct du scope).
+
 ## État du guide d'achat « Critères de choix » (cf. `template-criteres.html`)
 
 Livrables : **`php-css/criteres.code.php`** (onglet Code = markup PHP + boucle) +

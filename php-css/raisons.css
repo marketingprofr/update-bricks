@@ -74,6 +74,12 @@
 .mt-raisons-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
 .mt-raisons-body > :last-child { margin-bottom: 0; }
 
+/* === Largeur de lecture : 700px centrés (comme « tests complets ») ===
+   Titre + corps (texte enrobant l'image flottée) bornés à 700px et centrés
+   dans la colonne (~954px) ; .breakout = pleine largeur. */
+.mt-raisons > * { max-width: 700px; margin-left: auto; margin-right: auto; }
+.mt-raisons > .breakout { max-width: none; }
+
 /* === Responsive === */
 @media (max-width: 767px) {
   .mt-raisons-h2 { font-size: 26px; }

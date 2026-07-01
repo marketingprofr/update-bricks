@@ -99,6 +99,13 @@ details.mt-tip > .mt-tip-body { padding: 16px 20px 18px; }
   padding: 16px 20px;
 }
 
+/* === Largeur de lecture : 700px centrés (comme « tests complets ») ===
+   Titre + intro bornés à 700px et centrés dans la colonne (~954px).
+   Les blocs d'astuces (.mt-tips) et tout .breakout gardent la pleine largeur. */
+.mt-astuces > * { max-width: 700px; margin-left: auto; margin-right: auto; }
+.mt-astuces > .mt-tips,
+.mt-astuces > .breakout { max-width: none; }
+
 /* === Responsive === */
 @media (max-width: 991px) {
   .mt-tips { grid-template-columns: 1fr; }

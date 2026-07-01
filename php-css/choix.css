@@ -96,6 +96,15 @@
 .mt-duel-verdict-body p { margin: 0 0 10px; }
 .mt-duel-verdict-body > :last-child { margin-bottom: 0; }
 
+/* === Largeur de lecture : 700px centrés (comme « tests complets ») ===
+   Titre / intro / verdict bornés à 700px et centrés dans la colonne (~954px).
+   La grille des 2 options + VS (.mt-duel-grid) et tout .breakout gardent la
+   pleine largeur. */
+.mt-choix .mt-duel-title,
+.mt-choix .mt-duel-intro,
+.mt-choix .mt-duel-verdict { max-width: 700px; margin-left: auto; margin-right: auto; }
+.mt-choix .breakout { max-width: none; }
+
 /* === Responsive === */
 @media (max-width: 767px) {
   .mt-duel-title { font-size: 26px; }
