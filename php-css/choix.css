@@ -15,21 +15,24 @@
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink);
   width: 100%;
-  margin-top: 32px;            /* ne pas coller à la partie précédente */
+  margin-top: 50px;            /* marge réelle entre parties du guide d'achat */
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
 }
 .mt-choix * { box-sizing: border-box; }
 .mt-choix a { color: inherit; text-decoration: none; }
+/* La marge inter-parties (50px) est portée par la racine -> le 1er élément
+   ne rajoute pas sa propre marge haute. */
+.mt-choix > :first-child { margin-top: 0; }
 
 /* === Un duel (sobre : pas de carte) === */
 .mt-choix-list { display: grid; gap: 44px; }
 
-/* Titre du duel = H2 « X ou X ? » */
+/* Titre du duel = H2 « X ou X ? » (échelle de titres unifiée du guide) */
 .mt-duel-title {
   font-family: "Source Serif 4", Georgia, serif;
-  font-size: 28px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em;
-  color: var(--ink); margin: 0 0 20px;
+  font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.025em;
+  color: var(--ink); margin: 0 0 0.5em;
 }
 .mt-duel-intro { font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 800px; margin: 0 0 22px; }
 .mt-duel-intro p { margin: 0 0 12px; }
@@ -52,10 +55,11 @@
   padding: 20px 22px;
 }
 
+/* Titre d'option = H4 (échelle unifiée) + filet séparateur conservé */
 .mt-duel-ch {
-  font-family: "Inter", sans-serif;
-  font-size: 17px; font-weight: 700; letter-spacing: -0.01em;
-  color: var(--accent-dark); margin: 0 0 12px;
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 20px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2;
+  color: var(--ink); margin: 0 0 0.5em;
   padding-bottom: 10px; border-bottom: 1px solid var(--line);
 }
 .mt-duel-d { font-size: 14.5px; line-height: 1.65; color: var(--ink-2); }
@@ -94,7 +98,8 @@
 
 /* === Responsive === */
 @media (max-width: 767px) {
-  .mt-duel-title { font-size: 23px; }
+  .mt-duel-title { font-size: 26px; }
+  .mt-duel-ch { font-size: 18px; }
   /* Empilement vertical : le badge VS devient un séparateur horizontal */
   .mt-duel-grid { grid-template-columns: 1fr; }
   .mt-duel-vs { padding: 8px 0; }

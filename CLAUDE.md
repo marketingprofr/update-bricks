@@ -320,6 +320,23 @@ Inter corps, accent `--at-primary-*`).
   un prix ACF, sinon **« Meilleures offres »** (classements sans prix : séries…).
 - **Nom produit centré** : marque uppercase grise (13px) au-dessus, modèle dessous.
 
+## ⚠️ Convention typo/espacement commune aux parties du guide d'achat
+
+Toutes les parties du guide (`criteres`, `types`, `choix`, `marques`, `astuces`,
+`raisons`, `faq`) partagent **la même échelle de titres** (Source Serif 4, 600,
+`--ink`), marges en **`em`** (auto-scaling responsive) :
+- **h2** : `32px` / lh `1.15` / ls `-0.025em` — `margin: 1.5em 0 0.5em`
+- **h3** : `26px` / lh `1.2` / ls `-0.015em` — `margin: 1em 0 0.5em`
+- **h4** : `20px` / lh `1.2` / ls `-0.015em` — `margin: 0.5em 0 0.5em`
+S'applique aussi aux titres internes des WYSIWYG (`.mt-*-desc/-body/-content/-a`).
+
+**Marge réelle de 50px entre chaque partie** : portée par la **racine de scope**
+(`.mt-guide`, `.mt-types`, `.mt-choix`, `.mt-marques`, `.mt-astuces`,
+`.mt-raisons`, `.mt-faq`) via `margin-top: 50px`, avec `<scope> > :first-child {
+margin-top: 0 }` pour neutraliser la marge haute du 1er élément (pas d'addition ni
+de collapse imprévisible). ⚠️ Si les Code elements sont dans une colonne Bricks en
+**flex avec `gap`**, le gap s'ajoute au 50px → réduire l'un des deux.
+
 ## État du guide d'achat « Critères de choix » (cf. `template-criteres.html`)
 
 Livrables : **`php-css/criteres.code.php`** (onglet Code = markup PHP + boucle) +

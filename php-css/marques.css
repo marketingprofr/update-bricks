@@ -17,14 +17,19 @@
   width: 100%;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
+  margin-top: 50px;            /* marge réelle entre parties du guide d'achat */
 }
 .mt-marques * { box-sizing: border-box; }
 .mt-marques a { color: inherit; text-decoration: none; }
+/* La marge inter-parties (50px) est portée par la racine -> le 1er élément
+   ne rajoute pas sa propre marge haute. */
+.mt-marques > :first-child { margin-top: 0; }
 
+/* --- Échelle de titres unifiée du guide d'achat (h2 / h3 / h4) --- */
 .mt-marques-h2 {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 32px; line-height: 1.15; font-weight: 600;
-  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 20px;
+  letter-spacing: -0.025em; color: var(--ink); margin: 1.5em 0 0.5em;
 }
 
 /* === Grille de marques (onglets) === */
@@ -63,11 +68,16 @@
   border-radius: var(--radius-lg);
 }
 .mt-brand-content[hidden] { display: none; }
-.mt-brand-content h3 {
+.mt-brand-content h2,
+.mt-brand-content h3,
+.mt-brand-content h4 {
   font-family: "Source Serif 4", Georgia, serif;
-  font-size: 22px; font-weight: 600; letter-spacing: -0.015em;
-  margin: 0 0 12px; color: var(--ink);
+  font-weight: 600; letter-spacing: -0.015em; color: var(--ink);
 }
+.mt-brand-content h2 { font-size: 32px; line-height: 1.15; letter-spacing: -0.025em; margin: 1.5em 0 0.5em; }
+.mt-brand-content h3 { font-size: 26px; line-height: 1.2; margin: 1em 0 0.5em; }
+.mt-brand-content h4 { font-size: 20px; line-height: 1.2; margin: 0.5em 0 0.5em; }
+.mt-brand-content > :first-child { margin-top: 0; }
 .mt-brand-content p,
 .mt-brand-content ul,
 .mt-brand-content ol {
@@ -87,10 +97,12 @@
   .mt-brands { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 767px) {
-  .mt-marques-h2 { font-size: 26px; }
+  .mt-marques-h2, .mt-brand-content h2 { font-size: 26px; }
   .mt-brands { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .mt-brand { padding: 14px 16px; }
   .mt-brand-name { font-size: 15px; }
   .mt-brand-content { padding: 22px 20px; }
+  .mt-brand-content h3 { font-size: 22px; }
+  .mt-brand-content h4 { font-size: 18px; }
   .mt-brand-content p, .mt-brand-content ul, .mt-brand-content ol { font-size: 14.5px; }
 }

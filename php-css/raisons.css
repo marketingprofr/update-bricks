@@ -18,14 +18,19 @@
   width: 100%;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
+  margin-top: 50px;            /* marge réelle entre parties du guide d'achat */
 }
 .mt-raisons * { box-sizing: border-box; }
 .mt-raisons a { color: inherit; text-decoration: none; }
+/* La marge inter-parties (50px) est portée par la racine -> le 1er élément
+   ne rajoute pas sa propre marge haute. */
+.mt-raisons > :first-child { margin-top: 0; }
 
+/* --- Échelle de titres unifiée du guide d'achat (h2 / h3 / h4) --- */
 .mt-raisons-h2 {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 32px; line-height: 1.15; font-weight: 600;
-  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 18px;
+  letter-spacing: -0.025em; color: var(--ink); margin: 1.5em 0 0.5em;
 }
 
 /* === Corps : contenu riche (toutes les raisons) + image flottée === */
@@ -49,17 +54,16 @@
 .mt-raisons-body > :first-child { margin-top: 0; }
 .mt-raisons-body > figure + * { margin-top: 0; }
 
-/* Titres internes (1 par raison si l'éditeur en pose) */
+/* Titres internes (1 par raison si l'éditeur en pose) — échelle unifiée du guide */
 .mt-raisons-body h2,
 .mt-raisons-body h3,
 .mt-raisons-body h4 {
   font-family: "Source Serif 4", Georgia, serif;
-  font-weight: 600; letter-spacing: -0.015em; color: var(--ink);
-  margin: 26px 0 8px; line-height: 1.25;
+  font-weight: 600; letter-spacing: -0.015em; color: var(--ink); line-height: 1.2;
 }
-.mt-raisons-body h2 { font-size: 22px; }
-.mt-raisons-body h3 { font-size: 20px; }
-.mt-raisons-body h4 { font-size: 18px; }
+.mt-raisons-body h2 { font-size: 32px; line-height: 1.15; letter-spacing: -0.025em; margin: 1.5em 0 0.5em; }
+.mt-raisons-body h3 { font-size: 26px; margin: 1em 0 0.5em; }
+.mt-raisons-body h4 { font-size: 20px; margin: 0.5em 0 0.5em; }
 
 .mt-raisons-body p { margin: 0 0 14px; }
 .mt-raisons-body ul,
@@ -77,7 +81,7 @@
     float: none; width: 100%; max-width: none; margin: 0 0 18px;
   }
   .mt-raisons-body { font-size: 14.5px; }
-  .mt-raisons-body h2 { font-size: 20px; }
-  .mt-raisons-body h3 { font-size: 19px; }
-  .mt-raisons-body h4 { font-size: 17px; }
+  .mt-raisons-body h2 { font-size: 26px; }
+  .mt-raisons-body h3 { font-size: 22px; }
+  .mt-raisons-body h4 { font-size: 18px; }
 }
