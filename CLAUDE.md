@@ -566,7 +566,8 @@ cliquable, `aria-current="page"`).
     des candidats lus depuis le **cache d'objets** amorcé par WP_Query
     (`update_post_term_cache`, défaut) → **aucune requête en plus**.
 - **Tri** : palier ↑ → nb attributs partagés ↓ → nb catégories partagées ↓ →
-  date ↓. **Dédoublonnage** par ID (`$seen`). **Coupe à `$CS_MAX = 20`** items
+  **ID ↑** (départage à similarité égale : du plus petit au plus grand ID).
+  **Dédoublonnage** par ID (`$seen`). **Coupe à `$CS_MAX = 20`** items
   (courant inclus). Section **masquée** si aucune recommandation.
 - **Post type agnostique** : `get_post_type(get_the_ID())` → pas besoin du slug du
   CPT comparatif (la page courante EST un comparatif).
