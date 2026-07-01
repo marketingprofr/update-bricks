@@ -1,0 +1,79 @@
+/* =====================================================================
+   MEILLEURTEST — Mode sombre du HEADER (snippet à coller en CSS GLOBAL)
+   ---------------------------------------------------------------------
+   Le header est fait d'éléments natifs Bricks à couleurs codées en dur → il ne
+   bascule pas tout seul. Ce snippet le fait basculer sous le toggle Advanced
+   Themer (html[data-theme="dark"]) SANS re-générer le header : tes retouches
+   faites dans le builder sont préservées.
+
+   ✳️ 2 étapes :
+   1) Dans le builder : sélectionne la SECTION racine du header → onglet Style →
+      « CSS classes » → ajoute la classe   mt-header   (rien d'autre à toucher).
+   2) Colle ce CSS dans un CSS GLOBAL : Bricks → Settings → Custom CSS
+      (ou le Custom CSS d'Advanced Themer, ou le thème enfant).
+      ⚠️ PAS dans le champ CSS d'un élément (il resterait inerte au collage).
+      Puis purge Varnish + Breeze.
+
+   Repères : on cible les classes natives Bricks (.brxe-block / .brxe-search /
+   .brxe-nav-menu / .brxe-button / .brxe-text-basic) + l'ORDRE des 4 bandes :
+     1 = barre noire (déjà sombre, inchangée)
+     2 = rangée principale (logo · recherche · actions)
+     3 = rangée catégories
+     4 = bandeau de confiance
+   (si tu réordonnes/ajoutes une bande, ajuste les :nth-child ci-dessous.)
+   Palette alignée sur les blocs de contenu (ink #e7e9ec, surface #171b21,
+   ligne #2b323b, accent clair #57c79a).
+   ===================================================================== */
+
+/* Section : socle sombre (au cas où le fond de section transparaisse) */
+html[data-theme="dark"] .mt-header { background:#171b21 !important; }
+
+/* Bandes 2 (rangée principale) & 3 (catégories) : fond sombre + filet sombre */
+html[data-theme="dark"] .mt-header > *:nth-child(2),
+html[data-theme="dark"] .mt-header > *:nth-child(3){
+  background:#171b21 !important;
+  border-bottom-color:#2b323b !important;
+}
+
+/* Bande 4 : bandeau de confiance (vert clair → tint vert sombre + texte clair) */
+html[data-theme="dark"] .mt-header > *:nth-child(4){ background:rgba(58,180,131,.12) !important; }
+html[data-theme="dark"] .mt-header > *:nth-child(4) .brxe-text-basic{ color:#7fd7b0 !important; }
+
+/* Recherche : pilule sombre, texte clair, placeholder + loupe grisés */
+html[data-theme="dark"] .mt-header .brxe-search{ background:#222931 !important; }
+html[data-theme="dark"] .mt-header .brxe-search input{ color:#e7e9ec !important; }
+html[data-theme="dark"] .mt-header .brxe-search input::placeholder{ color:#97a1ab !important; }
+html[data-theme="dark"] .mt-header .brxe-search i,
+html[data-theme="dark"] .mt-header .brxe-search svg{ color:#97a1ab !important; }
+
+/* Boutons d'action (Connexion, Cadeaux…) : libellés + icônes clairs */
+html[data-theme="dark"] .mt-header .brxe-button{ color:#c3c9d0 !important; }
+html[data-theme="dark"] .mt-header .brxe-button:hover{ color:#57c79a !important; }
+
+/* Menus (burger mobile + catégories) : liens clairs, soulignés au survol / actif.
+   ⚠️ Le soulignement natif des catégories est BLANC par défaut (invisible en
+   clair) → il deviendrait visible en sombre : on le repasse en transparent. */
+html[data-theme="dark"] .mt-header .brxe-nav-menu,
+html[data-theme="dark"] .mt-header .brxe-nav-menu a{ color:#c3c9d0 !important; }
+html[data-theme="dark"] .mt-header .brxe-nav-menu a{ border-bottom-color:transparent !important; }
+html[data-theme="dark"] .mt-header .brxe-nav-menu a:hover{ color:#e7e9ec !important; border-bottom-color:#57c79a !important; }
+html[data-theme="dark"] .mt-header .brxe-nav-menu li.current-menu-item > a,
+html[data-theme="dark"] .mt-header .brxe-nav-menu li.current-menu-parent > a,
+html[data-theme="dark"] .mt-header .brxe-nav-menu li.current_page_item > a{
+  color:#57c79a !important; border-bottom-color:#57c79a !important;
+}
+
+/* Panneau du menu mobile / sous-menus déroulants : fond sombre.
+   (Classes Bricks courantes — à vérifier/ajuster dans l'inspecteur si besoin.) */
+html[data-theme="dark"] .mt-header .brxe-nav-menu .bricks-mobile-menu-wrapper,
+html[data-theme="dark"] .mt-header .brxe-nav-menu .brx-submenu-toggle + ul,
+html[data-theme="dark"] .mt-header .brxe-nav-menu ul.sub-menu{
+  background:#1c2127 !important; border-color:#2b323b !important;
+}
+
+/* --- LOGO : image claire → peu lisible sur fond sombre.
+   Option de DÉPANNAGE (éclaircissement CSS, imparfait — peut délaver la coche
+   bleue) : décommente la ligne ci-dessous. Sinon, fournis une version claire du
+   logo pour un vrai swap. ---
+html[data-theme="dark"] .mt-header .brxe-logo img{ filter:brightness(0) invert(1); }
+*/

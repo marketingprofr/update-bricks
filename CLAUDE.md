@@ -688,8 +688,15 @@ est en **2.0.2** → on s'appuie sur AT.
   pastilles/tags en tint AT clair → **fonds translucides**.
 - **Footer** : le fond `footer-3` est un token AT (blanc → bascule) ; la bande de
   confiance assombrit filet + séparateur en sombre.
-- **⚠️ Restes à traiter (natif, hors CSS de bloc)** : les **bandes du header**
-  (`build-header.py`, fonds `WHITE`/hex en dur, pas des tokens AT) ne basculent
-  pas → à reprendre. Et le **logo `merrilowgo.png`** (image claire) devient peu
-  lisible sur fond sombre (header ET footer) → prévoir une **version claire du
-  logo** pour le mode sombre.
+- **Header** (natif, hex en dur, pas de tokens AT → ne bascule pas seul) : traité
+  par un **snippet CSS global** `php-css/header-dark.css` (pas un re-build, pour
+  préserver les retouches builder). Étapes : ajouter la classe `.mt-header` sur la
+  **section racine** du header, puis coller le CSS dans un **CSS GLOBAL** (Bricks
+  Settings → Custom CSS ou AT, **pas** un champ d'élément = inerte). Cible les
+  bandes via l'ordre `:nth-child` (1 barre noire inchangée · 2 rangée principale ·
+  3 catégories · 4 confiance) + les classes natives `.brxe-search/.brxe-nav-menu/
+  .brxe-button/.brxe-text-basic`. Soulignement natif des catégories (blanc) repassé
+  transparent en sombre.
+- **⚠️ Logo `merrilowgo.png`** (image claire) : peu lisible sur fond sombre (header
+  ET footer) → prévoir une **version claire du logo** pour un swap propre en sombre
+  (repli : filtre CSS `brightness(0) invert(1)`, commenté dans `header-dark.css`).
