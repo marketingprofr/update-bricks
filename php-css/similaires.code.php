@@ -6,8 +6,10 @@
    Emplacement : SOUS le tableau comparatif, AVANT le guide d'achat.
 
    Recommande jusqu'à 20 comparatifs les plus proches du comparatif courant,
-   classés du plus proche au moins proche. Le comparatif courant est INCLUS
-   dans la liste et mis en ACCENTUÉ.
+   classés du plus proche au moins proche. Le comparatif courant est affiché
+   EN PLUS, en tête et ACCENTUÉ (il n'occupe pas un slot de recommandation).
+   ⚠️ Pour que ce bloc et « Tous les guides » (guides-similaires.code.php)
+   recommandent EXACTEMENT les mêmes comparatifs, garder $CS_MAX == $GS_MAX.
 
    Proximité (≤ 3 requêtes — ici 2 WP_Query) :
      0) le comparatif courant                                  (accentué, en tête)
@@ -24,7 +26,7 @@
 $CS_TAX_PRODUCT = 'post-type-produit';    // taxonomie « produit »
 $CS_TAX_ATTR    = 'post-type-attribut';   // taxonomie « attributs »
 $CS_TAX_CAT     = 'category';             // catégorie principale (WP standard)
-$CS_MAX         = 20;                     // nb max d'items (comparatif courant INCLUS)
+$CS_MAX         = 20;                     // nb de comparatifs recommandés (courant affiché EN PLUS) — garder == $GS_MAX
 $CS_LABEL_ACF   = '';                     // champ ACF pour un libellé court ; vide = titre du post
 $CS_TITLE       = 'Comparatifs similaires';
 $CS_ANCHOR      = 'partie-comparatifs-similaires';
@@ -190,15 +192,15 @@ if ( ! function_exists( 'mt_sim_label' ) ) {
 
 /* ---------------------------------------------------------------------
    Classement via le moteur de similarité partagé.
-   max = $CS_MAX - 1 : on réserve une place pour le comparatif courant,
-   ajouté en tête (accentué).
+   max = $CS_MAX recommandations (identiques à la grille si $CS_MAX == $GS_MAX) ;
+   le comparatif courant est ajouté EN PLUS, en tête (accentué).
    --------------------------------------------------------------------- */
 $cur_id = get_the_ID();
 $ids    = mt_sim_ranked_ids( $cur_id, array(
   'tax_product' => $CS_TAX_PRODUCT,
   'tax_attr'    => $CS_TAX_ATTR,
   'tax_cat'     => $CS_TAX_CAT,
-  'max'         => max( 0, $CS_MAX - 1 ),
+  'max'         => (int) $CS_MAX,
 ) );
 
 /* ---------------------------------------------------------------------
