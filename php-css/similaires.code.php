@@ -126,7 +126,6 @@ if ( ! empty( $cur_prod ) && $cur_type ) {
       'tier' => $has_all_att ? 2 : 3,
       'attr' => $attr_shared,
       'cat'  => count( array_intersect( $cur_cat, $c ) ),
-      'date' => (int) get_post_time( 'U', true, $pid ),
     );
   }
   wp_reset_postdata();
@@ -163,7 +162,6 @@ if ( ! empty( $cur_cat ) && $cur_type && $need > 0 ) {
       'tier' => 4,
       'attr' => 0,
       'cat'  => count( array_intersect( $cur_cat, $c ) ),
-      'date' => (int) get_post_time( 'U', true, $pid ),
     );
   }
   wp_reset_postdata();
@@ -171,14 +169,15 @@ if ( ! empty( $cur_cat ) && $cur_type && $need > 0 ) {
 
 /* ---------------------------------------------------------------------
    Tri du plus proche au moins proche + coupe
-   palier ↑, puis attributs partagés ↓, catégories partagées ↓, date ↓
+   palier ↑, puis attributs partagés ↓, catégories partagées ↓,
+   puis ID ↑ (départage à similarité égale : du plus petit au plus grand)
    --------------------------------------------------------------------- */
 $list = array_values( $cands );
 usort( $list, function ( $x, $y ) {
   if ( $x['tier'] !== $y['tier'] ) { return $x['tier'] - $y['tier']; }
   if ( $x['attr'] !== $y['attr'] ) { return $y['attr'] - $x['attr']; }
   if ( $x['cat']  !== $y['cat']  ) { return $y['cat']  - $x['cat']; }
-  return $y['date'] - $x['date'];
+  return $x['id'] - $y['id'];
 } );
 $list = array_slice( $list, 0, max( 0, $CS_MAX - 1 ) );
 
