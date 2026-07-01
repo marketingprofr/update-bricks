@@ -172,3 +172,21 @@
   .ed-a-pc .col.cons { padding-left: 0; padding-top: 16px; border-left: 0; border-top: 1px solid var(--line-2); }
   .ed-a-specs dl { grid-template-columns: 1fr; gap: 0; }
 }
+
+/* =====================================================================
+   MODE SOMBRE — html[data-theme="dark"] (toggle Advanced Themer).
+   ===================================================================== */
+html[data-theme="dark"] .ed-a {
+  --ink:#e7e9ec; --ink-2:#c3c9d0;
+  --muted:#97a1ab; --muted-2:#737c86;
+  --line:#2b323b; --line-2:#242b33;
+  --bg-2:#1c2127; --bg-3:#222931;
+  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
+  --gold:#d0a24e; --warn:#e59595;
+}
+/* Image produit : garder une tuile CLAIRE (le multiply devient invisible sur fond sombre) */
+html[data-theme="dark"] .ed-a-figure .ph-img { background:#edeff1; }
+/* Pastille "tag" : fond accent translucide au lieu du tint AT clair */
+html[data-theme="dark"] .ed-a-buy .tag { background:rgba(58,180,131,.15); }
+/* Séparateur mobile de la photo */
+html[data-theme="dark"] .ed-a-figure .ph-info { border-top-color:rgba(255,255,255,.08); }

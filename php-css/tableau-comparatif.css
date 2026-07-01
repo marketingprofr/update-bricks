@@ -219,3 +219,30 @@
   .mt-cmp th, .mt-cmp td { padding: 11px; }
   .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 14px 11px; }
 }
+
+/* =====================================================================
+   MODE SOMBRE — html[data-theme="dark"] (toggle Advanced Themer).
+   ===================================================================== */
+html[data-theme="dark"] .mt-cmp-root {
+  --ink:#e7e9ec; --ink-2:#c3c9d0;
+  --muted:#97a1ab; --muted-2:#737c86;
+  --line:#2b323b; --line-2:#242b33;
+  --bg:#171b21; --bg-2:#1c2127; --bg-3:#222931;
+  --track:#313842;
+  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
+  --sc-p:#3ab483; --sc-g:#43b56e; --sc-y:#e0b53f; --sc-o:#eb9a54; --sc-r:#e0685a;
+  --pos-ink:#67cfa0; --pos-ic:#35c07f; --neg-ink:#ec9a9a; --neg-ic:#e57373;
+}
+html[data-theme="dark"] .mt-cmp-wrap { background:var(--bg); }
+html[data-theme="dark"] .mt-cmp { background:var(--bg); }
+/* Médaillon laurier + rangs 4-5 : socle sombre */
+html[data-theme="dark"] .mt-cmp .t5-laurel { background:#20262e; }
+html[data-theme="dark"] .mt-cmp .pos-cell .rank.r4,
+html[data-theme="dark"] .mt-cmp .pos-cell .rank.r5 { background:#20262e; border-color:#3a424c; }
+html[data-theme="dark"] .mt-cmp .pos-cell .rank.r4 .rank-n,
+html[data-theme="dark"] .mt-cmp .pos-cell .rank.r5 .rank-n { color:#c3c9d0; }
+/* Image produit : tuile claire conservée (multiply invisible sur fond sombre) */
+html[data-theme="dark"] .mt-cmp .product-thumb { background:#edeff1; }
+html[data-theme="dark"] .mt-cmp .product-thumb.empty::after { background:repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,.06) 8px 9px); }
+/* Bouton "afficher plus" : surface sombre */
+html[data-theme="dark"] .mt-cmp-more-btn { background:var(--bg); }

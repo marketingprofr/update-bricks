@@ -652,3 +652,44 @@ capture client). Générateur versionné : **`build-footer.py`** → produit
 - **⚠️ Après collage** : approuver l'élément `code` de la rangée dans la **Code
   review** Bricks (`executeCode` → signature), puis **purger Varnish + Breeze**.
   Les URLs des SVG sont référencées telles quelles (badges déjà dans la médiathèque).
+
+## Mode sombre (mode nuit)
+
+Bascule **pilotée par le toggle natif Advanced Themer** (élément posé dans le
+header par le client, à la place de « Favoris »). **Zéro JS maison**, une seule
+source de vérité : AT ajoute **`data-theme="dark"` sur `<html>`** (sélecteur
+retenu : `html[data-theme="dark"]`). Si « Auto-darkmode » d'AT est activé, AT
+suit l'OS et pose cet attribut → nos blocs suivent automatiquement (pas de
+`prefers-color-scheme` séparé, qui entrerait en conflit avec le choix manuel).
+Bricks core n'a l'élément natif « Toggle – Mode » que depuis **2.2** ; le site
+est en **2.0.2** → on s'appuie sur AT.
+
+- **Mécanique** : chaque bloc définit déjà sa palette en **variables CSS au
+  scope** → le sombre = un bloc `html[data-theme="dark"] <scope> { … }` en fin de
+  fichier qui **re-déclare les variables** (neutres inversés). Palette sombre
+  **commune** à tous : `--ink:#e7e9ec` / `--ink-2:#c3c9d0` / `--muted:#97a1ab` /
+  `--muted-2:#737c86` / `--line:#2b323b` / `--line-2:#242b33` / `--bg:#171b21`
+  (surface carte) / `--bg-2:#1c2127` / `--bg-3:#222931`.
+- **Accent forcé** en vert clair lisible sur fond sombre, **indépendant du
+  réglage AT primary** (on ne parie pas sur le flip d'AT) : `--accent:#3ab483` /
+  `--accent-dark:#57c79a` / `--accent-soft:rgba(58,180,131,.15)`.
+- **Surfaces `#fff` en dur** des cartes → passées en `var(--bg)` (invisible en
+  clair, suit le thème en sombre). Les `color:#fff`/`white` **sur fond coloré**
+  (boutons accent, onglet actif, banderoles) restent blancs.
+- **⚠️ Piège `mix-blend-mode: multiply`** (images produit de `top5-resume`,
+  `top5-tests`, `tableau-comparatif`) : `multiply` sur fond sombre **efface**
+  l'image → en sombre on garde une **tuile CLAIRE** sous l'image
+  (`.ph`/`.ph-img`/`.product-thumb { background:#edeff1 }`), le produit reste
+  visible.
+- **Couleurs décoratives en dur** traitées au cas par cas : médailles or/argent/
+  bronze conservées ; **laurier & rangs 4-5** (socle blanc) → socle sombre
+  `#20262e` ; **onglet actif** du top5 inversé (fond clair, texte sombre) ;
+  jauges (`--track`), scores (`--sc-*`), points +/- (`--pos/neg-*`) éclaircis ;
+  pastilles/tags en tint AT clair → **fonds translucides**.
+- **Footer** : le fond `footer-3` est un token AT (blanc → bascule) ; la bande de
+  confiance assombrit filet + séparateur en sombre.
+- **⚠️ Restes à traiter (natif, hors CSS de bloc)** : les **bandes du header**
+  (`build-header.py`, fonds `WHITE`/hex en dur, pas des tokens AT) ne basculent
+  pas → à reprendre. Et le **logo `merrilowgo.png`** (image claire) devient peu
+  lisible sur fond sombre (header ET footer) → prévoir une **version claire du
+  logo** pour le mode sombre.

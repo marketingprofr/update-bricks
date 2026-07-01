@@ -71,5 +71,11 @@
       .mt-ftrust-badges img{ height:24px; }
       .mt-ftrust-badges img.is-round{ height:40px; width:40px; }
     }
+
+    /* Mode sombre (toggle Advanced Themer) : le fond footer devient sombre (token AT)
+       -> on assombrit le filet et le séparateur. ⚠️ Le logo merrilowgo.png reste
+       une image claire : prévoir une version claire pour le sombre si besoin. */
+    html[data-theme="dark"] .mt-ftrust{ border-bottom-color:#2b323b; }
+    html[data-theme="dark"] .mt-ftrust-sep{ background:#2b323b; }
   </style>
 </div>

@@ -125,3 +125,17 @@
   .text-content table { font-size: 13.5px; }
   .text-content th, .text-content td { padding: 8px 10px; }
 }
+
+/* =====================================================================
+   MODE SOMBRE — piloté par le toggle Advanced Themer (html[data-theme="dark"]).
+   On « flippe » les variables du scope ; l'accent est forcé en vert clair
+   lisible sur fond sombre (indépendant du réglage AT primary). Les surfaces
+   de cartes en #fff ont été passées en var(--bg) pour suivre le thème.
+   ===================================================================== */
+html[data-theme="dark"] .text-content {
+  --ink:#e7e9ec; --ink-2:#c3c9d0;
+  --muted:#97a1ab; --muted-2:#737c86;
+  --line:#2b323b; --line-2:#242b33;
+  --bg:#171b21; --bg-2:#1c2127; --bg-3:#222931;
+  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
+}
