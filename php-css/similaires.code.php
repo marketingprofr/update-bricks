@@ -44,14 +44,37 @@ if ( ! function_exists( 'mt_sim_term_ids' ) ) {
     return $ids;
   }
 }
+if ( ! function_exists( 'mt_sim_ucfirst' ) ) {
+  /* ucfirst multi-octets (accents FR : « épilateurs » -> « Épilateurs »). */
+  function mt_sim_ucfirst( $s ) {
+    if ( $s === '' ) { return $s; }
+    $first = mb_substr( $s, 0, 1, 'UTF-8' );
+    $rest  = mb_substr( $s, 1, null, 'UTF-8' );
+    return mb_strtoupper( $first, 'UTF-8' ) . $rest;
+  }
+}
+if ( ! function_exists( 'mt_sim_clean_label' ) ) {
+  /* Retire le préfixe « (Le/La/Les) meilleur(e)(s) … » puis force la capitale.
+     « Les meilleurs barbecues » -> « Barbecues » ;
+     « Les meilleures chaussures de sport » -> « Chaussures de sport » ;
+     « Les meilleurs VTT pas chers » -> « VTT pas chers ». */
+  function mt_sim_clean_label( $label ) {
+    $label = trim( wp_strip_all_tags( (string) $label ) );
+    $stripped = preg_replace( '/^\s*l(?:a|es?)\s+meilleure?s?\s+/iu', '', $label );
+    $stripped = trim( (string) $stripped );
+    if ( $stripped === '' ) { $stripped = $label; }   // titre entièrement consommé -> repli
+    return mt_sim_ucfirst( $stripped );
+  }
+}
 if ( ! function_exists( 'mt_sim_label' ) ) {
-  /* Libellé de la pastille : champ ACF court si défini, sinon titre du post. */
+  /* Libellé de la pastille : champ ACF court si défini, sinon titre du post,
+     nettoyé du préfixe « Les meilleur(e)s… » et capitalisé. */
   function mt_sim_label( $post_id, $acf_field ) {
     if ( $acf_field !== '' && function_exists( 'get_field' ) ) {
       $v = get_field( $acf_field, $post_id );
-      if ( is_string( $v ) && trim( $v ) !== '' ) { return trim( $v ); }
+      if ( is_string( $v ) && trim( $v ) !== '' ) { return mt_sim_clean_label( $v ); }
     }
-    return get_the_title( $post_id );
+    return mt_sim_clean_label( get_the_title( $post_id ) );
   }
 }
 
