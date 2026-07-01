@@ -18,14 +18,19 @@
   width: 100%;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
+  margin-top: 50px;            /* marge réelle entre parties du guide d'achat */
 }
 .mt-types * { box-sizing: border-box; }
 .mt-types a { color: inherit; text-decoration: none; }
+/* La marge inter-parties (50px) est portée par la racine -> le 1er élément
+   ne rajoute pas sa propre marge haute. */
+.mt-types > :first-child { margin-top: 0; }
 
+/* --- Échelle de titres unifiée du guide d'achat (h2 / h3 / h4) --- */
 .mt-types-h2 {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 32px; line-height: 1.15; font-weight: 600;
-  letter-spacing: -0.025em; color: var(--ink); margin: 32px 0 12px;
+  letter-spacing: -0.025em; color: var(--ink); margin: 1.5em 0 0.5em;
 }
 .mt-types-intro { font-size: 16px; line-height: 1.65; color: var(--ink-2); margin: 0 0 26px; }
 .mt-types-intro p { margin: 0 0 12px; }
@@ -60,17 +65,19 @@
 .mt-type-h {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 26px; font-weight: 600; letter-spacing: -0.015em;
-  color: var(--ink); margin: 0 0 14px; line-height: 1.2;
+  color: var(--ink); margin: 0 0 0.5em; line-height: 1.2;
 }
 .mt-type-desc { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
 .mt-type-desc p { margin: 0 0 12px; }
 .mt-type-desc ul, .mt-type-desc ol { margin: 0 0 12px; padding-left: 20px; }
-/* Titres internes (WYSIWYG) : même taille que le titre du type + marges aérées */
+/* Titres internes (WYSIWYG) : échelle unifiée du guide */
 .mt-type-desc h2, .mt-type-desc h3, .mt-type-desc h4 {
   font-family: "Source Serif 4", Georgia, serif;
-  font-size: 26px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2;
-  color: var(--ink); margin: 32px 0 14px;
+  font-weight: 600; letter-spacing: -0.015em; line-height: 1.2; color: var(--ink);
 }
+.mt-type-desc h2 { font-size: 32px; line-height: 1.15; letter-spacing: -0.025em; margin: 1.5em 0 0.5em; }
+.mt-type-desc h3 { font-size: 26px; margin: 1em 0 0.5em; }
+.mt-type-desc h4 { font-size: 20px; margin: 0.5em 0 0.5em; }
 .mt-type-desc > :first-child { margin-top: 0; }
 .mt-type-desc > :last-child { margin-bottom: 0; }
 
@@ -114,10 +121,10 @@
 
 /* === Responsive === */
 @media (max-width: 767px) {
-  .mt-types-h2 { font-size: 26px; }
+  .mt-types-h2, .mt-type-desc h2 { font-size: 26px; }
   .mt-types-intro { font-size: 15px; }
   .mt-type-main { padding: 18px 18px; }
-  .mt-type-h,
-  .mt-type-desc h2, .mt-type-desc h3, .mt-type-desc h4 { font-size: 22px; }
+  .mt-type-h, .mt-type-desc h3 { font-size: 22px; }
+  .mt-type-desc h4 { font-size: 18px; }
   .mt-type-pc { grid-template-columns: 1fr; }
 }
