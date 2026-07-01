@@ -374,7 +374,7 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
         <tr>
           <td class="row-label">R&eacute;sum&eacute;</td>
           <?php foreach ( $products as $it ) : ?>
-          <td class="pp"><?php echo $it['summary'] !== '' ? esc_html( $it['summary'] ) : '<span class="mt-cmp-empty">&mdash;</span>'; ?></td>
+          <td class="pp"><?php echo $it['summary'] !== '' ? wp_kses_post( $it['summary'] ) : '<span class="mt-cmp-empty">&mdash;</span>'; ?></td>
           <?php endforeach; ?>
         </tr>
         <?php endif; ?>
