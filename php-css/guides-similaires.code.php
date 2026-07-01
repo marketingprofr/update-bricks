@@ -1,33 +1,30 @@
 <?php
 /* =====================================================================
-   MEILLEURTEST — « Comparatifs similaires »
+   MEILLEURTEST — « Tous les guides {type} » (grille de guides similaires)
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
-   Le CSS correspondant va dans l'onglet CSS du même élément (similaires.css).
-   Emplacement : SOUS le tableau comparatif, AVANT le guide d'achat.
+   Le CSS correspondant va dans l'onglet CSS du même élément
+   (guides-similaires.css). Réf. maquette : template-guides-similaires.html.
 
-   Recommande jusqu'à 20 comparatifs les plus proches du comparatif courant,
-   classés du plus proche au moins proche. Le comparatif courant est INCLUS
-   dans la liste et mis en ACCENTUÉ.
-
-   Proximité (≤ 3 requêtes — ici 2 WP_Query) :
-     0) le comparatif courant                                  (accentué, en tête)
-     2) même taxonomie produit + TOUS les mêmes attributs      } Requête A
-     3) même taxonomie produit (attributs différents)          } (1 seule requête)
-     4) même catégorie WordPress                               > Requête B
-   Les termes attributs/catégories des candidats sont lus depuis le cache
-   d'objets amorcé par WP_Query (update_post_term_cache) -> aucune requête en +.
+   Réutilise LE MÊME moteur de similarité que « Comparatifs similaires »
+   (mt_sim_ranked_ids) mais en présentation « cartes » (image + titre + extrait).
+   Différences avec le bloc pastilles :
+     - le comparatif COURANT est EXCLU (« N autres guides ») ;
+     - titres COMPLETS (pas de strip « Les meilleur(e)s… ») ;
+     - carte = vignette (image à la une) + titre + extrait.
+   Classement identique : produit + attributs (palier 2/3) puis catégorie (4),
+   du plus proche au moins proche, en ≤ 2 WP_Query.
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
    CONFIG — slugs des taxonomies + réglages (à confirmer côté site)
    --------------------------------------------------------------------- */
-$CS_TAX_PRODUCT = 'post-type-produit';    // taxonomie « produit »
-$CS_TAX_ATTR    = 'post-type-attribut';   // taxonomie « attributs »
-$CS_TAX_CAT     = 'category';             // catégorie principale (WP standard)
-$CS_MAX         = 20;                     // nb max d'items (comparatif courant INCLUS)
-$CS_LABEL_ACF   = '';                     // champ ACF pour un libellé court ; vide = titre du post
-$CS_TITLE       = 'Comparatifs similaires';
-$CS_ANCHOR      = 'partie-comparatifs-similaires';
+$GS_TAX_PRODUCT = 'post-type-produit';    // taxonomie « produit »
+$GS_TAX_ATTR    = 'post-type-attribut';   // taxonomie « attributs »
+$GS_TAX_CAT     = 'category';             // catégorie principale (WP standard)
+$GS_MAX         = 20;                     // nb de guides affichés (courant EXCLU)
+$GS_DESC_ACF    = '';                     // champ ACF pour l'extrait ; vide = extrait auto
+$GS_DESC_WORDS  = 22;                     // longueur de l'extrait (mots)
+$GS_ANCHOR      = 'partie-guides-similaires';
 
 /* ---------------------------------------------------------------------
    Helpers (déclarés une fois — cohabitent avec les autres blocs Code)
@@ -154,68 +151,69 @@ if ( ! function_exists( 'mt_sim_ranked_ids' ) ) {
     return $ids;
   }
 }
-if ( ! function_exists( 'mt_sim_ucfirst' ) ) {
-  /* ucfirst multi-octets (accents FR : « épilateurs » -> « Épilateurs »). */
-  function mt_sim_ucfirst( $s ) {
-    if ( $s === '' ) { return $s; }
-    $first = mb_substr( $s, 0, 1, 'UTF-8' );
-    $rest  = mb_substr( $s, 1, null, 'UTF-8' );
-    return mb_strtoupper( $first, 'UTF-8' ) . $rest;
-  }
-}
-if ( ! function_exists( 'mt_sim_clean_label' ) ) {
-  /* Retire le préfixe « (Le/La/Les) meilleur(e)(s) … » puis force la capitale.
-     « Les meilleurs barbecues » -> « Barbecues » ;
-     « Les meilleures chaussures de sport » -> « Chaussures de sport » ;
-     « Les meilleurs VTT pas chers » -> « VTT pas chers ». */
-  function mt_sim_clean_label( $label ) {
-    $label = trim( wp_strip_all_tags( (string) $label ) );
-    $stripped = preg_replace( '/^\s*l(?:a|es?)\s+meilleure?s?\s+/iu', '', $label );
-    $stripped = trim( (string) $stripped );
-    if ( $stripped === '' ) { $stripped = $label; }   // titre entièrement consommé -> repli
-    return mt_sim_ucfirst( $stripped );
-  }
-}
-if ( ! function_exists( 'mt_sim_label' ) ) {
-  /* Libellé de la pastille : champ ACF court si défini, sinon titre du post,
-     nettoyé du préfixe « Les meilleur(e)s… » et capitalisé. */
-  function mt_sim_label( $post_id, $acf_field ) {
+if ( ! function_exists( 'mt_gsim_excerpt' ) ) {
+  /* Extrait court d'un guide : champ ACF si fourni, sinon extrait manuel WP,
+     sinon début du contenu — tronqué à $words mots, sans HTML ni shortcodes. */
+  function mt_gsim_excerpt( $post_id, $acf_field = '', $words = 22 ) {
+    $text = '';
     if ( $acf_field !== '' && function_exists( 'get_field' ) ) {
       $v = get_field( $acf_field, $post_id );
-      if ( is_string( $v ) && trim( $v ) !== '' ) { return mt_sim_clean_label( $v ); }
+      if ( is_string( $v ) ) { $text = $v; }
     }
-    return mt_sim_clean_label( get_the_title( $post_id ) );
+    if ( trim( $text ) === '' ) {
+      $text = has_excerpt( $post_id ) ? get_the_excerpt( $post_id ) : get_post_field( 'post_content', $post_id );
+    }
+    $text = wp_strip_all_tags( strip_shortcodes( (string) $text ) );
+    $text = trim( preg_replace( '/\s+/', ' ', $text ) );
+    return $text === '' ? '' : wp_trim_words( $text, (int) $words, '…' );
   }
 }
 
 /* ---------------------------------------------------------------------
-   Classement via le moteur de similarité partagé.
-   max = $CS_MAX - 1 : on réserve une place pour le comparatif courant,
-   ajouté en tête (accentué).
+   Contexte : type de produit au pluriel (titre) + classement
    --------------------------------------------------------------------- */
-$cur_id = get_the_ID();
-$ids    = mt_sim_ranked_ids( $cur_id, array(
-  'tax_product' => $CS_TAX_PRODUCT,
-  'tax_attr'    => $CS_TAX_ATTR,
-  'tax_cat'     => $CS_TAX_CAT,
-  'max'         => max( 0, $CS_MAX - 1 ),
+$page_id   = get_the_ID();
+$page_tv   = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
+$type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
+
+$ids = mt_sim_ranked_ids( $page_id, array(
+  'tax_product' => $GS_TAX_PRODUCT,
+  'tax_attr'    => $GS_TAX_ATTR,
+  'tax_cat'     => $GS_TAX_CAT,
+  'max'         => (int) $GS_MAX,
 ) );
 
 /* ---------------------------------------------------------------------
-   Rendu — masqué s'il n'y a aucune recommandation (le courant seul est inutile)
+   Rendu — masqué s'il n'y a aucun guide proche
    --------------------------------------------------------------------- */
 if ( ! empty( $ids ) ) :
-  $cur_label = mt_sim_label( $cur_id, $CS_LABEL_ACF );
+  $n     = count( $ids );
+  $title = $type_plur !== '' ? 'Tous les guides ' . $type_plur : 'Guides similaires';
+  $sub   = $n . ' autre' . ( $n > 1 ? 's' : '' ) . ' guide' . ( $n > 1 ? 's' : '' )
+         . ' plus spécifique' . ( $n > 1 ? 's' : '' ) . ' pour affiner votre choix';
   ?>
-  <section class="mt-similar" id="<?php echo esc_attr( $CS_ANCHOR ); ?>">
-    <h2 class="mt-similar-h2"><?php echo esc_html( $CS_TITLE ); ?></h2>
-    <div class="mt-similar-grid">
-      <span class="mt-similar-pill is-current" aria-current="page"><?php echo esc_html( $cur_label ); ?></span>
+  <section class="mt-gsim" id="<?php echo esc_attr( $GS_ANCHOR ); ?>" aria-labelledby="mt-gsim-title">
+    <h2 class="mt-gsim-h2" id="mt-gsim-title"><?php echo esc_html( $title ); ?></h2>
+    <p class="mt-gsim-sub"><?php echo esc_html( $sub ); ?></p>
+    <div class="mt-gsim-grid">
       <?php foreach ( $ids as $pid ) :
         $url = get_permalink( $pid );
         if ( ! $url ) { continue; }
+        $ttl  = get_the_title( $pid );
+        $img  = get_the_post_thumbnail_url( $pid, 'medium' );
+        $desc = mt_gsim_excerpt( $pid, $GS_DESC_ACF, $GS_DESC_WORDS );
         ?>
-        <a class="mt-similar-pill" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( mt_sim_label( $pid, $CS_LABEL_ACF ) ); ?></a>
+        <a class="mt-gsim-card" href="<?php echo esc_url( $url ); ?>">
+          <span class="mt-gsim-thumb<?php echo $img ? '' : ' is-empty'; ?>">
+            <?php if ( $img ) : ?>
+              <img src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $ttl ); ?>" loading="lazy">
+            <?php endif; ?>
+          </span>
+          <h3 class="mt-gsim-title-c"><?php echo esc_html( $ttl ); ?></h3>
+          <?php if ( $desc !== '' ) : ?>
+            <p class="mt-gsim-desc"><?php echo esc_html( $desc ); ?></p>
+          <?php endif; ?>
+        </a>
       <?php endforeach; ?>
     </div>
   </section>
