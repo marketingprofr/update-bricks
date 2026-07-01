@@ -2,17 +2,15 @@
    MEILLEURTEST — Top 5 « tests complets » — CSS (onglet CSS du bloc code)
    Scope : .ed-a  (aucun conflit avec les classes du site)
    Accent converti sur l'échelle Advanced Themer :
-     #0f6b54 -> var(--at-primary-d-1) | #e7f1ec -> var(--at-primary-l-6)
-     #0a4f3e -> var(--at-primary-d-2)
    Neutres / or / warn conservés en hex (clamp AT trop gros).
    ===================================================================== */
 .ed-a {
-  --ink: #14181d; --ink-2: #2e353d;
-  --muted: #6b7480; --muted-2: #9aa3ad;
-  --line: #e6e8eb; --line-2: #eef0f2;
-  --bg-2: #fafbfc; --bg-3: #f4f5f7;
-  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
-  --gold: #9c7b34; --warn: #b54848;
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
+  --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --gold: var(--at-gold); --warn: var(--at-danger-d-1);
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink);
   line-height: 1.5;
@@ -75,7 +73,7 @@
 .ed-a-buy .pro-line { position: relative; margin: 0; padding-left: 22px; font-size: 13.5px; line-height: 1.45; font-weight: 600; color: var(--ink-2); }
 .ed-a-buy .pro-line::before { content: ""; position: absolute; left: 2px; top: 5px; width: 9px; height: 5px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
 .ed-a-buy .cta-block { margin-left: auto; padding: 18px 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 210px; }
-.ed-a-buy .cta { display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 10px; transition: background .15s; }
+.ed-a-buy .cta { display: inline-flex; align-items: center; justify-content: center; gap: 9px; width: 100%; background: var(--accent); color: var(--at-white); font-size: 14px; font-weight: 600; padding: 12px 20px; border-radius: 10px; transition: background .15s; }
 .ed-a-buy .cta:hover { background: var(--accent-dark); }
 .ed-a-buy .cta .arr { transition: transform .15s; }
 .ed-a-buy .cta:hover .arr { transform: translateX(3px); }
@@ -172,21 +170,3 @@
   .ed-a-pc .col.cons { padding-left: 0; padding-top: 16px; border-left: 0; border-top: 1px solid var(--line-2); }
   .ed-a-specs dl { grid-template-columns: 1fr; gap: 0; }
 }
-
-/* =====================================================================
-   MODE SOMBRE — html[data-theme="dark"] (toggle Advanced Themer).
-   ===================================================================== */
-html[data-theme="dark"] .ed-a {
-  --ink:#e7e9ec; --ink-2:#c3c9d0;
-  --muted:#97a1ab; --muted-2:#737c86;
-  --line:#2b323b; --line-2:#242b33;
-  --bg-2:#1c2127; --bg-3:#222931;
-  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
-  --gold:#d0a24e; --warn:#e59595;
-}
-/* Image produit : garder une tuile CLAIRE (le multiply devient invisible sur fond sombre) */
-html[data-theme="dark"] .ed-a-figure .ph-img { background:#edeff1; }
-/* Pastille "tag" : fond accent translucide au lieu du tint AT clair */
-html[data-theme="dark"] .ed-a-buy .tag { background:rgba(58,180,131,.15); }
-/* Séparateur mobile de la photo */
-html[data-theme="dark"] .ed-a-figure .ph-info { border-top-color:rgba(255,255,255,.08); }

@@ -2,21 +2,19 @@
    MEILLEURTEST — Tableau comparatif (onglet CSS de l'élément Code)
    Scope : .mt-cmp-root  (cf. tableau-comparatif.code.php)
    Palette alignée hero/resume/tests : accent -> tokens Advanced Themer.
-     #0f6b54 -> var(--at-primary-d-1) | #0a4f3e -> var(--at-primary-d-2)
-     #e7f1ec -> var(--at-primary-l-6)
    ===================================================================== */
 
 .mt-cmp-root {
-  --ink: #14181d; --ink-2: #2a3038;
-  --muted: #6b7480; --muted-2: #9aa3ad;
-  --line: #e8eaed; --line-2: #f1f3f5;
-  --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f4f5f7;
-  --track: #d8dde3;                          /* gris des jauges (assombri pour la visibilité) */
-  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
+  --bg: var(--at-white); --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --track: var(--at-grey-l-2);                          /* gris des jauges (assombri pour la visibilité) */
+  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
   /* Notes monochromes */
-  --sc-p: var(--at-primary-d-1); --sc-g: #2e9e5b; --sc-y: #d4a017; --sc-o: #e08a3c; --sc-r: #cf4a3c;
+  --sc-p: var(--at-primary-d-1); --sc-g: var(--at-success); --sc-y: var(--at-warning-d-1); --sc-o: var(--at-warning); --sc-r: var(--at-danger);
   /* Points + / - */
-  --pos-ink: #15663f; --pos-ic: #1f9d63; --neg-ink: #9e3030; --neg-ic: #d14343;
+  --pos-ink: var(--at-success-d-3); --pos-ic: var(--at-success); --neg-ink: var(--at-danger-d-3); --neg-ic: var(--at-danger);
   --radius: 10px; --radius-lg: 16px;
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink);
@@ -45,7 +43,7 @@
   border-radius: var(--radius-lg);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  background: #fff;
+  background: var(--at-white);
 }
 .mt-cmp-wrap::-webkit-scrollbar { height: 9px; }
 .mt-cmp-wrap::-webkit-scrollbar-track { background: var(--bg-3); }
@@ -54,7 +52,7 @@
 /* === Table : 1re colonne fixe (160px), colonnes produits >= 190px et égales.
    La largeur mini totale (160 + nb*190) est posée en inline sur la table -> les
    colonnes produits ne descendent jamais sous 190px et le tableau scrolle. === */
-.mt-cmp { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; background: #fff; }
+.mt-cmp { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; background: var(--at-white); }
 .mt-cmp th, .mt-cmp td {
   padding: 14px; text-align: left; vertical-align: top;
   border-bottom: 1px solid var(--line);
@@ -76,7 +74,7 @@
 /* Pastille « engagement » (laurier recoloré en primary) + mention */
 .mt-cmp .brand-cell { vertical-align: top; text-transform: none; }
 .mt-cmp-brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
-.mt-cmp .t5-laurel { display: grid; place-items: center; width: 56px; height: 56px; background: #fff; border: 1px solid var(--accent-soft); border-radius: 50%; box-shadow: 0 1px 4px rgba(20,24,29,.1); }
+.mt-cmp .t5-laurel { display: grid; place-items: center; width: 56px; height: 56px; background: var(--at-white); border: 1px solid var(--accent-soft); border-radius: 50%; box-shadow: 0 1px 4px rgba(20,24,29,.1); }
 .mt-cmp .t5-laurel-ic {
   width: 40px; height: 40px; display: block; background-color: var(--accent);
   -webkit-mask: url("https://meilleurtest.fr/wp-content/uploads/2026/06/badge-laurel.svg") center / contain no-repeat;
@@ -92,7 +90,7 @@
   position: absolute; top: 0; left: 0; right: 0; height: 26px;
   display: flex; align-items: center; justify-content: center;
   font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
-  color: #fff; line-height: 1.1; padding: 0 6px; background: var(--bn);
+  color: var(--at-white); line-height: 1.1; padding: 0 6px; background: var(--bn);
 }
 .mt-cmp .col-banner.b-best  { --bn: var(--at-primary); }
 .mt-cmp .col-banner.b-price { --bn: var(--at-primary-d-1); }
@@ -108,14 +106,14 @@
 .mt-cmp .pos-cell .rank {
   display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
 }
-.mt-cmp .pos-cell .rank-n { font-weight: 700; font-size: 13px; color: #fff; }
-.mt-cmp .pos-cell .rank.r1 { background: #e3a712; }  /* or */
-.mt-cmp .pos-cell .rank.r2 { background: #aab1b8; }  /* argent */
-.mt-cmp .pos-cell .rank.r3 { background: #b87333; }  /* bronze */
+.mt-cmp .pos-cell .rank-n { font-weight: 700; font-size: 13px; color: var(--at-white); }
+.mt-cmp .pos-cell .rank.r1 { background: var(--at-gold); }  /* or */
+.mt-cmp .pos-cell .rank.r2 { background: var(--at-silver); }  /* argent */
+.mt-cmp .pos-cell .rank.r3 { background: var(--at-bronze); }  /* bronze */
 .mt-cmp .pos-cell .rank.r4,
-.mt-cmp .pos-cell .rank.r5 { background: #fff; border: 1px solid #c8ccd0; }
+.mt-cmp .pos-cell .rank.r5 { background: var(--at-white); border: 1px solid var(--at-grey-l-2); }
 .mt-cmp .pos-cell .rank.r4 .rank-n,
-.mt-cmp .pos-cell .rank.r5 .rank-n { color: #6b7280; }
+.mt-cmp .pos-cell .rank.r5 .rank-n { color: var(--at-grey); }
 
 /* Image produit (fond gris + multiply + padding pour ne pas coller au bord) */
 .mt-cmp .product-cell { padding: 18px 14px; text-align: center; }
@@ -157,7 +155,7 @@
 /* Avis clients (centré) */
 .mt-cmp .cust-cell { text-align: center; }
 .mt-cmp .cust-line { display: flex; align-items: baseline; justify-content: center; gap: 5px; }
-.mt-cmp .cust-star { color: #e8a93b; font-size: 14px; }
+.mt-cmp .cust-star { color: var(--at-gold); font-size: 14px; }
 .mt-cmp .cust-val { font-size: 16px; font-weight: 700; color: var(--ink); }
 .mt-cmp .cust-val small { font-size: 11px; font-weight: 600; color: var(--muted); }
 .mt-cmp .cust-count { font-size: 11px; color: var(--muted); margin-top: 3px; }
@@ -173,7 +171,7 @@
 
 /* Achat : bouton + marchands (comme ailleurs sur la page) */
 .mt-cmp .buy-cell { text-align: center; }
-.mt-cmp .cmp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 16px; background: var(--accent); color: #fff; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; border: none; font-family: inherit; }
+.mt-cmp .cmp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 16px; background: var(--accent); color: var(--at-white); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; border: none; font-family: inherit; }
 .mt-cmp .cmp-btn:hover { background: var(--accent-dark); }
 .mt-cmp .buy-merchants { font-size: 11.5px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
 .mt-cmp .buy-merchants a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
@@ -196,7 +194,7 @@
 
 /* Bouton « afficher plus » */
 .mt-cmp-more { text-align: center; padding: 16px 0 0; }
-.mt-cmp-more-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: all .2s; font-family: inherit; }
+.mt-cmp-more-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--ink); background: var(--at-white); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: all .2s; font-family: inherit; }
 .mt-cmp-more-btn:hover { background: var(--bg-3); border-color: var(--muted-2); }
 .mt-cmp-more-btn .chevron { transition: transform .3s ease; }
 
@@ -219,30 +217,3 @@
   .mt-cmp th, .mt-cmp td { padding: 11px; }
   .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 14px 11px; }
 }
-
-/* =====================================================================
-   MODE SOMBRE — html[data-theme="dark"] (toggle Advanced Themer).
-   ===================================================================== */
-html[data-theme="dark"] .mt-cmp-root {
-  --ink:#e7e9ec; --ink-2:#c3c9d0;
-  --muted:#97a1ab; --muted-2:#737c86;
-  --line:#2b323b; --line-2:#242b33;
-  --bg:#171b21; --bg-2:#1c2127; --bg-3:#222931;
-  --track:#313842;
-  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
-  --sc-p:#3ab483; --sc-g:#43b56e; --sc-y:#e0b53f; --sc-o:#eb9a54; --sc-r:#e0685a;
-  --pos-ink:#67cfa0; --pos-ic:#35c07f; --neg-ink:#ec9a9a; --neg-ic:#e57373;
-}
-html[data-theme="dark"] .mt-cmp-wrap { background:var(--bg); }
-html[data-theme="dark"] .mt-cmp { background:var(--bg); }
-/* Médaillon laurier + rangs 4-5 : socle sombre */
-html[data-theme="dark"] .mt-cmp .t5-laurel { background:#20262e; }
-html[data-theme="dark"] .mt-cmp .pos-cell .rank.r4,
-html[data-theme="dark"] .mt-cmp .pos-cell .rank.r5 { background:#20262e; border-color:#3a424c; }
-html[data-theme="dark"] .mt-cmp .pos-cell .rank.r4 .rank-n,
-html[data-theme="dark"] .mt-cmp .pos-cell .rank.r5 .rank-n { color:#c3c9d0; }
-/* Image produit : tuile claire conservée (multiply invisible sur fond sombre) */
-html[data-theme="dark"] .mt-cmp .product-thumb { background:#edeff1; }
-html[data-theme="dark"] .mt-cmp .product-thumb.empty::after { background:repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,.06) 8px 9px); }
-/* Bouton "afficher plus" : surface sombre */
-html[data-theme="dark"] .mt-cmp-more-btn { background:var(--bg); }

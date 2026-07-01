@@ -2,17 +2,15 @@
    MEILLEURTEST — Top 5 « résumé » — CSS (onglet CSS du bloc code)
    Scope : .mt-top5  (aucun conflit avec les classes du site)
    Accent converti sur l'échelle Advanced Themer :
-     #0f6b54 -> var(--at-primary) | #e5f1ec -> var(--at-primary-l-6)
-     #0a4f3e -> var(--at-primary-d-2)
    Neutres / or / warn conservés en hex (clamp AT trop gros).
    ===================================================================== */
 .mt-top5 {
-  --ink: #14181d; --ink-2: #2a3038;
-  --muted: #6b7480; --muted-2: #8d96a0;
-  --line: #e8eaed; --line-2: #f1f3f5;
-  --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
-  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
-  --gold: #b48a3a; --warn: #b54848;
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
+  --bg: var(--at-white); --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --gold: var(--at-gold); --warn: var(--at-danger-d-1);
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased;
 }
@@ -26,7 +24,7 @@
 
 /* ===== En-tête ===== */
 .mt-top5 .t5-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-.mt-top5 .t5-h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: #14181d; margin: 0; }
+.mt-top5 .t5-h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--at-black-l-1); margin: 0; }
 .mt-top5 .t5-meta { font-size: 16px; color: var(--ink-2); line-height: 1.65; max-width: 740px; margin: 8px 0 0; }
 .mt-top5 .t5-howto { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent); padding: 8px 2px; border-bottom: 1px solid transparent; transition: border-color .15s; }
 .mt-top5 .t5-howto:hover { border-color: var(--accent); }
@@ -46,11 +44,11 @@
   display: inline-flex; align-items: center; gap: 7px;
   padding: 9px 16px; border-radius: 999px; cursor: pointer;
   font-size: 13.5px; font-weight: 600; color: var(--ink-2);
-  background: white; border: 1px solid var(--line); transition: all .15s;
+  background: var(--at-white); border: 1px solid var(--line); transition: all .15s;
 }
 .mt-top5 .t5-tab .ico { font-size: 13px; opacity: .55; transition: opacity .15s; }
 .mt-top5 .t5-tab:hover { border-color: var(--muted-2); }
-.mt-top5 .t5-tab[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: white; }
+.mt-top5 .t5-tab[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--at-white); }
 .mt-top5 .t5-tab[aria-pressed="true"] .ico { opacity: 1; }
 
 /* ===== Liste ===== */
@@ -72,7 +70,7 @@
   box-shadow: 0 1px 2px rgba(20,24,29,.03);
   transition: box-shadow .2s, border-color .2s;
 }
-.mt-top5 .t5-card:hover { box-shadow: 0 14px 36px -22px rgba(20,24,29,.22); border-color: #dcdfe3; }
+.mt-top5 .t5-card:hover { box-shadow: 0 14px 36px -22px rgba(20,24,29,.22); border-color: var(--at-grey-l-2); }
 
 .mt-top5 .t5-banner { display: none; }
 .mt-top5 .t5-rnum { grid-area: rnum; font-family: ui-monospace, monospace; font-size: 22px; font-weight: 700; color: var(--muted); text-align: center; }
@@ -110,7 +108,7 @@
 .mt-top5 .t5-cta {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%; padding: 10px 18px; border-radius: 9px; font-size: 13px; font-weight: 600;
-  background: var(--accent); color: white; border: 1px solid var(--accent); transition: all .15s;
+  background: var(--accent); color: var(--at-white); border: 1px solid var(--accent); transition: all .15s;
 }
 .mt-top5 .t5-cta:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
 .mt-top5 .t5-cta .arr { transition: transform .15s; }
@@ -128,14 +126,14 @@
   align-items: stretch; gap: 0;
   padding: 0; overflow: hidden; border-radius: 18px;
   border-color: var(--at-primary-l-5);
-  box-shadow: 0 0 0 1px var(--at-primary-l-5), 0 10px 28px -22px rgba(15,107,84,.22);
+  box-shadow: 0 0 0 1px var(--at-primary-l-5), 0 10px 28px -22px rgba(20,24,29,.22);
 }
 .mt-top5 .t5-list > li:first-child .t5-banner {
   grid-area: banner; margin: 0; display: flex; align-items: center; gap: 10px;
   padding: 10px 20px; background: var(--accent-soft); border-bottom: 1px solid var(--at-primary-l-5);
   font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent);
 }
-.mt-top5 .t5-list > li:first-child .t5-banner .b-num { font-family: ui-monospace, monospace; font-size: 13px; background: var(--accent); color: white; padding: 2px 8px; border-radius: 6px; letter-spacing: 0; }
+.mt-top5 .t5-list > li:first-child .t5-banner .b-num { font-family: ui-monospace, monospace; font-size: 13px; background: var(--accent); color: var(--at-white); padding: 2px 8px; border-radius: 6px; letter-spacing: 0; }
 
 .mt-top5 .t5-list > li:first-child .t5-rnum { display: none; }
 .mt-top5 .t5-list > li:first-child .t5-media { padding: 22px; display: grid; place-items: center; border-right: 1px solid var(--line-2); }
@@ -144,7 +142,7 @@
 .mt-top5 .t5-list > li:first-child .t5-laurel {
   display: grid; place-items: center; position: absolute; top: -8px; left: -8px; z-index: 2;
   width: 60px; height: 60px;
-  background: white; border: 1px solid #ece0c4; border-radius: 50%; box-shadow: 0 1px 4px rgba(20,24,29,.1);
+  background: var(--at-white); border: 1px solid var(--at-grey-l-3); border-radius: 50%; box-shadow: 0 1px 4px rgba(20,24,29,.1);
 }
 /* Le badge SVG est recoloré en OR via mask (peu importe sa couleur d'origine). */
 .mt-top5 .t5-list > li:first-child .t5-laurel-ic {
@@ -165,7 +163,7 @@
 .mt-top5 .t5-list > li:first-child .t5-pc { gap: 6px; }
 .mt-top5 .t5-list > li:first-child .t5-pc li { font-size: 12px; padding: 5px 11px 5px 24px; border-radius: 999px; color: var(--ink-2); }
 .mt-top5 .t5-list > li:first-child .t5-pc li.pro { background: var(--accent-soft); }
-.mt-top5 .t5-list > li:first-child .t5-pc li.con { background: #f7e6e6; }
+.mt-top5 .t5-list > li:first-child .t5-pc li.con { background: var(--at-danger-l-3); }
 .mt-top5 .t5-list > li:first-child .t5-pc li::before { content: ""; left: 9px; top: 50%; width: 9px; height: 9px; border-radius: 50%; transform: translateY(-50%); }
 .mt-top5 .t5-list > li:first-child .t5-pc li.pro::before { background: var(--accent); }
 .mt-top5 .t5-list > li:first-child .t5-pc li.con::before { background: var(--warn); }
@@ -224,29 +222,3 @@
 @media (prefers-reduced-motion: reduce) {
   .mt-top5 * { transition: none !important; }
 }
-
-/* =====================================================================
-   MODE SOMBRE — html[data-theme="dark"] (toggle Advanced Themer).
-   ===================================================================== */
-html[data-theme="dark"] .mt-top5 {
-  --ink:#e7e9ec; --ink-2:#c3c9d0;
-  --muted:#97a1ab; --muted-2:#8d96a0;
-  --line:#2b323b; --line-2:#242b33;
-  --bg:#171b21; --bg-2:#1c2127; --bg-3:#222931;
-  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
-  --gold:#d0a24e; --warn:#e59595;
-}
-html[data-theme="dark"] .mt-top5 .t5-h2 { color:var(--ink); }
-html[data-theme="dark"] .mt-top5 .t5-tab { background:var(--bg-2); }
-html[data-theme="dark"] .mt-top5 .t5-tab:hover { border-color:#454e58; }
-/* Onglet actif : inverse clair (comme le fond noir en mode jour) */
-html[data-theme="dark"] .mt-top5 .t5-tab[aria-pressed="true"] { background:#e7e9ec; border-color:#e7e9ec; color:#14181d; }
-html[data-theme="dark"] .mt-top5 .t5-card:hover { border-color:#3a424c; }
-/* Image produit : tuile claire conservée (multiply invisible sur fond sombre) */
-html[data-theme="dark"] .mt-top5 .ph { background:#edeff1; }
-html[data-theme="dark"] .mt-top5 .ph-cap { color:#6b7480; }
-/* Médaille laurier : socle sombre (le laurier reste doré via mask) */
-html[data-theme="dark"] .mt-top5 .t5-list > li:first-child .t5-laurel { background:#20262e; border-color:#4a3f28; }
-/* Pastilles hero + tag : fonds translucides au lieu des tints AT clairs */
-html[data-theme="dark"] .mt-top5 .t5-list > li:first-child .t5-pc li.con { background:rgba(220,90,90,.14); }
-html[data-theme="dark"] .mt-top5 .t5-ed .tag { background:rgba(58,180,131,.15); }
