@@ -18,12 +18,9 @@
   width: 100%;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
-  margin-top: 30px;
-  /* Bande : fond gris clair + filet haut (rendu maquette). Si placé en pleine
-     largeur, la bande couvre toute la largeur ; en colonne, c'est un panneau. */
-  background: var(--bg-2);
-  border-top: 1px solid var(--line);
-  padding: 44px 36px;
+  /* Fond gris, filet haut et padding de bande = à porter par la SECTION Bricks
+     (natif), pas ici — la bande couvre alors toute la largeur pendant que le
+     container borne le contenu. */
 }
 .mt-gsim * { box-sizing: border-box; }
 .mt-gsim a { color: inherit; text-decoration: none; }
@@ -81,11 +78,9 @@
 
 /* === Responsive === */
 @media (max-width: 991px) {
-  .mt-gsim { padding: 36px 24px; }
   .mt-gsim-grid { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 767px) {
-  .mt-gsim { padding: 28px 18px; }
   .mt-gsim-h2 { font-size: 24px; }
   .mt-gsim-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
