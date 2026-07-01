@@ -577,3 +577,39 @@ cliquable, `aria-current="page"`).
   (simple référence de style). Ancre `id="partie-comparatifs-similaires"` (pas
   d'entrée sommaire, pas `.contenu-principal` : bloc de nav, pas une colonne de
   texte).
+
+## Moteur de similarité partagé (`mt_sim_ranked_ids`)
+
+Le classement des comparatifs proches est **factorisé** dans une fonction gardée
+`function_exists` **`mt_sim_ranked_ids($cur_id, $opts)`**, incluse **à l'identique**
+(byte-identical, vérifié) dans `similaires.code.php` ET `guides-similaires.code.php`
+→ le 1er bloc chargé la définit, les autres réutilisent. Dépend de `mt_sim_term_ids`
+(idem, gardée). Renvoie les **IDs** des comparatifs proches (courant **exclu**),
+classés du plus proche au moins proche, en **≤ 2 WP_Query** (produit → paliers 2/3,
+catégorie → palier 4 ; tri palier ↑ / attributs partagés ↓ / catégories ↓ / ID ↑).
+`$opts` : `tax_product`, `tax_attr`, `tax_cat`, `max`.
+- **Pastilles** (`similaires.code.php`) appelle avec `max = $CS_MAX - 1` (réserve la
+  place du comparatif courant, ajouté en tête accentué) + libellés **nettoyés**
+  (`mt_sim_clean_label` : strip « Les meilleur(e)s… » + capitale).
+- **Grille** (`guides-similaires.code.php`) appelle avec `max = $GS_MAX` (courant
+  exclu) + titres **complets**.
+
+## État de « Tous les guides {type} » (grille — cf. `template-guides-similaires.html`)
+
+Livrables : **`php-css/guides-similaires.code.php`** + **`php-css/guides-similaires.css`**.
+UN seul élément Code Bricks. Scope `.mt-gsim`. Même moteur de similarité que les
+pastilles, mais présentation **cartes** (vignette image à la une + titre complet +
+extrait). Comparatif **courant exclu** (« N autres guides »).
+
+- **Titre** : « Tous les guides {`type_de_produit_au_pluriel`} » (via
+  `get_all_template_variables`), repli « Guides similaires ». **Sous-titre** :
+  « N autre(s) guide(s) plus spécifique(s) pour affiner votre choix » (accord auto).
+- **Vignette** : `get_the_post_thumbnail_url($pid,'medium')` ; si absente →
+  placeholder texturé (`.is-empty::after`, rayures diagonales comme la maquette).
+- **Extrait** : `mt_gsim_excerpt` (champ ACF `$GS_DESC_ACF` si fourni, sinon extrait
+  WP manuel, sinon début du contenu) tronqué à `$GS_DESC_WORDS = 22` mots, sans
+  HTML/shortcodes. Carte entière cliquable (`<a>`).
+- **Bande** pleine largeur fond gris (`--bg-2`) + filet haut + padding — placer dans
+  une section pleine largeur pour le rendu maquette. Grille 4 → 3 (≤991) → 2 (≤767)
+  → 1 (≤420). Ancre `id="partie-guides-similaires"` (bloc de nav, hors sommaire,
+  pas `.contenu-principal`). `$GS_MAX = 20` guides.
