@@ -9,6 +9,7 @@
   --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
   --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
   --bg: var(--at-white); --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --tile: #f5f6f8;   /* tuile image produit : INVARIABLE clair/sombre (multiply) */
   --track: var(--at-grey-l-2);                          /* gris des jauges (assombri pour la visibilité) */
   --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
   /* Notes monochromes */
@@ -117,7 +118,7 @@
 
 /* Image produit (fond gris + multiply + padding pour ne pas coller au bord) */
 .mt-cmp .product-cell { padding: 18px 14px; text-align: center; }
-.mt-cmp .product-thumb { display: block; width: 100%; aspect-ratio: 1; background: var(--bg-3); border-radius: 8px; margin: 0 auto 12px; padding: 12px; position: relative; overflow: hidden; }
+.mt-cmp .product-thumb { display: block; width: 100%; aspect-ratio: 1; background: var(--tile); border-radius: 8px; margin: 0 auto 12px; padding: 12px; position: relative; overflow: hidden; }
 .mt-cmp .product-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: multiply; }
 .mt-cmp .product-thumb.empty::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,0.03) 8px 9px); }
 

@@ -9,6 +9,7 @@
   --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
   --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
   --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --tile: #f5f6f8;   /* tuile image produit : INVARIABLE clair/sombre (multiply) */
   --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
   --gold: var(--at-gold); --warn: var(--at-danger-d-1);
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
@@ -106,7 +107,7 @@
 /* Fond gris porté par .ph-img : .ph-img crée un contexte d'empilement (z-index)
    → le multiply de l'img doit avoir le gris DANS ce même contexte, sinon il se
    mélange avec du blanc et le fond clair ne transparaît pas. */
-.ed-a-figure .ph-img { flex: 0 0 368px; display: flex; align-items: center; justify-content: center; padding: 34px; position: relative; z-index: 1; background: var(--bg-3); }
+.ed-a-figure .ph-img { flex: 0 0 368px; display: flex; align-items: center; justify-content: center; padding: 34px; position: relative; z-index: 1; background: var(--tile); }
 .ed-a-figure .ph-img img { width: 300px; height: 300px; object-fit: contain; display: block; mix-blend-mode: multiply; }
 .ed-a-figure .ph-cap { font-family: ui-monospace, monospace; font-size: 12px; color: var(--muted-2); letter-spacing: .06em; text-transform: uppercase; text-align: center; line-height: 1.6; }
 .ed-a-figure .ph-info { flex: 1; display: flex; align-items: center; padding: 40px 48px 40px 32px; position: relative; z-index: 1; }

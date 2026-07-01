@@ -685,11 +685,13 @@ met `data-theme="dark"` sur `<html>`). Bricks core n'a « Toggle – Mode » que
   (tout doit être en variable ; les cas particuliers sombres, on verra le moment venu).
 - **Onglet actif top5** : `background:var(--ink); color:var(--at-white)` → s'inverse
   tout seul en sombre (ink devient clair, white devient sombre). Rien à coder.
-- **⚠️ Exception connue, à traiter plus tard** : les **images produit
-  `mix-blend-mode: multiply`** (`top5-resume`/`top5-tests`/`tableau-comparatif`) ont
-  leur tuile en `var(--at-grey-l-5)` → elle **s'assombrit en sombre** et le multiply
-  **efface l'image**. Comportement spécifique dark à ajouter le moment venu (tuile
-  claire figée ou blend différent).
+- **Images produit `mix-blend-mode: multiply`** (`top5-resume`/`top5-tests`/
+  `tableau-comparatif`) : la tuile sous l'image utilise une variable dédiée
+  **`--tile: #f5f6f8` INVARIABLE** (identique clair/sombre) — PAS `grey-l-5` (qui
+  s'assombrirait et effacerait l'image via `multiply`, en plus les images mal
+  détourées baveraient sur du noir). Seule valeur volontairement figée. (Peut être
+  remplacée par une couleur AT « gris-invariable » réglée à #f5f6f8 dans les 2
+  modes si on veut la centraliser.)
 - **Footer** : `footer-3` (token AT white) + bande de confiance (filet/séparateur en
   `var(--at-grey-l-*)`) → basculent tout seuls.
 - **⚠️ Restes hors CSS de bloc** : le **header** (`build-header.py`, hex natifs en
