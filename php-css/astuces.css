@@ -67,7 +67,7 @@
 .mt-tip:not(.featured) {
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--bg);
 }
 details.mt-tip > summary {
   list-style: none;
@@ -118,4 +118,18 @@ details.mt-tip > .mt-tip-body { padding: 16px 20px 18px; }
   .mt-tip-body { font-size: 14.5px; }
   details.mt-tip > summary, .mt-tip.static { padding: 14px 16px; gap: 12px; }
   .mt-tip-title { font-size: 15px; }
+}
+
+/* =====================================================================
+   MODE SOMBRE — piloté par le toggle Advanced Themer (html[data-theme="dark"]).
+   On « flippe » les variables du scope ; l'accent est forcé en vert clair
+   lisible sur fond sombre (indépendant du réglage AT primary). Les surfaces
+   de cartes en #fff ont été passées en var(--bg) pour suivre le thème.
+   ===================================================================== */
+html[data-theme="dark"] .mt-astuces {
+  --ink:#e7e9ec; --ink-2:#c3c9d0;
+  --muted:#97a1ab; --muted-2:#737c86;
+  --line:#2b323b; --line-2:#242b33;
+  --bg:#171b21; --bg-2:#1c2127; --bg-3:#222931;
+  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
 }
