@@ -325,7 +325,7 @@ Inter corps, accent `--at-primary-*`).
 Toutes les parties du guide (`criteres`, `types`, `choix`, `marques`, `astuces`,
 `raisons`, `faq`) partagent **la même échelle de titres** (Source Serif 4, 600,
 `--ink`), marges en **`em`** (auto-scaling responsive) :
-- **h2** : `32px` / lh `1.15` / ls `-0.025em` — `margin: 1.5em 0 1em`
+- **h2** : `32px` / lh `1.15` / ls `-0.025em` — `margin: 1.5em 0 0.75em`
 - **h3** : `26px` / lh `1.2` / ls `-0.015em` — `margin: 1em 0 0.5em`
 - **h4** : `20px` / lh `1.2` / ls `-0.015em` — `margin: 0.5em 0 0.5em`
 S'applique aussi aux titres internes des WYSIWYG (`.mt-*-desc/-body/-content/-a`).
