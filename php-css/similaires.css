@@ -7,11 +7,11 @@
    ===================================================================== */
 
 .mt-similar {
-  --ink: #14181d; --ink-2: #2a3038;
-  --muted: #6b7480;
-  --line: #e8eaed; --line-2: #f1f3f5;
-  --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f4f5f7;
-  --accent: var(--at-primary-d-1); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey);
+  --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
+  --bg: var(--at-white); --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
   --radius: 10px;
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink);
@@ -64,18 +64,4 @@ a.mt-similar-pill:focus-visible { outline: 2px solid var(--accent); outline-offs
 @media (max-width: 767px) {
   .mt-similar-h2 { font-size: 26px; }
   .mt-similar-pill { padding: 8px 13px; font-size: 13px; }
-}
-
-/* =====================================================================
-   MODE SOMBRE — piloté par le toggle Advanced Themer (html[data-theme="dark"]).
-   On « flippe » les variables du scope ; l'accent est forcé en vert clair
-   lisible sur fond sombre (indépendant du réglage AT primary). Les surfaces
-   de cartes en #fff ont été passées en var(--bg) pour suivre le thème.
-   ===================================================================== */
-html[data-theme="dark"] .mt-similar {
-  --ink:#e7e9ec; --ink-2:#c3c9d0;
-  --muted:#97a1ab; --muted-2:#737c86;
-  --line:#2b323b; --line-2:#242b33;
-  --bg:#171b21; --bg-2:#1c2127; --bg-3:#222931;
-  --accent:#3ab483; --accent-dark:#57c79a; --accent-soft:rgba(58,180,131,.15);
 }

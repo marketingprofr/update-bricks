@@ -34,7 +34,7 @@
       display:flex; align-items:center; flex-wrap:wrap;
       gap:18px 28px; width:100%;
       padding-bottom:22px;
-      border-bottom:1px solid #eef0f2;   /* léger filet de séparation avec le contenu du footer */
+      border-bottom:1px solid var(--at-grey-l-4);   /* filet (token AT → bascule en sombre) */
     }
     .mt-ftrust *{ box-sizing:border-box; }
     .mt-ftrust-logo{ display:inline-flex; align-items:center; }
@@ -43,7 +43,7 @@
     /* Séparateur vertical logo | badges */
     .mt-ftrust-sep{
       align-self:stretch; width:1px; min-height:46px;
-      background:#e8eaed; flex:0 0 auto;
+      background:var(--at-grey-l-3); flex:0 0 auto;
     }
 
     /* Badges — poussés à droite comme la maquette, alignés par la hauteur */
@@ -71,11 +71,9 @@
       .mt-ftrust-badges img{ height:24px; }
       .mt-ftrust-badges img.is-round{ height:40px; width:40px; }
     }
-
-    /* Mode sombre (toggle Advanced Themer) : le fond footer devient sombre (token AT)
-       -> on assombrit le filet et le séparateur. ⚠️ Le logo merrilowgo.png reste
-       une image claire : prévoir une version claire pour le sombre si besoin. */
-    html[data-theme="dark"] .mt-ftrust{ border-bottom-color:#2b323b; }
-    html[data-theme="dark"] .mt-ftrust-sep{ background:#2b323b; }
+    /* Mode sombre : filet + séparateur utilisent des tokens AT (--at-grey-l-*)
+       → ils basculent automatiquement, aucune règle dédiée nécessaire.
+       ⚠️ Le logo merrilowgo.png reste une image claire (peu lisible sur fond
+       sombre) : prévoir une version claire du logo, à traiter séparément. */
   </style>
 </div>

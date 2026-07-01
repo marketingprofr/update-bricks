@@ -653,50 +653,47 @@ capture client). Générateur versionné : **`build-footer.py`** → produit
   review** Bricks (`executeCode` → signature), puis **purger Varnish + Breeze**.
   Les URLs des SVG sont référencées telles quelles (badges déjà dans la médiathèque).
 
-## Mode sombre (mode nuit)
+## Mode sombre (mode nuit) — 100 % variables Advanced Themer
 
-Bascule **pilotée par le toggle natif Advanced Themer** (élément posé dans le
-header par le client, à la place de « Favoris »). **Zéro JS maison**, une seule
-source de vérité : AT ajoute **`data-theme="dark"` sur `<html>`** (sélecteur
-retenu : `html[data-theme="dark"]`). Si « Auto-darkmode » d'AT est activé, AT
-suit l'OS et pose cet attribut → nos blocs suivent automatiquement (pas de
-`prefers-color-scheme` séparé, qui entrerait en conflit avec le choix manuel).
-Bricks core n'a l'élément natif « Toggle – Mode » que depuis **2.2** ; le site
-est en **2.0.2** → on s'appuie sur AT.
+**Principe (décision client) :** le sombre est géré **entièrement par AT**. On
+n'écrit **AUCUN** override `html[data-theme="dark"]` : **toutes** les couleurs des
+blocs pointent vers des **tokens AT `var(--at-*)`**, et AT bascule leurs valeurs en
+sombre (le toggle natif AT est posé dans le header à la place de « Favoris » ; il
+met `data-theme="dark"` sur `<html>`). Bricks core n'a « Toggle – Mode » que depuis
+2.2 ; le site est en 2.0.2 → on s'appuie sur AT.
 
-- **Mécanique** : chaque bloc définit déjà sa palette en **variables CSS au
-  scope** → le sombre = un bloc `html[data-theme="dark"] <scope> { … }` en fin de
-  fichier qui **re-déclare les variables** (neutres inversés). Palette sombre
-  **commune** à tous : `--ink:#e7e9ec` / `--ink-2:#c3c9d0` / `--muted:#97a1ab` /
-  `--muted-2:#737c86` / `--line:#2b323b` / `--line-2:#242b33` / `--bg:#171b21`
-  (surface carte) / `--bg-2:#1c2127` / `--bg-3:#222931`.
-- **Accent forcé** en vert clair lisible sur fond sombre, **indépendant du
-  réglage AT primary** (on ne parie pas sur le flip d'AT) : `--accent:#3ab483` /
-  `--accent-dark:#57c79a` / `--accent-soft:rgba(58,180,131,.15)`.
-- **Surfaces `#fff` en dur** des cartes → passées en `var(--bg)` (invisible en
-  clair, suit le thème en sombre). Les `color:#fff`/`white` **sur fond coloré**
-  (boutons accent, onglet actif, banderoles) restent blancs.
-- **⚠️ Piège `mix-blend-mode: multiply`** (images produit de `top5-resume`,
-  `top5-tests`, `tableau-comparatif`) : `multiply` sur fond sombre **efface**
-  l'image → en sombre on garde une **tuile CLAIRE** sous l'image
-  (`.ph`/`.ph-img`/`.product-thumb { background:#edeff1 }`), le produit reste
-  visible.
-- **Couleurs décoratives en dur** traitées au cas par cas : médailles or/argent/
-  bronze conservées ; **laurier & rangs 4-5** (socle blanc) → socle sombre
-  `#20262e` ; **onglet actif** du top5 inversé (fond clair, texte sombre) ;
-  jauges (`--track`), scores (`--sc-*`), points +/- (`--pos/neg-*`) éclaircis ;
-  pastilles/tags en tint AT clair → **fonds translucides**.
-- **Footer** : le fond `footer-3` est un token AT (blanc → bascule) ; la bande de
-  confiance assombrit filet + séparateur en sombre.
-- **Header** (natif, hex en dur, pas de tokens AT → ne bascule pas seul) : traité
-  par un **snippet CSS global** `php-css/header-dark.css` (pas un re-build, pour
-  préserver les retouches builder). Étapes : ajouter la classe `.mt-header` sur la
-  **section racine** du header, puis coller le CSS dans un **CSS GLOBAL** (Bricks
-  Settings → Custom CSS ou AT, **pas** un champ d'élément = inerte). Cible les
-  bandes via l'ordre `:nth-child` (1 barre noire inchangée · 2 rangée principale ·
-  3 catégories · 4 confiance) + les classes natives `.brxe-search/.brxe-nav-menu/
-  .brxe-button/.brxe-text-basic`. Soulignement natif des catégories (blanc) repassé
-  transparent en sombre.
-- **⚠️ Logo `merrilowgo.png`** (image claire) : peu lisible sur fond sombre (header
-  ET footer) → prévoir une **version claire du logo** pour un swap propre en sombre
-  (repli : filtre CSS `brightness(0) invert(1)`, commenté dans `header-dark.css`).
+- **Aucune couleur en dur** dans les CSS de bloc : chaque scope définit ses
+  variables sémantiques **en références AT**, et tout le reste utilise ces
+  variables. Refactor fait en une passe (table hex→token unique → cohérence).
+- **Palette AT du site** (hex saisis côté AT par le client) :
+  - `black` : `#000` → `black-l-1 #14181d` (ink) → `l-2 #2a3038` … `l-6` (≈ un peu
+    plus foncé qu'un gris moyen). `grey` : `#666` (muted) → `l-1 #9aa3ad` →
+    `l-2 #d8dde3` → `l-3 #e8eaed` → `l-4 #f1f3f5` → `l-5 #f5f6f8` → `l-6 #fafbfc`.
+  - `primary` = **BLEU** (couleur principale, l-6→d-6, **fixe**). `secondary` =
+    vert (défini mais **non utilisé** — pas de vert de marque sur la page).
+  - `success/warning/danger` : l-3→d-3. `gold #e3a712` / `silver #aab1b8` /
+    `bronze #b87333` / `white` (→ **gris sombre en mode dark**, pas noir pur).
+- **Correspondances variables → tokens** (appliquées partout) :
+  `--ink=black-l-1`, `--ink-2=black-l-2`, `--muted=grey`, `--muted-2=grey-l-1`,
+  `--line=grey-l-3`, `--line-2=grey-l-4`, `--track=grey-l-2`, `--bg=white`,
+  `--bg-2=grey-l-6`, `--bg-3=grey-l-5` ; **accent = primary** (`--accent=primary`,
+  `--accent-dark=primary-d-2`, `--accent-soft=primary-l-6`) → **aucun vert** ;
+  points forts `--pos-*=success-*`, points faibles `--neg-*=danger-*`,
+  scores `--sc-p=primary`, `--sc-g=success`, `--sc-y=warning-d-1`,
+  `--sc-o=warning`, `--sc-r=danger` ; médailles = `gold/silver/bronze` ; blanc =
+  `white`. **Le blanc sur fond coloré (boutons, banderoles) reste `var(--at-white)`**
+  (tout doit être en variable ; les cas particuliers sombres, on verra le moment venu).
+- **Onglet actif top5** : `background:var(--ink); color:var(--at-white)` → s'inverse
+  tout seul en sombre (ink devient clair, white devient sombre). Rien à coder.
+- **⚠️ Exception connue, à traiter plus tard** : les **images produit
+  `mix-blend-mode: multiply`** (`top5-resume`/`top5-tests`/`tableau-comparatif`) ont
+  leur tuile en `var(--at-grey-l-5)` → elle **s'assombrit en sombre** et le multiply
+  **efface l'image**. Comportement spécifique dark à ajouter le moment venu (tuile
+  claire figée ou blend différent).
+- **Footer** : `footer-3` (token AT white) + bande de confiance (filet/séparateur en
+  `var(--at-grey-l-*)`) → basculent tout seuls.
+- **⚠️ Restes hors CSS de bloc** : le **header** (`build-header.py`, hex natifs en
+  dur) → à repasser en tokens AT dans le générateur (l'ancien snippet
+  `header-dark.css` par override a été **abandonné/supprimé**). Le **logo
+  `merrilowgo.png`** (image claire) reste peu lisible sur fond sombre (header +
+  footer) → prévoir une **version claire du logo**.
