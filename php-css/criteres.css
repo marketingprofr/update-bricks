@@ -61,15 +61,16 @@
 }
 .mt-guide-fig img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
-/* Titre « Les critères pour bien choisir … » (2e H2 : même échelle, marge haute) */
-.mt-guide-h2--crit { margin-top: 1.5em; }
+/* Titre « Les critères pour bien choisir … » (2e H2 : même échelle, marge haute).
+   Centré sur la colonne de lecture (700px) pour s'aligner sur le contenu des critères. */
+.mt-guide-h2--crit { margin-top: 1.5em; max-width: 700px; margin-left: auto; margin-right: auto; }
 
 /* === Liste des critères numérotés === */
 .mt-guide-list { margin-top: 0; }
 
 .mt-crit {
   display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
+  grid-template-columns: 97px minmax(0, 1fr);
   gap: 30px;
   padding: 30px 0;
   border-top: 1px solid var(--line);
@@ -89,6 +90,11 @@
   letter-spacing: -0.04em; color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
+
+/* Contenu du critère borné à 700px : avec la gouttière numéro (97px) + gap (30px)
+   = 127px à gauche, le contenu est centré (~127px de marge de chaque côté) dans
+   la colonne du guide (~954px). */
+.mt-crit-body { max-width: 700px; }
 
 .mt-crit-body h2,
 .mt-crit-body h3,
@@ -123,6 +129,9 @@
   padding: 16px 22px; margin: 18px 0; max-width: 760px;
 }
 .mt-crit-body blockquote p { font-size: 14px; line-height: 1.6; margin: 0; color: var(--ink-2); }
+
+/* Échappatoire manuelle : élément en pleine largeur du contenu */
+.mt-guide .breakout { max-width: none; }
 
 /* === Responsive === */
 @media (max-width: 991px) {

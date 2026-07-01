@@ -92,6 +92,12 @@
 .mt-brand-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
 .mt-brand-content > :last-child { margin-bottom: 0; }
 
+/* === Largeur de lecture : 700px centrés (comme « tests complets ») ===
+   Contenu (titre, grille de marques, panneau détail) borné à 700px et centré
+   dans la colonne (~954px) ; .breakout = pleine largeur. */
+.mt-marques > * { max-width: 700px; margin-left: auto; margin-right: auto; }
+.mt-marques > .breakout { max-width: none; }
+
 /* === Responsive === */
 @media (max-width: 991px) {
   .mt-brands { grid-template-columns: repeat(3, 1fr); }

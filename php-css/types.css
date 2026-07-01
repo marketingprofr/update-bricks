@@ -119,6 +119,11 @@
 .mt-type-who-body p { margin: 0 0 8px; }
 .mt-type-who-body > :last-child { margin-bottom: 0; }
 
+/* === Largeur de lecture : 700px centrés (comme « tests complets ») ===
+   Contenu borné à 700px et centré dans la colonne (~954px) ; .breakout = pleine largeur. */
+.mt-types > * { max-width: 700px; margin-left: auto; margin-right: auto; }
+.mt-types > .breakout { max-width: none; }
+
 /* === Responsive === */
 @media (max-width: 767px) {
   .mt-types-h2, .mt-type-desc h2 { font-size: 26px; }
