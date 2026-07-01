@@ -624,3 +624,31 @@ extrait). Comparatif **courant exclu** (« N autres guides »).
   (bloc de nav, hors sommaire, pas `.contenu-principal`). `$GS_MAX = 12` guides
   (top 12 = préfixe des 20 recommandations des pastilles → mêmes comparatifs,
   la grille en montre juste moins).
+
+## État du footer (rangée de confiance en haut)
+
+On **ne refait pas** le footer from scratch : on part du **footer réel**
+(composant « footer-3 », fond blanc) sauvegardé dans **`templates/footer-base.json`**
+et on lui **ajoute une rangée de confiance en haut** (logo + badges SVG, façon
+capture client). Générateur versionné : **`build-footer.py`** → produit
+**`templates/footer-2026-updated.json`** (footer complet, à coller dans Bricks).
+
+- **Rangée du haut** = livrée dans **`php-css/footer-top.code.html`** : un `<div
+  class="mt-ftrust">` avec le **logo** (`merrilowgo.png`) + un séparateur vertical
+  + une `<ul>` de **4 badges** en `<img src>` vers les SVG de la médiathèque WP
+  (`2026/07/footer-{expert,cloudflare,gdpr,ssl}.svg`). Styles dans un `<style>`
+  interne scopé `.mt-ftrust` (rendu immédiat). **Aucun SVG inline** (le SVG inline
+  « saute » sous Bricks/AT → on sert les badges par URL en `<img>`).
+- **Badges — ratios réels** (lus dans les fichiers) : `expert` = **cercle**
+  (`viewBox 0 0 69 69`, `width/height 100%`) → forcé carré `46×46` (`object-fit
+  contain`) et **agrandi** pour équilibrer ; `cloudflare` (natif 101×24, ~4.2:1),
+  `gdpr` (67×20), `ssl` (87×29) → **rectangles hauteur ~28px**, largeur auto.
+  Mobile ≤767 : rectangles 24px, cercle 40px, logo centré au-dessus, séparateur masqué.
+- **Intégration** (`build-footer.py`) : insère un élément **`code` (langage HTML,
+  `executeCode:true`)** en **1er enfant du `container`** (id `anjkfm`) → borné/aligné
+  comme le reste ; et **retire le `logo` dupliqué** de la colonne gauche (id `ddqsop`)
+  — la colonne gauche garde description + réseaux. Structure finale du container :
+  `[rangée-confiance, container-top, divider, container-bot]`.
+- **⚠️ Après collage** : approuver l'élément `code` de la rangée dans la **Code
+  review** Bricks (`executeCode` → signature), puis **purger Varnish + Breeze**.
+  Les URLs des SVG sont référencées telles quelles (badges déjà dans la médiathèque).
