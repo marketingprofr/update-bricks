@@ -542,3 +542,37 @@ Code Bricks. Scope `.mt-choix`. Conçu from scratch.
   ⚠️ **Pas d'entrée dans le sommaire** (le sommaire ne liste pas « choix ») — à
   ajouter dans `sommaire.code.php` si on veut un lien TOC. `.contenu-principal`
   posée pour la jauge de lecture.
+
+## État de « Comparatifs similaires » (cf. capture client, sans template HTML)
+
+Livrables : **`php-css/similaires.code.php`** + **`php-css/similaires.css`**. UN
+seul élément Code Bricks. Scope `.mt-similar`. Emplacement : **sous le tableau
+comparatif, avant le guide d'achat**. Grille de pastilles cliquables vers les
+comparatifs les plus proches, classés du plus proche au moins proche ; le
+**comparatif courant est inclus en tête et accentué** (`.is-current`, non
+cliquable, `aria-current="page"`).
+
+- **Taxonomies (confirmées client)** : produit = `post-type-produit`, attributs =
+  `post-type-attribut`, catégorie principale = `category` (WP standard). Slugs en
+  **CONFIG en tête de fichier** (`$CS_TAX_*`).
+- **Ordonnancement en ≤ 3 requêtes (2 WP_Query réelles)** :
+  - **Requête A** — `tax_query` sur `post-type-produit` (mêmes termes produit) →
+    ramène **paliers 2 & 3 d'un coup** ; départage en PHP : palier **2** si le
+    candidat contient **tous** les attributs du courant (superset,
+    `attr_shared === total`), sinon palier **3**.
+  - **Requête B** — `tax_query` sur `category`, en excluant `array_keys($seen)`
+    (palier **4**).
+  - Palier **0** = comparatif courant, ajouté en tête. Termes attributs/catégories
+    des candidats lus depuis le **cache d'objets** amorcé par WP_Query
+    (`update_post_term_cache`, défaut) → **aucune requête en plus**.
+- **Tri** : palier ↑ → nb attributs partagés ↓ → nb catégories partagées ↓ →
+  date ↓. **Dédoublonnage** par ID (`$seen`). **Coupe à `$CS_MAX = 20`** items
+  (courant inclus). Section **masquée** si aucune recommandation.
+- **Post type agnostique** : `get_post_type(get_the_ID())` → pas besoin du slug du
+  CPT comparatif (la page courante EST un comparatif).
+- **Libellé des pastilles** : titre du post par défaut ; CONFIG `$CS_LABEL_ACF`
+  pour pointer un champ de libellé court si les titres sont trop longs.
+- **Accent** = palette du site (`--at-primary-*`, vert), pas le bleu de la capture
+  (simple référence de style). Ancre `id="partie-comparatifs-similaires"` (pas
+  d'entrée sommaire, pas `.contenu-principal` : bloc de nav, pas une colonne de
+  texte).
