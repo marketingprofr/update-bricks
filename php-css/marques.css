@@ -17,11 +17,11 @@
   width: 100%;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
-  margin-top: 50px;            /* marge réelle entre parties du guide d'achat */
+  margin-top: 30px;            /* marge réelle entre parties du guide d'achat */
 }
 .mt-marques * { box-sizing: border-box; }
 .mt-marques a { color: inherit; text-decoration: none; }
-/* La marge inter-parties (50px) est portée par la racine -> le 1er élément
+/* La marge inter-parties (30px) est portée par la racine -> le 1er élément
    ne rajoute pas sa propre marge haute. */
 .mt-marques > :first-child { margin-top: 0; }
 
@@ -29,7 +29,7 @@
 .mt-marques-h2 {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 32px; line-height: 1.15; font-weight: 600;
-  letter-spacing: -0.025em; color: var(--ink); margin: 1.5em 0 0.5em;
+  letter-spacing: -0.025em; color: var(--ink); margin: 1.5em 0 1em;
 }
 
 /* === Grille de marques (onglets) === */
@@ -74,7 +74,7 @@
   font-family: "Source Serif 4", Georgia, serif;
   font-weight: 600; letter-spacing: -0.015em; color: var(--ink);
 }
-.mt-brand-content h2 { font-size: 32px; line-height: 1.15; letter-spacing: -0.025em; margin: 1.5em 0 0.5em; }
+.mt-brand-content h2 { font-size: 32px; line-height: 1.15; letter-spacing: -0.025em; margin: 1.5em 0 1em; }
 .mt-brand-content h3 { font-size: 26px; line-height: 1.2; margin: 1em 0 0.5em; }
 .mt-brand-content h4 { font-size: 20px; line-height: 1.2; margin: 0.5em 0 0.5em; }
 .mt-brand-content > :first-child { margin-top: 0; }
