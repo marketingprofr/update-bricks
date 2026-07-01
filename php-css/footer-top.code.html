@@ -16,14 +16,17 @@
   <span class="mt-ftrust-sep" aria-hidden="true"></span>
 
   <ul class="mt-ftrust-badges">
+    <!-- width/height explicites = boîte réservée AVANT chargement du SVG (0 layout shift) ;
+         calculés depuis le ratio réel de chaque fichier pour une hauteur d'affichage de 28px
+         (cercle expert = 46x46). Le CSS garde la main pour le responsive. -->
     <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-expert.svg"
-             alt="Testé par des experts" class="is-round" loading="lazy" decoding="async"></li>
+             alt="Testé par des experts" class="is-round" width="46" height="46" loading="lazy" decoding="async"></li>
     <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-cloudflare.svg"
-             alt="Protégé par Cloudflare" loading="lazy" decoding="async"></li>
+             alt="Protégé par Cloudflare" width="118" height="28" loading="lazy" decoding="async"></li>
     <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-gdpr.svg"
-             alt="Conforme au RGPD" loading="lazy" decoding="async"></li>
+             alt="Conforme au RGPD" width="94" height="28" loading="lazy" decoding="async"></li>
     <li><img src="https://meilleurtest.fr/wp-content/uploads/2026/07/footer-ssl.svg"
-             alt="Sécurisé par SSL" loading="lazy" decoding="async"></li>
+             alt="Sécurisé par SSL" width="84" height="28" loading="lazy" decoding="async"></li>
   </ul>
 
   <style>
