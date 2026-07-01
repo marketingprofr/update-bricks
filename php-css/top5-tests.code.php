@@ -253,7 +253,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
         </div>
         <?php if ( $it['summary'] !== '' ) : ?>
         <div class="ph-info">
-          <p class="ph-verdict"><?php echo esc_html( $it['summary'] ); ?></p>
+          <p class="ph-verdict"><?php echo wp_kses_post( $it['summary'] ); ?></p>
         </div>
         <?php endif; ?>
       </div>
