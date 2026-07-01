@@ -1,0 +1,27 @@
+/* =====================================================================
+   MEILLEURTEST — Hero, colonne gauche (onglet CSS de l'élément Code)
+   Scope : .mt-left (fil d'ariane, eyebrow, H1, byline, chapô, photo).
+   100 % variables Advanced Themer (aucune couleur en dur) → bascule dark auto.
+   ===================================================================== */
+.mt-left { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; }
+
+.mt-crumb { font-size: 13px; color: var(--at-grey); margin-bottom: 18px; }
+.mt-crumb a { color: var(--at-grey); }
+.mt-crumb .separator { color: var(--at-grey-l-1); }
+
+.mt-eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 5px 12px 5px 8px; background: var(--at-white); border: 1px solid var(--at-grey-l-3); border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--at-black-l-2); margin-bottom: 20px; }
+.mt-eyebrow .pill { padding: 2px 8px; background: var(--at-primary-l-5); color: var(--at-primary-d-1); border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+.mt-h1 { font-size: clamp(30px, 4.4vw, 50px); line-height: 1.1; margin: 0 0 22px; letter-spacing: -0.025em; font-weight: 600; color: var(--at-black-l-1); text-wrap: balance; }
+.mt-h1 em { font-style: normal; color: var(--at-primary-d-1); }
+
+.mt-byline { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; font-size: 13px; color: var(--at-grey); margin: 0 0 26px; }
+.mt-byline b { color: var(--at-black-l-1); font-weight: 600; }
+.mt-byline .mt-dot { color: var(--at-grey-l-1); }
+.mt-avatar { display: inline-flex; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; }
+.mt-avatar img { width: 30px; height: 30px; object-fit: cover; display: block; }
+
+.mt-lede { font-size: clamp(15px, 1.4vw, 16.5px); line-height: 1.62; color: var(--at-black-l-2); margin: 0 0 26px; }
+
+.mt-photo { position: relative; border-radius: 12px; overflow: hidden; }
+.mt-photo .mt-badge { border-radius: 0; }
