@@ -569,9 +569,9 @@ cliquable, `aria-current="page"`).
   **ID ↑** (départage à similarité égale : du plus petit au plus grand ID).
   **Dédoublonnage** par ID (`$seen`). **Coupe à `$CS_MAX = 20` recommandations**
   (le comparatif courant est affiché **en plus**, en tête, accentué → 21 pastilles
-  au total). Section **masquée** si aucune recommandation. ⚠️ **`$CS_MAX` doit
-  rester == `$GS_MAX`** pour que pastilles et grille recommandent EXACTEMENT les
-  mêmes comparatifs (moteur déterministe → même liste pour un même `max`).
+  au total). Section **masquée** si aucune recommandation. Moteur déterministe →
+  la grille (`$GS_MAX = 12`) montre le **préfixe** de cette même liste (mêmes
+  comparatifs, mêmes rangs, juste moins d'items).
 - **Post type agnostique** : `get_post_type(get_the_ID())` → pas besoin du slug du
   CPT comparatif (la page courante EST un comparatif).
 - **Libellé des pastilles** : titre du post par défaut ; CONFIG `$CS_LABEL_ACF`
@@ -597,8 +597,9 @@ catégorie → palier 4 ; tri palier ↑ / attributs partagés ↓ / catégories
 - **Grille** (`guides-similaires.code.php`) appelle avec `max = $GS_MAX` (courant
   exclu) + titres **complets**.
 - ⚠️ **Cohabitation** : les deux blocs partagent le même moteur déterministe →
-  avec **`$CS_MAX == $GS_MAX`** ils recommandent les **mêmes** comparatifs (les
-  pastilles ajoutent juste le courant en tête).
+  la grille (`$GS_MAX = 12`) affiche le **top 12**, strictement le **préfixe** des
+  20 recommandations des pastilles (`$CS_MAX = 20`) : mêmes comparatifs, mêmes
+  rangs, la grille en montre juste moins. Les pastilles ajoutent le courant en tête.
 
 ## État de « Tous les guides {type} » (grille — cf. `template-guides-similaires.html`)
 
@@ -620,5 +621,6 @@ extrait). Comparatif **courant exclu** (« N autres guides »).
   section > container > code, sans wrapper) → la bande couvre toute la largeur, le
   container borne le contenu. Le CSS du bloc ne gère plus que la grille/cartes.
   Grille 4 → 3 (≤991) → 2 (≤767) → 1 (≤420). Ancre `id="partie-guides-similaires"`
-  (bloc de nav, hors sommaire, pas `.contenu-principal`). `$GS_MAX = 20` guides
-  (garder == `$CS_MAX` pour des recommandations identiques aux pastilles).
+  (bloc de nav, hors sommaire, pas `.contenu-principal`). `$GS_MAX = 12` guides
+  (top 12 = préfixe des 20 recommandations des pastilles → mêmes comparatifs,
+  la grille en montre juste moins).
