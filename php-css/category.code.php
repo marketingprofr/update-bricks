@@ -260,7 +260,7 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
   <div class="mt-toolbar">
     <h2>Tous les guides</h2>
     <div class="mt-toolbar-right">
-      <span class="mt-toolbar-count"><b><?php echo (int) $total_all; ?></b> guide<?php echo $total_all > 1 ? 's' : ''; ?> · page <?php echo (int) $paged; ?> sur <?php echo (int) $max_pages; ?></span>
+      <span class="mt-toolbar-count"><b><?php echo (int) $total_all; ?></b>&nbsp;guide<?php echo $total_all > 1 ? 's' : ''; ?> · page <?php echo (int) $paged; ?> sur <?php echo (int) $max_pages; ?></span>
       <form class="mt-sort" method="get">
         <label for="mt-orderby">Trier par</label>
         <select id="mt-orderby" name="orderby" onchange="this.form.submit()">
