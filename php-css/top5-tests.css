@@ -150,6 +150,7 @@
 @media (max-width: 760px) {
   .ed-a-figure .ph { flex-direction: column; min-height: 0; height: auto; overflow: visible; }
   .ed-a-figure .ph-img { flex: none; width: 100%; height: 240px; padding: 24px; border-radius: 4px 4px 0 0; overflow: hidden; }
+  .ed-a-figure .ph-img img { width: 100%; height: 100%; }   /* image contenue dans la tuile grise, pas de débordement */
   .ed-a-figure .ph-info { border-top: 1px solid rgba(0,0,0,.08); padding: 24px 24px 32px; display: block; }
   .ed-a-figure .ph-verdict { font-size: 18px; border-left: none; padding-left: 0; }
   .ed-a-head h2 { font-size: 30px; }
@@ -170,4 +171,14 @@
   .ed-a-pc .col.pros { padding-right: 0; padding-bottom: 16px; }
   .ed-a-pc .col.cons { padding-left: 0; padding-top: 16px; border-left: 0; border-top: 1px solid var(--line-2); }
   .ed-a-specs dl { grid-template-columns: 1fr; gap: 0; }
+}
+@media (max-width: 478px) {
+  /* Encart achat empilé : "Notre note" / "Avis clients" ou "Point fort" / "Voir le prix"
+     tous pleine largeur ET centrés horizontalement (le point fort était à gauche). */
+  .ed-a-buy .note-block,
+  .ed-a-buy .cust-block,
+  .ed-a-buy .pro-block {
+    flex: 1 1 100%; align-items: center; text-align: center;
+    border-right: 0; border-bottom: 1px solid var(--line);
+  }
 }
