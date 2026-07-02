@@ -130,7 +130,7 @@ echo '<div style="position:relative;border-radius:12px;overflow:hidden;">';
 echo get_the_post_thumbnail($this_id, 'large', array(
     'style' => 'display:block;width:100%;height:340px;object-fit:cover;border-radius:12px;'));
 if ($post_type === 'comparatif') {
-    echo '<img src="https://meilleurtest.fr/wp-content/uploads/2025/11/badge-mt.png" alt="" '
+    echo '<img src="https://meilleurtest.fr/wp-content/uploads/2026/07/badge-meilleurtest.png" alt="" '
        . 'style="position:absolute;top:10px;left:10px;max-width:130px;height:auto;">';
 }
 echo '</div>';

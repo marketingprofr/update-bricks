@@ -220,6 +220,12 @@
   .mt-top5 .t5-cta { width: 100%; }
   .mt-top5 .t5-list > li:first-child .t5-buy { width: auto; }
 }
+@media (max-width: 478px) {
+  /* Barre de tri : "Trier par" / vignettes de tri / "Comment nous évaluons"
+     sur 3 lignes distinctes, alignées à gauche. */
+  .mt-top5 .t5-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .mt-top5 .t5-howto { margin-left: 0; }
+}
 @media (prefers-reduced-motion: reduce) {
   .mt-top5 * { transition: none !important; }
 }
