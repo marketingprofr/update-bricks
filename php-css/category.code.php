@@ -88,17 +88,18 @@ $paged = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) )
    partout, et l'afficher en tête en page 1 seulement)
    --------------------------------------------------------------------- */
 $featured_id = 0;
-$fq = new WP_Query( array(
-  'post_type'           => $CAT_POST_TYPES,
-  'post_status'         => 'publish',
-  'posts_per_page'      => 1,
-  'orderby'             => 'modified',
-  'order'               => 'DESC',
-  'no_found_rows'       => true,
-  'ignore_sticky_posts' => true,
-  'tax_query'           => array( array(
-    'taxonomy' => $CAT_TAXONOMY, 'field' => 'term_id', 'terms' => $term_id,
-  ) ),
+$fq = new WP_Query( array_merge(
+  array(
+    'post_type'           => $CAT_POST_TYPES,
+    'post_status'         => 'publish',
+    'posts_per_page'      => 1,
+    'no_found_rows'       => true,
+    'ignore_sticky_posts' => true,
+    'tax_query'           => array( array(
+      'taxonomy' => $CAT_TAXONOMY, 'field' => 'term_id', 'terms' => $term_id,
+    ) ),
+  ),
+  mt_arch_orderby_args( 'popular', $CAT_VIEWS_META ) // le plus vu (Independent Analytics)
 ) );
 if ( $fq->have_posts() ) { $featured_id = (int) $fq->posts[0]->ID; }
 wp_reset_postdata();
