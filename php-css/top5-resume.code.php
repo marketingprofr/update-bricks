@@ -108,8 +108,14 @@ foreach ( $ids as $pid ) {
   $tagline = trim( (string) get_field( 'mltv5_sous_titre', $pid ) );
   $summary = trim( (string) get_field( 'mltv5_resume_produit', $pid ) );
 
-  /* Image */
+  /* Image : featured en priorite, sinon URL externe ACF (hotlink partenaire) */
   $img = get_the_post_thumbnail_url( $pid, 'medium' );
+  if ( ! $img ) {
+    $ext = get_field( 'mltv5_image_external_url', $pid );
+    if ( is_array( $ext ) ) { $ext = isset( $ext['url'] ) ? $ext['url'] : ''; }
+    $ext = trim( (string) $ext );
+    if ( $ext !== '' ) { $img = $ext; }
+  }
 
   /* Score rédac /10 + libellés */
   $score10 = function_exists( 'get_acf_score_divided_by_10' )
