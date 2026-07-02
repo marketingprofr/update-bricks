@@ -142,8 +142,14 @@ foreach ( $ids as $pid ) {
   $modname = $model !== '' ? $model : get_the_title( $pid );
   $name    = trim( $brand . ' ' . $modname );
 
-  /* Image */
+  /* Image : featured en priorite, sinon URL externe ACF (hotlink partenaire) */
   $img = get_the_post_thumbnail_url( $pid, 'medium' );
+  if ( ! $img ) {
+    $ext = get_field( 'mltv5_image_external_url', $pid );
+    if ( is_array( $ext ) ) { $ext = isset( $ext['url'] ) ? $ext['url'] : ''; }
+    $ext = trim( (string) $ext );
+    if ( $ext !== '' ) { $img = $ext; }
+  }
 
   /* Score rédac /10 + libellés (helpers en contexte post) */
   $raw_score = get_field( 'mltv5_score_recent', $pid );
