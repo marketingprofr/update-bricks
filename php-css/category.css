@@ -1,0 +1,136 @@
+/* =====================================================================
+   MEILLEURTEST — Archive de catégorie (onglet CSS de l'élément Code)
+   Scope : .mt-arch. Réf. maquette : templates/template-category.html.
+   100 % variables Advanced Themer (aucune couleur en dur) → bascule dark auto.
+   Correspondances : ink=black-l-1 · ink-2=black-l-2 · muted=grey ·
+   muted-2=grey-l-1 · line=grey-l-3 · line-2=grey-l-4 · bg=white ·
+   bg-2=grey-l-6 · bg-3=grey-l-5 · accent=primary · accent-soft=primary-l-6 ·
+   gold=gold · warn=danger.
+   ===================================================================== */
+.mt-arch {
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
+  --bg: var(--at-white); --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --accent: var(--at-primary); --accent-soft: var(--at-primary-l-6);
+  --accent-dark: var(--at-primary-d-1);
+  --gold: var(--at-gold); --warn: var(--at-danger);
+  --radius: 10px; --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink); background: var(--bg-2);
+  width: 100%; max-width: 1280px; margin: 0 auto;
+  -webkit-font-smoothing: antialiased; line-height: 1.5;
+}
+.mt-arch * { box-sizing: border-box; }
+.mt-arch a { color: inherit; text-decoration: none; }
+.mt-arch img { max-width: 100%; }
+
+/* === Fil d'Ariane === */
+.mt-arch .mt-crumb { padding: 20px clamp(18px, 4vw, 40px) 0; font-size: 13px; color: var(--muted); }
+.mt-arch .mt-crumb a { color: var(--muted); white-space: nowrap; }
+.mt-arch .mt-crumb a:hover { color: var(--accent); }
+.mt-arch .mt-crumb b { color: var(--ink); font-weight: 500; white-space: nowrap; }
+
+/* === En-tête de catégorie === */
+.mt-arch .mt-cat-head { padding: 22px clamp(18px, 4vw, 40px) 30px; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 40px; align-items: end; border-bottom: 1px solid var(--line); }
+.mt-arch .mt-cat-eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 5px 12px 5px 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; font-size: 12px; font-weight: 500; color: var(--ink-2); margin-bottom: 18px; }
+.mt-arch .mt-cat-eyebrow .pill { padding: 2px 8px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; font-size: 11px; font-weight: 600; }
+.mt-arch .mt-cat-head h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(30px, 4vw, 46px); line-height: 1.08; margin: 0 0 16px; letter-spacing: -0.02em; font-weight: 600; text-wrap: balance; }
+.mt-arch .mt-cat-lede { font-size: clamp(15px, 1.35vw, 16.5px); line-height: 1.62; color: var(--ink-2); margin: 0; max-width: 62ch; }
+.mt-arch .mt-cat-lede :is(p):first-child { margin-top: 0; }
+.mt-arch .mt-cat-lede :is(p):last-child { margin-bottom: 0; }
+.mt-arch .mt-cat-stats { display: flex; flex-direction: column; gap: 14px; }
+.mt-arch .mt-cat-stat { display: flex; align-items: center; gap: 11px; font-size: 13px; color: var(--muted); }
+.mt-arch .mt-cat-stat .si { width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.mt-arch .mt-cat-stat .si svg { width: 18px; height: 18px; }
+.mt-arch .mt-cat-stat b { display: block; color: var(--ink); font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+
+/* === Sous-catégories (chips) === */
+.mt-arch .mt-subcats { display: flex; gap: 9px; flex-wrap: wrap; padding: 22px clamp(18px, 4vw, 40px) 0; }
+.mt-arch .mt-subcat { padding: 8px 15px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); font-size: 13px; color: var(--ink-2); font-weight: 500; transition: border-color .15s, color .15s; }
+.mt-arch .mt-subcat:hover { border-color: var(--muted-2); }
+.mt-arch .mt-subcat.active { background: var(--ink); border-color: var(--ink); color: var(--at-white); }
+
+/* === Guide à la une === */
+.mt-arch .mt-feature-wrap { padding: 26px clamp(18px, 4vw, 40px) 0; }
+.mt-arch .mt-feature { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+.mt-arch .mt-feature-media { position: relative; min-height: 360px; background: var(--bg-3); display: block; }
+.mt-arch .mt-feature-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mt-arch .mt-feature-flag { position: absolute; top: 16px; left: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; background: var(--ink); color: var(--at-white); border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.01em; }
+.mt-arch .mt-feature-flag svg { width: 14px; height: 14px; color: var(--gold); }
+.mt-arch .mt-feature-body { padding: clamp(26px, 3vw, 44px); display: flex; flex-direction: column; justify-content: center; }
+.mt-arch .mt-feature-kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+.mt-arch .mt-feature-body h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 600; line-height: 1.16; letter-spacing: -0.02em; margin: 0 0 14px; text-wrap: balance; }
+.mt-arch .mt-feature-body h2 a:hover { color: var(--accent); }
+.mt-arch .mt-feature-body p { font-size: 15px; line-height: 1.6; color: var(--ink-2); margin: 0 0 22px; max-width: 52ch; }
+.mt-arch .mt-feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+.mt-arch .mt-feature-chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; font-size: 12.5px; color: var(--ink-2); }
+.mt-arch .mt-feature-chip svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+.mt-arch .mt-feature-foot { display: flex; align-items: center; gap: 14px; }
+.mt-arch .mt-feature-byline { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted); }
+.mt-arch .mt-feature-byline .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--line); object-fit: cover; flex-shrink: 0; }
+.mt-arch .mt-feature-byline b { color: var(--ink-2); font-weight: 600; }
+.mt-arch .mt-btn { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; padding: 12px 22px; background: var(--accent); color: var(--at-white); border-radius: 10px; font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .15s; }
+.mt-arch .mt-btn:hover { background: var(--accent-dark); }
+.mt-arch .mt-btn svg { width: 16px; height: 16px; }
+
+/* === Barre d'outils === */
+.mt-arch .mt-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 34px clamp(18px, 4vw, 40px) 0; }
+.mt-arch .mt-toolbar h2 { font-family: "Source Serif 4", Georgia, serif; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+.mt-arch .mt-toolbar-right { display: flex; align-items: center; gap: 18px; }
+.mt-arch .mt-toolbar-count { font-size: 13.5px; color: var(--muted); }
+.mt-arch .mt-toolbar-count b { color: var(--ink); font-weight: 600; }
+.mt-arch .mt-sort { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin: 0; }
+.mt-arch .mt-sort select { font: inherit; font-size: 13px; color: var(--ink); background-color: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 30px 8px 12px; cursor: pointer; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7480' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; }
+
+/* === Grille de cartes (4 par ligne) === */
+.mt-arch .mt-cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px clamp(18px, 4vw, 40px) 0; }
+.mt-arch .mt-card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .18s ease, transform .18s ease; }
+.mt-arch .mt-card:hover { box-shadow: 0 10px 30px rgba(20,24,29,0.09); transform: translateY(-3px); }
+.mt-arch .mt-card-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16/11; background: var(--bg-3); }
+.mt-arch .mt-card-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mt-arch .mt-card-tag { position: absolute; top: 11px; left: 11px; z-index: 2; padding: 4px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--accent); }
+.mt-arch .mt-card-body { padding: 15px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.mt-arch .mt-card h3 { font-size: 15.5px; font-weight: 600; margin: 0 0 8px; line-height: 1.3; letter-spacing: -0.01em; }
+.mt-arch .mt-card h3 a:hover { color: var(--accent); }
+.mt-arch .mt-card p { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 14px; }
+.mt-arch .mt-card-meta { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 13px; border-top: 1px solid var(--line-2); font-size: 12px; color: var(--muted); }
+.mt-arch .mt-card-meta .avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--line); object-fit: cover; flex-shrink: 0; }
+.mt-arch .mt-card-meta b { color: var(--ink-2); font-weight: 600; }
+.mt-arch .mt-card-meta .dot { color: var(--muted-2); }
+
+/* Motif de placeholder sur les vignettes sans image */
+.mt-arch .mt-card-thumb.ph::after, .mt-arch .mt-feature-media.ph::after { content: ""; position: absolute; inset: 0; z-index: 1; background: repeating-linear-gradient(45deg, transparent 0 11px, rgba(0,0,0,0.025) 11px 12px); pointer-events: none; }
+
+.mt-arch .mt-cat-empty { padding: 40px clamp(18px, 4vw, 40px); font-size: 15px; color: var(--muted); }
+
+/* === Pagination (balisage paginate_links → .page-numbers) === */
+.mt-arch .mt-pager { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px; padding: 40px clamp(18px, 4vw, 40px) 64px; }
+.mt-arch .mt-pager .page-numbers { min-width: 40px; height: 40px; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); font-size: 14px; color: var(--ink-2); font-weight: 500; transition: border-color .15s; }
+.mt-arch .mt-pager a.page-numbers:hover { border-color: var(--muted-2); }
+.mt-arch .mt-pager .page-numbers.current { background: var(--accent); border-color: var(--accent); color: var(--at-white); }
+.mt-arch .mt-pager .page-numbers.dots { border: 0; background: none; color: var(--muted-2); min-width: 0; padding: 0 2px; }
+.mt-arch .mt-pager .page-numbers.prev, .mt-arch .mt-pager .page-numbers.next { gap: 6px; padding: 0 14px; color: var(--ink); }
+
+/* ===== Responsive ===== */
+@media (max-width: 1080px) {
+  .mt-arch .mt-cat-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 980px) {
+  .mt-arch .mt-cat-head { grid-template-columns: 1fr; gap: 24px; align-items: start; }
+  .mt-arch .mt-cat-stats { flex-direction: row; flex-wrap: wrap; gap: 22px; }
+  .mt-arch .mt-feature { grid-template-columns: 1fr; }
+  .mt-arch .mt-feature-media { min-height: 240px; aspect-ratio: 16/9; }
+}
+@media (max-width: 760px) {
+  .mt-arch .mt-cat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px) {
+  .mt-arch .mt-toolbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .mt-arch .mt-feature-foot { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .mt-arch .mt-btn { margin-left: 0; }
+  .mt-arch .mt-pager .page-numbers.prev .lbl, .mt-arch .mt-pager .page-numbers.next .lbl { display: none; }
+}
+@media (max-width: 440px) {
+  .mt-arch .mt-cat-grid { grid-template-columns: 1fr; }
+}
