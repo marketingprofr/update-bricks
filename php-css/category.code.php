@@ -195,7 +195,7 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
       </div>
       <div class="mt-cat-stat">
         <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
-        <span><b><?php echo number_format_i18n( $products_ranked ); ?></b> produit<?php echo $products_ranked > 1 ? 's' : ''; ?> classé<?php echo $products_ranked > 1 ? 's' : ''; ?></span>
+        <span><b><?php echo number_format_i18n( $products_ranked ); ?></b> produit<?php echo $products_ranked > 1 ? 's' : ''; ?> évalué<?php echo $products_ranked > 1 ? 's' : ''; ?></span>
       </div>
       <div class="mt-cat-stat">
         <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg></span>
