@@ -24,7 +24,6 @@ $CAT_TAXONOMY   = 'category';                     // taxonomie d'archive (WP sta
 $CAT_PER_PAGE   = 12;                             // cartes par page (4 col × 3)
 $CAT_VIEWS_META = 'iawp_total_views';             // meta vues (Independent Analytics)
 $CAT_TYPE_LABELS = array( 'comparatif' => 'Comparatif', 'liste' => 'Liste' );
-$CAT_PRODUCTS_PER = 5;                            // produits classés estimés par guide (comparatif ×5 + liste ×5)
 
 /* ---------------------------------------------------------------------
    Helpers (guardés — cohabitent avec les autres blocs Code)
@@ -125,24 +124,19 @@ $grid = new WP_Query( $grid_args );
 
 $max_pages = max( 1, (int) $grid->max_num_pages );
 
-/* Stats d'en-tête : nb de guides par type (comparatifs / listes) */
-$type_counts = array();
-foreach ( $CAT_POST_TYPES as $pt ) {
-  $cq = new WP_Query( array(
-    'post_type'           => $pt,
-    'post_status'         => 'publish',
-    'posts_per_page'      => 1,
-    'fields'              => 'ids',
-    'ignore_sticky_posts' => true,
-    'tax_query'           => array( array(
-      'taxonomy' => $CAT_TAXONOMY, 'field' => 'term_id', 'terms' => $term_id,
-    ) ),
-  ) );
-  $type_counts[ $pt ] = (int) $cq->found_posts;
-  wp_reset_postdata();
-}
-$total_all       = array_sum( $type_counts );                 // guides publiés (comparatifs + listes)
-$products_ranked = $total_all * (int) $CAT_PRODUCTS_PER;       // comparatifs ×5 + listes ×5
+/* Stat d'en-tête : nb total de guides (comparatifs + listes) de la catégorie */
+$cq = new WP_Query( array(
+  'post_type'           => $CAT_POST_TYPES,
+  'post_status'         => 'publish',
+  'posts_per_page'      => 1,
+  'fields'              => 'ids',
+  'ignore_sticky_posts' => true,
+  'tax_query'           => array( array(
+    'taxonomy' => $CAT_TAXONOMY, 'field' => 'term_id', 'terms' => $term_id,
+  ) ),
+) );
+$total_all = (int) $cq->found_posts;
+wp_reset_postdata();
 
 /* Sous-catégories (chips) */
 $children = get_terms( array(
@@ -192,10 +186,6 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
       <div class="mt-cat-stat">
         <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h10"/></svg></span>
         <span><b><?php echo (int) $total_all; ?></b> guide<?php echo $total_all > 1 ? 's' : ''; ?> publié<?php echo $total_all > 1 ? 's' : ''; ?></span>
-      </div>
-      <div class="mt-cat-stat">
-        <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
-        <span><b><?php echo number_format_i18n( $products_ranked ); ?></b> produit<?php echo $products_ranked > 1 ? 's' : ''; ?> évalué<?php echo $products_ranked > 1 ? 's' : ''; ?></span>
       </div>
       <div class="mt-cat-stat">
         <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg></span>
