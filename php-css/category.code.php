@@ -24,6 +24,7 @@ $CAT_TAXONOMY   = 'category';                     // taxonomie d'archive (WP sta
 $CAT_PER_PAGE   = 12;                             // cartes par page (4 col × 3)
 $CAT_VIEWS_META = 'iawp_total_views';             // meta vues (Independent Analytics)
 $CAT_TYPE_LABELS = array( 'comparatif' => 'Comparatif', 'liste' => 'Liste' );
+$CAT_PRODUCTS_PER = 5;                            // produits classés estimés par guide (comparatif ×5 + liste ×5)
 
 /* ---------------------------------------------------------------------
    Helpers (guardés — cohabitent avec les autres blocs Code)
@@ -77,8 +78,8 @@ $term_id = (int) $term->term_id;
 
 /* Tri courant */
 $allowed_sort = array( 'date', 'popular', 'az' );
-$orderby = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'date';
-if ( ! in_array( $orderby, $allowed_sort, true ) ) { $orderby = 'date'; }
+$orderby = isset( $_GET['orderby'] ) ? sanitize_key( wp_unslash( $_GET['orderby'] ) ) : 'popular';
+if ( ! in_array( $orderby, $allowed_sort, true ) ) { $orderby = 'popular'; }
 
 /* Page courante */
 $paged = max( 1, (int) get_query_var( 'paged' ), (int) get_query_var( 'page' ) );
@@ -123,10 +124,25 @@ if ( $featured_id ) { $grid_args['post__not_in'] = array( $featured_id ); }
 $grid = new WP_Query( $grid_args );
 
 $max_pages = max( 1, (int) $grid->max_num_pages );
-$total_all = (int) $grid->found_posts + ( $featured_id ? 1 : 0 );
 
-/* Stats d'en-tête */
-$last_update = $featured_id ? get_the_modified_date( 'M Y', $featured_id ) : '';
+/* Stats d'en-tête : nb de guides par type (comparatifs / listes) */
+$type_counts = array();
+foreach ( $CAT_POST_TYPES as $pt ) {
+  $cq = new WP_Query( array(
+    'post_type'           => $pt,
+    'post_status'         => 'publish',
+    'posts_per_page'      => 1,
+    'fields'              => 'ids',
+    'ignore_sticky_posts' => true,
+    'tax_query'           => array( array(
+      'taxonomy' => $CAT_TAXONOMY, 'field' => 'term_id', 'terms' => $term_id,
+    ) ),
+  ) );
+  $type_counts[ $pt ] = (int) $cq->found_posts;
+  wp_reset_postdata();
+}
+$total_all       = array_sum( $type_counts );                 // guides publiés (comparatifs + listes)
+$products_ranked = $total_all * (int) $CAT_PRODUCTS_PER;       // comparatifs ×5 + listes ×5
 
 /* Sous-catégories (chips) */
 $children = get_terms( array(
@@ -177,12 +193,10 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
         <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h10"/></svg></span>
         <span><b><?php echo (int) $total_all; ?></b> guide<?php echo $total_all > 1 ? 's' : ''; ?> publié<?php echo $total_all > 1 ? 's' : ''; ?></span>
       </div>
-      <?php if ( $last_update !== '' ) : ?>
       <div class="mt-cat-stat">
-        <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v5h-5"/></svg></span>
-        <span><b><?php echo esc_html( $last_update ); ?></b><br>dernière mise à jour</span>
+        <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg></span>
+        <span><b><?php echo number_format_i18n( $products_ranked ); ?></b> produit<?php echo $products_ranked > 1 ? 's' : ''; ?> classé<?php echo $products_ranked > 1 ? 's' : ''; ?></span>
       </div>
-      <?php endif; ?>
       <div class="mt-cat-stat">
         <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg></span>
         <span><b>100 %</b> indépendant</span>
@@ -316,7 +330,7 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
       'end_size'  => 1,
       'prev_text' => '‹ <span class="lbl">Précédent</span>',
       'next_text' => '<span class="lbl">Suivant</span> ›',
-      'add_args'  => ( $orderby !== 'date' ) ? array( 'orderby' => $orderby ) : false,
+      'add_args'  => ( $orderby !== 'popular' ) ? array( 'orderby' => $orderby ) : false,
       'type'      => 'array',
     ) );
     if ( ! empty( $links ) ) : ?>
