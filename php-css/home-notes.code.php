@@ -7,9 +7,11 @@
 
    ▸ FOND DE SECTION À RÉGLER DANS BRICKS : var(--at-white)  (blanc)
 
-   Données : comparatifs + listes triés par NOTE LECTEURS.
+   Données : comparatifs + listes bien notés. On NE trie PAS toute la base
+   par note (lourd) : on filtre les guides à NOTE ≥ $HN_MIN_RATING, puis on
+   les classe par NOMBRE D'AVIS décroissant.
    ⚠️ CONFIG $HN_RATING_META / $HN_COUNT_META À CONFIRMER côté site
-   (clés du plugin de notation, ex. Rate my Post). Si la clé n'existe pas,
+   (clés du plugin de notation, ex. Rate my Post). Si rien ne remonte,
    repli automatique sur les plus vus (Independent Analytics).
    ===================================================================== */
 
@@ -20,8 +22,8 @@ $HN_POST_TYPES  = array( 'comparatif', 'liste' );
 $HN_COUNT       = 4;
 $HN_RATING_META = 'rmp_avg_rating';   // ⚠️ note moyenne /5 (à confirmer)
 $HN_COUNT_META  = 'rmp_vote_count';   // ⚠️ nombre d'avis (à confirmer)
+$HN_MIN_RATING  = 4.7;                // seuil de note (on classe ensuite par nb d'avis)
 $HN_VIEWS_META  = 'iawp_total_views'; // repli si aucune note en base
-$HN_MORE_URL    = '';                 // URL « Voir le classement » (vide = masqué)
 
 /* ---------------------------------------------------------------------
    Helpers accueil — guardés (byte-identique entre blocs)
@@ -83,7 +85,8 @@ if ( ! function_exists( 'mt_home_card' ) ) {
 }
 
 /* ---------------------------------------------------------------------
-   Requête : mieux notés (repli sur les plus vus si aucune note en base)
+   Requête : note ≥ seuil, classés par nombre d'avis décroissant
+   (repli sur les plus vus si rien ne remonte)
    --------------------------------------------------------------------- */
 $hn_q = new WP_Query( array(
   'post_type'           => $HN_POST_TYPES,
@@ -91,10 +94,11 @@ $hn_q = new WP_Query( array(
   'posts_per_page'      => (int) $HN_COUNT,
   'no_found_rows'       => true,
   'ignore_sticky_posts' => true,
-  'meta_key'            => $HN_RATING_META,
-  'orderby'             => 'meta_value_num',
-  'order'               => 'DESC',
-  'meta_query'          => array( array( 'key' => $HN_RATING_META, 'compare' => 'EXISTS', 'type' => 'NUMERIC' ) ),
+  'meta_query'          => array(
+    'rating' => array( 'key' => $HN_RATING_META, 'value' => $HN_MIN_RATING, 'compare' => '>=', 'type' => 'DECIMAL' ),
+    'votes'  => array( 'key' => $HN_COUNT_META, 'compare' => 'EXISTS', 'type' => 'NUMERIC' ),
+  ),
+  'orderby'             => array( 'votes' => 'DESC' ),
 ) );
 $hn_has_ratings = $hn_q->have_posts();
 if ( ! $hn_has_ratings ) {
@@ -120,9 +124,6 @@ if ( ! $hn_q->have_posts() ) { wp_reset_postdata(); return; }
       <h2>Guides les mieux notés</h2>
       <p>Les comparatifs qui récoltent les meilleures notes de nos lecteurs, toutes catégories confondues.</p>
     </div>
-    <?php if ( $HN_MORE_URL !== '' ) : ?>
-      <a class="mt-sec-link" href="<?php echo esc_url( $HN_MORE_URL ); ?>">Voir le classement <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <?php endif; ?>
   </div>
 
   <div class="mt-guide-grid">

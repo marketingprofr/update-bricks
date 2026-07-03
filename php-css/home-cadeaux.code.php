@@ -7,9 +7,8 @@
 
    ▸ FOND DE SECTION À RÉGLER DANS BRICKS : var(--at-white)  (blanc)
 
-   Données : comparatifs + listes d'une catégorie « cadeaux / loisirs »
-   (CONFIG $HG_CATEGORY). Repli sur les plus vus toutes catégories si le
-   slug n'existe pas. Étiquette « Idée cadeau ».
+   Données : les dernières « listes » (post type liste), toutes catégories,
+   classées par date de modification. Étiquette « Idée cadeau ».
    ⚠️ Pas de prix inventé : le prix ne s'affiche que si $HG_PRICE_META est
    renseigné ET présent sur le guide ; sinon on montre le nb de modèles.
    ===================================================================== */
@@ -17,12 +16,9 @@
 /* ---------------------------------------------------------------------
    CONFIG
    --------------------------------------------------------------------- */
-$HG_POST_TYPES = array( 'comparatif', 'liste' );
+$HG_POST_TYPE  = 'liste';   // idées cadeaux/loisirs = uniquement les « listes »
 $HG_COUNT      = 4;
-$HG_CATEGORY   = 'loisirs';           // slug de la catégorie « cadeaux/loisirs »
-$HG_VIEWS_META = 'iawp_total_views';
-$HG_PRICE_META = '';                   // meta/ACF « prix à partir de » (vide = pas de prix)
-$HG_MORE_URL   = '';                   // URL « Toutes les idées » (vide = masqué)
+$HG_PRICE_META = '';         // meta/ACF « prix à partir de » (vide = pas de prix)
 
 /* ---------------------------------------------------------------------
    Helpers accueil — guardés (byte-identique entre blocs)
@@ -42,18 +38,6 @@ if ( ! function_exists( 'mt_home_primary_cat' ) ) {
     $pc = (int) get_post_meta( $post_id, '_yoast_wpseo_primary_category', true );
     if ( $pc ) { foreach ( $terms as $t ) { if ( (int) $t->term_id === $pc ) { return $t->name; } } }
     return $terms[0]->name;
-  }
-}
-if ( ! function_exists( 'mt_home_popular_args' ) ) {
-  function mt_home_popular_args( $views_meta ) {
-    return array(
-      'meta_query' => array(
-        'relation' => 'OR',
-        'hasv' => array( 'key' => $views_meta, 'compare' => 'EXISTS', 'type' => 'NUMERIC' ),
-        'nov'  => array( 'key' => $views_meta, 'compare' => 'NOT EXISTS' ),
-      ),
-      'orderby' => array( 'hasv' => 'DESC', 'date' => 'DESC' ),
-    );
   }
 }
 if ( ! function_exists( 'mt_home_card' ) ) {
@@ -84,25 +68,17 @@ if ( ! function_exists( 'mt_home_card' ) ) {
 }
 
 /* ---------------------------------------------------------------------
-   Requête : catégorie cadeaux/loisirs (repli plus vus toutes catégories)
+   Requête : dernières « listes » modifiées (toutes catégories)
    --------------------------------------------------------------------- */
-$hg_args = array_merge(
-  array(
-    'post_type'           => $HG_POST_TYPES,
-    'post_status'         => 'publish',
-    'posts_per_page'      => (int) $HG_COUNT,
-    'no_found_rows'       => true,
-    'ignore_sticky_posts' => true,
-  ),
-  mt_home_popular_args( $HG_VIEWS_META )
-);
-$hg_term = $HG_CATEGORY !== '' ? get_term_by( 'slug', $HG_CATEGORY, 'category' ) : false;
-if ( $hg_term && ! is_wp_error( $hg_term ) ) {
-  $hg_args['tax_query'] = array( array(
-    'taxonomy' => 'category', 'field' => 'term_id', 'terms' => (int) $hg_term->term_id, 'include_children' => true,
-  ) );
-}
-$hg_q = new WP_Query( $hg_args );
+$hg_q = new WP_Query( array(
+  'post_type'           => $HG_POST_TYPE,
+  'post_status'         => 'publish',
+  'posts_per_page'      => (int) $HG_COUNT,
+  'orderby'             => 'modified',
+  'order'               => 'DESC',
+  'no_found_rows'       => true,
+  'ignore_sticky_posts' => true,
+) );
 if ( ! $hg_q->have_posts() ) { wp_reset_postdata(); return; }
 ?>
 
@@ -113,9 +89,6 @@ if ( ! $hg_q->have_posts() ) { wp_reset_postdata(); return; }
       <h2>Les idées cadeaux et loisirs</h2>
       <p>Nos meilleures sélections pour offrir — ou se faire plaisir — sans se tromper.</p>
     </div>
-    <?php if ( $HG_MORE_URL !== '' ) : ?>
-      <a class="mt-sec-link" href="<?php echo esc_url( $HG_MORE_URL ); ?>">Toutes les idées <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <?php endif; ?>
   </div>
 
   <div class="mt-guide-grid">

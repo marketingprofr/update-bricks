@@ -16,7 +16,6 @@
    --------------------------------------------------------------------- */
 $HR_POST_TYPES = array( 'comparatif', 'liste' );
 $HR_COUNT      = 4;
-$HR_MORE_URL   = '';   // URL « Toutes les mises à jour » (vide = lien masqué)
 
 /* ---------------------------------------------------------------------
    Helpers accueil — guardés (byte-identique entre blocs)
@@ -101,9 +100,6 @@ $clock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-widt
       <h2>Guides d'achat récents</h2>
       <p>Nos derniers comparatifs créés ou réactualisés — parce qu'un bon conseil, c'est un conseil à jour.</p>
     </div>
-    <?php if ( $HR_MORE_URL !== '' ) : ?>
-      <a class="mt-sec-link" href="<?php echo esc_url( $HR_MORE_URL ); ?>">Toutes les mises à jour <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <?php endif; ?>
   </div>
 
   <div class="mt-guide-grid">

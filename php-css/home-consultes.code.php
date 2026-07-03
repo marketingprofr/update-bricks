@@ -17,7 +17,6 @@
 $HC_POST_TYPES = array( 'comparatif', 'liste' );
 $HC_COUNT      = 10;
 $HC_VIEWS_META = 'iawp_total_views';
-$HC_MORE_URL   = '';   // URL « Voir le top 100 » (vide = lien masqué)
 
 /* ---------------------------------------------------------------------
    Helpers accueil — guardés (byte-identique entre blocs)
@@ -70,9 +69,6 @@ $rank = 0;
       <h2>Les guides les plus consultés</h2>
       <p>Les <?php echo (int) $HC_COUNT; ?> guides que nos lecteurs ont ouverts le plus souvent.</p>
     </div>
-    <?php if ( $HC_MORE_URL !== '' ) : ?>
-      <a class="mt-sec-link" href="<?php echo esc_url( $HC_MORE_URL ); ?>">Voir le top 100 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <?php endif; ?>
   </div>
 
   <div class="mt-rank">

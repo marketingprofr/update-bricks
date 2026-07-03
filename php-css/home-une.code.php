@@ -16,7 +16,6 @@
    --------------------------------------------------------------------- */
 $HU_POST_TYPES = array( 'comparatif', 'liste' );
 $HU_VIEWS_META = 'iawp_total_views';   // meta vues Independent Analytics
-$HU_MORE_URL   = '';                    // URL « Tous les guides » (vide = lien masqué)
 
 /* ---------------------------------------------------------------------
    Helpers accueil — guardés (définition partagée entre blocs, byte-identique)
@@ -123,9 +122,6 @@ $f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies']
       <h2>Nos guides à la une</h2>
       <p>Nos comparatifs les plus consultés du moment, toutes catégories confondues.</p>
     </div>
-    <?php if ( $HU_MORE_URL !== '' ) : ?>
-      <a class="mt-sec-link" href="<?php echo esc_url( $HU_MORE_URL ); ?>">Tous les guides <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
-    <?php endif; ?>
   </div>
 
   <article class="mt-feature">
