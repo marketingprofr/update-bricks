@@ -185,11 +185,11 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
     </div>
     <div class="mt-cat-stats">
       <div class="mt-cat-stat">
-        <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h10"/></svg></span>
+        <span class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h10"/></svg></span>
         <span><b><?php echo (int) $total_all; ?></b> guide<?php echo $total_all > 1 ? 's' : ''; ?> publié<?php echo $total_all > 1 ? 's' : ''; ?></span>
       </div>
       <div class="mt-cat-stat">
-        <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg></span>
+        <span class="si"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg></span>
         <span><b>100 %</b> indépendant</span>
       </div>
     </div>
@@ -227,7 +227,7 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
   <div class="mt-feature-wrap">
     <article class="mt-feature">
       <a class="mt-feature-media<?php echo $f_img ? '' : ' ph'; ?>" href="<?php echo esc_url( $f_url ); ?>">
-        <span class="mt-feature-flag"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17l-6.2 3.6 1.6-6.7L2.2 8.9l6.9-.6L12 2z"/></svg> Guide à la une</span>
+        <span class="mt-feature-flag"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17l-6.2 3.6 1.6-6.7L2.2 8.9l6.9-.6L12 2z"/></svg> Guide à la une</span>
         <?php if ( $f_img ) : ?><img src="<?php echo esc_url( $f_img ); ?>" alt="<?php echo esc_attr( $f_title ); ?>"><?php endif; ?>
       </a>
       <div class="mt-feature-body">
@@ -237,12 +237,12 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
         <?php if ( $f_nprod || $f_heures ) : ?>
         <div class="mt-feature-chips">
           <?php if ( $f_nprod ) : ?>
-          <span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="10.5" y1="17.5" x2="13.5" y2="17.5"/></svg> <?php echo (int) $f_nprod; ?> modèles analysés</span>
+          <span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="2"/><line x1="10.5" y1="17.5" x2="13.5" y2="17.5"/></svg> <?php echo (int) $f_nprod; ?> modèles analysés</span>
           <?php endif; ?>
           <?php if ( $f_heures ) : ?>
-          <span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <?php echo (int) $f_heures; ?> h de recherche</span>
+          <span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <?php echo (int) $f_heures; ?> h de recherche</span>
           <?php endif; ?>
-          <span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> 100 % indépendant</span>
+          <span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> 100 % indépendant</span>
         </div>
         <?php endif; ?>
         <div class="mt-feature-foot">
@@ -250,7 +250,7 @@ $term_desc = trim( (string) term_description( $term_id, $CAT_TAXONOMY ) );
             <?php if ( $f_avatar ) : ?><img class="avatar" src="<?php echo esc_url( $f_avatar ); ?>" alt="" width="30" height="30" loading="lazy"><?php else : ?><span class="avatar"></span><?php endif; ?>
             <span>Par <b><?php echo esc_html( $f_author ); ?></b> · mis à jour le <?php echo esc_html( $f_date ); ?></span>
           </span>
-          <a class="mt-btn" href="<?php echo esc_url( $f_url ); ?>">Lire le guide <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+          <a class="mt-btn" href="<?php echo esc_url( $f_url ); ?>">Lire le guide <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
         </div>
       </div>
     </article>
