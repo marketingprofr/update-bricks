@@ -17,7 +17,7 @@
    CONFIG
    --------------------------------------------------------------------- */
 $HH_SEARCH_ACTION = home_url( '/' );                 // cible du formulaire (recherche WP)
-$HH_YEAR          = '2018';                           // « indépendant depuis … »
+$HH_YEAR          = '2014';                           // « indépendant depuis … »
 $HH_POST_TYPES    = array( 'comparatif', 'liste' );   // CPT comptés pour « guides d'achat »
 $HH_POPULAR       = array( 'Aspirateur robot', 'Matelas', 'Tablette', 'Friteuse sans huile', 'Casque Bluetooth' );
 
