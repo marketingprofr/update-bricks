@@ -1,0 +1,40 @@
+/* =====================================================================
+   MEILLEURTEST — ACCUEIL · §6 COMMENT NOUS TESTONS (onglet CSS)
+   Scope : .mt-hm. Bande sombre. 100 % variables Advanced Themer.
+   FOND DE SECTION À RÉGLER DANS BRICKS : var(--at-black-l-1).
+   (Le CSS ne pose PAS le fond de bande — c'est la section Bricks qui le
+   porte, plein écran ; ici on ne gère que les panneaux + le texte clair.)
+   ===================================================================== */
+.mt-hm {
+  --panel: var(--at-black-l-2); --hair: var(--at-black-l-3);
+  --title: var(--at-white); --body: var(--at-grey-l-1); --num: var(--at-grey);
+  --accent: var(--at-primary); --accent-soft: var(--at-primary-d-3);
+  --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--body); width: 100%; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  padding: clamp(48px, 5vw, 72px) 0;
+}
+.mt-hm * { box-sizing: border-box; }
+
+.mt-hm-head { max-width: 640px; margin-bottom: 40px; }
+.mt-hm-head .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+.mt-hm-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(26px, 3vw, 36px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.14; margin: 0 0 14px; color: var(--title); text-wrap: balance; }
+.mt-hm-head p { font-size: 15.5px; line-height: 1.6; color: var(--body); margin: 0; }
+
+.mt-hm-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--hair); border: 1px solid var(--hair); border-radius: var(--radius-lg); overflow: hidden; }
+.mt-hm .mt-step { background: var(--panel); padding: 28px 26px; }
+.mt-hm .mt-step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.mt-hm .mt-step-num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; font-weight: 700; color: var(--num); letter-spacing: 0.02em; }
+.mt-hm .mt-step-ico { width: 42px; height: 42px; border-radius: 11px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.mt-hm .mt-step-ico svg { width: 22px; height: 22px; }
+.mt-hm .mt-step h3 { font-size: 16.5px; font-weight: 600; color: var(--title); margin: 0 0 8px; letter-spacing: -0.01em; }
+.mt-hm .mt-step p { font-size: 13.5px; line-height: 1.55; color: var(--body); margin: 0; }
+
+.mt-hm-promise { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 28px; margin-top: 34px; padding-top: 30px; border-top: 1px solid var(--hair); }
+.mt-hm-promise .p { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; color: var(--at-grey-l-2); }
+.mt-hm-promise .p svg { width: 18px; height: 18px; color: var(--accent); }
+.mt-hm-promise .p b { color: var(--title); font-weight: 600; }
+
+/* ===== Responsive ===== */
+@media (max-width: 1080px) { .mt-hm-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px)  { .mt-hm-grid { grid-template-columns: 1fr; } }

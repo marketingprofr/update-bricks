@@ -1,0 +1,88 @@
+/* =====================================================================
+   MEILLEURTEST — ACCUEIL · §2 NOS GUIDES À LA UNE (onglet CSS)
+   Scope : .mt-hu. 100 % variables Advanced Themer → bascule dark auto.
+   FOND DE SECTION À RÉGLER DANS BRICKS : var(--at-grey-l-5).
+   ===================================================================== */
+.mt-hu {
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
+  --bg: var(--at-white); --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --accent: var(--at-primary); --accent-soft: var(--at-primary-l-6); --accent-dark: var(--at-primary-d-1);
+  --gold: var(--at-gold);
+  --radius: 10px; --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink); width: 100%; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  padding: clamp(44px, 5vw, 64px) 0;
+}
+.mt-hu * { box-sizing: border-box; }
+.mt-hu a { color: inherit; text-decoration: none; }
+.mt-hu img { max-width: 100%; }
+
+/* === Titre de section (partagé) === */
+.mt-hu .mt-sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+.mt-hu .mt-sec-head .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+.mt-hu .mt-sec-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(26px, 3vw, 36px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.12; margin: 0; text-wrap: balance; }
+.mt-hu .mt-sec-head p { font-size: 15px; color: var(--muted); margin: 10px 0 0; max-width: 56ch; }
+.mt-hu .mt-sec-link { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; font-size: 14px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.mt-hu .mt-sec-link svg { width: 16px; height: 16px; transition: transform .15s; }
+.mt-hu .mt-sec-link:hover svg { transform: translateX(3px); }
+
+/* === Guide à la une (feature) === */
+.mt-hu .mt-feature { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+.mt-hu .mt-feature-media { position: relative; min-height: 340px; background: var(--bg-3); display: block; }
+.mt-hu .mt-feature-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mt-hu .mt-feature-flag { position: absolute; top: 16px; left: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; background: var(--ink); color: var(--at-white); border-radius: 999px; font-size: 12px; font-weight: 600; }
+.mt-hu .mt-feature-flag svg { width: 14px; height: 14px; color: var(--gold); }
+.mt-hu .mt-feature-body { padding: clamp(26px, 3vw, 44px); display: flex; flex-direction: column; justify-content: center; }
+.mt-hu .mt-feature-kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+.mt-hu .mt-feature-body h3 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 600; line-height: 1.16; letter-spacing: -0.02em; margin: 0 0 14px; text-wrap: balance; }
+.mt-hu .mt-feature-body h3 a:hover { color: var(--accent); }
+.mt-hu .mt-feature-body p { font-size: 15px; line-height: 1.6; color: var(--ink-2); margin: 0 0 22px; max-width: 52ch; }
+.mt-hu .mt-feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+.mt-hu .mt-feature-chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; font-size: 12.5px; color: var(--ink-2); }
+.mt-hu .mt-feature-chip svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+.mt-hu .mt-feature-foot { display: flex; align-items: center; gap: 14px; }
+.mt-hu .mt-feature-byline { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted); }
+.mt-hu .mt-feature-byline .avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--line); object-fit: cover; flex-shrink: 0; }
+.mt-hu .mt-feature-byline b { color: var(--ink-2); font-weight: 600; }
+.mt-hu .mt-btn { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; padding: 12px 22px; background: var(--accent); color: var(--at-white); border-radius: 10px; font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .15s; }
+.mt-hu .mt-btn:hover { background: var(--accent-dark); }
+.mt-hu .mt-btn svg { width: 16px; height: 16px; }
+
+/* === Grille de cartes (partagée) === */
+.mt-hu .mt-guide-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.mt-hu .mt-card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: box-shadow .18s ease, transform .18s ease; }
+.mt-hu .mt-card:hover { box-shadow: 0 10px 30px rgba(20,24,29,0.09); transform: translateY(-3px); }
+.mt-hu .mt-card-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16/11; background: var(--bg-3); }
+.mt-hu .mt-card-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mt-hu .mt-card-tag { position: absolute; top: 11px; left: 11px; z-index: 2; padding: 4px 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--accent); }
+.mt-hu .mt-card-body { padding: 15px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+.mt-hu .mt-card-cat { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+.mt-hu .mt-card h4 { font-size: 15.5px; font-weight: 600; margin: 0 0 8px; line-height: 1.3; letter-spacing: -0.01em; }
+.mt-hu .mt-card h4 a:hover { color: var(--accent); }
+.mt-hu .mt-card p { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 14px; }
+.mt-hu .mt-card-meta { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 13px; border-top: 1px solid var(--line-2); font-size: 12px; color: var(--muted); }
+.mt-hu .mt-card-meta .stars { color: var(--gold); font-size: 12.5px; letter-spacing: 1px; }
+.mt-hu .mt-card-meta b { color: var(--ink-2); font-weight: 600; }
+.mt-hu .mt-card-meta .dot { color: var(--muted-2); }
+
+/* Motif placeholder sur les vignettes sans image */
+.mt-hu .mt-card-thumb.ph::after, .mt-hu .mt-feature-media.ph::after { content: ""; position: absolute; inset: 0; z-index: 1; background: repeating-linear-gradient(45deg, transparent 0 11px, rgba(0,0,0,0.025) 11px 12px); pointer-events: none; }
+
+/* ===== Responsive ===== */
+@media (max-width: 1080px) {
+  .mt-hu .mt-guide-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .mt-hu .mt-feature { grid-template-columns: 1fr; }
+  .mt-hu .mt-feature-media { min-height: 0; aspect-ratio: 16/9; }
+}
+@media (max-width: 860px) {
+  .mt-hu .mt-sec-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .mt-hu .mt-feature-foot { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .mt-hu .mt-btn { margin-left: 0; }
+}
+@media (max-width: 560px) {
+  .mt-hu .mt-guide-grid { grid-template-columns: 1fr; }
+}

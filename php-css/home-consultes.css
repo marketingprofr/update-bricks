@@ -1,0 +1,40 @@
+/* =====================================================================
+   MEILLEURTEST — ACCUEIL · §7 LES PLUS CONSULTÉS (onglet CSS)
+   Scope : .mt-hc. 100 % variables Advanced Themer → bascule dark auto.
+   FOND DE SECTION À RÉGLER DANS BRICKS : var(--at-grey-l-5).
+   ===================================================================== */
+.mt-hc {
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3);
+  --accent: var(--at-primary);
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink); width: 100%; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  padding: clamp(44px, 5vw, 64px) 0;
+}
+.mt-hc * { box-sizing: border-box; }
+.mt-hc a { color: inherit; text-decoration: none; }
+
+/* === Titre de section (partagé) === */
+.mt-hc .mt-sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+.mt-hc .mt-sec-head .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+.mt-hc .mt-sec-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(26px, 3vw, 36px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.12; margin: 0; text-wrap: balance; }
+.mt-hc .mt-sec-head p { font-size: 15px; color: var(--muted); margin: 10px 0 0; max-width: 56ch; }
+.mt-hc .mt-sec-link { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; font-size: 14px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+.mt-hc .mt-sec-link svg { width: 16px; height: 16px; transition: transform .15s; }
+.mt-hc .mt-sec-link:hover svg { transform: translateX(3px); }
+
+/* === Liste classée (2 colonnes) === */
+.mt-hc .mt-rank { display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; }
+.mt-hc .mt-rank-item { display: flex; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.mt-hc .mt-rank-num { font-family: "Source Serif 4", Georgia, serif; font-size: 30px; font-weight: 600; color: var(--muted-2); line-height: 1; width: 40px; flex-shrink: 0; text-align: center; letter-spacing: -0.02em; }
+.mt-hc .mt-rank-body { min-width: 0; flex: 1; }
+.mt-hc .mt-rank-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+.mt-hc .mt-rank-title { display: block; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 3px 0 0; line-height: 1.3; }
+.mt-hc .mt-rank-item:hover .mt-rank-title { color: var(--accent); }
+.mt-hc .mt-rank-meta { font-size: 12.5px; color: var(--muted); flex-shrink: 0; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.mt-hc .mt-rank-meta svg { width: 14px; height: 14px; color: var(--muted-2); }
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) { .mt-hc .mt-rank { grid-template-columns: 1fr; gap: 0; } }
+@media (max-width: 860px) { .mt-hc .mt-sec-head { flex-direction: column; align-items: flex-start; gap: 14px; } }
