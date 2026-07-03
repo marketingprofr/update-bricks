@@ -43,7 +43,7 @@ $hh_univ_disp  = $hh_univ > 0 ? number_format_i18n( $hh_univ ) : '8';
       Comparatifs sans pub ni sponsor depuis <?php echo esc_html( $HH_YEAR ); ?>
     </span>
 
-    <h1>Le bon choix, <em>quel que soit</em> votre achat</h1>
+    <h1>Le bon choix,<br><em>quel que soit</em> votre achat</h1>
     <p class="mt-hh-lede">De la maison au high-tech, de la beauté au sport — nous testons, comparons et classons des milliers de produits pour vous aider à choisir en toute confiance. Sans pub, sans sponsor, sans cadeau des marques.</p>
 
     <form class="mt-hh-search" method="get" action="<?php echo esc_url( $HH_SEARCH_ACTION ); ?>" role="search">
