@@ -38,14 +38,16 @@ if ( ! function_exists( 'mt_home_primary_cat' ) ) {
   }
 }
 if ( ! function_exists( 'mt_home_popular_args' ) ) {
+  /* Tri « plus vus » simple et RAPIDE : un seul JOIN indexe sur meta_key,
+     classe par vues decroissantes. On ne remonte que les guides AYANT des
+     vues (exactement ce qu'on veut pour « plus vus / a la une »). Surtout PAS
+     de OR + NOT EXISTS ici : sans filtre de taxonomie sur tout le site, ca
+     genere une double jointure + filesort qui fait timeout le serveur. */
   function mt_home_popular_args( $views_meta ) {
     return array(
-      'meta_query' => array(
-        'relation' => 'OR',
-        'hasv' => array( 'key' => $views_meta, 'compare' => 'EXISTS', 'type' => 'NUMERIC' ),
-        'nov'  => array( 'key' => $views_meta, 'compare' => 'NOT EXISTS' ),
-      ),
-      'orderby' => array( 'hasv' => 'DESC', 'date' => 'DESC' ),
+      'meta_key' => $views_meta,
+      'orderby'  => 'meta_value_num',
+      'order'    => 'DESC',
     );
   }
 }
