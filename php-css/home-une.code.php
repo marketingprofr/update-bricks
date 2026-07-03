@@ -116,11 +116,6 @@ $f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies']
 ?>
 
 <section class="mt-hu">
-  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
-    .mt-hu svg{width:16px;height:16px;flex-shrink:0}
-    .mt-hu .mt-feature-flag svg{width:14px;height:14px}
-    .mt-hu .mt-feature-chip svg{width:15px;height:15px}
-    .mt-hu .mt-btn svg{width:16px;height:16px}</style>
   <div class="mt-sec-head">
     <div>
       <p class="eyebrow">La rédaction recommande</p>
@@ -131,7 +126,7 @@ $f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies']
 
   <article class="mt-feature">
     <a class="mt-feature-media<?php echo $f_img ? '' : ' ph'; ?>" href="<?php echo esc_url( $f_url ); ?>">
-      <span class="mt-feature-flag"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17l-6.2 3.6 1.6-6.7L2.2 8.9l6.9-.6L12 2z"/></svg> Coup de cœur</span>
+      <span class="mt-feature-flag"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17l-6.2 3.6 1.6-6.7L2.2 8.9l6.9-.6L12 2z"/></svg> Coup de cœur</span>
       <?php if ( $f_img ) : ?><img src="<?php echo esc_url( $f_img ); ?>" alt="<?php echo esc_attr( $f_title ); ?>"><?php endif; ?>
     </a>
     <div class="mt-feature-body">
@@ -140,9 +135,9 @@ $f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies']
       <?php if ( $f_desc !== '' ) : ?><p><?php echo esc_html( $f_desc ); ?></p><?php endif; ?>
       <?php if ( $f_nprod || $f_heures ) : ?>
       <div class="mt-feature-chips">
-        <?php if ( $f_nprod ) : ?><span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg> <?php echo (int) $f_nprod; ?> modèles testés</span><?php endif; ?>
-        <?php if ( $f_heures ) : ?><span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <?php echo (int) $f_heures; ?> h de recherche</span><?php endif; ?>
-        <span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> 100 % indépendant</span>
+        <?php if ( $f_nprod ) : ?><span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg> <?php echo (int) $f_nprod; ?> modèles testés</span><?php endif; ?>
+        <?php if ( $f_heures ) : ?><span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <?php echo (int) $f_heures; ?> h de recherche</span><?php endif; ?>
+        <span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> 100 % indépendant</span>
       </div>
       <?php endif; ?>
       <div class="mt-feature-foot">
@@ -150,7 +145,7 @@ $f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies']
           <?php if ( $f_avatar ) : ?><img class="avatar" src="<?php echo esc_url( $f_avatar ); ?>" alt="" width="30" height="30" loading="lazy"><?php else : ?><span class="avatar"></span><?php endif; ?>
           <span>Par <b><?php echo esc_html( $f_author ); ?></b> · mis à jour le <?php echo esc_html( $f_date ); ?></span>
         </span>
-        <a class="mt-btn" href="<?php echo esc_url( $f_url ); ?>">Lire le guide <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        <a class="mt-btn" href="<?php echo esc_url( $f_url ); ?>">Lire le guide <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
       </div>
     </div>
   </article>

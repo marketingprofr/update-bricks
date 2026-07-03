@@ -59,10 +59,6 @@ if ( $HX_MAX > 0 ) { $hx_terms = array_slice( $hx_terms, 0, (int) $HX_MAX ); }
 ?>
 
 <section class="mt-hx">
-  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
-    .mt-hx svg{width:20px;height:20px;flex-shrink:0}
-    .mt-hx .mt-univ-ico svg{width:24px;height:24px}
-    .mt-hx .mt-univ-arrow svg{width:18px;height:18px}</style>
   <div class="mt-sec-head">
     <div>
       <p class="eyebrow">Un site généraliste</p>
@@ -93,12 +89,12 @@ if ( $HX_MAX > 0 ) { $hx_terms = array_slice( $hx_terms, 0, (int) $HX_MAX ); }
       if ( $count < 1 ) { $count = (int) $term->count; }
       ?>
       <a class="mt-univ" href="<?php echo esc_url( $link ); ?>">
-        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><?php echo mt_hx_icon( $term->slug ); // markup SVG interne contrôlé ?></svg></span>
+        <span class="mt-univ-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><?php echo mt_hx_icon( $term->slug ); // markup SVG interne contrôlé ?></svg></span>
         <div>
           <div class="mt-univ-name"><?php echo esc_html( $term->name ); ?></div>
           <div class="mt-univ-count"><?php echo esc_html( number_format_i18n( $count ) ); ?> guide<?php echo $count > 1 ? 's' : ''; ?></div>
         </div>
-        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+        <span class="mt-univ-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
       </a>
     <?php endforeach; ?>
   </div>

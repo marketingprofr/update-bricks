@@ -90,12 +90,10 @@ $hr_q = new WP_Query( array(
 ) );
 if ( ! $hr_q->have_posts() ) { wp_reset_postdata(); return; }
 
-$clock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+$clock = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 ?>
 
 <section class="mt-hr">
-  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
-    .mt-hr svg{width:14px;height:14px;flex-shrink:0}</style>
   <div class="mt-sec-head">
     <div>
       <p class="eyebrow">Fraîchement publiés</p>
