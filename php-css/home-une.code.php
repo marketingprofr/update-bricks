@@ -51,6 +51,33 @@ if ( ! function_exists( 'mt_home_popular_args' ) ) {
     );
   }
 }
+if ( ! function_exists( 'mt_home_top_viewed' ) ) {
+  /* IDs des guides les plus vus, MÉMOÏSÉS pour toute la requête : la requête
+     DB ne s'exécute qu'UNE fois par rendu même si plusieurs blocs l'utilisent
+     (home-une = 5, home-consultes = 10 → on ramène 10 une seule fois puis on
+     tranche). Le WP_Query amorce au passage les caches post/terme/meta des
+     cartes. On ne remonte que les guides ayant des vues (tri indexé rapide). */
+  function mt_home_top_viewed( $post_types, $views_meta, $limit ) {
+    static $cache = array();
+    $key  = md5( wp_json_encode( array( $post_types, $views_meta ) ) );
+    $need = (int) $limit;
+    if ( ! isset( $cache[ $key ] ) || count( $cache[ $key ] ) < $need ) {
+      $q = new WP_Query( array(
+        'post_type'           => $post_types,
+        'post_status'         => 'publish',
+        'posts_per_page'      => max( $need, 10 ),
+        'no_found_rows'       => true,
+        'ignore_sticky_posts' => true,
+        'meta_key'            => $views_meta,
+        'orderby'             => 'meta_value_num',
+        'order'               => 'DESC',
+      ) );
+      $cache[ $key ] = array_map( 'intval', wp_list_pluck( $q->posts, 'ID' ) );
+      wp_reset_postdata();
+    }
+    return array_slice( $cache[ $key ], 0, $need );
+  }
+}
 if ( ! function_exists( 'mt_home_card' ) ) {
   /* Rend une carte guide standard. $a : cat, desc, words, tag, tag_class,
      meta (HTML déjà échappé côté appelant). */
@@ -81,21 +108,10 @@ if ( ! function_exists( 'mt_home_card' ) ) {
 }
 
 /* ---------------------------------------------------------------------
-   Requête : 5 guides les plus vus (feature + 4 cartes)
+   5 guides les plus vus (feature + 4 cartes) — requête mutualisée
+   avec home-consultes (mt_home_top_viewed)
    --------------------------------------------------------------------- */
-$hu_q = new WP_Query( array_merge(
-  array(
-    'post_type'           => $HU_POST_TYPES,
-    'post_status'         => 'publish',
-    'posts_per_page'      => 5,
-    'no_found_rows'       => true,
-    'ignore_sticky_posts' => true,
-  ),
-  mt_home_popular_args( $HU_VIEWS_META )
-) );
-$hu_ids = wp_list_pluck( $hu_q->posts, 'ID' );
-wp_reset_postdata();
-
+$hu_ids = mt_home_top_viewed( $HU_POST_TYPES, $HU_VIEWS_META, 5 );
 if ( empty( $hu_ids ) ) { return; }
 
 $feat_id  = (int) array_shift( $hu_ids );

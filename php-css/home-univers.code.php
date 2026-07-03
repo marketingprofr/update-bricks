@@ -16,7 +16,8 @@
    CONFIG
    --------------------------------------------------------------------- */
 $HX_POST_TYPES = array( 'comparatif', 'liste' );
-$HX_MAX        = 8;   // nb d'univers affichés (0 = tous)
+$HX_MAX        = 8;                 // nb d'univers affichés (0 = tous)
+$HX_CACHE_TTL  = 6 * HOUR_IN_SECONDS; // cache des comptages (0 = pas de cache)
 
 /* ---------------------------------------------------------------------
    Icône par univers (inner-SVG) selon un mot-clé du slug — repli générique.
@@ -47,15 +48,37 @@ if ( ! function_exists( 'mt_hx_icon' ) ) {
 }
 
 /* ---------------------------------------------------------------------
-   Catégories de 1er niveau non vides + comptage des CPT guides
+   Catégories de 1er niveau + comptage des CPT guides — mis en TRANSIENT
+   (les comptages changent rarement → 0 requête sur les rendus suivants).
    --------------------------------------------------------------------- */
-$hx_terms = get_terms( array(
-  'taxonomy'   => 'category',
-  'parent'     => 0,
-  'hide_empty' => true,
-) );
-if ( is_wp_error( $hx_terms ) || empty( $hx_terms ) ) { return; }
-if ( $HX_MAX > 0 ) { $hx_terms = array_slice( $hx_terms, 0, (int) $HX_MAX ); }
+$hx_ck    = 'mt_home_univers_' . md5( wp_json_encode( array( $HX_POST_TYPES, (int) $HX_MAX ) ) );
+$hx_items = ( $HX_CACHE_TTL > 0 ) ? get_transient( $hx_ck ) : false;
+
+if ( ! is_array( $hx_items ) ) {
+  $hx_items = array();
+  $hx_terms = get_terms( array( 'taxonomy' => 'category', 'parent' => 0, 'hide_empty' => true ) );
+  if ( ! is_wp_error( $hx_terms ) && ! empty( $hx_terms ) ) {
+    if ( $HX_MAX > 0 ) { $hx_terms = array_slice( $hx_terms, 0, (int) $HX_MAX ); }
+    foreach ( $hx_terms as $term ) {
+      $cq = new WP_Query( array(
+        'post_type'           => $HX_POST_TYPES,
+        'post_status'         => 'publish',
+        'posts_per_page'      => 1,
+        'fields'              => 'ids',
+        'ignore_sticky_posts' => true,
+        'tax_query'           => array( array(
+          'taxonomy' => 'category', 'field' => 'term_id', 'terms' => (int) $term->term_id, 'include_children' => true,
+        ) ),
+      ) );
+      $count = (int) $cq->found_posts;
+      wp_reset_postdata();
+      if ( $count < 1 ) { $count = (int) $term->count; }
+      $hx_items[] = array( 'id' => (int) $term->term_id, 'name' => $term->name, 'slug' => $term->slug, 'count' => $count );
+    }
+  }
+  if ( $HX_CACHE_TTL > 0 ) { set_transient( $hx_ck, $hx_items, (int) $HX_CACHE_TTL ); }
+}
+if ( empty( $hx_items ) ) { return; }
 ?>
 
 <section class="mt-hx">
@@ -68,30 +91,15 @@ if ( $HX_MAX > 0 ) { $hx_terms = array_slice( $hx_terms, 0, (int) $HX_MAX ); }
   </div>
 
   <div class="mt-univ-grid">
-    <?php foreach ( $hx_terms as $term ) :
-      $link = get_term_link( $term );
+    <?php foreach ( $hx_items as $it ) :
+      $link = get_term_link( (int) $it['id'], 'category' );
       if ( is_wp_error( $link ) ) { continue; }
-
-      /* Nombre de guides (comparatifs + listes) de l'univers */
-      $cq = new WP_Query( array(
-        'post_type'           => $HX_POST_TYPES,
-        'post_status'         => 'publish',
-        'posts_per_page'      => 1,
-        'fields'              => 'ids',
-        'no_found_rows'       => false,
-        'ignore_sticky_posts' => true,
-        'tax_query'           => array( array(
-          'taxonomy' => 'category', 'field' => 'term_id', 'terms' => (int) $term->term_id, 'include_children' => true,
-        ) ),
-      ) );
-      $count = (int) $cq->found_posts;
-      wp_reset_postdata();
-      if ( $count < 1 ) { $count = (int) $term->count; }
+      $count = (int) $it['count'];
       ?>
       <a class="mt-univ" href="<?php echo esc_url( $link ); ?>">
-        <span class="mt-univ-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><?php echo mt_hx_icon( $term->slug ); // markup SVG interne contrôlé ?></svg></span>
+        <span class="mt-univ-ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><?php echo mt_hx_icon( $it['slug'] ); // markup SVG interne contrôlé ?></svg></span>
         <div>
-          <div class="mt-univ-name"><?php echo esc_html( $term->name ); ?></div>
+          <div class="mt-univ-name"><?php echo esc_html( $it['name'] ); ?></div>
           <div class="mt-univ-count"><?php echo esc_html( number_format_i18n( $count ) ); ?> guide<?php echo $count > 1 ? 's' : ''; ?></div>
         </div>
         <span class="mt-univ-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>

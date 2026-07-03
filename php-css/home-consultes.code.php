@@ -44,21 +44,39 @@ if ( ! function_exists( 'mt_home_popular_args' ) ) {
     );
   }
 }
+if ( ! function_exists( 'mt_home_top_viewed' ) ) {
+  /* IDs des guides les plus vus, MÉMOÏSÉS pour toute la requête : la requête
+     DB ne s'exécute qu'UNE fois par rendu même si plusieurs blocs l'utilisent
+     (home-une = 5, home-consultes = 10 → on ramène 10 une seule fois puis on
+     tranche). Le WP_Query amorce au passage les caches post/terme/meta des
+     cartes. On ne remonte que les guides ayant des vues (tri indexé rapide). */
+  function mt_home_top_viewed( $post_types, $views_meta, $limit ) {
+    static $cache = array();
+    $key  = md5( wp_json_encode( array( $post_types, $views_meta ) ) );
+    $need = (int) $limit;
+    if ( ! isset( $cache[ $key ] ) || count( $cache[ $key ] ) < $need ) {
+      $q = new WP_Query( array(
+        'post_type'           => $post_types,
+        'post_status'         => 'publish',
+        'posts_per_page'      => max( $need, 10 ),
+        'no_found_rows'       => true,
+        'ignore_sticky_posts' => true,
+        'meta_key'            => $views_meta,
+        'orderby'             => 'meta_value_num',
+        'order'               => 'DESC',
+      ) );
+      $cache[ $key ] = array_map( 'intval', wp_list_pluck( $q->posts, 'ID' ) );
+      wp_reset_postdata();
+    }
+    return array_slice( $cache[ $key ], 0, $need );
+  }
+}
 
 /* ---------------------------------------------------------------------
-   Requête : top vues
+   Top vues — requête mutualisée avec home-une (mt_home_top_viewed)
    --------------------------------------------------------------------- */
-$hc_q = new WP_Query( array_merge(
-  array(
-    'post_type'           => $HC_POST_TYPES,
-    'post_status'         => 'publish',
-    'posts_per_page'      => (int) $HC_COUNT,
-    'no_found_rows'       => true,
-    'ignore_sticky_posts' => true,
-  ),
-  mt_home_popular_args( $HC_VIEWS_META )
-) );
-if ( ! $hc_q->have_posts() ) { wp_reset_postdata(); return; }
+$hc_ids = mt_home_top_viewed( $HC_POST_TYPES, $HC_VIEWS_META, (int) $HC_COUNT );
+if ( empty( $hc_ids ) ) { return; }
 
 $eye = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
 $rank = 0;
@@ -74,8 +92,7 @@ $rank = 0;
   </div>
 
   <div class="mt-rank">
-    <?php while ( $hc_q->have_posts() ) : $hc_q->the_post();
-      $pid   = get_the_ID();
+    <?php foreach ( $hc_ids as $pid ) :
       $rank++;
       $cat   = mt_home_primary_cat( $pid );
       $views = (int) get_post_meta( $pid, $HC_VIEWS_META, true );
@@ -84,16 +101,16 @@ $rank = 0;
       } else {
         $vdisp = $views > 0 ? number_format_i18n( $views ) : '';
       }
+      $url = get_permalink( $pid );
       ?>
-      <a class="mt-rank-item" href="<?php the_permalink(); ?>">
+      <a class="mt-rank-item" href="<?php echo esc_url( $url ); ?>">
         <span class="mt-rank-num"><?php echo (int) $rank; ?></span>
         <span class="mt-rank-body">
           <?php if ( $cat !== '' ) : ?><span class="mt-rank-tag"><?php echo esc_html( $cat ); ?></span><?php endif; ?>
-          <span class="mt-rank-title"><?php echo esc_html( get_the_title() ); ?></span>
+          <span class="mt-rank-title"><?php echo esc_html( get_the_title( $pid ) ); ?></span>
         </span>
         <?php if ( $vdisp !== '' ) : ?><span class="mt-rank-meta"><?php echo $eye; /* SVG contrôlé */ ?> <?php echo esc_html( $vdisp ); ?></span><?php endif; ?>
       </a>
-    <?php endwhile; ?>
+    <?php endforeach; ?>
   </div>
 </section>
-<?php wp_reset_postdata(); ?>
