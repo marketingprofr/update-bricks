@@ -63,6 +63,8 @@ $rank = 0;
 ?>
 
 <section class="mt-hc">
+  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
+    .mt-hc svg{width:14px;height:14px;flex-shrink:0}</style>
   <div class="mt-sec-head">
     <div>
       <p class="eyebrow">Le palmarès des lecteurs</p>

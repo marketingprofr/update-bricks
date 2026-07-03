@@ -59,6 +59,10 @@ if ( $HX_MAX > 0 ) { $hx_terms = array_slice( $hx_terms, 0, (int) $HX_MAX ); }
 ?>
 
 <section class="mt-hx">
+  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
+    .mt-hx svg{width:20px;height:20px;flex-shrink:0}
+    .mt-hx .mt-univ-ico svg{width:24px;height:24px}
+    .mt-hx .mt-univ-arrow svg{width:18px;height:18px}</style>
   <div class="mt-sec-head">
     <div>
       <p class="eyebrow">Un site généraliste</p>

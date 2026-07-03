@@ -94,6 +94,8 @@ $clock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-widt
 ?>
 
 <section class="mt-hr">
+  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
+    .mt-hr svg{width:14px;height:14px;flex-shrink:0}</style>
   <div class="mt-sec-head">
     <div>
       <p class="eyebrow">Fraîchement publiés</p>

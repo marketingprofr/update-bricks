@@ -116,6 +116,11 @@ $f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies']
 ?>
 
 <section class="mt-hu">
+  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
+    .mt-hu svg{width:16px;height:16px;flex-shrink:0}
+    .mt-hu .mt-feature-flag svg{width:14px;height:14px}
+    .mt-hu .mt-feature-chip svg{width:15px;height:15px}
+    .mt-hu .mt-btn svg{width:16px;height:16px}</style>
   <div class="mt-sec-head">
     <div>
       <p class="eyebrow">La rédaction recommande</p>

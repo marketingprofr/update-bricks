@@ -12,6 +12,10 @@
    ===================================================================== */
 ?>
 <section class="mt-hm">
+  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
+    .mt-hm svg{width:20px;height:20px;flex-shrink:0}
+    .mt-hm .mt-step-ico svg{width:22px;height:22px}
+    .mt-hm .mt-hm-promise .p svg{width:18px;height:18px}</style>
   <div class="mt-hm-head">
     <p class="eyebrow">Notre méthode</p>
     <h2>Comment nous testons</h2>

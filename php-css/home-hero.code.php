@@ -37,6 +37,12 @@ $hh_univ_disp  = $hh_univ > 0 ? number_format_i18n( $hh_univ ) : '8';
 ?>
 
 <section class="mt-hh">
+  <style>/* dimensionnement SVG immédiat (anti-FOUC, indépendant de l'onglet CSS) */
+    .mt-hh svg{width:16px;height:16px;flex-shrink:0}
+    .mt-hh-eyebrow .pill svg{width:12px;height:12px}
+    .mt-hh-search .si{width:20px;height:20px}
+    .mt-hh-search button svg{width:16px;height:16px}
+    .mt-hh-stat svg{width:17px;height:17px}</style>
   <div class="mt-hh-inner">
     <span class="mt-hh-eyebrow">
       <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> Indépendant</span>
