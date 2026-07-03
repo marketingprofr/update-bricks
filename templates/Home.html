@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>Meilleurtest — Comparatifs et guides d'achat indépendants</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #fafbfc; }
+  body > .mt { background: #fafbfc; }
+
+  .mt {
+    --ink: #14181d; --ink-2: #2a3038;
+    --muted: #6b7480; --muted-2: #9aa3ad;
+    --line: #e8eaed; --line-2: #f1f3f5;
+    --bg: #ffffff; --bg-2: #fafbfc; --bg-3: #f5f6f8;
+    --accent: #155e9e; --accent-soft: #e6eff7;
+    --gold: #b48a3a; --warn: #b54848;
+    --radius: 10px; --radius-lg: 16px;
+    font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+    color: var(--ink); background: var(--bg);
+    width: 100%; max-width: 1280px; margin: 0 auto;
+    -webkit-font-smoothing: antialiased; line-height: 1.5;
+  }
+  .mt * { box-sizing: border-box; }
+  .mt a { color: inherit; text-decoration: none; }
+  .mt image-slot { display: block; width: 100%; height: 100%; }
+
+  /* ============================================================
+     EN-TÊTE DE SITE (identique aux autres pages)
+     ============================================================ */
+  .mt-utility { background: var(--ink); color: #cfd4d9; font-size: 12px; padding: 8px 40px; display: flex; justify-content: space-between; align-items: center; }
+  .mt-utility b { color: white; font-weight: 500; }
+  .mt-utility .check { color: #6dd6a8; }
+
+  .mt-header { padding: 18px 40px; display: grid; grid-template-columns: 200px 1fr auto; grid-template-areas: "logo search actions"; gap: 32px; align-items: center; border-bottom: 1px solid var(--line); }
+  .mt-logo { grid-area: logo; display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; white-space: nowrap; }
+  .mt-logo-mark { width: 28px; height: 28px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; color: white; font-weight: 700; font-size: 14px; }
+  .mt-logo .tld { color: var(--muted); font-weight: 400; }
+  .mt-search { grid-area: search; display: flex; align-items: center; gap: 10px; padding: 11px 16px; background: var(--bg-3); border-radius: 999px; font-size: 14px; color: var(--muted); }
+  .mt-search input { background: transparent; border: 0; outline: 0; width: 100%; min-width: 0; font: inherit; color: var(--ink); }
+  .mt-header-actions { grid-area: actions; display: flex; gap: 18px; align-items: center; font-size: 13px; color: var(--ink-2); }
+  .mt-header-actions span { display: flex; align-items: center; gap: 6px; }
+
+  .mt-cats { display: flex; gap: 4px; padding: 0 28px; border-bottom: 1px solid var(--line); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none; }
+  .mt-cats::-webkit-scrollbar { display: none; }
+  .mt-cats a { padding: 14px 16px; font-size: 14px; color: var(--ink-2); position: relative; white-space: nowrap; flex: 0 0 auto; }
+  .mt-cats a.active { color: var(--accent); font-weight: 600; }
+  .mt-cats a.active::after { content: ""; position: absolute; left: 16px; right: 16px; bottom: -1px; height: 2px; background: var(--accent); border-radius: 2px; }
+
+  .mt-nav-toggle { display: none; }
+  .mt-burger { display: none; }
+
+  .mt-trust { background: var(--accent-soft); color: var(--accent); padding: 10px 40px; font-size: 13px; text-align: center; }
+  .mt-trust b { font-weight: 600; }
+
+  /* ============================================================
+     HERO D'ACCUEIL — proposition de valeur + recherche
+     ============================================================ */
+  .mt-hero-home { padding: clamp(44px, 6vw, 76px) clamp(18px, 4vw, 40px) clamp(36px, 4vw, 52px); text-align: center; background: var(--bg); }
+  .mt-hero-inner { max-width: 780px; margin: 0 auto; }
+  .mt-hero-eyebrow { display: inline-flex; align-items: center; gap: 9px; padding: 6px 14px 6px 9px; background: white; border: 1px solid var(--line); border-radius: 999px; font-size: 12.5px; font-weight: 500; color: var(--ink-2); margin-bottom: 26px; }
+  .mt-hero-eyebrow .pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .mt-hero-eyebrow .pill svg { width: 12px; height: 12px; }
+  .mt-hero-home h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(34px, 5vw, 58px); line-height: 1.06; margin: 0 0 20px; letter-spacing: -0.025em; font-weight: 600; text-wrap: balance; }
+  .mt-hero-home h1 em { font-style: normal; color: var(--accent); }
+  .mt-hero-lede { font-size: clamp(15.5px, 1.5vw, 18px); line-height: 1.6; color: var(--ink-2); margin: 0 auto 32px; max-width: 60ch; text-wrap: pretty; }
+
+  .mt-hero-search { display: flex; align-items: center; gap: 8px; max-width: 620px; margin: 0 auto; background: white; border: 1px solid var(--line); border-radius: 999px; padding: 7px 7px 7px 20px; box-shadow: 0 8px 30px rgba(20,24,29,0.06); }
+  .mt-hero-search .si { width: 20px; height: 20px; color: var(--muted); flex-shrink: 0; }
+  .mt-hero-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: var(--ink); }
+  .mt-hero-search input::placeholder { color: var(--muted-2); }
+  .mt-hero-search button { flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer; padding: 12px 22px; background: var(--accent); color: white; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 600; transition: background .15s; }
+  .mt-hero-search button:hover { background: #124f85; }
+  .mt-hero-search button svg { width: 16px; height: 16px; }
+
+  .mt-hero-pop { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 20px; font-size: 13px; }
+  .mt-hero-pop .lbl { color: var(--muted); }
+  .mt-hero-pop a { padding: 6px 13px; background: white; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); font-weight: 500; transition: border-color .15s, color .15s; }
+  .mt-hero-pop a:hover { border-color: var(--accent); color: var(--accent); }
+
+  .mt-hero-strip { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px 30px; margin: 40px auto 0; padding-top: 30px; border-top: 1px solid var(--line); max-width: 860px; }
+  .mt-hero-stat { display: inline-flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--muted); }
+  .mt-hero-stat svg { width: 17px; height: 17px; color: var(--accent); flex-shrink: 0; }
+  .mt-hero-stat b { color: var(--ink); font-weight: 700; }
+
+  /* ============================================================
+     TITRES DE SECTION (partagés) + alternance de fond
+     ============================================================ */
+  .mt-sec { padding: clamp(48px, 5vw, 68px) clamp(18px, 4vw, 40px); }
+  .mt-sec.alt { background: var(--bg-3); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .mt-sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 30px; }
+  .mt-sec-head .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+  .mt-sec-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(26px, 3vw, 36px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.12; margin: 0; text-wrap: balance; }
+  .mt-sec-head p { font-size: 15px; color: var(--muted); margin: 10px 0 0; max-width: 56ch; }
+  .mt-sec-link { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; font-size: 14px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .mt-sec-link svg { width: 16px; height: 16px; transition: transform .15s; }
+  .mt-sec-link:hover svg { transform: translateX(3px); }
+
+  /* ============================================================
+     EXPLOREZ PAR UNIVERS — 8 cartes catégories
+     ============================================================ */
+  .mt-univ-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .mt-univ { display: flex; align-items: flex-start; gap: 15px; padding: 22px; background: white; border: 1px solid var(--line); border-radius: var(--radius-lg); transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease; position: relative; }
+  .mt-univ:hover { border-color: var(--accent); box-shadow: 0 10px 28px rgba(20,24,29,0.08); transform: translateY(-3px); }
+  .mt-univ-ico { width: 46px; height: 46px; flex-shrink: 0; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+  .mt-univ-ico svg { width: 24px; height: 24px; }
+  .mt-univ-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; margin: 3px 0 3px; }
+  .mt-univ-count { font-size: 13px; color: var(--muted); }
+  .mt-univ-arrow { position: absolute; top: 22px; right: 20px; color: var(--muted-2); transition: transform .15s, color .15s; }
+  .mt-univ-arrow svg { width: 18px; height: 18px; display: block; }
+  .mt-univ:hover .mt-univ-arrow { color: var(--accent); transform: translateX(3px); }
+
+  /* ============================================================
+     GUIDE À LA UNE (feature) + CARTES GUIDE (partagées)
+     ============================================================ */
+  .mt-feature { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; background: white; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 24px; }
+  .mt-feature-media { position: relative; min-height: 340px; background: var(--bg-3); }
+  .mt-feature-flag { position: absolute; top: 16px; left: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; background: var(--ink); color: white; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .mt-feature-flag svg { width: 14px; height: 14px; color: var(--gold); }
+  .mt-feature-body { padding: clamp(26px, 3vw, 44px); display: flex; flex-direction: column; justify-content: center; }
+  .mt-feature-kicker { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+  .mt-feature-body h3 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(24px, 2.6vw, 32px); font-weight: 600; line-height: 1.16; letter-spacing: -0.02em; margin: 0 0 14px; text-wrap: balance; }
+  .mt-feature-body h3 a:hover { color: var(--accent); }
+  .mt-feature-body p { font-size: 15px; line-height: 1.6; color: var(--ink-2); margin: 0 0 22px; max-width: 52ch; }
+  .mt-feature-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .mt-feature-rating .stars { color: var(--gold); font-size: 17px; letter-spacing: 2px; }
+  .mt-feature-rating .rv { font-size: 13px; color: var(--muted); }
+  .mt-feature-rating .rv b { color: var(--ink); font-weight: 600; }
+  .mt-feature-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .mt-feature-chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 8px; font-size: 12.5px; color: var(--ink-2); }
+  .mt-feature-chip svg { width: 15px; height: 15px; color: var(--accent); }
+  .mt-feature-foot { display: flex; align-items: center; gap: 14px; }
+  .mt-feature-byline { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted); }
+  .mt-feature-byline .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #c9b89d, #8a7456); flex-shrink: 0; }
+  .mt-feature-byline b { color: var(--ink-2); font-weight: 600; }
+  .mt-btn { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; padding: 12px 22px; background: var(--accent); color: white; border-radius: 10px; font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .15s; }
+  .mt-btn:hover { background: #124f85; }
+  .mt-btn svg { width: 16px; height: 16px; }
+
+  .mt-guide-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .mt-card { background: white; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; position: relative; transition: box-shadow .18s ease, transform .18s ease; }
+  .mt-card:hover { box-shadow: 0 10px 30px rgba(20,24,29,0.09); transform: translateY(-3px); }
+  .mt-card-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16/11; background: var(--bg-3); }
+  .mt-card-tag { position: absolute; top: 11px; left: 11px; z-index: 2; display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; background: rgba(255,255,255,0.94); backdrop-filter: blur(4px); border-radius: 999px; font-size: 11px; font-weight: 600; color: var(--accent); }
+  .mt-card-tag.upd, .mt-card-tag.score { color: var(--gold); }
+  .mt-card-body { padding: 15px 16px 16px; display: flex; flex-direction: column; flex: 1; }
+  .mt-card-cat { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .mt-card h4 { font-size: 15.5px; font-weight: 600; margin: 0 0 8px; line-height: 1.3; letter-spacing: -0.01em; }
+  .mt-card h4 a:hover { color: var(--accent); }
+  .mt-card p { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 14px; }
+  .mt-card-meta { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 13px; border-top: 1px solid var(--line-2); font-size: 12px; color: var(--muted); }
+  .mt-card-meta .stars { color: var(--gold); font-size: 12.5px; letter-spacing: 1px; }
+  .mt-card-meta svg { width: 14px; height: 14px; color: var(--muted-2); flex-shrink: 0; }
+  .mt-card-meta b { color: var(--ink-2); font-weight: 600; }
+  .mt-card-meta .dot { color: var(--muted-2); }
+
+  .mt-card-thumb.ph::after, .mt-feature-media.ph::after { content: ""; position: absolute; inset: 0; z-index: 1; background: repeating-linear-gradient(45deg, transparent 0 11px, rgba(0,0,0,0.025) 11px 12px); pointer-events: none; }
+
+  /* ============================================================
+     COMMENT NOUS TESTONS — bande sombre méthode
+     ============================================================ */
+  .mt-method { background: var(--ink); color: #cfd4d9; padding: clamp(48px, 5vw, 72px) clamp(18px, 4vw, 40px); }
+  .mt-method-head { max-width: 640px; margin-bottom: 40px; }
+  .mt-method-head .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6dd6a8; margin: 0 0 14px; }
+  .mt-method-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(26px, 3vw, 36px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.14; margin: 0 0 14px; color: white; text-wrap: balance; }
+  .mt-method-head p { font-size: 15.5px; line-height: 1.6; color: #9aa3ad; margin: 0; }
+  .mt-method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #2a3038; border: 1px solid #2a3038; border-radius: var(--radius-lg); overflow: hidden; }
+  .mt-step { background: #191e24; padding: 28px 26px; }
+  .mt-step-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .mt-step-num { font-family: ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #6c7480; letter-spacing: 0.02em; }
+  .mt-step-ico { width: 42px; height: 42px; border-radius: 11px; background: rgba(109,214,168,0.12); color: #6dd6a8; display: grid; place-items: center; }
+  .mt-step-ico svg { width: 22px; height: 22px; }
+  .mt-step h3 { font-size: 16.5px; font-weight: 600; color: white; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .mt-step p { font-size: 13.5px; line-height: 1.55; color: #9aa3ad; margin: 0; }
+  .mt-method-promise { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 28px; margin-top: 34px; padding-top: 30px; border-top: 1px solid #2a3038; }
+  .mt-method-promise .p { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; color: #cfd4d9; }
+  .mt-method-promise .p svg { width: 18px; height: 18px; color: #6dd6a8; }
+  .mt-method-promise .p b { color: white; font-weight: 600; }
+
+  /* ============================================================
+     LES PLUS CONSULTÉS — liste classée sur 2 colonnes
+     ============================================================ */
+  .mt-rank { display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; }
+  .mt-rank-item { display: flex; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .mt-rank-num { font-family: "Source Serif 4", Georgia, serif; font-size: 30px; font-weight: 600; color: var(--muted-2); line-height: 1; width: 40px; flex-shrink: 0; text-align: center; letter-spacing: -0.02em; }
+  .mt-rank-body { min-width: 0; flex: 1; }
+  .mt-rank-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+  .mt-rank-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin: 3px 0 0; line-height: 1.3; }
+  .mt-rank-item:hover .mt-rank-title { color: var(--accent); }
+  .mt-rank-meta { font-size: 12.5px; color: var(--muted); flex-shrink: 0; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .mt-rank-meta svg { width: 14px; height: 14px; color: var(--muted-2); }
+
+  /* ============================================================
+     PIED DE PAGE (identique aux autres pages)
+     ============================================================ */
+  .mt-foot-logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; letter-spacing: -0.02em; }
+  .mt-foot-logo .mt-logo-mark { width: 28px; height: 28px; }
+  .mt-foot-logo .tld { color: var(--muted); font-weight: 400; }
+  .mt-footer { background: var(--ink); color: #cfd4d9; padding: 56px 40px 28px; }
+  .mt-footer-grid { display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 40px; padding-bottom: 36px; border-bottom: 1px solid #2a3038; }
+  .mt-footer h5 { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: white; margin: 0 0 14px; }
+  .mt-footer ul { list-style: none; margin: 0; padding: 0; }
+  .mt-footer li { padding: 4px 0; font-size: 13px; }
+  .mt-footer-pitch { font-size: 13.5px; line-height: 1.6; color: #9aa3ad; max-width: 320px; margin: 12px 0 0; }
+  .mt-footer-bottom { padding-top: 24px; display: flex; justify-content: space-between; font-size: 12px; color: #6c7480; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 1080px) {
+    .mt-utility { padding: 8px 28px; }
+    .mt-header { padding: 16px 28px; grid-template-columns: 176px 1fr auto; gap: 24px; }
+    .mt-header-actions { gap: 14px; }
+    .mt-cats { padding: 0 20px; }
+    .mt-trust { padding: 10px 28px; }
+    .mt-univ-grid { grid-template-columns: repeat(2, 1fr); }
+    .mt-guide-grid { grid-template-columns: repeat(2, 1fr); }
+    .mt-method-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .mt-feature { grid-template-columns: 1fr; }
+    .mt-feature-media { min-height: 220px; aspect-ratio: 16/9; }
+    .mt-rank { grid-template-columns: 1fr; gap: 0; }
+  }
+  @media (max-width: 860px) {
+    .mt-utility { justify-content: flex-start; padding: 8px 20px; }
+    .mt-utility .util-promise { display: none; }
+    .mt-header {
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas: "burger logo actions" "search search search";
+      gap: 14px 12px; padding: 14px 20px; position: relative;
+    }
+    .mt-search { width: 100%; }
+    .mt-nav-toggle { display: block; position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; pointer-events: none; }
+    .mt-burger { grid-area: burger; display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; margin-left: -9px; cursor: pointer; user-select: none; color: var(--ink); border-radius: 10px; transition: background .15s ease; }
+    .mt-burger:hover { background: var(--bg-3); }
+    .mt-burger-bars, .mt-burger-bars::before, .mt-burger-bars::after { content: ""; display: block; width: 20px; height: 2px; background: var(--ink-2); border-radius: 2px; transition: transform .22s ease, opacity .15s ease, background .15s ease; }
+    .mt-burger-bars { position: relative; }
+    .mt-burger-bars::before { position: absolute; top: -6px; left: 0; }
+    .mt-burger-bars::after  { position: absolute; top: 6px; left: 0; }
+    .mt-cats { display: block; overflow: hidden; max-height: 0; border-bottom: 0; padding: 0 20px; transition: max-height .3s ease; }
+    .mt-cats a { display: block; padding: 13px 2px; border-bottom: 1px solid var(--line-2); white-space: normal; }
+    .mt-cats a:last-child { border-bottom: 0; }
+    .mt-cats a.active::after { display: none; }
+    .mt-trust { padding: 10px 20px; font-size: 12.5px; }
+    .mt-nav-toggle:checked ~ .mt-cats { max-height: 460px; border-bottom: 1px solid var(--line); }
+    .mt:has(#mt-nav-toggle:checked) .mt-burger-bars { background: transparent; }
+    .mt:has(#mt-nav-toggle:checked) .mt-burger-bars::before { top: 0; transform: rotate(45deg); }
+    .mt:has(#mt-nav-toggle:checked) .mt-burger-bars::after  { top: 0; transform: rotate(-45deg); }
+    .mt-sec-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .mt-feature-foot { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .mt-btn { margin-left: 0; }
+  }
+  @media (max-width: 560px) {
+    .mt-utility { font-size: 11px; padding: 7px 16px; }
+    .mt-header { padding: 12px 12px; gap: 12px 6px; grid-template-columns: 1fr auto 1fr; }
+    .mt-logo { font-size: 17px; min-width: 0; justify-self: center; }
+    .mt-logo .tld { display: none; }
+    .mt-logo-mark { width: 26px; height: 26px; }
+    .mt-header-actions { gap: 0; justify-self: end; }
+    .mt-header-actions span { padding: 5px; min-width: 0; justify-content: center; }
+    .mt-header-actions .lbl { display: none; }
+    .mt-search { padding: 10px 14px; }
+    .mt-burger { width: 40px; height: 40px; margin-left: -6px; justify-self: start; }
+    .mt-cats { padding: 0 16px; }
+    .mt-trust { padding: 10px 16px; font-size: 12px; text-align: left; }
+    .mt-univ-grid { grid-template-columns: 1fr; }
+    .mt-guide-grid { grid-template-columns: 1fr; }
+    .mt-method-grid { grid-template-columns: 1fr; }
+    .mt-hero-search { flex-wrap: wrap; border-radius: var(--radius-lg); padding: 12px; }
+    .mt-hero-search .si { display: none; }
+    .mt-hero-search input { flex-basis: 100%; padding: 4px 6px 10px; border-bottom: 1px solid var(--line-2); }
+    .mt-hero-search button { flex: 1; justify-content: center; }
+  }
+</style>
+<script src="image-slot.js"></script>
+</head>
+<body>
+
+
+
+<!-- ================= CONTENU ================= -->
+<div class="mt">
+
+  <!-- ---------- HERO ---------- -->
+  <section class="mt-hero-home">
+    <div class="mt-hero-inner">
+      <span class="mt-hero-eyebrow">
+        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> Indépendant</span>
+        Comparatifs sans pub ni sponsor depuis 2018
+      </span>
+      <h1>Le bon choix, <em>quel que soit</em> votre achat</h1>
+      <p class="mt-hero-lede">De la maison au high-tech, de la beauté au sport — nous testons, comparons et classons des milliers de produits pour vous aider à choisir en toute confiance. Sans pub, sans sponsor, sans cadeau des marques.</p>
+
+      <form class="mt-hero-search" onsubmit="return false">
+        <svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input placeholder="Que cherchez-vous à acheter&nbsp;?" aria-label="Rechercher un produit" />
+        <button type="submit">Rechercher <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>
+      </form>
+
+      <div class="mt-hero-pop">
+        <span class="lbl">Populaire&nbsp;:</span>
+        <a>Aspirateur robot</a>
+        <a>Matelas</a>
+        <a>Tablette</a>
+        <a>Friteuse sans huile</a>
+        <a>Casque Bluetooth</a>
+      </div>
+
+      <div class="mt-hero-strip">
+        <span class="mt-hero-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-1.6-1.2-4-2-7-2v13c3 0 5.4.8 7 2 1.6-1.2 4-2 7-2V4c-3 0-5.4.8-7 2Z"/><path d="M12 6v13"/></svg> <b>5 000+</b>&nbsp;guides d'achat</span>
+        <span class="mt-hero-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg> <b>8</b>&nbsp;univers couverts</span>
+        <span class="mt-hero-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Indépendant depuis <b>2018</b></span>
+        <span class="mt-hero-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> <b>0 %</b>&nbsp;de publicité</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- NOS GUIDES À LA UNE ---------- -->
+  <section class="mt-sec alt">
+    <div class="mt-sec-head">
+      <div>
+        <p class="eyebrow">La rédaction recommande</p>
+        <h2>Nos guides à la une</h2>
+        <p>Nos comparatifs les plus utiles du moment, toutes catégories confondues.</p>
+      </div>
+      <a class="mt-sec-link">Tous les guides <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    </div>
+
+    <!-- Feature -->
+    <article class="mt-feature">
+      <div class="mt-feature-media ph">
+        <span class="mt-feature-flag"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17l-6.2 3.6 1.6-6.7L2.2 8.9l6.9-.6L12 2z"/></svg> Coup de cœur</span>
+        <image-slot id="home-feature" shape="rect" placeholder="Photo du guide à la une"></image-slot>
+      </div>
+      <div class="mt-feature-body">
+        <p class="mt-feature-kicker">Maison · Entretien</p>
+        <h3><a>Les meilleurs aspirateurs robots en 2026</a></h3>
+        <p>Navigation laser, station de vidage automatique, serpillière… Nous avons comparé 14 modèles pour trouver celui qui nettoie vraiment sans vous compliquer la vie.</p>
+        <div class="mt-feature-rating">
+          <span class="stars">★★★★★</span>
+          <span class="rv"><b>4,8</b> / 5 — <b>312</b> avis lecteurs</span>
+        </div>
+        <div class="mt-feature-chips">
+          <span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg> 14 modèles testés</span>
+          <span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 18 h de recherche</span>
+          <span class="mt-feature-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> 100 % indépendant</span>
+        </div>
+        <div class="mt-feature-foot">
+          <span class="mt-feature-byline">
+            <span class="avatar"></span>
+            <span>Par <b>Camille</b> · mis à jour le 28 juin 2026</span>
+          </span>
+          <a class="mt-btn">Lire le guide <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Grille -->
+    <div class="mt-guide-grid">
+
+      <article class="mt-card">
+        <image-slot id="home-g1" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">High-Tech</span>
+          <h4><a>Les meilleures tablettes en 2026</a></h4>
+          <p>De l'entrée de gamme à l'iPad Pro : le comparatif complet pour bien choisir.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★★</span><span><b>4,8</b>/5</span><span class="dot">·</span><span>10 testées</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-g2" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Maison</span>
+          <h4><a>Les meilleurs matelas en 2026</a></h4>
+          <p>Mousse, ressorts, latex : le bon soutien pour chaque morphologie et budget.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★★</span><span><b>4,7</b>/5</span><span class="dot">·</span><span>16 testés</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-g3" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Beauté</span>
+          <h4><a>Les meilleurs sèche-cheveux</a></h4>
+          <p>Puissance, ionisation, silence : ceux qui sèchent vite sans abîmer.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★☆</span><span><b>4,6</b>/5</span><span class="dot">·</span><span>12 testés</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-g4" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Sports</span>
+          <h4><a>Les meilleures montres connectées</a></h4>
+          <p>GPS, suivi cardio, autonomie : la bonne montre pour courir et se dépasser.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★★</span><span><b>4,8</b>/5</span><span class="dot">·</span><span>11 testées</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ---------- EXPLOREZ PAR UNIVERS ---------- -->
+  <section class="mt-sec">
+    <div class="mt-sec-head">
+      <div>
+        <p class="eyebrow">Un site généraliste</p>
+        <h2>Explorez par univers</h2>
+        <p>Huit grandes familles de produits, un seul niveau d'exigence. Choisissez le vôtre.</p>
+      </div>
+    </div>
+    <div class="mt-univ-grid">
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 4l8.5 6.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/></svg></span>
+        <div><div class="mt-univ-name">Maison</div><div class="mt-univ-count">1 240 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/><path d="M9.5 2v3M14.5 2v3M9.5 19v3M14.5 19v3M2 9.5h3M2 14.5h3M19 9.5h3M19 14.5h3"/></svg></span>
+        <div><div class="mt-univ-name">High-Tech</div><div class="mt-univ-count">980 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5l1.7 4.8 4.8 1.7-4.8 1.7L12 16.5l-1.7-4.8L5.5 10l4.8-1.7L12 3.5Z"/></svg></span>
+        <div><div class="mt-univ-name">Beauté</div><div class="mt-univ-count">610 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg></span>
+        <div><div class="mt-univ-name">Santé</div><div class="mt-univ-count">540 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5h12v4.5a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8.5Z"/><path d="M16 9.5h2.2a2.3 2.3 0 0 1 0 4.6H16"/><path d="M7 3.5v2M11 3.5v2"/></svg></span>
+        <div><div class="mt-univ-name">Lifestyle</div><div class="mt-univ-count">720 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8" width="19" height="9" rx="4.5"/><path d="M7 11.3v3.4M5.3 13h3.4"/><circle cx="15.5" cy="12" r="1"/><circle cx="18" cy="14" r="1"/></svg></span>
+        <div><div class="mt-univ-name">Loisirs</div><div class="mt-univ-count">480 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7v10M4 9v6M17.5 7v10M20 9v6M6.5 12h11"/></svg></span>
+        <div><div class="mt-univ-name">Sports</div><div class="mt-univ-count">390 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+      <a class="mt-univ">
+        <span class="mt-univ-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7.5" width="18" height="12" rx="2"/><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5"/><path d="M3 12.5h18"/></svg></span>
+        <div><div class="mt-univ-name">Services</div><div class="mt-univ-count">210 guides</div></div>
+        <span class="mt-univ-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ---------- GUIDES D'ACHAT RÉCENTS ---------- -->
+  <section class="mt-sec alt">
+    <div class="mt-sec-head">
+      <div>
+        <p class="eyebrow">Fraîchement publiés</p>
+        <h2>Guides d'achat récents</h2>
+        <p>Nos derniers comparatifs créés ou réactualisés — parce qu'un bon conseil, c'est un conseil à jour.</p>
+      </div>
+      <a class="mt-sec-link">Toutes les mises à jour <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    </div>
+    <div class="mt-guide-grid">
+
+      <article class="mt-card">
+        <image-slot id="home-r1" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag upd">Mis à jour</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Maison</span>
+          <h4><a>Les meilleurs aspirateurs robots</a></h4>
+          <p>Navigation laser, vidage automatique, serpillière : notre comparatif entièrement réactualisé.</p>
+          <div class="mt-card-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Mis à jour le 28 juin 2026</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-r2" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag">Nouveau</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">High-Tech</span>
+          <h4><a>Les meilleurs vidéoprojecteurs 4K</a></h4>
+          <p>Home cinéma à la maison : luminosité, contraste et silence passés au banc d'essai.</p>
+          <div class="mt-card-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Ajouté le 25 juin 2026</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-r3" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag">Nouveau</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Beauté</span>
+          <h4><a>Les meilleures crèmes solaires</a></h4>
+          <p>SPF, texture, résistance à l'eau : celles qui protègent vraiment tout l'été.</p>
+          <div class="mt-card-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Ajouté le 21 juin 2026</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-r4" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag upd">Mis à jour</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Sports</span>
+          <h4><a>Les meilleurs vélos d'appartement</a></h4>
+          <p>Confort, résistance, connectivité : pédaler efficace sans quitter le salon.</p>
+          <div class="mt-card-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Mis à jour le 18 juin 2026</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ---------- GUIDES LES MIEUX NOTÉS ---------- -->
+  <section class="mt-sec">
+    <div class="mt-sec-head">
+      <div>
+        <p class="eyebrow">Plébiscités</p>
+        <h2>Guides les mieux notés</h2>
+        <p>Les comparatifs qui récoltent les meilleures notes de nos lecteurs, toutes catégories confondues.</p>
+      </div>
+      <a class="mt-sec-link">Voir le classement <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    </div>
+    <div class="mt-guide-grid">
+
+      <article class="mt-card">
+        <image-slot id="home-n1" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag score">★ 4,9</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">High-Tech</span>
+          <h4><a>Les meilleurs casques à réduction de bruit</a></h4>
+          <p>Silence en cabine et confort longue durée : le haut du panier de l'audio nomade.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★★</span><span><b>4,9</b>/5</span><span class="dot">·</span><span>512 avis</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-n2" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag score">★ 4,9</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Maison</span>
+          <h4><a>Les meilleurs matelas à mémoire de forme</a></h4>
+          <p>Soutien, indépendance de couchage et régulation thermique au rendez-vous.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★★</span><span><b>4,9</b>/5</span><span class="dot">·</span><span>431 avis</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-n3" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag score">★ 4,8</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Beauté</span>
+          <h4><a>Les meilleures crèmes hydratantes visage</a></h4>
+          <p>Hydratation longue durée, sans effet gras ni parfum agressif.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★★</span><span><b>4,8</b>/5</span><span class="dot">·</span><span>356 avis</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-n4" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag score">★ 4,8</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Sports</span>
+          <h4><a>Les meilleurs tapis de course</a></h4>
+          <p>Amorti, puissance moteur et pliage : courir chez soi sans se blesser.</p>
+          <div class="mt-card-meta"><span class="stars">★★★★★</span><span><b>4,8</b>/5</span><span class="dot">·</span><span>219 avis</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ---------- COMMENT NOUS TESTONS ---------- -->
+  <section class="mt-method">
+    <div class="mt-method-head">
+      <p class="eyebrow">Notre méthode</p>
+      <h2>Comment nous testons</h2>
+      <p>Une méthode identique pour chaque guide, de l'aspirateur au smartphone. Objectif : une recommandation que vous pouvez suivre les yeux fermés.</p>
+    </div>
+
+    <div class="mt-method-grid">
+      <div class="mt-step">
+        <div class="mt-step-top">
+          <span class="mt-step-num">01</span>
+          <span class="mt-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+        </div>
+        <h3>On enquête</h3>
+        <p>Des dizaines d'heures de recherche, des sources croisées et les avis de milliers d'utilisateurs réels.</p>
+      </div>
+      <div class="mt-step">
+        <div class="mt-step-top">
+          <span class="mt-step-num">02</span>
+          <span class="mt-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v5.5L5.2 17A1.6 1.6 0 0 0 6.6 19.5h10.8A1.6 1.6 0 0 0 18.8 17L14 8.5V3"/><path d="M7.5 14h9"/></svg></span>
+        </div>
+        <h3>On compare</h3>
+        <p>Chaque produit retenu est évalué sur des critères concrets — pas sur les fiches marketing des marques.</p>
+      </div>
+      <div class="mt-step">
+        <div class="mt-step-top">
+          <span class="mt-step-num">03</span>
+          <span class="mt-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V9"/><path d="M12 20V5"/><path d="M18 20v-8"/></svg></span>
+        </div>
+        <h3>On classe</h3>
+        <p>Un classement clair : le meilleur choix, le meilleur rapport qualité-prix, le meilleur pas cher.</p>
+      </div>
+      <div class="mt-step">
+        <div class="mt-step-top">
+          <span class="mt-step-num">04</span>
+          <span class="mt-step-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v5h-5"/></svg></span>
+        </div>
+        <h3>On met à jour</h3>
+        <p>Nos guides sont révisés dès qu'un nouveau modèle sort ou qu'un prix bouge sensiblement.</p>
+      </div>
+    </div>
+
+    <div class="mt-method-promise">
+      <span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> <b>0 %</b>&nbsp;de publicité</span>
+      <span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> <b>0 %</b>&nbsp;sponsorisé</span>
+      <span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> <b>100 %</b>&nbsp;indépendant</span>
+      <span class="p"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> Aucun cadeau des marques</span>
+    </div>
+  </section>
+
+  <!-- ---------- LES PLUS CONSULTÉS ---------- -->
+  <section class="mt-sec alt">
+    <div class="mt-sec-head">
+      <div>
+        <p class="eyebrow">Le palmarès des lecteurs</p>
+        <h2>Les plus consultés ce mois-ci</h2>
+        <p>Les dix guides que nos lecteurs ont ouverts le plus souvent en juin.</p>
+      </div>
+      <a class="mt-sec-link">Voir le top 100 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    </div>
+
+    <div class="mt-rank">
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">1</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Maison</span><div class="mt-rank-title">Les meilleurs aspirateurs robots</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 48 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">2</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">High-Tech</span><div class="mt-rank-title">Les meilleures tablettes</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 41 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">3</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Maison</span><div class="mt-rank-title">Les meilleurs matelas</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 37 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">4</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Maison</span><div class="mt-rank-title">Les meilleures friteuses sans huile</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 34 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">5</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">High-Tech</span><div class="mt-rank-title">Les meilleurs casques Bluetooth</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 31 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">6</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Beauté</span><div class="mt-rank-title">Les meilleurs sèche-cheveux</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 28 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">7</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Santé</span><div class="mt-rank-title">Les meilleures brosses à dents électriques</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 26 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">8</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Sports</span><div class="mt-rank-title">Les meilleures montres connectées</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 23 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">9</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Maison</span><div class="mt-rank-title">Les meilleures machines à café</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 21 k</span>
+      </a>
+      <a class="mt-rank-item">
+        <span class="mt-rank-num">10</span>
+        <span class="mt-rank-body"><span class="mt-rank-tag">Loisirs</span><div class="mt-rank-title">Les meilleures trottinettes électriques</div></span>
+        <span class="mt-rank-meta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> 19 k</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ---------- IDÉES CADEAUX ET LOISIRS ---------- -->
+  <section class="mt-sec">
+    <div class="mt-sec-head">
+      <div>
+        <p class="eyebrow">Faire plaisir</p>
+        <h2>Les idées cadeaux et loisirs</h2>
+        <p>Nos meilleures sélections pour offrir — ou se faire plaisir — sans se tromper.</p>
+      </div>
+      <a class="mt-sec-link">Toutes les idées <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></a>
+    </div>
+    <div class="mt-guide-grid">
+
+      <article class="mt-card">
+        <image-slot id="home-c1" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag">Idée cadeau</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Loisirs</span>
+          <h4><a>Les meilleures enceintes Bluetooth</a></h4>
+          <p>Le cadeau qui plaît à tous les coups, à la maison comme au jardin.</p>
+          <div class="mt-card-meta"><span>Dès <b>39 €</b></span><span class="dot">·</span><span>11 modèles</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-c2" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag">Idée cadeau</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Loisirs</span>
+          <h4><a>Les meilleurs jeux de société</a></h4>
+          <p>Nos coups de cœur pour animer les soirées et week-ends en famille.</p>
+          <div class="mt-card-meta"><span>Dès <b>19 €</b></span><span class="dot">·</span><span>16 jeux</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-c3" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag">Idée cadeau</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Lifestyle</span>
+          <h4><a>Les meilleures liseuses</a></h4>
+          <p>Toute une bibliothèque dans la poche : le cadeau des grands lecteurs.</p>
+          <div class="mt-card-meta"><span>Dès <b>99 €</b></span><span class="dot">·</span><span>8 modèles</span></div>
+        </div>
+      </article>
+
+      <article class="mt-card">
+        <image-slot id="home-c4" class="mt-card-thumb ph" shape="rect" placeholder="Photo guide"></image-slot>
+        <span class="mt-card-tag">Idée cadeau</span>
+        <div class="mt-card-body">
+          <span class="mt-card-cat">Loisirs</span>
+          <h4><a>Les meilleurs appareils photo instantanés</a></h4>
+          <p>Des souvenirs imprimés sur-le-champ : la valeur sûre côté fun.</p>
+          <div class="mt-card-meta"><span>Dès <b>69 €</b></span><span class="dot">·</span><span>9 modèles</span></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+</div>
+
