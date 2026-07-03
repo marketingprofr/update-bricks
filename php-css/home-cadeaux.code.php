@@ -105,10 +105,6 @@ if ( ! $hg_q->have_posts() ) { wp_reset_postdata(); return; }
         }
       }
 
-      $tv    = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $pid ) : array();
-      $nprod = isset( $tv['produits_analyses'] ) ? (int) $tv['produits_analyses'] : 0;
-      if ( $nprod > 0 ) { $parts[] = esc_html( $nprod ) . ' modèles'; }
-
       $meta = ! empty( $parts ) ? implode( '<span class="dot">·</span>', array_map( function ( $p ) { return '<span>' . $p . '</span>'; }, $parts ) ) : '';
 
       mt_home_card( $pid, array(

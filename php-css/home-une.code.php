@@ -109,10 +109,6 @@ $f_aid    = (int) get_post_field( 'post_author', $feat_id );
 $f_author = get_the_author_meta( 'display_name', $f_aid );
 $f_avatar = get_avatar_url( $f_aid, array( 'size' => 60 ) );
 $f_date   = get_the_modified_date( 'j M Y', $feat_id );
-
-$f_tv     = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $feat_id ) : array();
-$f_nprod  = isset( $f_tv['produits_analyses'] ) ? (int) $f_tv['produits_analyses'] : 0;
-$f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies'] : 0;
 ?>
 
 <section class="mt-hu">
@@ -133,13 +129,10 @@ $f_heures = isset( $f_tv['heures_investies'] ) ? (int) $f_tv['heures_investies']
       <?php if ( $f_cat !== '' ) : ?><p class="mt-feature-kicker"><?php echo esc_html( $f_cat ); ?></p><?php endif; ?>
       <h3><a href="<?php echo esc_url( $f_url ); ?>"><?php echo esc_html( $f_title ); ?></a></h3>
       <?php if ( $f_desc !== '' ) : ?><p><?php echo esc_html( $f_desc ); ?></p><?php endif; ?>
-      <?php if ( $f_nprod || $f_heures ) : ?>
       <div class="mt-feature-chips">
-        <?php if ( $f_nprod ) : ?><span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16 9 5 9-5"/></svg> <?php echo (int) $f_nprod; ?> modèles testés</span><?php endif; ?>
-        <?php if ( $f_heures ) : ?><span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <?php echo (int) $f_heures; ?> h de recherche</span><?php endif; ?>
         <span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg> 100 % indépendant</span>
+        <span class="mt-feature-chip"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> Sans sponsor</span>
       </div>
-      <?php endif; ?>
       <div class="mt-feature-foot">
         <span class="mt-feature-byline">
           <?php if ( $f_avatar ) : ?><img class="avatar" src="<?php echo esc_url( $f_avatar ); ?>" alt="" width="30" height="30" loading="lazy"><?php else : ?><span class="avatar"></span><?php endif; ?>
