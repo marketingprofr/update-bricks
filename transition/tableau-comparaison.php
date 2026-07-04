@@ -10,8 +10,8 @@
  * (sélection calculée en amont à partir des taxonomies post-type-produit +
  * post-type-attribut, stockée dans les ACF), avec la même cascade que les
  * templates voisins :
- *   1) produits_comparatif  (override éditorial propre au comparatif)
- *   2) top_avis_ids         (sélection taxonomique du guide)
+ *   1) top_avis_ids         (sélection taxonomique du guide — source utilisée désormais)
+ *   2) produits_comparatif  (repli : ancien override éditorial du comparatif)
  *   3) mltv5_best_products  (repli : champ relation ACF)          [AJOUT]
  *   4) mlt_get_meilleur_produit()  (repli legacy par catégorie)   [AJOUT]
  * Les IDs sont ensuite validés (posts existants) avant rendu.
@@ -70,8 +70,13 @@ try {
     $template_vars = get_all_template_variables($current_post_id);
     $product_ids = array();
 
-    // 1) produits_comparatif : sélection éditoriale spécifique au comparatif (prioritaire)
-    if (!empty($template_vars['produits_comparatif'])) {
+    // 1) top_avis_ids : sélection taxonomique du guide (source utilisée désormais)
+    if (!empty($template_vars['top_avis_ids'])) {
+        $product_ids = array_map('intval', $template_vars['top_avis_ids']);
+    }
+
+    // 2) produits_comparatif : repli (ancien override éditorial du comparatif)
+    if (empty($product_ids) && !empty($template_vars['produits_comparatif'])) {
         foreach ($template_vars['produits_comparatif'] as $item) {
             if (is_array($item) && isset($item['avis_id'])) {
                 $pid = is_object($item['avis_id']) ? $item['avis_id']->ID : intval($item['avis_id']);
@@ -80,11 +85,6 @@ try {
                 $product_ids[] = intval($item);
             }
         }
-    }
-
-    // 2) top_avis_ids : sélection taxonomique du guide (source canonique)
-    if (empty($product_ids) && !empty($template_vars['top_avis_ids'])) {
-        $product_ids = array_map('intval', $template_vars['top_avis_ids']);
     }
 
     // 3) mltv5_best_products : repli sur le champ relation ACF
@@ -584,7 +584,7 @@ try {
 
 						// Offre Amazon
 						if ($has_amazon) {
-							$url_amazon = 'https://www.amazon.fr/dp/' . esc_attr($product['asin_amazon']) . '?tag=meaboram-21';
+							$url_amazon = 'https://www.amazon.fr/dp/' . esc_attr($product['asin_amazon']) . '?tag=mlt00-21';
 
 							// Déterminer le texte selon la présence du prix
 							$texte_amazon = $has_price

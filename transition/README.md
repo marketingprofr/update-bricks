@@ -55,8 +55,9 @@ catégorie à remplacer. La version transition se contente d'aligner la
 
 - **Source des produits** — cascade alignée sur les autres templates
   transition, avec deux replis ajoutés :
-  1. `produits_comparatif` (override éditorial propre au comparatif) ;
-  2. `top_avis_ids` (sélection taxonomique du guide) ;
+  1. `top_avis_ids` (sélection taxonomique du guide — **source utilisée
+     désormais**) ;
+  2. `produits_comparatif` (repli : ancien override éditorial du comparatif) ;
   3. **[ajout]** `mltv5_best_products` (champ relation ACF) ;
   4. **[ajout]** `mlt_get_meilleur_produit()` (repli legacy par catégorie,
      le temps de la transition).
@@ -69,20 +70,13 @@ catégorie à remplacer. La version transition se contente d'aligner la
   deux comparatifs sur la même page provoquaient un fatal « Cannot redeclare
   function ». Comportement inchangé quand ils ne sont définis qu'une fois.
 
+- **Tag Amazon.** Aligné sur `mlt00-21` (ligne « Meilleures offres »),
+  comme `notre-selection-template-1.php`.
+
 ### Ce qui ne change pas
 
 - **Rendu HTML, classes CSS, offres, toggle JS, options de config** : à
   l'identique. Aucun impact visuel.
-
-### À confirmer
-
-- **Priorité de `produits_comparatif`.** Elle reste en tête, en supposant
-  que c'est une sélection éditoriale du comparatif. Si c'est en réalité
-  l'ancienne source auto par catégorie, il faut la dé-prioriser derrière
-  `top_avis_ids` — à signaler.
-- **Tag Amazon.** Ce template utilise `meaboram-21` (ligne « Meilleures
-  offres »), là où `notre-selection-template-1.php` utilise `mlt00-21`.
-  Conservé tel quel ; à unifier si les deux doivent pointer sur le même tag.
 
 ### Installation
 
