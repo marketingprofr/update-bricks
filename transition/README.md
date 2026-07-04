@@ -22,14 +22,13 @@ Refonte de « NOTRE SELECTION TEMPLATE 1 ».
   C'est la même source que le nouveau template Top 5, donc les deux blocs
   restent cohérents (1 post = 1 produit).
 
-- **Liens.** L'URL d'un produit suit : ASIN Amazon (avec `$amazon_tag`) →
-  liens perso `mltv5_lien_du_produit_1..3` → *aucun lien*. Contrairement à
-  l'ancien helper, on ne retombe plus sur le permalink comme « offre » : un
-  lien interne ne doit pas porter `rel="sponsored"`. Sans offre, le titre
-  s'affiche en texte simple (la flèche « aller-au-test » assure déjà la
-  navigation vers le test).
-
 ### Ce qui ne change pas
+
+- **Liens.** L'URL d'un produit suit la **même cascade que l'ancien helper** :
+  ASIN Amazon (avec `$amazon_tag`) → liens perso `mltv5_lien_du_produit_1..3`
+  → permalink en dernier recours. Chaque produit reste donc cliquable comme
+  aujourd'hui. (Le `rel="sponsored"` sur un lien interne, hérité de l'ancienne
+  version, pourra être nettoyé à une étape ultérieure de la migration.)
 
 - **Sortie HTML et classes CSS identiques** (`#bloc-after-featured`,
   `#intro-list`, `.notre-selection-1-verdict`, etc.) → aucun impact visuel.

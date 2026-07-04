@@ -33,12 +33,13 @@ $nb_max     = 5;                                   // nombre de produits affich�
 $amazon_tag = 'mlt00-21';                          // tag affilié Amazon (liens ASIN)
 
 /* ---------------------------------------------------------------------
-   Helper : URL affiliée d'un produit
-   Priorité : ASIN Amazon (avec tag) > lien perso 1..3 > '' (pas de lien).
-   Aligné sur le nouveau template : pas de repli sur le permalink comme
-   « offre » (l'ancien helper le faisait, mais un permalink interne ne doit
-   pas porter rel="sponsored"). Sans offre, le titre s'affiche sans lien —
-   la flèche « aller-au-test » assure déjà la navigation interne.
+   Helper : URL d'un produit
+   Priorité : ASIN Amazon (avec tag) > lien perso 1..3 > permalink.
+   Cascade IDENTIQUE à l'ancien helper (« Amazon ASIN > Link 1 > Permalink »)
+   pour ne rien changer au rendu : chaque produit reste cliquable comme
+   aujourd'hui. Le permalink en dernier recours pourra être revu à une
+   étape ultérieure de la migration (un lien interne n'a pas à porter
+   rel="sponsored"), mais on le conserve ici pour une transition sans casse.
    --------------------------------------------------------------------- */
 if ( ! function_exists( 'ns1_url_affilie' ) ) {
   function ns1_url_affilie( $pid, $amazon_tag ) {
@@ -52,7 +53,7 @@ if ( ! function_exists( 'ns1_url_affilie' ) ) {
         return $u;
       }
     }
-    return '';
+    return get_permalink( $pid ); // dernier recours, comme l'ancien helper
   }
 }
 
@@ -164,7 +165,7 @@ $ns1_saved_post = $post;
         echo "<span class='notre-selection-1-verdict'><strong>";
         echo ucfirst( $verdict_affiche ) . "&nbsp;:&nbsp;</strong></span>";
 
-        // Lien affilié (ou titre simple si aucune offre)
+        // Lien produit (ASIN > lien perso > permalink) ; titre simple si vraiment aucune URL
         if ( ! empty( $url_affilie ) ) {
             echo "<a class='secondary product-link-with-icon' ";
             echo "href='" . esc_url( $url_affilie ) . "' target='_blank' rel='sponsored noopener'>";
