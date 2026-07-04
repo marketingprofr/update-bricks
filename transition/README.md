@@ -41,3 +41,50 @@ Refonte de « NOTRE SELECTION TEMPLATE 1 ».
 
 À coller dans un élément **CODE Bricks** (Execute code = ON), comme
 l'ancienne version qu'il remplace.
+
+## `tableau-comparaison.php`
+
+Refonte du « Tableau de comparaison des produits » (style TechGearLab v2).
+
+Ce template lisait déjà la sélection depuis les variables de template et
+utilisait des helpers par-produit — il n'y avait donc pas de calcul par
+catégorie à remplacer. La version transition se contente d'aligner la
+**source des produits** et de **fiabiliser** le bloc.
+
+### Ce qui change
+
+- **Source des produits** — cascade alignée sur les autres templates
+  transition, avec deux replis ajoutés :
+  1. `produits_comparatif` (override éditorial propre au comparatif) ;
+  2. `top_avis_ids` (sélection taxonomique du guide) ;
+  3. **[ajout]** `mltv5_best_products` (champ relation ACF) ;
+  4. **[ajout]** `mlt_get_meilleur_produit()` (repli legacy par catégorie,
+     le temps de la transition).
+
+  Les IDs sont ensuite dédupliqués et **validés** (posts existants) avant
+  rendu — évite les colonnes vides sur un ID orphelin.
+
+- **Helpers protégés** — `mlt_get_score_color_class`, `mlt_format_score` et
+  `mlt_render_stars` sont désormais entourés de `function_exists`. Sans ça,
+  deux comparatifs sur la même page provoquaient un fatal « Cannot redeclare
+  function ». Comportement inchangé quand ils ne sont définis qu'une fois.
+
+### Ce qui ne change pas
+
+- **Rendu HTML, classes CSS, offres, toggle JS, options de config** : à
+  l'identique. Aucun impact visuel.
+
+### À confirmer
+
+- **Priorité de `produits_comparatif`.** Elle reste en tête, en supposant
+  que c'est une sélection éditoriale du comparatif. Si c'est en réalité
+  l'ancienne source auto par catégorie, il faut la dé-prioriser derrière
+  `top_avis_ids` — à signaler.
+- **Tag Amazon.** Ce template utilise `meaboram-21` (ligne « Meilleures
+  offres »), là où `notre-selection-template-1.php` utilise `mlt00-21`.
+  Conservé tel quel ; à unifier si les deux doivent pointer sur le même tag.
+
+### Installation
+
+À coller dans un élément **CODE Bricks** (Execute code = ON), comme
+l'ancienne version qu'il remplace.
