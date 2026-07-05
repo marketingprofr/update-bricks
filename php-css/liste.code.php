@@ -91,7 +91,9 @@ if ( ! function_exists( 'mt_liste_reading_time' ) ) {
 /* ---------------------------------------------------------------------
    Données : le répéteur vit sur l'article « liste » courant.
    --------------------------------------------------------------------- */
-$lp_id   = get_the_ID();
+$lp_id = get_the_ID();
+if ( ! $lp_id && function_exists( 'get_queried_object_id' ) ) { $lp_id = (int) get_queried_object_id(); }
+if ( ! $lp_id ) { return; }   // pas de contexte de post (builder / archive) -> on ne rend rien
 $lp_rows = function_exists( 'get_field' ) ? get_field( 'mltv5_elements_liste', $lp_id ) : null;
 $lp_rows = is_array( $lp_rows ) ? $lp_rows : array();
 

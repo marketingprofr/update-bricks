@@ -78,6 +78,8 @@ if ( ! function_exists( 'mt_types_read' ) ) {
 }
 
 $page_id   = get_the_ID();
+if ( ! $page_id && function_exists( 'get_queried_object_id' ) ) { $page_id = (int) get_queried_object_id(); }
+if ( ! $page_id ) { return; }   // pas de contexte de post (builder / archive) -> on ne rend rien
 $page_tv   = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
 $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
 $type_sing = isset( $page_tv['type_de_produit_au_singulier'] ) ? trim( (string) $page_tv['type_de_produit_au_singulier'] ) : '';
@@ -113,7 +115,8 @@ if ( empty( $types ) ) {
   if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' ) ) {
     $rr = function_exists( 'get_field' ) ? get_field( 'mltv5_types_de_produits', $page_id ) : null;
     $probe = array();
-    foreach ( get_post_meta( $page_id ) as $mk => $mv ) {
+    $all_meta = get_post_meta( $page_id );
+    foreach ( ( is_array( $all_meta ) ? $all_meta : array() ) as $mk => $mv ) {
       if ( stripos( $mk, 'cache' ) !== false || stripos( $mk, 'type' ) !== false ) {
         $mvv = is_array( $mv ) ? reset( $mv ) : $mv;
         $probe[] = $mk . '=' . ( is_scalar( $mvv ) ? $mvv : gettype( $mvv ) );

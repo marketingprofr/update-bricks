@@ -62,6 +62,8 @@ if ( ! function_exists( 'mt_choix_read' ) ) {
 }
 
 $page_id = get_the_ID();
+if ( ! $page_id && function_exists( 'get_queried_object_id' ) ) { $page_id = (int) get_queried_object_id(); }
+if ( ! $page_id ) { return; }   // pas de contexte de post (builder / archive) -> on ne rend rien
 
 $src_id = $page_id;
 $rows   = mt_choix_read( $src_id );
@@ -91,7 +93,8 @@ if ( empty( $duels ) ) {
   if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' ) ) {
     $rr = function_exists( 'get_field' ) ? get_field( 'mltv5_choix_comparatif', $page_id ) : null;
     $probe = array();
-    foreach ( get_post_meta( $page_id ) as $mk => $mv ) {
+    $all_meta = get_post_meta( $page_id );
+    foreach ( ( is_array( $all_meta ) ? $all_meta : array() ) as $mk => $mv ) {
       if ( stripos( $mk, 'cache' ) !== false || stripos( $mk, 'type' ) !== false ) {
         $mvv = is_array( $mv ) ? reset( $mv ) : $mv;
         $probe[] = $mk . '=' . ( is_scalar( $mvv ) ? $mvv : gettype( $mvv ) );
