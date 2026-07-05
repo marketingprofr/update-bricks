@@ -1,0 +1,50 @@
+/* =====================================================================
+   MEILLEURTEST — « D'autres listes qui pourraient vous plaire » — onglet CSS
+   Scope : .mt-lsim. Réf. maquette : bas de templates/template-liste.html.
+   FOND DE SECTION À RÉGLER DANS BRICKS : var(--at-grey-l-6) (gris très clair).
+   100 % variables Advanced Themer (mode nuit auto).
+   ===================================================================== */
+.mt-lsim {
+  --ink: var(--at-black-l-1);
+  --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey);
+  --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3);
+  --line-2: var(--at-grey-l-4);
+  --bg: var(--at-white);
+  --bg-3: var(--at-grey-l-5);
+  --gold: var(--at-gold);
+  --gold-ink: var(--at-gold-d-2);
+  --white: var(--at-white);
+  --radius-lg: 16px;
+
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased;
+  width: 100%;
+}
+.mt-lsim * { box-sizing: border-box; }
+.mt-lsim a { color: inherit; text-decoration: none; }
+.mt-lsim img { max-width: 100%; display: block; }
+
+.mt-lsim-head { margin-bottom: 26px; }
+.mt-lsim-head .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin: 0 0 12px; }
+.mt-lsim-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(24px, 3vw, 34px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.12; margin: 0; }
+
+.mt-lsim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.mt-lsim-card { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .18s ease, transform .18s ease; }
+.mt-lsim-card:hover { box-shadow: 0 10px 30px rgba(20,24,29,0.09); transform: translateY(-3px); }
+.mt-lsim-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16/10; background: var(--bg-3); }
+.mt-lsim-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.mt-lsim-thumb.ph::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 11px, rgba(0,0,0,0.025) 11px 12px); pointer-events: none; }
+.mt-lsim-count { position: absolute; top: 12px; left: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; background: rgba(20,24,29,0.82); backdrop-filter: blur(4px); border-radius: 999px; font-size: 11.5px; font-weight: 600; color: #fff; }
+.mt-lsim-count svg { color: var(--gold); flex-shrink: 0; }
+.mt-lsim-body { padding: 16px 17px 17px; display: flex; flex-direction: column; flex: 1; }
+.mt-lsim-cat { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.mt-lsim-body h3 { font-family: "Source Serif 4", Georgia, serif; font-size: 18px; font-weight: 600; margin: 0 0 8px; line-height: 1.24; letter-spacing: -0.01em; }
+.mt-lsim-body h3 a:hover { color: var(--gold-ink); }
+.mt-lsim-body p { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 14px; }
+.mt-lsim-meta { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 13px; border-top: 1px solid var(--line-2); font-size: 12px; color: var(--muted); }
+.mt-lsim-meta b { color: var(--ink-2); font-weight: 600; }
+
+@media (max-width: 980px) { .mt-lsim-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .mt-lsim-grid { grid-template-columns: 1fr; } }
