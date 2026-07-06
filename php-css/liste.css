@@ -92,8 +92,7 @@
 .mt-lp-toc-cb:checked ~ .mt-lp-toc-more .txt-more { display: none; }
 .mt-lp-toc-cb:checked ~ .mt-lp-toc-more .txt-less { display: inline; }
 .mt-lp-toc-cb:checked ~ .mt-lp-toc-more .chev { transform: rotate(180deg); }
-.mt-lp-note { display: flex; gap: 12px; padding: 18px 20px; background: var(--gold-soft); border: 1px solid var(--gold-line); border-radius: var(--radius); font-size: 13px; line-height: 1.55; color: var(--gold-ink-2); }
-.mt-lp-note svg { flex-shrink: 0; color: var(--gold); margin-top: 1px; }
+.mt-lp-note { padding: 18px 20px; background: var(--gold-soft); border: 1px solid var(--gold-line); border-radius: var(--radius); font-size: 13px; line-height: 1.55; color: var(--gold-ink-2); }
 .mt-lp-note b { color: var(--gold-ink-2); font-weight: 600; }
 
 /* --- Liste : items numérotés en alternance --- */

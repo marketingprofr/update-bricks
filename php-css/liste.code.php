@@ -244,7 +244,6 @@ $home_url = home_url( '/' );
     <div class="mt-lp-note-wrap">
       <p class="mt-lp-panel-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> En toute ind&eacute;pendance</p>
       <div class="mt-lp-note">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
         <span><b>Une s&eacute;lection ind&eacute;pendante.</b> Cette liste est &eacute;tablie librement par notre r&eacute;daction, selon ses propres crit&egrave;res. Aucune marque ne paie pour y figurer.</span>
       </div>
     </div>
