@@ -71,11 +71,27 @@
 .mt-lp-tools { margin: 34px 0 0; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(24px, 4vw, 56px); align-items: start; }
 .mt-lp-panel-title { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 16px; }
 .mt-lp-panel-title svg { color: var(--gold); flex-shrink: 0; }
-.mt-lp-toc { columns: 2; column-gap: 40px; }
+.mt-lp-toc { position: relative; columns: 2; column-gap: 40px; }
 .mt-lp-toc a { break-inside: avoid; display: flex; align-items: baseline; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line-2); font-size: 14px; color: var(--ink-2); }
 .mt-lp-toc a:hover { color: var(--gold-ink); }
 .mt-lp-toc .tn { font-family: "Source Serif 4", Georgia, serif; font-size: 15px; font-weight: 600; color: var(--gold); width: 22px; flex-shrink: 0; }
 .mt-lp-toc .tt { line-height: 1.35; }
+
+/* Sommaire repliable (listes longues : aperçu + bouton « voir tout »),
+   100 % CSS via une case à cocher masquée -> rien à re-signer côté JS. */
+.mt-lp-toc-box { position: relative; }
+.mt-lp-toc-cb { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.mt-lp-toc-box.is-collapsible .mt-lp-toc { max-height: 220px; overflow: hidden; }
+.mt-lp-toc-box.is-collapsible .mt-lp-toc::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: linear-gradient(to bottom, transparent, var(--bg)); pointer-events: none; }
+.mt-lp-toc-cb:checked ~ .mt-lp-toc { max-height: 4000px; }
+.mt-lp-toc-cb:checked ~ .mt-lp-toc::after { opacity: 0; }
+.mt-lp-toc-more { display: inline-flex; align-items: center; gap: 7px; margin-top: 14px; padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); font-size: 13px; font-weight: 600; color: var(--gold-ink); cursor: pointer; user-select: none; transition: border-color .15s; }
+.mt-lp-toc-more:hover { border-color: var(--gold); }
+.mt-lp-toc-more .chev { transition: transform .2s; }
+.mt-lp-toc-more .txt-less { display: none; }
+.mt-lp-toc-cb:checked ~ .mt-lp-toc-more .txt-more { display: none; }
+.mt-lp-toc-cb:checked ~ .mt-lp-toc-more .txt-less { display: inline; }
+.mt-lp-toc-cb:checked ~ .mt-lp-toc-more .chev { transform: rotate(180deg); }
 .mt-lp-note { display: flex; gap: 12px; padding: 18px 20px; background: var(--gold-soft); border: 1px solid var(--gold-line); border-radius: var(--radius); font-size: 13px; line-height: 1.55; color: var(--gold-ink-2); }
 .mt-lp-note svg { flex-shrink: 0; color: var(--gold); margin-top: 1px; }
 .mt-lp-note b { color: var(--gold-ink-2); font-weight: 600; }
@@ -87,11 +103,14 @@
 .mt-lp-item-num { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(38px, 5vw, 52px); font-weight: 600; line-height: 0.9; color: var(--gold); letter-spacing: -0.03em; flex-shrink: 0; font-variant-numeric: lining-nums; }
 .mt-lp-item-rule { flex: 1; height: 1px; background: var(--line); }
 
-.mt-lp-item-body { display: grid; grid-template-columns: 0.92fr 1fr; gap: clamp(24px, 3.4vw, 48px); align-items: center; }
+.mt-lp-item-body { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3.4vw, 48px); align-items: center; }
 .mt-lp-item:nth-child(even) .mt-lp-item-media { order: 2; }
 
-.mt-lp-item-media { position: relative; border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/3; background: var(--bg-3); }
-.mt-lp-item-media img { width: 100%; height: 100%; object-fit: cover; }
+/* Image : on préserve le ratio d'origine (portrait/carré/paysage), jamais
+   déformée, centrée H+V dans sa colonne, hauteur plafonnée. */
+.mt-lp-item-media { display: flex; align-items: center; justify-content: center; }
+.mt-lp-item-media img { max-width: 100%; max-height: 460px; width: auto; height: auto; border-radius: var(--radius-lg); }
+.mt-lp-item-media.ph { position: relative; width: 100%; aspect-ratio: 4/3; background: var(--bg-3); border-radius: var(--radius-lg); overflow: hidden; }
 .mt-lp-item-media.ph::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 11px, rgba(0,0,0,0.025) 11px 12px); pointer-events: none; }
 
 .mt-lp-item-text h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(23px, 2.6vw, 31px); font-weight: 600; line-height: 1.14; letter-spacing: -0.02em; margin: 0 0 14px; text-wrap: balance; }
@@ -110,11 +129,13 @@
 .mt-lp-desc strong, .mt-lp-desc b { color: var(--ink); }
 
 .mt-lp-item-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 18px; margin-top: 20px; }
-.mt-lp-buy { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: var(--accent); color: var(--white); border-radius: 10px; font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .15s; }
-.mt-lp-buy:hover { background: var(--accent-d); }
-.mt-lp-buy svg { flex-shrink: 0; }
-.mt-lp-alt { font-size: 13.5px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s, border-color .15s; }
-.mt-lp-alt:hover { color: var(--accent); border-color: var(--accent); }
+/* Sélecteurs qualifiés `a.` : nécessaires pour battre `.mt-lp a{color:inherit}`
+   (même nb de classes, mais l'élément `a` tranche) -> texte bien BLANC. */
+.mt-lp a.mt-lp-buy { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background: var(--accent); color: var(--white); border-radius: 10px; font-size: 14px; font-weight: 600; white-space: nowrap; transition: background .15s; }
+.mt-lp a.mt-lp-buy:hover { background: var(--accent-d); color: var(--white); }
+.mt-lp a.mt-lp-buy svg { flex-shrink: 0; }
+.mt-lp a.mt-lp-alt { font-size: 13.5px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s, border-color .15s; }
+.mt-lp a.mt-lp-alt:hover { color: var(--accent); border-color: var(--accent); }
 
 /* --- Retour haut --- */
 .mt-lp-more { margin: 46px 0 0; text-align: center; }
@@ -129,7 +150,7 @@
 @media (max-width: 860px) {
   .mt-lp-item-body { grid-template-columns: 1fr; gap: 20px; }
   .mt-lp-item:nth-child(even) .mt-lp-item-media { order: 0; }
-  .mt-lp-item-media { aspect-ratio: 16/10; }
+  .mt-lp-item-media img { max-height: 380px; }   /* ratio conservé, plafond réduit */
   .mt-lp-byline .spacer { flex-basis: 100%; margin-left: 0; }
   .mt-lp-cover { aspect-ratio: 16/9; }
 }

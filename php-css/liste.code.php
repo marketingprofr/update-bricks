@@ -164,6 +164,12 @@ $GLOBALS['mt_liste_uid']++;
 $uid   = (int) $GLOBALS['mt_liste_uid'];
 $anch  = 'mt-lp-' . $uid . '-idee-';
 
+/* Sommaire : replié (aperçu + bouton « voir tout ») au-delà de N entrées —
+   certaines listes ont 100+ éléments, on ne veut pas les dérouler en entier
+   avant le contenu. Pur CSS (case à cocher), rien à signer côté JS. */
+$toc_collapsible = ( $count > 14 );
+$toc_id          = 'mt-lp-toc-' . $uid;
+
 /* Fil d'ariane. */
 $home_url = home_url( '/' );
 ?>
@@ -217,19 +223,29 @@ $home_url = home_url( '/' );
   <div class="mt-lp-tools">
     <div class="mt-lp-toc-wrap">
       <p class="mt-lp-panel-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg> Au sommaire</p>
-      <nav class="mt-lp-toc">
-        <?php $n = 0; foreach ( $items as $it ) : $n++;
-          $label = $it['name'] !== '' ? $it['name'] : 'Id&eacute;e ' . $n; ?>
-        <a href="#<?php echo esc_attr( $anch . $n ); ?>"><span class="tn"><?php echo (int) $n; ?></span><span class="tt"><?php echo esc_html( $label ); ?></span></a>
-        <?php endforeach; ?>
-      </nav>
+      <div class="mt-lp-toc-box<?php echo $toc_collapsible ? ' is-collapsible' : ''; ?>">
+        <?php if ( $toc_collapsible ) : ?><input type="checkbox" class="mt-lp-toc-cb" id="<?php echo esc_attr( $toc_id ); ?>"><?php endif; ?>
+        <nav class="mt-lp-toc" aria-label="Sommaire de la liste">
+          <?php $n = 0; foreach ( $items as $it ) : $n++;
+            $label = $it['name'] !== '' ? $it['name'] : 'Entr&eacute;e ' . $n; ?>
+          <a href="#<?php echo esc_attr( $anch . $n ); ?>"><span class="tn"><?php echo (int) $n; ?></span><span class="tt"><?php echo esc_html( $label ); ?></span></a>
+          <?php endforeach; ?>
+        </nav>
+        <?php if ( $toc_collapsible ) : ?>
+        <label class="mt-lp-toc-more" for="<?php echo esc_attr( $toc_id ); ?>">
+          <span class="txt-more">Voir tout le sommaire</span>
+          <span class="txt-less">R&eacute;duire le sommaire</span>
+          <svg class="chev" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </label>
+        <?php endif; ?>
+      </div>
     </div>
 
     <div class="mt-lp-note-wrap">
       <p class="mt-lp-panel-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg> En toute ind&eacute;pendance</p>
       <div class="mt-lp-note">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
-        <span><b>Comment on choisit.</b> Ces id&eacute;es sont s&eacute;lectionn&eacute;es par notre r&eacute;daction, &agrave; partir des produits que nous avons test&eacute;s ou longuement recherch&eacute;s. Aucune marque ne paie pour y figurer.</span>
+        <span><b>Une s&eacute;lection ind&eacute;pendante.</b> Cette liste est &eacute;tablie librement par notre r&eacute;daction, selon ses propres crit&egrave;res. Aucune marque ne paie pour y figurer.</span>
       </div>
     </div>
   </div>
