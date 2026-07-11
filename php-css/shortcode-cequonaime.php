@@ -25,18 +25,22 @@ if ( ! function_exists( 'mt_cequonaime_styles' ) ) {
   /* CSS imprimé UNE fois dans <head> (statique, minuscule, pas de FOUC,
      et pas d'enrobage <p> par wpautop comme le ferait un <style> inline). */
   function mt_cequonaime_styles() {
+    /* Classe doublée (h4.cequonaime.cequonaime) = spécificité (0,2,1) pour
+       PASSER DEVANT « .ed-a-body h4 » (0,2,0... = 0,1,1) du template top5-tests,
+       sinon l'ordre de chargement l'emporte et « défauts » hérite du bleu de
+       base au lieu du rouge. Reste valable hors de .ed-a-body. */
     echo '<style id="mt-cequonaime-css">'
        /* --- intertitres [cequonaime] / [cequonaimepas] --- */
-       . 'h4.cequonaime,h4.cequonaimepas{'
+       . 'h4.cequonaime.cequonaime,h4.cequonaimepas.cequonaimepas{'
        .   'font-family:"Inter",sans-serif!important;'
        .   'font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;'
        .   'margin:38px 0 14px;display:flex;align-items:center;gap:12px;'
        .   'color:var(--at-primary-d-2)'
        . '}'
-       . 'h4.cequonaime::after,h4.cequonaimepas::after{'
+       . 'h4.cequonaime.cequonaime::after,h4.cequonaimepas.cequonaimepas::after{'
        .   'content:"";flex:1;height:1px;background:var(--at-grey-l-3)'
        . '}'
-       . 'h4.cequonaimepas{color:var(--at-danger-d-2)}'
+       . 'h4.cequonaimepas.cequonaimepas{color:var(--at-danger-d-2)}'
        . '</style>';
   }
   add_action( 'wp_head', 'mt_cequonaime_styles', 20 );
