@@ -35,12 +35,12 @@ if ( ! function_exists( 'mt_cequonaime_styles' ) ) {
        .   'font-family:"Inter",sans-serif!important;'
        .   'font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;'
        .   'margin:38px 0 14px;display:flex;align-items:center;gap:12px;'
-       .   'color:var(--at-primary-d-2)'
+       .   'color:var(--at-primary)'
        . '}'
        . 'h4.cequonaime.cequonaime::after,h4.cequonaimepas.cequonaimepas::after{'
        .   'content:"";flex:1;height:1px;background:var(--at-grey-l-3)'
        . '}'
-       . 'h4.cequonaimepas.cequonaimepas{color:var(--at-danger-d-2)}'
+       . 'h4.cequonaimepas.cequonaimepas{color:var(--at-danger)}'
        . '</style>';
   }
   add_action( 'wp_head', 'mt_cequonaime_styles', 20 );
