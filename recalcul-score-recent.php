@@ -15,8 +15,9 @@
 //   - manuellement via mlt_recalculate_recent_scores_all()
 //   - via URL (admin uniquement) :
 //       ?mlt_recent_single_id=123   → recalcule le score récent de l'avis #123
-//       ?mlt_recent_bulk=run        → recalcule tous les avis (500 par requête,
-//                                     redirige automatiquement vers le lot suivant)
+//       ?mlt_recent_bulk=run        → recalcule tous les avis par lots de 500
+//                                     (rechargement auto entre chaque lot)
+//       ?mlt_recent_bulk=reset      → remet l'offset à zéro (reset manuel)
 
 /** Score récent d'un avis selon son âge. Null si score total absent. */
 function mlt_calc_score_recent($avis_id) {
@@ -158,66 +159,118 @@ add_action('init', function () {
         if ( $avis_id < 1 ) {
             wp_die('ID invalide.');
         }
+
+        @set_time_limit(0);
+        header('Content-Type: text/plain; charset=utf-8');
+
         $updated = mlt_update_score_recent($avis_id);
         $score   = get_field('mltv5_score_recent', $avis_id);
-        wp_die(
-            $updated
-                ? "Score récent mis à jour pour l'avis #{$avis_id} → {$score}"
-                : "Aucun changement pour l'avis #{$avis_id} (score actuel : {$score})",
-            'Recalcul score récent',
-            ['response' => 200]
+
+        echo $updated
+            ? "Score récent mis à jour pour l'avis #{$avis_id} → {$score}\n"
+            : "Aucun changement pour l'avis #{$avis_id} (score actuel : {$score})\n";
+        exit;
+    }
+
+    // ?mlt_recent_bulk=run | reset
+    if ( ! isset($_GET['mlt_recent_bulk']) ) {
+        return;
+    }
+    $action = sanitize_key($_GET['mlt_recent_bulk']);
+
+    if ( ! current_user_can('manage_options') ) {
+        wp_die('Accès refusé.', 403);
+    }
+
+    $BATCH_SIZE     = 500;
+    $RELOAD_SECONDS = 5;
+    $OFFSET_KEY     = 'mlt_recent_bulk_offset';
+
+    @set_time_limit(0);
+    header('Content-Type: text/plain; charset=utf-8');
+
+    // --- reset ---
+    if ( $action === 'reset' ) {
+        delete_option($OFFSET_KEY);
+        echo "Offset remis à zéro. Le prochain ?mlt_recent_bulk=run repartira du début.\n";
+        exit;
+    }
+
+    if ( $action !== 'run' ) {
+        echo "Action inconnue. Utilise run ou reset.\n";
+        exit;
+    }
+
+    // --- run ---
+    $offset = (int) get_option($OFFSET_KEY, 0);
+
+    $total_query = new WP_Query([
+        'post_type'      => 'avis',
+        'post_status'    => 'publish',
+        'posts_per_page' => 1,
+        'fields'         => 'ids',
+        'no_found_rows'  => false,
+    ]);
+    $total = (int) $total_query->found_posts;
+
+    $ids = get_posts([
+        'post_type'      => 'avis',
+        'post_status'    => 'publish',
+        'posts_per_page' => $BATCH_SIZE,
+        'offset'         => $offset,
+        'fields'         => 'ids',
+        'no_found_rows'  => true,
+        'orderby'        => 'ID',
+        'order'          => 'ASC',
+    ]);
+
+    echo "=== Bulk scores récents (par lots) ===\n";
+    echo "Total avis    : {$total}\n";
+    echo "Offset courant: {$offset}\n";
+    echo "Taille de lot : {$BATCH_SIZE}\n\n";
+
+    if ( empty($ids) ) {
+        delete_option($OFFSET_KEY);
+        echo "Terminé. Tous les avis ont été traités.\n";
+        echo "L'offset a été réinitialisé.\n";
+        exit;
+    }
+
+    $batch_updated = 0;
+    foreach ( $ids as $i => $avis_id ) {
+        $did = mlt_update_score_recent($avis_id);
+        if ( $did ) {
+            $batch_updated++;
+        }
+        $score = get_field('mltv5_score_recent', $avis_id);
+        echo sprintf(
+            "[%d] Avis #%d → %s (score : %s)\n",
+            $offset + $i + 1,
+            $avis_id,
+            $did ? 'mis à jour' : 'inchangé',
+            $score !== null && $score !== '' ? $score : 'n/a'
         );
     }
 
-    // ?mlt_recent_bulk=run  (traite 500 avis par requête, puis redirige)
-    // Paramètres cumulés automatiquement :
-    //   &mlt_offset=0  (position courante)
-    //   &mlt_updated=0 (compteur de mises à jour)
-    //   &mlt_total=0   (compteur d'avis traités)
-    if ( isset($_GET['mlt_recent_bulk']) && $_GET['mlt_recent_bulk'] === 'run' ) {
-        if ( ! current_user_can('manage_options') ) {
-            wp_die('Accès refusé.', 403);
-        }
-        $batch       = 500;
-        $offset      = max(0, (int) ($_GET['mlt_offset']  ?? 0));
-        $updated_acc = max(0, (int) ($_GET['mlt_updated'] ?? 0));
-        $total_acc   = max(0, (int) ($_GET['mlt_total']   ?? 0));
+    $new_offset = $offset + count($ids);
+    update_option($OFFSET_KEY, $new_offset, false);
 
-        $ids = get_posts([
-            'post_type'      => 'avis',
-            'post_status'    => 'publish',
-            'posts_per_page' => $batch,
-            'offset'         => $offset,
-            'fields'         => 'ids',
-            'no_found_rows'  => true,
-            'orderby'        => 'ID',
-            'order'          => 'ASC',
-        ]);
+    echo "\n--- Lot terminé ---\n";
+    echo "Mis à jour (ce lot) : {$batch_updated}\n";
+    echo "Progression         : {$new_offset} / {$total}\n\n";
 
-        foreach ( $ids as $id ) {
-            if ( mlt_update_score_recent($id) ) {
-                $updated_acc++;
-            }
-            $total_acc++;
-        }
-
-        if ( count($ids) === $batch ) {
-            $next_url = add_query_arg([
-                'mlt_recent_bulk' => 'run',
-                'mlt_offset'      => $offset + $batch,
-                'mlt_updated'     => $updated_acc,
-                'mlt_total'       => $total_acc,
-            ], home_url('/'));
-            wp_redirect($next_url);
-            exit;
-        }
-
-        wp_die(
-            "Terminé. {$updated_acc} score(s) mis à jour sur {$total_acc} avis traités.",
-            'Recalcul bulk scores récents',
-            ['response' => 200]
-        );
+    if ( count($ids) < $BATCH_SIZE ) {
+        delete_option($OFFSET_KEY);
+        echo "Terminé. Tous les avis ont été traités.\n";
+        echo "L'offset a été réinitialisé.\n";
+        exit;
     }
+
+    $next_url = esc_url_raw(add_query_arg('mlt_recent_bulk', 'run', home_url('/')));
+    echo "Rechargement dans {$RELOAD_SECONDS}s vers le lot suivant...\n";
+    echo "(Si rien ne se passe, ouvre : {$next_url} )\n";
+    header('Refresh: ' . $RELOAD_SECONDS . '; url=' . $next_url);
+    exit;
 });
 
 // ----- Recalcul à la sauvegarde d'un comparatif (inchangé) -----
