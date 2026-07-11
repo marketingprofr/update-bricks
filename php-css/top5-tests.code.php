@@ -14,7 +14,7 @@
 $TT_CUST_RATING_FIELD = 'mltv5_score_avis_clients';   // note clients /5
 $TT_CUST_COUNT_FIELD  = 'mltv5_nombre_avis_clients';  // nombre d'avis clients
 $TT_VERDICT_FIELD     = 'mltv5_verdict_court';        // libellé récompense (eyebrow), ex. « Notre coup de cœur »
-$TT_FORWHO_FIELD      = 'mltv5_public_cible';         // « À qui ça s'adresse » (optionnel, masqué si vide)
+$TT_FORWHO_FIELD      = 'mltv5_pour_qui';             // « À qui ça s'adresse » (optionnel, masqué si vide)
 $TT_SPECS_FIELD       = 'mltv5_caracteristiques_du_produit'; // repeater fiche technique
 $TT_SPEC_LABEL_KEY    = 'mltv5_caracteristique_intitule';    // sous-champ intitulé
 $TT_SPEC_VALUE_KEY    = 'mltv5_caracteristique_valeur';      // sous-champ valeur

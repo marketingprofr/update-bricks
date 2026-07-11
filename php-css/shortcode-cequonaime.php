@@ -4,19 +4,19 @@
    ---------------------------------------------------------------------
    [cequonaime]     -> <h4 class="cequonaime">Ce qui nous a convaincus</h4>
    [cequonaimepas]  -> <h4 class="cequonaimepas">Les défauts qu'on pardonne (ou pas)</h4>
-   [pourqui]        -> encart « À qui s'adresse ce {type} ? » + contenu du
-                       champ ACF mltv5_pour_qui (masqué si le champ est vide).
 
-   Mise en forme = celle du template « top5-tests »
-   (cf. php-css/top5-tests.css : .ed-a-body h4 / h4.warn / .ed-a-forwho) :
-     - intertitres Inter 13px 700 MAJUSCULES, filet 1px à droite ;
-       « convaincus » en primary sombre, « défauts » en rouge sombre ;
-     - encart « pour qui » fond primary très clair, titre h5 primary.
+   Mise en forme = celle des intertitres du template « top5-tests »
+   (cf. php-css/top5-tests.css : .ed-a-body h4 / h4.warn) : Inter 13px 700
+   MAJUSCULES, filet 1px à droite ; « convaincus » en primary sombre,
+   « défauts » en rouge sombre.
+
+   (L'encart « À qui s'adresse ce {type} ? » n'est PAS un shortcode : il est
+   rendu automatiquement par le template top5-tests si mltv5_pour_qui est rempli.)
 
    ⚠️ CE N'EST PAS un bloc Code Bricks. À coller dans un snippet PHP
    (extension « Code Snippets », ou functions.php du thème enfant).
    Usage dans le contenu WYSIWYG (chaque shortcode sur sa propre ligne) :
-       [cequonaime]  ...paragraphes...  [cequonaimepas]  ...  [pourqui]
+       [cequonaime]  ...paragraphes...  [cequonaimepas]
 
    100 % tokens Advanced Themer (var(--at-*)) -> bascule mode nuit auto.
    ===================================================================== */
@@ -37,13 +37,6 @@ if ( ! function_exists( 'mt_cequonaime_styles' ) ) {
        .   'content:"";flex:1;height:1px;background:var(--at-grey-l-3)'
        . '}'
        . 'h4.cequonaimepas{color:var(--at-danger-d-2)}'
-       /* --- encart [pourqui] --- */
-       . '.mt-forwho{font-family:"Inter",sans-serif;margin:36px 0 8px;padding:24px 26px;'
-       .   'background:var(--at-primary-l-6);border-radius:14px}'
-       . '.mt-forwho h5{font-family:"Inter",sans-serif!important;font-size:12px;font-weight:700;'
-       .   'letter-spacing:.08em;text-transform:uppercase;color:var(--at-primary);margin:0 0 10px}'
-       . '.mt-forwho p{font-size:15.5px;line-height:1.65;color:var(--at-black-l-2);margin:0}'
-       . '.mt-forwho p b{color:var(--at-black-l-1);font-weight:600}'
        . '</style>';
   }
   add_action( 'wp_head', 'mt_cequonaime_styles', 20 );
