@@ -94,6 +94,21 @@ if ( ! function_exists( 'mt5_specs' ) ) {
     return $out;
   }
 }
+if ( ! function_exists( 'mt5_spec_val' ) ) {
+  /* Valeur de spec : rend le HTML léger (icônes FA <i>, <br>, gras…) au lieu
+     de l'échapper (sinon « <i class="fa-solid fa-check"></i> » s'affiche en
+     texte). Whitelist stricte -> pas de script/style/img/iframe arbitraire. */
+  function mt5_spec_val( $html ) {
+    return wp_kses( (string) $html, array(
+      'i'      => array( 'class' => true, 'aria-hidden' => true, 'title' => true, 'style' => true ),
+      'span'   => array( 'class' => true, 'aria-hidden' => true, 'style' => true ),
+      'br'     => array(),
+      'strong' => array(), 'b' => array(), 'em' => array(),
+      'sub'    => array(), 'sup' => array(),
+      'a'      => array( 'href' => true, 'target' => true, 'rel' => true ),
+    ) );
+  }
+}
 
 /* ---------------------------------------------------------------------
    Liste ordonnée des produits du guide (même source que top5-resume)
@@ -352,7 +367,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
           <summary>Fiche technique compl&egrave;te <span class="chev" aria-hidden="true">&#8964;</span></summary>
           <dl>
             <?php foreach ( $it['specs'] as $sp ) : ?>
-            <div class="row"><dt><?php echo esc_html( $sp[0] ); ?></dt><dd><?php echo esc_html( $sp[1] ); ?></dd></div>
+            <div class="row"><dt><?php echo esc_html( $sp[0] ); ?></dt><dd><?php echo mt5_spec_val( $sp[1] ); ?></dd></div>
             <?php endforeach; ?>
           </dl>
         </details>
