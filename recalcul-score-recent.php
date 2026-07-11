@@ -10,9 +10,12 @@
 //   La date ACF « mltv5_date_dernier_test », si renseignée, prime sur la
 //   date de publication (re-test = récence remise à zéro).
 //
-// PAS de cron. Recalcul déclenché comme avant :
+// PAS de cron. Recalcul déclenché :
 //   - à la sauvegarde d'un comparatif (hook en bas de fichier)
 //   - manuellement via mlt_recalculate_recent_scores_all()
+//   - via URL (admin uniquement) :
+//       ?mlt_recent_single_id=123   → recalcule le score récent de l'avis #123
+//       ?mlt_recent_bulk=run        → recalcule tous les avis par lots de 500
 
 /** Score récent d'un avis selon son âge. Null si score total absent. */
 function mlt_calc_score_recent($avis_id) {
