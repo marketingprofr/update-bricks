@@ -15,7 +15,8 @@
 //   - manuellement via mlt_recalculate_recent_scores_all()
 //   - via URL (admin uniquement) :
 //       ?mlt_recent_single_id=123   → recalcule le score récent de l'avis #123
-//       ?mlt_recent_bulk=run        → recalcule tous les avis par lots de 500
+//       ?mlt_recent_bulk=run        → recalcule tous les avis (500 par requête,
+//                                     redirige automatiquement vers le lot suivant)
 
 /** Score récent d'un avis selon son âge. Null si score total absent. */
 function mlt_calc_score_recent($avis_id) {
@@ -168,38 +169,51 @@ add_action('init', function () {
         );
     }
 
-    // ?mlt_recent_bulk=run
+    // ?mlt_recent_bulk=run  (traite 500 avis par requête, puis redirige)
+    // Paramètres cumulés automatiquement :
+    //   &mlt_offset=0  (position courante)
+    //   &mlt_updated=0 (compteur de mises à jour)
+    //   &mlt_total=0   (compteur d'avis traités)
     if ( isset($_GET['mlt_recent_bulk']) && $_GET['mlt_recent_bulk'] === 'run' ) {
         if ( ! current_user_can('manage_options') ) {
             wp_die('Accès refusé.', 403);
         }
-        $batch   = 500;
-        $page    = 1;
-        $updated = 0;
-        $total   = 0;
+        $batch       = 500;
+        $offset      = max(0, (int) ($_GET['mlt_offset']  ?? 0));
+        $updated_acc = max(0, (int) ($_GET['mlt_updated'] ?? 0));
+        $total_acc   = max(0, (int) ($_GET['mlt_total']   ?? 0));
 
-        do {
-            $ids = get_posts([
-                'post_type'      => 'avis',
-                'post_status'    => 'publish',
-                'posts_per_page' => $batch,
-                'paged'          => $page,
-                'fields'         => 'ids',
-                'no_found_rows'  => true,
-                'orderby'        => 'ID',
-                'order'          => 'ASC',
-            ]);
-            foreach ( $ids as $id ) {
-                if ( mlt_update_score_recent($id) ) {
-                    $updated++;
-                }
-                $total++;
+        $ids = get_posts([
+            'post_type'      => 'avis',
+            'post_status'    => 'publish',
+            'posts_per_page' => $batch,
+            'offset'         => $offset,
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+            'orderby'        => 'ID',
+            'order'          => 'ASC',
+        ]);
+
+        foreach ( $ids as $id ) {
+            if ( mlt_update_score_recent($id) ) {
+                $updated_acc++;
             }
-            $page++;
-        } while ( count($ids) === $batch );
+            $total_acc++;
+        }
+
+        if ( count($ids) === $batch ) {
+            $next_url = add_query_arg([
+                'mlt_recent_bulk' => 'run',
+                'mlt_offset'      => $offset + $batch,
+                'mlt_updated'     => $updated_acc,
+                'mlt_total'       => $total_acc,
+            ], home_url('/'));
+            wp_redirect($next_url);
+            exit;
+        }
 
         wp_die(
-            "{$updated} score(s) mis à jour sur {$total} avis traités.",
+            "Terminé. {$updated_acc} score(s) mis à jour sur {$total_acc} avis traités.",
             'Recalcul bulk scores récents',
             ['response' => 200]
         );
