@@ -288,7 +288,7 @@ $head_title = 'Les ' . $nb . ' ' . esc_html( lcfirst( $mf ) )
 /* Classement complet : tous les avis du même type/attribut */
 $all_avis     = mt_all_scored_avis( $page_id );
 $show_ranking = ( $all_avis['count'] >= 10 );
-$show_range   = ( $all_avis['count'] > $nb && $all_avis['min'] < $all_avis['max'] );
+$show_range   = ( $all_avis['count'] >= 10 && $all_avis['count'] > $nb && $all_avis['min'] < $all_avis['max'] );
 $acf_analyzed = isset( $page_tv['produits_analyses'] ) ? (int) $page_tv['produits_analyses'] : 0;
 $meta_count   = max( $acf_analyzed, $all_avis['total'] );
 $top5_set     = array_flip( $ids );
