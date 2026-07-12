@@ -66,6 +66,92 @@ if ( ! function_exists( 'mt5_points' ) ) {
     return $out;
   }
 }
+if ( ! function_exists( 'mt_all_scored_avis' ) ) {
+  /**
+   * Tous les avis publiés partageant le même post-type-produit (et au moins
+   * les mêmes post-type-attribut) que le comparatif, triés par score desc.
+   * Renvoie count (filtré), total (non filtré), min/max scores, items[].
+   * Résultat en cache statique (1 appel = 1 query).
+   */
+  function mt_all_scored_avis( $page_id ) {
+    static $cache = array();
+    $key = (int) $page_id;
+    if ( isset( $cache[ $key ] ) ) { return $cache[ $key ]; }
+
+    $empty = array( 'count' => 0, 'min' => 0, 'max' => 0, 'items' => array(), 'total' => 0 );
+
+    $prod_terms = get_the_terms( $key, 'post-type-produit' );
+    if ( ! is_array( $prod_terms ) || empty( $prod_terms ) ) {
+      $cache[ $key ] = $empty;
+      return $empty;
+    }
+    $prod_ids = wp_list_pluck( $prod_terms, 'term_id' );
+
+    $total_q = new WP_Query( array(
+      'post_type' => 'avis', 'post_status' => 'publish',
+      'tax_query' => array( array( 'taxonomy' => 'post-type-produit', 'terms' => $prod_ids ) ),
+      'posts_per_page' => -1, 'fields' => 'ids', 'no_found_rows' => true,
+      'update_post_meta_cache' => false, 'update_post_term_cache' => false,
+    ) );
+    $total_count = count( $total_q->posts );
+
+    $attr_terms = get_the_terms( $key, 'post-type-attribut' );
+    $attr_ids   = is_array( $attr_terms ) ? wp_list_pluck( $attr_terms, 'term_id' ) : array();
+
+    if ( ! empty( $attr_ids ) ) {
+      $q = new WP_Query( array(
+        'post_type' => 'avis', 'post_status' => 'publish',
+        'tax_query' => array(
+          'relation' => 'AND',
+          array( 'taxonomy' => 'post-type-produit', 'terms' => $prod_ids ),
+          array( 'taxonomy' => 'post-type-attribut', 'terms' => $attr_ids, 'operator' => 'AND' ),
+        ),
+        'posts_per_page' => -1, 'fields' => 'ids', 'no_found_rows' => true,
+        'update_post_meta_cache' => true, 'update_post_term_cache' => false,
+      ) );
+      $avis_ids = $q->posts;
+    } else {
+      $avis_ids = $total_q->posts;
+    }
+
+    if ( empty( $avis_ids ) ) {
+      $empty['total'] = $total_count;
+      $cache[ $key ]  = $empty;
+      return $empty;
+    }
+
+    $items = array();
+    foreach ( $avis_ids as $aid ) {
+      $raw = get_field( 'mltv5_score_recent', $aid );
+      $s10 = round( mt5_num( $raw ) / 10, 1 );
+      if ( $s10 <= 0 ) { continue; }
+      $brand = trim( (string) get_field( 'mltv5_marque_du_produit', $aid ) );
+      $model = trim( (string) get_field( 'mltv5_modele_du_produit', $aid ) );
+      $name  = $model !== '' ? $model : get_the_title( $aid );
+      $items[] = array( 'id' => (int) $aid, 'brand' => $brand, 'name' => $name, 'score' => $s10 );
+    }
+
+    usort( $items, function ( $a, $b ) {
+      if ( $a['score'] !== $b['score'] ) { return ( $b['score'] > $a['score'] ) ? 1 : -1; }
+      return strcmp( $a['name'], $b['name'] );
+    } );
+
+    foreach ( $items as $i => &$it ) { $it['rank'] = $i + 1; }
+    unset( $it );
+
+    $scores = array_column( $items, 'score' );
+    $result = array(
+      'count' => count( $items ),
+      'min'   => ! empty( $scores ) ? min( $scores ) : 0,
+      'max'   => ! empty( $scores ) ? max( $scores ) : 0,
+      'items' => $items,
+      'total' => $total_count,
+    );
+
+    $cache[ $key ] = $result;
+    return $result;
+  }
+}
 
 /* ---------------------------------------------------------------------
    Liste ordonnée des produits du guide
@@ -205,12 +291,29 @@ if ( $mf === '' ) { $mf = 'meilleures'; }
 $head_title = 'Les ' . $nb . ' ' . esc_html( lcfirst( $mf ) )
   . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : '' )
   . ' en un coup d&rsquo;&oelig;il';
+
+/* Classement complet : tous les avis du même type/attribut */
+$all_avis     = mt_all_scored_avis( $page_id );
+$show_ranking = ( $all_avis['count'] >= 10 );
+$show_range   = ( $all_avis['count'] > $nb && $all_avis['min'] < $all_avis['max'] );
+$acf_analyzed = isset( $page_tv['produits_analyses'] ) ? (int) $page_tv['produits_analyses'] : 0;
+$meta_count   = max( $acf_analyzed, $all_avis['total'] );
+$top5_set     = array_flip( $ids );
 ?>
 <section class="mt-top5" aria-labelledby="mt-top5-title">
   <header class="t5-head">
     <div>
       <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
-      <p class="t5-meta">Notre classement <?php echo esc_html( date_i18n( 'Y' ) ); ?>, totalement impartial et v&eacute;rifi&eacute; par la r&eacute;daction</p>
+      <p class="t5-meta"><?php
+        if ( $meta_count >= 15 ) {
+          echo 'Notre classement ' . esc_html( date_i18n( 'Y' ) ) . ' parmi <b>' . (int) $meta_count . '&nbsp;produits</b> analys&eacute;s, totalement impartial et v&eacute;rifi&eacute; par la r&eacute;daction';
+        } else {
+          echo 'Notre classement ' . esc_html( date_i18n( 'Y' ) ) . ', totalement impartial et v&eacute;rifi&eacute; par la r&eacute;daction';
+        }
+      ?></p>
+<?php if ( $show_range ) : ?>
+      <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $all_avis['min'], 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $all_avis['max'], 1, ',', '' ) ); ?></b> sur <?php echo (int) $all_avis['count']; ?> produits. Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.</p>
+<?php endif; ?>
     </div>
   </header>
 
@@ -300,6 +403,40 @@ $head_title = 'Les ' . $nb . ' ' . esc_html( lcfirst( $mf ) )
     </li>
 <?php endforeach; ?>
   </ol>
+
+<?php if ( $show_ranking ) : ?>
+  <div class="t5-allrank">
+    <h3 class="t5-allrank-h">Classement complet<?php echo ( $type_plur !== '' ? ' des ' . esc_html( $type_plur ) : '' ); ?> test&eacute;s</h3>
+    <div class="t5-ar-head"><span>#</span><span>Produit</span><span>Note</span></div>
+<?php
+  $ar_visible = 3;
+  $ar_items   = $all_avis['items'];
+  $ar_rest    = count( $ar_items ) - $ar_visible;
+  foreach ( array_slice( $ar_items, 0, $ar_visible ) as $ar ) :
+    $ar_top5 = isset( $top5_set[ $ar['id'] ] );
+?>
+    <div class="t5-ar-row<?php echo $ar_top5 ? ' is-top5' : ''; ?>">
+      <span class="t5-ar-rank"><?php echo (int) $ar['rank']; ?></span>
+      <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?></span>
+      <span class="t5-ar-score"><?php echo esc_html( number_format( $ar['score'], 1, ',', '' ) ); ?><small>/10</small></span>
+    </div>
+<?php endforeach; ?>
+<?php if ( $ar_rest > 0 ) : ?>
+    <details class="t5-ar-more">
+      <summary>Voir les <?php echo $ar_rest; ?> autres produits test&eacute;s</summary>
+<?php foreach ( array_slice( $ar_items, $ar_visible ) as $ar ) :
+    $ar_top5 = isset( $top5_set[ $ar['id'] ] );
+?>
+      <div class="t5-ar-row<?php echo $ar_top5 ? ' is-top5' : ''; ?>">
+        <span class="t5-ar-rank"><?php echo (int) $ar['rank']; ?></span>
+        <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?></span>
+        <span class="t5-ar-score"><?php echo esc_html( number_format( $ar['score'], 1, ',', '' ) ); ?><small>/10</small></span>
+      </div>
+<?php endforeach; ?>
+    </details>
+<?php endif; ?>
+  </div>
+<?php endif; ?>
 
   <p class="t5-disclosure">Liens commerciaux : Meilleurtest peut percevoir une commission sur les achats effectu&eacute;s via ces liens, sans impact sur le prix ni sur nos verdicts.</p>
 </section>
