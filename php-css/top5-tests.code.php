@@ -109,6 +109,22 @@ if ( ! function_exists( 'mt5_spec_val' ) ) {
     ) );
   }
 }
+if ( ! function_exists( 'mt5_norm_keys' ) ) {
+  /* Normalise une liste de libellés d'attributs -> minuscules, sans espace de
+     bord, sans vide ni doublon, triés alpha. Sert à comparer le jeu d'attributs
+     du comparatif avec celui d'un « angle d'utilisation » d'avis consolidé
+     (comparaison insensible à la casse ET à l'ordre). */
+  function mt5_norm_keys( $list ) {
+    $out = array();
+    foreach ( (array) $list as $s ) {
+      $s = strtolower( trim( (string) $s ) );
+      if ( $s !== '' ) { $out[] = $s; }
+    }
+    $out = array_values( array_unique( $out ) );
+    sort( $out, SORT_STRING );
+    return $out;
+  }
+}
 
 /* ---------------------------------------------------------------------
    Liste ordonnée des produits du guide (même source que top5-resume)
@@ -125,6 +141,18 @@ if ( empty( $ids ) ) {
 }
 $ids = array_values( array_filter( array_map( 'intval', $ids ) ) );
 if ( empty( $ids ) ) { return; }
+
+/* ---------------------------------------------------------------------
+   Attributs du comparatif courant (taxonomie post-type-attribut) :
+   jeu normalisé (lowercase + tri alpha) qui sert, plus bas, à choisir le bon
+   « angle d'utilisation » d'un avis consolidé. Vide -> contenu principal partout.
+   --------------------------------------------------------------------- */
+$comp_names = array();
+$comp_terms = get_the_terms( $page_id, 'post-type-attribut' );
+if ( is_array( $comp_terms ) ) {
+  foreach ( $comp_terms as $t ) { $comp_names[] = isset( $t->name ) ? $t->name : ''; }
+}
+$comp_attr_keys = mt5_norm_keys( $comp_names );
 
 /* ---------------------------------------------------------------------
    PASSE 1 : collecte (contexte post requis pour les helpers de score)
@@ -179,6 +207,28 @@ foreach ( $ids as $pid ) {
 
   /* Corps de l'avis = contenu WordPress du produit */
   $body_html = apply_filters( 'the_content', get_the_content( null, false, $p ) );
+
+  /* Avis consolidés : si le comparatif porte des attributs, chercher dans le
+     repeater mltv5_utilisations_du_produit l'« angle d'utilisation » dont les
+     attributs (mltv5_nom_utilisation_produit, virgule-séparés) forment EXACTEMENT
+     le même jeu que ceux du comparatif (casse/ordre ignorés). Match -> on affiche
+     son wysiwyg à la place du contenu principal ; sinon fallback contenu principal.
+     Le wysiwyg ACF est déjà filtré (the_content) -> rendu cohérent avec ci-dessus. */
+  if ( ! empty( $comp_attr_keys ) ) {
+    $uses = get_field( 'mltv5_utilisations_du_produit', $pid );
+    if ( is_array( $uses ) ) {
+      foreach ( $uses as $u ) {
+        if ( ! is_array( $u ) ) { continue; }
+        $raw  = isset( $u['mltv5_nom_utilisation_produit'] ) ? (string) $u['mltv5_nom_utilisation_produit'] : '';
+        $keys = mt5_norm_keys( explode( ',', $raw ) );
+        if ( $keys === $comp_attr_keys ) {
+          $rich = isset( $u['mltv5_avantages_inconvenients_utilisation'] ) ? (string) $u['mltv5_avantages_inconvenients_utilisation'] : '';
+          if ( trim( $rich ) !== '' ) { $body_html = $rich; }
+          break; // un seul angle attendu par jeu d'attributs
+        }
+      }
+    }
+  }
 
   /* Offres : ASIN Amazon prioritaire, puis liens perso ACF */
   $asin       = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
