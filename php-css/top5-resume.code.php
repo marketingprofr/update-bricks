@@ -425,7 +425,7 @@ $top5_set     = array_flip( $ids );
 <?php endforeach; ?>
 <?php if ( $ar_rest > 0 ) : ?>
     <details class="t5-ar-more">
-      <summary>Voir les <?php echo $ar_rest; ?> autres produits test&eacute;s</summary>
+      <summary>Afficher les <?php echo $ar_rest; ?> autres produits test&eacute;s</summary>
 <?php foreach ( array_slice( $ar_items, $ar_visible ) as $ar ) :
     $ar_top5 = isset( $top5_set[ $ar['id'] ] );
 ?>
