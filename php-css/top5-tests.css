@@ -51,7 +51,7 @@
 /* Barre d'infos ADMIN sous le nom (jamais rendue pour le public — cf. PHP).
    Look « debug » volontairement distinct (dashed ambré) pour ne pas la confondre
    avec le contenu éditorial. */
-.ed-a-adminbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 8px; margin: -6px 0 22px; padding: 7px 10px; border: 1px dashed var(--at-warning); border-radius: 8px; background: var(--at-warning-l-6); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px; line-height: 1.3; }
+.ed-a-adminbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 7px 10px; margin: -6px 0 22px; padding: 9px 12px; border: 1px dashed var(--at-warning); border-radius: 8px; background: var(--at-warning-l-6); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13.5px; line-height: 1.35; }
 .ed-a-adminbar .am-tag { color: var(--muted); }
 .ed-a-adminbar .am-date { font-weight: 700; color: var(--ink-2); }
 .ed-a-adminbar .am-date.is-recent { color: var(--at-success-d-1); }
