@@ -401,10 +401,10 @@ $top5_set     = array_flip( $ids );
 
 <?php if ( $show_ranking ) : ?>
   <div class="t5-allrank" data-page="<?php echo esc_attr( $page_id ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'mt_ranking' ) ); ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
-    <h3 class="t5-allrank-h">Classement complet<?php echo ( $type_plur !== '' ? ' des ' . esc_html( $type_plur ) : '' ); ?> test&eacute;s</h3>
-    <div class="t5-ar-head"><span>#</span><span>Produit</span><span>Note</span></div>
+    <h3 class="t5-allrank-h" style="display:none">Classement complet<?php echo ( $type_plur !== '' ? ' des ' . esc_html( $type_plur ) : '' ); ?> test&eacute;s</h3>
+    <div class="t5-ar-head" style="display:none"><span>#</span><span>Produit</span><span>Note</span></div>
     <div class="t5-ar-body"></div>
-    <button type="button" class="t5-ar-toggle" data-label-show="Afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s" data-label-hide="Masquer le classement">Afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s</button>
+    <button type="button" class="t5-ar-toggle" data-label-show="Voir le classement complet : afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s" data-label-hide="Masquer le classement">Voir le classement complet : afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s</button>
   </div>
 <?php endif; ?>
 
@@ -483,6 +483,8 @@ add_action( 'wp_footer', function () {
     if (!btn || !body) return;
     var loaded = false;
     var visible = false;
+    var heading = wrap.querySelector('.t5-allrank-h');
+    var colHead = wrap.querySelector('.t5-ar-head');
     btn.addEventListener('click', function () {
       if (!loaded) {
         btn.disabled = true;
@@ -501,6 +503,8 @@ add_action( 'wp_footer', function () {
               loaded = true;
               visible = true;
               body.style.display = '';
+              if (heading) heading.style.display = '';
+              if (colHead) colHead.style.display = '';
               btn.textContent = btn.getAttribute('data-label-hide') || 'Masquer le classement';
             } else {
               btn.textContent = 'Erreur de chargement';
@@ -517,6 +521,8 @@ add_action( 'wp_footer', function () {
       } else {
         visible = !visible;
         body.style.display = visible ? '' : 'none';
+        if (heading) heading.style.display = visible ? '' : 'none';
+        if (colHead) colHead.style.display = visible ? '' : 'none';
         btn.textContent = visible
           ? (btn.getAttribute('data-label-hide') || 'Masquer le classement')
           : (btn.getAttribute('data-label-show') || 'Afficher');
