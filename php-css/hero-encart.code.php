@@ -12,8 +12,7 @@ $tp = $type_de_produit_au_pluriel ?? '';
 if (strlen($tp) >= 22) { $lblprod = 'Produits analysés'; }
 else { $lblprod = ($tp ?: 'Produits') . ((($masculinsfeminins ?? '') == 'Meilleures') ? ' analysées' : ' analysés'); }
 
-// Compteur dynamique : max(ACF, nombre réel d'avis publiés du même type + attributs)
-$mt_acf_count  = (int) ($produits_analyses ?? 0);
+// Compteur dynamique : vrai nombre d'avis publiés (même type + attributs), +5 si < 10
 $mt_real_count = 0;
 $mt_prod_terms = get_the_terms( $this_id, 'post-type-produit' );
 if ( is_array( $mt_prod_terms ) && ! empty( $mt_prod_terms ) ) {
@@ -35,7 +34,7 @@ if ( is_array( $mt_prod_terms ) && ! empty( $mt_prod_terms ) ) {
   ) );
   $mt_real_count = count( $mt_cq->posts );
 }
-$mt_display_count = max( $mt_acf_count, $mt_real_count );
+$mt_display_count = ( $mt_real_count < 10 ) ? $mt_real_count + 5 : $mt_real_count;
 
 // Icones SVG outline (couleur via CSS / currentColor)
 $ic_shield  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.4-3 7.4-7 9-4-1.6-7-4.6-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>';

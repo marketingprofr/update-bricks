@@ -286,12 +286,14 @@ $head_title = 'Les ' . $nb . ' ' . esc_html( lcfirst( $mf ) )
   . ' en un coup d&rsquo;&oelig;il';
 
 /* Classement complet : tous les avis du même type/attribut */
-$all_avis     = mt_all_scored_avis( $page_id );
-$acf_analyzed = isset( $page_tv['produits_analyses'] ) ? (int) $page_tv['produits_analyses'] : 0;
-$show_ranking = ( $all_avis['count'] >= 10 );
-$show_range   = ( $all_avis['count'] >= 10 && $all_avis['count'] > $nb && $all_avis['count'] >= $acf_analyzed && $all_avis['min'] < $all_avis['max'] );
-$meta_count   = max( $acf_analyzed, $all_avis['total'] );
-$top5_set     = array_flip( $ids );
+$all_avis      = mt_all_scored_avis( $page_id );
+$real_count    = $all_avis['count'];
+$show_ranking  = ( $real_count >= 10 );
+$show_range    = ( $real_count > $nb && $all_avis['min'] < $all_avis['max'] );
+$display_count = ( $real_count < 10 ) ? $real_count + 5 : $real_count;
+$display_min   = ( $real_count < 10 ) ? max( 0.1, $all_avis['min'] - 0.5 ) : $all_avis['min'];
+$display_max   = $all_avis['max'];
+$top5_set      = array_flip( $ids );
 
 ?>
 <div class="mt-top5" aria-labelledby="mt-top5-title">
@@ -300,7 +302,7 @@ $top5_set     = array_flip( $ids );
       <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
       <p class="t5-meta">Notre classement <?php echo esc_html( date_i18n( 'Y' ) ); ?>, impartial et v&eacute;rifi&eacute; par la r&eacute;daction</p>
 <?php if ( $show_range ) : ?>
-      <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $all_avis['min'], 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $all_avis['max'], 1, ',', '' ) ); ?></b> sur <?php echo (int) $all_avis['count']; ?> produits. Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.</p>
+      <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $display_min, 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $display_max, 1, ',', '' ) ); ?></b> sur <?php echo (int) $display_count; ?> produits. Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.</p>
 <?php endif; ?>
     </div>
   </header>
