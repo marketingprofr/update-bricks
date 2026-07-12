@@ -329,13 +329,18 @@ $bucket_max = max( array_column( $score_buckets, 'count' ) );
 <?php if ( $show_range ) : ?>
       <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $all_avis['min'], 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $all_avis['max'], 1, ',', '' ) ); ?></b> sur <?php echo (int) $all_avis['count']; ?> produits. Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.</p>
       <div class="t5-distrib" aria-label="Distribution des scores">
-<?php foreach ( $score_buckets as $bk ) : if ( $bk['count'] === 0 ) continue; ?>
-        <div class="t5-db-col">
-          <span class="t5-db-bar <?php echo $bk['cls']; ?>" style="height:<?php echo $bucket_max > 0 ? max( 4, round( $bk['count'] / $bucket_max * 40 ) ) : 4; ?>px"></span>
-          <span class="t5-db-n"><?php echo $bk['count']; ?></span>
-          <span class="t5-db-lbl"><?php echo $bk['label']; ?></span>
-        </div>
+        <div class="t5-db-track">
+<?php foreach ( $score_buckets as $bk ) : if ( $bk['count'] === 0 ) continue;
+  $pct = round( $bk['count'] / $all_avis['count'] * 100, 1 );
+?>
+          <span class="t5-db-seg <?php echo $bk['cls']; ?>" style="width:<?php echo $pct; ?>%" title="<?php echo $bk['count']; ?> produit<?php echo $bk['count'] > 1 ? 's' : ''; ?> not&eacute;s <?php echo strip_tags( $bk['label'] ); ?>/10"><span class="t5-db-n"><?php echo $bk['count']; ?></span></span>
 <?php endforeach; ?>
+        </div>
+        <div class="t5-db-legend">
+<?php foreach ( $score_buckets as $bk ) : if ( $bk['count'] === 0 ) continue; ?>
+          <span class="t5-db-key"><span class="t5-db-dot <?php echo $bk['cls']; ?>"></span><?php echo $bk['label']; ?></span>
+<?php endforeach; ?>
+        </div>
       </div>
 <?php endif; ?>
     </div>
