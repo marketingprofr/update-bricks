@@ -295,11 +295,11 @@ $top5_set     = array_flip( $ids );
 
 /* Distribution des scores par tranche (pour la barre visuelle) */
 $score_buckets = array(
-  array( 'label' => '&lt;6', 'min' => 0.0, 'max' => 6.0, 'count' => 0, 'cls' => 'sc-r' ),
-  array( 'label' => '6',   'min' => 6.0, 'max' => 7.0,  'count' => 0, 'cls' => 'sc-o' ),
-  array( 'label' => '7',   'min' => 7.0, 'max' => 8.0,  'count' => 0, 'cls' => 'sc-y' ),
-  array( 'label' => '8',   'min' => 8.0, 'max' => 9.0,  'count' => 0, 'cls' => 'sc-g' ),
-  array( 'label' => '9+',  'min' => 9.0, 'max' => 10.1, 'count' => 0, 'cls' => 'sc-p' ),
+  array( 'label' => '&lt;7,5', 'min' => 0.0, 'max' => 7.5, 'count' => 0, 'cls' => 'sc-r' ),
+  array( 'label' => '7,5+',   'min' => 7.5, 'max' => 8.0, 'count' => 0, 'cls' => 'sc-o' ),
+  array( 'label' => '8+',     'min' => 8.0, 'max' => 8.5, 'count' => 0, 'cls' => 'sc-y' ),
+  array( 'label' => '8,5+',   'min' => 8.5, 'max' => 9.0, 'count' => 0, 'cls' => 'sc-g' ),
+  array( 'label' => '9+',     'min' => 9.0, 'max' => 10.1,'count' => 0, 'cls' => 'sc-p' ),
 );
 if ( $show_range && ! empty( $all_avis['items'] ) ) {
   foreach ( $all_avis['items'] as $ai ) {
