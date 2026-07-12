@@ -230,6 +230,18 @@
 .mt-top5 .t5-range { font-size: 14px; color: var(--muted); margin: 6px 0 0; line-height: 1.6; }
 .mt-top5 .t5-range b { color: var(--ink); font-weight: 600; }
 
+/* ===== Barre de distribution des scores ===== */
+.mt-top5 .t5-distrib { display: flex; align-items: flex-end; gap: 6px; margin-top: 12px; }
+.mt-top5 .t5-db-col { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 32px; }
+.mt-top5 .t5-db-bar { width: 100%; border-radius: 3px 3px 0 0; }
+.mt-top5 .t5-db-bar.sc-p { background: var(--accent); }
+.mt-top5 .t5-db-bar.sc-g { background: var(--at-success); }
+.mt-top5 .t5-db-bar.sc-y { background: var(--at-warning-d-1); }
+.mt-top5 .t5-db-bar.sc-o { background: var(--at-warning); }
+.mt-top5 .t5-db-bar.sc-r { background: var(--at-danger); }
+.mt-top5 .t5-db-n { font-size: 11px; font-weight: 700; color: var(--ink); line-height: 1; }
+.mt-top5 .t5-db-lbl { font-size: 10px; color: var(--muted); line-height: 1; }
+
 /* ===== Classement complet (après les cartes) ===== */
 .mt-top5 .t5-allrank { margin-top: 14px; padding: 24px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; }
 .mt-top5 .t5-allrank:not(.is-open) { padding: 6px 24px; }

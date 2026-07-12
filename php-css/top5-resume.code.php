@@ -292,6 +292,26 @@ $show_range   = ( $all_avis['count'] > $nb && $all_avis['min'] < $all_avis['max'
 $acf_analyzed = isset( $page_tv['produits_analyses'] ) ? (int) $page_tv['produits_analyses'] : 0;
 $meta_count   = max( $acf_analyzed, $all_avis['total'] );
 $top5_set     = array_flip( $ids );
+
+/* Distribution des scores par tranche (pour la barre visuelle) */
+$score_buckets = array(
+  array( 'label' => '9+',  'min' => 9.0, 'max' => 10.1, 'count' => 0, 'cls' => 'sc-p' ),
+  array( 'label' => '8',   'min' => 8.0, 'max' => 9.0,  'count' => 0, 'cls' => 'sc-g' ),
+  array( 'label' => '7',   'min' => 7.0, 'max' => 8.0,  'count' => 0, 'cls' => 'sc-y' ),
+  array( 'label' => '6',   'min' => 6.0, 'max' => 7.0,  'count' => 0, 'cls' => 'sc-o' ),
+  array( 'label' => '&lt;6', 'min' => 0.0, 'max' => 6.0, 'count' => 0, 'cls' => 'sc-r' ),
+);
+if ( $show_range && ! empty( $all_avis['items'] ) ) {
+  foreach ( $all_avis['items'] as $ai ) {
+    for ( $bi = 0; $bi < count( $score_buckets ); $bi++ ) {
+      if ( $ai['score'] >= $score_buckets[ $bi ]['min'] && $ai['score'] < $score_buckets[ $bi ]['max'] ) {
+        $score_buckets[ $bi ]['count']++;
+        break;
+      }
+    }
+  }
+}
+$bucket_max = max( array_column( $score_buckets, 'count' ) );
 ?>
 <div class="mt-top5" aria-labelledby="mt-top5-title">
   <header class="t5-head">
@@ -308,6 +328,15 @@ $top5_set     = array_flip( $ids );
       ?></p>
 <?php if ( $show_range ) : ?>
       <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $all_avis['min'], 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $all_avis['max'], 1, ',', '' ) ); ?></b> sur <?php echo (int) $all_avis['count']; ?> produits. Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.</p>
+      <div class="t5-distrib" aria-label="Distribution des scores">
+<?php foreach ( $score_buckets as $bk ) : if ( $bk['count'] === 0 ) continue; ?>
+        <div class="t5-db-col">
+          <span class="t5-db-bar <?php echo $bk['cls']; ?>" style="height:<?php echo $bucket_max > 0 ? max( 4, round( $bk['count'] / $bucket_max * 40 ) ) : 4; ?>px"></span>
+          <span class="t5-db-n"><?php echo $bk['count']; ?></span>
+          <span class="t5-db-lbl"><?php echo $bk['label']; ?></span>
+        </div>
+<?php endforeach; ?>
+      </div>
 <?php endif; ?>
     </div>
   </header>
