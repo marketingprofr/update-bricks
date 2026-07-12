@@ -43,6 +43,7 @@
 .mt-sc-vote .rmp-rating-widget__icons-list { display: inline-flex; align-items: center; gap: 2px; margin: 0; padding: 0; list-style: none; }
 .mt-sc-vote .rmp-rating-widget__icons-list__icon { margin: 0; padding: 0; line-height: 1; }
 .mt-sc-vote .rmp-icon--star { font-size: 18px; line-height: 1; color: var(--at-grey-l-2); }
+.mt-sc-vote .rmp-icon--star:before { font-family: Arial, "Helvetica Neue", sans-serif !important; content: "\2605" !important; }
 .mt-sc-vote .rmp-icon--full-highlight { color: var(--at-gold); }
 .mt-sc-vote .rmp-icon--half-highlight { background: linear-gradient(90deg, var(--at-gold) 50%, var(--at-grey-l-2) 50%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 @media (hover: hover) {
