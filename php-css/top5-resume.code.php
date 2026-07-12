@@ -505,6 +505,7 @@ add_action( 'wp_footer', function () {
               body.style.display = '';
               if (heading) heading.style.display = '';
               if (colHead) colHead.style.display = '';
+              wrap.classList.add('is-open');
               btn.textContent = btn.getAttribute('data-label-hide') || 'Masquer le classement';
             } else {
               btn.textContent = 'Erreur de chargement';
@@ -523,6 +524,7 @@ add_action( 'wp_footer', function () {
         body.style.display = visible ? '' : 'none';
         if (heading) heading.style.display = visible ? '' : 'none';
         if (colHead) colHead.style.display = visible ? '' : 'none';
+        wrap.classList.toggle('is-open', visible);
         btn.textContent = visible
           ? (btn.getAttribute('data-label-hide') || 'Masquer le classement')
           : (btn.getAttribute('data-label-show') || 'Afficher');
