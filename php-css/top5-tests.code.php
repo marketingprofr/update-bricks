@@ -117,7 +117,12 @@ if ( ! function_exists( 'mt5_norm_keys' ) ) {
   function mt5_norm_keys( $list ) {
     $out = array();
     foreach ( (array) $list as $s ) {
-      $s = strtolower( trim( (string) $s ) );
+      $s = str_replace( "\xC2\xA0", ' ', (string) $s ); // nbsp -> espace normal
+      $s = preg_replace( '/\s+/u', ' ', $s );           // espaces multiples -> un seul
+      $s = trim( $s );
+      /* mb_strtolower : indispensable pour les accents (« Réduction » -> « réduction »),
+         strtolower ASCII ne baisserait pas la casse des lettres accentuées. */
+      $s = function_exists( 'mb_strtolower' ) ? mb_strtolower( $s, 'UTF-8' ) : strtolower( $s );
       if ( $s !== '' ) { $out[] = $s; }
     }
     $out = array_values( array_unique( $out ) );
