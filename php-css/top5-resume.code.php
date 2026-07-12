@@ -293,25 +293,6 @@ $acf_analyzed = isset( $page_tv['produits_analyses'] ) ? (int) $page_tv['produit
 $meta_count   = max( $acf_analyzed, $all_avis['total'] );
 $top5_set     = array_flip( $ids );
 
-/* Distribution des scores par tranche (pour la barre visuelle) */
-$score_buckets = array(
-  array( 'label' => '&lt;7,5', 'min' => 0.0, 'max' => 7.5, 'count' => 0, 'cls' => 'sc-r' ),
-  array( 'label' => '7,5+',   'min' => 7.5, 'max' => 8.0, 'count' => 0, 'cls' => 'sc-o' ),
-  array( 'label' => '8+',     'min' => 8.0, 'max' => 8.5, 'count' => 0, 'cls' => 'sc-y' ),
-  array( 'label' => '8,5+',   'min' => 8.5, 'max' => 9.0, 'count' => 0, 'cls' => 'sc-g' ),
-  array( 'label' => '9+',     'min' => 9.0, 'max' => 10.1,'count' => 0, 'cls' => 'sc-p' ),
-);
-if ( $show_range && ! empty( $all_avis['items'] ) ) {
-  foreach ( $all_avis['items'] as $ai ) {
-    for ( $bi = 0; $bi < count( $score_buckets ); $bi++ ) {
-      if ( $ai['score'] >= $score_buckets[ $bi ]['min'] && $ai['score'] < $score_buckets[ $bi ]['max'] ) {
-        $score_buckets[ $bi ]['count']++;
-        break;
-      }
-    }
-  }
-}
-$bucket_max = max( array_column( $score_buckets, 'count' ) );
 ?>
 <div class="mt-top5" aria-labelledby="mt-top5-title">
   <header class="t5-head">
@@ -328,20 +309,6 @@ $bucket_max = max( array_column( $score_buckets, 'count' ) );
       ?></p>
 <?php if ( $show_range ) : ?>
       <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $all_avis['min'], 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $all_avis['max'], 1, ',', '' ) ); ?></b> sur <?php echo (int) $all_avis['count']; ?> produits. Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.</p>
-      <div class="t5-distrib" aria-label="Distribution des scores">
-        <div class="t5-db-track">
-<?php foreach ( $score_buckets as $bk ) : if ( $bk['count'] === 0 ) continue;
-  $pct = round( $bk['count'] / $all_avis['count'] * 100, 1 );
-?>
-          <span class="t5-db-seg <?php echo $bk['cls']; ?>" style="width:<?php echo $pct; ?>%" title="<?php echo $bk['count']; ?> produit<?php echo $bk['count'] > 1 ? 's' : ''; ?> not&eacute;s <?php echo strip_tags( $bk['label'] ); ?>/10"><span class="t5-db-n"><?php echo $bk['count']; ?></span></span>
-<?php endforeach; ?>
-        </div>
-        <div class="t5-db-legend">
-<?php foreach ( $score_buckets as $bk ) : if ( $bk['count'] === 0 ) continue; ?>
-          <span class="t5-db-key"><span class="t5-db-dot <?php echo $bk['cls']; ?>"></span><?php echo $bk['label']; ?></span>
-<?php endforeach; ?>
-        </div>
-      </div>
 <?php endif; ?>
     </div>
   </header>

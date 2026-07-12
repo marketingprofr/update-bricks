@@ -230,25 +230,7 @@
 .mt-top5 .t5-range { font-size: 14px; color: var(--muted); margin: 6px 0 0; line-height: 1.6; }
 .mt-top5 .t5-range b { color: var(--ink); font-weight: 600; }
 
-/* ===== Barre de distribution des scores ===== */
-.mt-top5 .t5-distrib { margin-top: 12px; }
-.mt-top5 .t5-db-track { display: flex; height: 22px; border-radius: 6px; overflow: hidden; }
-.mt-top5 .t5-db-seg { display: flex; align-items: center; justify-content: center; min-width: 18px; transition: filter .15s; }
-.mt-top5 .t5-db-seg:hover { filter: brightness(1.1); }
-.mt-top5 .t5-db-seg.sc-p { background: var(--accent); }
-.mt-top5 .t5-db-seg.sc-g { background: var(--at-success); }
-.mt-top5 .t5-db-seg.sc-y { background: var(--at-warning-d-1); }
-.mt-top5 .t5-db-seg.sc-o { background: var(--at-warning); }
-.mt-top5 .t5-db-seg.sc-r { background: var(--at-danger); }
-.mt-top5 .t5-db-n { font-size: 10px; font-weight: 700; color: var(--at-white); line-height: 1; }
-.mt-top5 .t5-db-legend { display: flex; gap: 10px; margin-top: 6px; }
-.mt-top5 .t5-db-key { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--muted); }
-.mt-top5 .t5-db-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
-.mt-top5 .t5-db-dot.sc-p { background: var(--accent); }
-.mt-top5 .t5-db-dot.sc-g { background: var(--at-success); }
-.mt-top5 .t5-db-dot.sc-y { background: var(--at-warning-d-1); }
-.mt-top5 .t5-db-dot.sc-o { background: var(--at-warning); }
-.mt-top5 .t5-db-dot.sc-r { background: var(--at-danger); }
+
 
 /* ===== Classement complet (après les cartes) ===== */
 .mt-top5 .t5-allrank { margin-top: 14px; padding: 24px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; }
