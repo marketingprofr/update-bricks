@@ -122,6 +122,7 @@ if ( ! function_exists( 'mt_all_scored_avis' ) ) {
 
     $items = array();
     foreach ( $avis_ids as $aid ) {
+      if ( get_post_status( $aid ) !== 'publish' ) { continue; }
       $raw = get_field( 'mltv5_score_recent', $aid );
       $s10 = round( mt5_num( $raw ) / 10, 1 );
       if ( $s10 <= 0 ) { continue; }
@@ -425,7 +426,7 @@ $top5_set     = array_flip( $ids );
 <?php endforeach; ?>
 <?php if ( $ar_rest > 0 ) : ?>
     <details class="t5-ar-more">
-      <summary>Afficher les <?php echo $ar_rest; ?> autres produits test&eacute;s</summary>
+      <summary data-show="Afficher les <?php echo $ar_rest; ?> autres produits test&eacute;s" data-hide="Masquer les <?php echo $ar_rest; ?> autres produits test&eacute;s">Afficher les <?php echo $ar_rest; ?> autres produits test&eacute;s</summary>
 <?php foreach ( array_slice( $ar_items, $ar_visible ) as $ar ) :
     $ar_top5 = isset( $top5_set[ $ar['id'] ] );
 ?>
@@ -507,6 +508,13 @@ add_action( 'wp_footer', function () {
         tab.setAttribute('aria-pressed', 'true');
         sortBy(tab.getAttribute('data-sort'));
       });
+    });
+  });
+  document.querySelectorAll('.t5-ar-more').forEach(function (d) {
+    d.addEventListener('toggle', function () {
+      var s = d.querySelector('summary');
+      if (!s) return;
+      s.textContent = d.open ? (s.getAttribute('data-hide') || '') : (s.getAttribute('data-show') || '');
     });
   });
 })();
