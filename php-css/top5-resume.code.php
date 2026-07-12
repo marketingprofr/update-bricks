@@ -300,12 +300,14 @@ $acf_analyzed = isset( $page_tv['produits_analyses'] ) ? (int) $page_tv['produit
 $meta_count   = max( $acf_analyzed, $all_avis['total'] );
 $top5_set     = array_flip( $ids );
 ?>
-<section class="mt-top5" aria-labelledby="mt-top5-title">
+<div class="mt-top5" aria-labelledby="mt-top5-title">
   <header class="t5-head">
     <div>
       <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
       <p class="t5-meta"><?php
-        if ( $meta_count >= 15 ) {
+        if ( $show_range && $meta_count >= 15 ) {
+          echo 'Notre classement ' . esc_html( date_i18n( 'Y' ) ) . ' parmi <b>' . (int) $meta_count . '&nbsp;produits</b> analys&eacute;s';
+        } elseif ( $meta_count >= 15 ) {
           echo 'Notre classement ' . esc_html( date_i18n( 'Y' ) ) . ' parmi <b>' . (int) $meta_count . '&nbsp;produits</b> analys&eacute;s, totalement impartial et v&eacute;rifi&eacute; par la r&eacute;daction';
         } else {
           echo 'Notre classement ' . esc_html( date_i18n( 'Y' ) ) . ', totalement impartial et v&eacute;rifi&eacute; par la r&eacute;daction';
@@ -439,8 +441,14 @@ $top5_set     = array_flip( $ids );
 <?php endif; ?>
 
   <p class="t5-disclosure">Liens commerciaux : Meilleurtest peut percevoir une commission sur les achats effectu&eacute;s via ces liens, sans impact sur le prix ni sur nos verdicts.</p>
-</section>
+</div>
 
+<?php
+add_action( 'wp_footer', function () {
+  static $done = false;
+  if ( $done ) { return; }
+  $done = true;
+?>
 <script>
 (function () {
   var roots = document.querySelectorAll('.mt-top5');
@@ -503,3 +511,4 @@ $top5_set     = array_flip( $ids );
   });
 })();
 </script>
+<?php }, 99 ); ?>
