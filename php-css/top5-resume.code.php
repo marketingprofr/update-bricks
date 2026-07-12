@@ -397,7 +397,7 @@ $top5_set     = array_flip( $ids );
     <h3 class="t5-allrank-h" style="display:none">Classement complet<?php echo ( $type_plur !== '' ? ' des ' . esc_html( $type_plur ) : '' ); ?> test&eacute;s</h3>
     <div class="t5-ar-head" style="display:none"><span>#</span><span>Produit</span><span>Note</span></div>
     <div class="t5-ar-body"></div>
-    <button type="button" class="t5-ar-toggle" data-label-show="Voir le classement complet : afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s" data-label-hide="Masquer le classement">Voir le classement complet : afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s</button>
+    <button type="button" class="t5-ar-toggle" data-label-hide="Masquer le classement">Voir le classement complet : <span class="t5-ar-u">afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s</span></button>
   </div>
 <?php endif; ?>
 
@@ -478,6 +478,8 @@ add_action( 'wp_footer', function () {
     var visible = false;
     var heading = wrap.querySelector('.t5-allrank-h');
     var colHead = wrap.querySelector('.t5-ar-head');
+    var showHtml = btn.innerHTML;
+    var hideText = btn.getAttribute('data-label-hide') || 'Masquer le classement';
     btn.addEventListener('click', function () {
       if (!loaded) {
         btn.disabled = true;
@@ -499,7 +501,7 @@ add_action( 'wp_footer', function () {
               if (heading) heading.style.display = '';
               if (colHead) colHead.style.display = '';
               wrap.classList.add('is-open');
-              btn.textContent = btn.getAttribute('data-label-hide') || 'Masquer le classement';
+              btn.textContent = hideText;
             } else {
               btn.textContent = 'Erreur de chargement';
             }
@@ -509,7 +511,7 @@ add_action( 'wp_footer', function () {
         };
         xhr.onerror = function () {
           btn.disabled = false;
-          btn.textContent = btn.getAttribute('data-label-show') || 'Réessayer';
+          btn.innerHTML = showHtml;
         };
         xhr.send();
       } else {
@@ -518,9 +520,7 @@ add_action( 'wp_footer', function () {
         if (heading) heading.style.display = visible ? '' : 'none';
         if (colHead) colHead.style.display = visible ? '' : 'none';
         wrap.classList.toggle('is-open', visible);
-        btn.textContent = visible
-          ? (btn.getAttribute('data-label-hide') || 'Masquer le classement')
-          : (btn.getAttribute('data-label-show') || 'Afficher');
+        if (visible) { btn.textContent = hideText; } else { btn.innerHTML = showHtml; }
       }
     });
   });

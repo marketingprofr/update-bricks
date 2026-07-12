@@ -262,6 +262,7 @@
   background: none; border: none; cursor: pointer; transition: color .15s;
 }
 .mt-top5 .t5-ar-toggle:hover { color: var(--accent-dark); }
+.mt-top5 .t5-ar-u { text-decoration: underline; text-underline-offset: 2px; }
 .mt-top5 .t5-ar-toggle:disabled { opacity: .6; cursor: wait; }
 .mt-top5 .t5-ar-edit { font-size: 11px; color: var(--muted-2); text-decoration: none; margin-left: 4px; opacity: .5; transition: opacity .15s; }
 .mt-top5 .t5-ar-edit:hover { opacity: 1; color: var(--accent); }
