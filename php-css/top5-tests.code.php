@@ -354,7 +354,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
         <span class="am-tag am-date<?php echo $am['recent'] ? ' is-recent' : ''; ?>" title="Publication (année/mois) — vert si &lt; 6 mois"><?php echo esc_html( $am['pub'] ); ?></span>
         <?php if ( $am['status'] !== 'publish' ) : ?><span class="am-tag am-status" title="Statut du post">&#9888; <?php echo esc_html( $am['status'] ); ?></span><?php endif; ?>
         <span class="am-tag am-src" title="Source du contenu affiché"><?php echo esc_html( $am['src'] ); ?></span>
-        <span class="am-tag am-angles" title="Nombre d'angles d'utilisation dans le repeater"><?php echo (int) $am['angles']; ?> angle<?php echo ( (int) $am['angles'] > 1 ? 's' : '' ); ?></span>
+        <?php if ( (int) $am['angles'] > 0 ) : ?><span class="am-tag am-angles" title="Nombre d'angles d'utilisation (repeater mltv5_utilisations_du_produit)"><?php echo (int) $am['angles']; ?> angle<?php echo ( (int) $am['angles'] > 1 ? 's' : '' ); ?></span><?php endif; ?>
         <?php if ( $am['edit'] !== '' ) : ?><a class="am-edit" href="<?php echo esc_url( $am['edit'] ); ?>" target="_blank" rel="noopener">&#9998;&nbsp;&Eacute;dition</a><?php endif; ?>
       </div>
       <?php endif; ?>
