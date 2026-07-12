@@ -262,6 +262,8 @@
 .mt-top5 .t5-ar-more summary::after { content: " \2193"; }
 .mt-top5 .t5-ar-more[open] summary::after { content: " \2191"; }
 .mt-top5 .t5-ar-more summary:hover { color: var(--accent-dark); }
+.mt-top5 .t5-ar-edit { font-size: 11px; color: var(--muted-2); text-decoration: none; margin-left: 4px; opacity: .5; transition: opacity .15s; }
+.mt-top5 .t5-ar-edit:hover { opacity: 1; color: var(--accent); }
 @media (max-width: 600px) {
   .mt-top5 .t5-allrank { padding: 16px; }
   .mt-top5 .t5-allrank-h { font-size: 16px; }

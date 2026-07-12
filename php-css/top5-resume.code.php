@@ -121,7 +121,11 @@ if ( ! function_exists( 'mt_all_scored_avis' ) ) {
     }
 
     $items = array();
+    $seen_ids = array();
     foreach ( $avis_ids as $aid ) {
+      $aid = (int) $aid;
+      if ( isset( $seen_ids[ $aid ] ) ) { continue; }
+      $seen_ids[ $aid ] = true;
       if ( get_post_status( $aid ) !== 'publish' ) { continue; }
       $raw = get_field( 'mltv5_score_recent', $aid );
       $s10 = round( mt5_num( $raw ) / 10, 1 );
@@ -129,7 +133,7 @@ if ( ! function_exists( 'mt_all_scored_avis' ) ) {
       $brand = trim( (string) get_field( 'mltv5_marque_du_produit', $aid ) );
       $model = trim( (string) get_field( 'mltv5_modele_du_produit', $aid ) );
       $name  = $model !== '' ? $model : get_the_title( $aid );
-      $items[] = array( 'id' => (int) $aid, 'brand' => $brand, 'name' => $name, 'score' => $s10 );
+      $items[] = array( 'id' => $aid, 'brand' => $brand, 'name' => $name, 'score' => $s10 );
     }
 
     usort( $items, function ( $a, $b ) {
@@ -420,7 +424,7 @@ $top5_set     = array_flip( $ids );
 ?>
     <div class="t5-ar-row<?php echo $ar_top5 ? ' is-top5' : ''; ?>">
       <span class="t5-ar-rank"><?php echo (int) $ar['rank']; ?></span>
-      <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?></span>
+      <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?><?php if ( current_user_can( 'edit_posts' ) ) : ?> <a class="t5-ar-edit" href="<?php echo esc_url( get_edit_post_link( $ar['id'] ) ); ?>" target="_blank" title="Modifier (ID <?php echo $ar['id']; ?>)">&#9998;</a><?php endif; ?></span>
       <span class="t5-ar-score"><?php echo esc_html( number_format( $ar['score'], 1, ',', '' ) ); ?><small>/10</small></span>
     </div>
 <?php endforeach; ?>
@@ -432,7 +436,7 @@ $top5_set     = array_flip( $ids );
 ?>
       <div class="t5-ar-row<?php echo $ar_top5 ? ' is-top5' : ''; ?>">
         <span class="t5-ar-rank"><?php echo (int) $ar['rank']; ?></span>
-        <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?></span>
+        <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?><?php if ( current_user_can( 'edit_posts' ) ) : ?> <a class="t5-ar-edit" href="<?php echo esc_url( get_edit_post_link( $ar['id'] ) ); ?>" target="_blank" title="Modifier (ID <?php echo $ar['id']; ?>)">&#9998;</a><?php endif; ?></span>
         <span class="t5-ar-score"><?php echo esc_html( number_format( $ar['score'], 1, ',', '' ) ); ?><small>/10</small></span>
       </div>
 <?php endforeach; ?>
