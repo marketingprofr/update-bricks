@@ -400,36 +400,11 @@ $top5_set     = array_flip( $ids );
   </ol>
 
 <?php if ( $show_ranking ) : ?>
-  <div class="t5-allrank">
+  <div class="t5-allrank" data-page="<?php echo esc_attr( $page_id ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'mt_ranking' ) ); ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
     <h3 class="t5-allrank-h">Classement complet<?php echo ( $type_plur !== '' ? ' des ' . esc_html( $type_plur ) : '' ); ?> test&eacute;s</h3>
     <div class="t5-ar-head"><span>#</span><span>Produit</span><span>Note</span></div>
-<?php
-  $ar_visible = 3;
-  $ar_items   = $all_avis['items'];
-  $ar_rest    = count( $ar_items ) - $ar_visible;
-  foreach ( array_slice( $ar_items, 0, $ar_visible ) as $ar ) :
-    $ar_top5 = isset( $top5_set[ $ar['id'] ] );
-?>
-    <div class="t5-ar-row<?php echo $ar_top5 ? ' is-top5' : ''; ?>">
-      <span class="t5-ar-rank"><?php echo (int) $ar['rank']; ?></span>
-      <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?><?php if ( current_user_can( 'edit_posts' ) ) : ?> <a class="t5-ar-edit" href="<?php echo esc_url( get_edit_post_link( $ar['id'] ) ); ?>" target="_blank" title="Modifier (ID <?php echo $ar['id']; ?>)">&#9998;</a><?php endif; ?></span>
-      <span class="t5-ar-score"><?php echo esc_html( number_format( $ar['score'], 1, ',', '' ) ); ?><small>/10</small></span>
-    </div>
-<?php endforeach; ?>
-<?php if ( $ar_rest > 0 ) : ?>
-    <details class="t5-ar-more">
-      <summary data-show="Afficher les <?php echo $ar_rest; ?> autres produits test&eacute;s" data-hide="Masquer les <?php echo $ar_rest; ?> autres produits test&eacute;s">Afficher les <?php echo $ar_rest; ?> autres produits test&eacute;s</summary>
-<?php foreach ( array_slice( $ar_items, $ar_visible ) as $ar ) :
-    $ar_top5 = isset( $top5_set[ $ar['id'] ] );
-?>
-      <div class="t5-ar-row<?php echo $ar_top5 ? ' is-top5' : ''; ?>">
-        <span class="t5-ar-rank"><?php echo (int) $ar['rank']; ?></span>
-        <span class="t5-ar-name"><?php if ( $ar['brand'] !== '' ) : ?><span class="t5-ar-brand"><?php echo esc_html( $ar['brand'] ); ?></span> <?php endif; ?><?php echo esc_html( $ar['name'] ); ?><?php if ( current_user_can( 'edit_posts' ) ) : ?> <a class="t5-ar-edit" href="<?php echo esc_url( get_edit_post_link( $ar['id'] ) ); ?>" target="_blank" title="Modifier (ID <?php echo $ar['id']; ?>)">&#9998;</a><?php endif; ?></span>
-        <span class="t5-ar-score"><?php echo esc_html( number_format( $ar['score'], 1, ',', '' ) ); ?><small>/10</small></span>
-      </div>
-<?php endforeach; ?>
-    </details>
-<?php endif; ?>
+    <div class="t5-ar-body"></div>
+    <button type="button" class="t5-ar-toggle" data-label-show="Afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s" data-label-hide="Masquer le classement">Afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s</button>
   </div>
 <?php endif; ?>
 
@@ -502,11 +477,50 @@ add_action( 'wp_footer', function () {
       });
     });
   });
-  document.querySelectorAll('.t5-ar-more').forEach(function (d) {
-    d.addEventListener('toggle', function () {
-      var s = d.querySelector('summary');
-      if (!s) return;
-      s.textContent = d.open ? (s.getAttribute('data-hide') || '') : (s.getAttribute('data-show') || '');
+  document.querySelectorAll('.t5-allrank').forEach(function (wrap) {
+    var btn = wrap.querySelector('.t5-ar-toggle');
+    var body = wrap.querySelector('.t5-ar-body');
+    if (!btn || !body) return;
+    var loaded = false;
+    var visible = false;
+    btn.addEventListener('click', function () {
+      if (!loaded) {
+        btn.disabled = true;
+        btn.textContent = 'Chargement…';
+        var url = wrap.getAttribute('data-ajax')
+          + '?action=mt_ranking&page_id=' + encodeURIComponent(wrap.getAttribute('data-page'))
+          + '&_n=' + encodeURIComponent(wrap.getAttribute('data-nonce'));
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url);
+        xhr.onload = function () {
+          btn.disabled = false;
+          try {
+            var res = JSON.parse(xhr.responseText);
+            if (res.success && res.data && res.data.html) {
+              body.innerHTML = res.data.html;
+              loaded = true;
+              visible = true;
+              body.style.display = '';
+              btn.textContent = btn.getAttribute('data-label-hide') || 'Masquer le classement';
+            } else {
+              btn.textContent = 'Erreur de chargement';
+            }
+          } catch (e) {
+            btn.textContent = 'Erreur de chargement';
+          }
+        };
+        xhr.onerror = function () {
+          btn.disabled = false;
+          btn.textContent = btn.getAttribute('data-label-show') || 'Réessayer';
+        };
+        xhr.send();
+      } else {
+        visible = !visible;
+        body.style.display = visible ? '' : 'none';
+        btn.textContent = visible
+          ? (btn.getAttribute('data-label-hide') || 'Masquer le classement')
+          : (btn.getAttribute('data-label-show') || 'Afficher');
+      }
     });
   });
 })();

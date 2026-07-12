@@ -253,15 +253,13 @@
 .mt-top5 .t5-ar-score { font-family: ui-monospace, monospace; font-size: 14px; font-weight: 600; text-align: right; color: var(--ink-2); }
 .mt-top5 .t5-ar-score small { font-size: 10px; color: var(--muted); font-weight: 400; }
 .mt-top5 .t5-ar-row.is-top5 .t5-ar-score { color: var(--accent); font-weight: 700; }
-.mt-top5 .t5-ar-more summary {
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+.mt-top5 .t5-ar-toggle {
+  display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
   padding: 12px; font-size: 13px; font-weight: 600; color: var(--accent);
-  cursor: pointer; list-style: none; transition: color .15s;
+  background: none; border: none; cursor: pointer; transition: color .15s;
 }
-.mt-top5 .t5-ar-more summary::-webkit-details-marker { display: none; }
-.mt-top5 .t5-ar-more summary::after { content: " \2193"; }
-.mt-top5 .t5-ar-more[open] summary::after { content: " \2191"; }
-.mt-top5 .t5-ar-more summary:hover { color: var(--accent-dark); }
+.mt-top5 .t5-ar-toggle:hover { color: var(--accent-dark); }
+.mt-top5 .t5-ar-toggle:disabled { opacity: .6; cursor: wait; }
 .mt-top5 .t5-ar-edit { font-size: 11px; color: var(--muted-2); text-decoration: none; margin-left: 4px; opacity: .5; transition: opacity .15s; }
 .mt-top5 .t5-ar-edit:hover { opacity: 1; color: var(--accent); }
 @media (max-width: 600px) {
