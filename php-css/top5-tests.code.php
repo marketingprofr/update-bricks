@@ -168,6 +168,11 @@ $tt_saved_post = $post;
 $products = array();
 $pos      = 0;
 
+/* Barre d'infos sous le nom : STRICTEMENT réservée à l'admin connecté.
+   Rendue seulement si la condition est vraie -> jamais présente dans le HTML
+   servi au public (donc jamais mise en cache pour les visiteurs). */
+$tt_is_admin = function_exists( 'current_user_can' ) && current_user_can( 'manage_options' );
+
 foreach ( $ids as $pid ) {
   $p = get_post( $pid );
   if ( ! $p ) { continue; }
@@ -219,6 +224,7 @@ foreach ( $ids as $pid ) {
      le même jeu que ceux du comparatif (casse/ordre ignorés). Match -> on affiche
      son wysiwyg à la place du contenu principal ; sinon fallback contenu principal.
      Le wysiwyg ACF est déjà filtré (the_content) -> rendu cohérent avec ci-dessus. */
+  $body_matched = false;
   if ( ! empty( $comp_attr_keys ) ) {
     $uses = get_field( 'mltv5_utilisations_du_produit', $pid );
     if ( is_array( $uses ) ) {
@@ -228,11 +234,37 @@ foreach ( $ids as $pid ) {
         $keys = mt5_norm_keys( explode( ',', $raw ) );
         if ( $keys === $comp_attr_keys ) {
           $rich = isset( $u['mltv5_avantages_inconvenients_utilisation'] ) ? (string) $u['mltv5_avantages_inconvenients_utilisation'] : '';
-          if ( trim( $rich ) !== '' ) { $body_html = $rich; }
+          if ( trim( $rich ) !== '' ) { $body_html = $rich; $body_matched = true; }
           break; // un seul angle attendu par jeu d'attributs
         }
       }
     }
+  }
+
+  /* Méta admin (barre de debug sous le nom) — calculée seulement pour l'admin. */
+  $admin_meta = null;
+  if ( $tt_is_admin ) {
+    $pub_ts  = function_exists( 'get_post_timestamp' ) ? get_post_timestamp( $p )
+      : ( ! empty( $p->post_date_gmt ) ? strtotime( $p->post_date_gmt . ' UTC' ) : strtotime( $p->post_date ) );
+    $pub_lbl = $pub_ts ? ( function_exists( 'wp_date' ) ? wp_date( 'Y/m', $pub_ts ) : gmdate( 'Y/m', $pub_ts ) ) : '—';
+    $recent  = $pub_ts && ( $pub_ts >= strtotime( '-6 months' ) ); // « frais » < 6 mois
+    $edit    = function_exists( 'get_edit_post_link' ) ? (string) get_edit_post_link( $pid, 'raw' ) : '';
+    if ( $body_matched ) {
+      $src = 'Angle : ' . implode( ' + ', $comp_attr_keys );
+    } elseif ( ! empty( $comp_attr_keys ) ) {
+      $src = 'Contenu principal (aucun angle « ' . implode( ' + ', $comp_attr_keys ) . ' »)';
+    } else {
+      $src = 'Contenu principal';
+    }
+    $angles = get_field( 'mltv5_utilisations_du_produit', $pid );
+    $admin_meta = array(
+      'pub'    => $pub_lbl,
+      'recent' => (bool) $recent,
+      'edit'   => $edit,
+      'src'    => $src,
+      'status' => (string) get_post_status( $p ),
+      'angles' => is_array( $angles ) ? count( $angles ) : 0,
+    );
   }
 
   /* Offres : ASIN Amazon prioritaire, puis liens perso ACF */
@@ -274,6 +306,7 @@ foreach ( $ids as $pid ) {
     'offer_urls'  => $offer_urls,
     'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
     'cta_text'    => $has_price ? 'Voir le prix' : ( $btn_first !== '' ? $btn_first : "Voir l'offre" ),
+    'admin'       => $admin_meta,
   );
 }
 $post = $tt_saved_post;
@@ -316,6 +349,15 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
       </div>
       <h3 class="ed-a-name"><?php if ( $it['brand'] !== '' ) : ?><?php echo esc_html( $it['brand'] ); ?> <?php endif; ?><span><?php echo esc_html( $it['name'] ); ?></span></h3>
       <?php if ( $it['tagline'] !== '' ) : ?><p class="ed-a-deck"><?php echo esc_html( $it['tagline'] ); ?></p><?php endif; ?>
+      <?php if ( ! empty( $it['admin'] ) ) : $am = $it['admin']; ?>
+      <div class="ed-a-adminbar" role="note" aria-label="Infos administrateur (avis)">
+        <span class="am-tag am-date<?php echo $am['recent'] ? ' is-recent' : ''; ?>" title="Publication (année/mois) — vert si &lt; 6 mois"><?php echo esc_html( $am['pub'] ); ?></span>
+        <?php if ( $am['status'] !== 'publish' ) : ?><span class="am-tag am-status" title="Statut du post">&#9888; <?php echo esc_html( $am['status'] ); ?></span><?php endif; ?>
+        <span class="am-tag am-src" title="Source du contenu affiché"><?php echo esc_html( $am['src'] ); ?></span>
+        <span class="am-tag am-angles" title="Nombre d'angles d'utilisation dans le repeater"><?php echo (int) $am['angles']; ?> angle<?php echo ( (int) $am['angles'] > 1 ? 's' : '' ); ?></span>
+        <?php if ( $am['edit'] !== '' ) : ?><a class="am-edit" href="<?php echo esc_url( $am['edit'] ); ?>" target="_blank" rel="noopener">&#9998;&nbsp;&Eacute;dition</a><?php endif; ?>
+      </div>
+      <?php endif; ?>
     </div>
 
     <figure class="ed-a-figure">
