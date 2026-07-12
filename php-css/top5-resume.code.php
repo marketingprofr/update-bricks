@@ -87,36 +87,24 @@ if ( ! function_exists( 'mt_all_scored_avis' ) ) {
     }
     $prod_ids = wp_list_pluck( $prod_terms, 'term_id' );
 
-    $total_q = new WP_Query( array(
-      'post_type' => 'avis', 'post_status' => 'publish',
-      'tax_query' => array( array( 'taxonomy' => 'post-type-produit', 'terms' => $prod_ids ) ),
-      'posts_per_page' => -1, 'fields' => 'ids', 'no_found_rows' => true,
-      'update_post_meta_cache' => false, 'update_post_term_cache' => false,
-    ) );
-    $total_count = count( $total_q->posts );
-
+    $tax_q = array( array( 'taxonomy' => 'post-type-produit', 'terms' => $prod_ids ) );
     $attr_terms = get_the_terms( $key, 'post-type-attribut' );
-    $attr_ids   = is_array( $attr_terms ) ? wp_list_pluck( $attr_terms, 'term_id' ) : array();
-
-    if ( ! empty( $attr_ids ) ) {
-      $q = new WP_Query( array(
-        'post_type' => 'avis', 'post_status' => 'publish',
-        'tax_query' => array(
-          'relation' => 'AND',
-          array( 'taxonomy' => 'post-type-produit', 'terms' => $prod_ids ),
-          array( 'taxonomy' => 'post-type-attribut', 'terms' => $attr_ids, 'operator' => 'AND' ),
-        ),
-        'posts_per_page' => -1, 'fields' => 'ids', 'no_found_rows' => true,
-        'update_post_meta_cache' => true, 'update_post_term_cache' => false,
-      ) );
-      $avis_ids = $q->posts;
-    } else {
-      $avis_ids = $total_q->posts;
+    if ( is_array( $attr_terms ) && ! empty( $attr_terms ) ) {
+      $tax_q['relation'] = 'AND';
+      $tax_q[] = array( 'taxonomy' => 'post-type-attribut', 'terms' => wp_list_pluck( $attr_terms, 'term_id' ), 'operator' => 'AND' );
     }
 
+    $q = new WP_Query( array(
+      'post_type' => 'avis', 'post_status' => 'publish',
+      'tax_query' => $tax_q,
+      'posts_per_page' => -1, 'fields' => 'ids', 'no_found_rows' => true,
+      'update_post_meta_cache' => true, 'update_post_term_cache' => false,
+    ) );
+    $avis_ids    = $q->posts;
+    $total_count = count( $avis_ids );
+
     if ( empty( $avis_ids ) ) {
-      $empty['total'] = $total_count;
-      $cache[ $key ]  = $empty;
+      $cache[ $key ] = $empty;
       return $empty;
     }
 
