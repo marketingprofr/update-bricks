@@ -40,6 +40,25 @@ après le nettoyage, en s'appuyant sur la taxonomie produit
 - la page signale aussi les posts sans catégorie **et** sans terme produit
   (à traiter à la main)
 
+Définition de « sans catégorie » (alignée sur ce qu'on voit dans l'admin) :
+
+- **« Non classé »** (catégorie par défaut) ne compte pas comme une vraie
+  catégorie (`$catcleanup_ignore_default_cat`, activé par défaut) ;
+- les **relations résiduelles** vers des catégories supprimées ou à moitié
+  supprimées pendant le nettoyage (ligne `wp_terms` manquante) ne comptent
+  pas non plus.
+
+Vues supplémentaires :
+
+- `?catcleanup=remap&mode=all` : liste **tous** les termes produit (filtre
+  de recherche inclus) et permet d'appliquer la catégorie choisie à **tous
+  les posts du terme** (toujours additif) — pour corriger des posts ayant
+  reçu une mauvaise catégorie de repli ;
+- `?catcleanup=remap&inspect=<slug ou ID du terme>` : posts d'un terme avec
+  leurs catégories actuelles ;
+- `?catcleanup=remap&post=<ID>` : relations brutes d'un post (détecte les
+  relations fantômes/demi-fantômes) et verdict « catégorisé ou non ».
+
 Si une catégorie a été supprimée à tort : la recréer dans
 Articles → Catégories, puis mettre son ID dans le champ manuel.
 
