@@ -81,7 +81,8 @@ if ( ! function_exists( 'mt_home_card' ) ) {
 /* ---------------------------------------------------------------------
    Requête : derniers guides modifiés
    --------------------------------------------------------------------- */
-$hr_q = new WP_Query( array(
+$hr_excl = isset( $GLOBALS['mt_home_exclude'] ) ? array_map( 'intval', (array) $GLOBALS['mt_home_exclude'] ) : array();
+$hr_args = array(
   'post_type'           => $HR_POST_TYPES,
   'post_status'         => 'publish',
   'posts_per_page'      => (int) $HR_COUNT,
@@ -89,7 +90,9 @@ $hr_q = new WP_Query( array(
   'order'               => 'DESC',
   'no_found_rows'       => true,
   'ignore_sticky_posts' => true,
-) );
+);
+if ( ! empty( $hr_excl ) ) { $hr_args['post__not_in'] = $hr_excl; }
+$hr_q = new WP_Query( $hr_args );
 if ( ! $hr_q->have_posts() ) { wp_reset_postdata(); return; }
 
 $clock = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';

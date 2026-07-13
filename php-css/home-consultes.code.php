@@ -54,17 +54,20 @@ if ( ! function_exists( 'mt_home_top_viewed' ) ) {
     static $cache = array();
     $key  = md5( wp_json_encode( array( $post_types, $views_meta ) ) );
     $need = (int) $limit;
+    $excl = isset( $GLOBALS['mt_home_exclude'] ) ? array_map( 'intval', (array) $GLOBALS['mt_home_exclude'] ) : array();
     if ( ! isset( $cache[ $key ] ) || count( $cache[ $key ] ) < $need ) {
-      $q = new WP_Query( array(
+      $args = array(
         'post_type'           => $post_types,
         'post_status'         => 'publish',
-        'posts_per_page'      => max( $need, 10 ),
+        'posts_per_page'      => max( $need, 10 ) + count( $excl ),
         'no_found_rows'       => true,
         'ignore_sticky_posts' => true,
         'meta_key'            => $views_meta,
         'orderby'             => 'meta_value_num',
         'order'               => 'DESC',
-      ) );
+      );
+      if ( ! empty( $excl ) ) { $args['post__not_in'] = $excl; }
+      $q = new WP_Query( $args );
       $cache[ $key ] = array_map( 'intval', wp_list_pluck( $q->posts, 'ID' ) );
       wp_reset_postdata();
     }

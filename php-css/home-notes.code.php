@@ -90,7 +90,8 @@ if ( ! function_exists( 'mt_home_card' ) ) {
    Requête : note ≥ seuil, classés par nombre d'avis décroissant
    (repli sur les plus vus si rien ne remonte)
    --------------------------------------------------------------------- */
-$hn_q = new WP_Query( array(
+$hn_excl = isset( $GLOBALS['mt_home_exclude'] ) ? array_map( 'intval', (array) $GLOBALS['mt_home_exclude'] ) : array();
+$hn_args = array(
   'post_type'           => $HN_POST_TYPES,
   'post_status'         => 'publish',
   'posts_per_page'      => (int) $HN_COUNT,
@@ -101,11 +102,13 @@ $hn_q = new WP_Query( array(
     'votes'  => array( 'key' => $HN_COUNT_META, 'compare' => 'EXISTS', 'type' => 'NUMERIC' ),
   ),
   'orderby'             => array( 'votes' => 'DESC' ),
-) );
+);
+if ( ! empty( $hn_excl ) ) { $hn_args['post__not_in'] = $hn_excl; }
+$hn_q = new WP_Query( $hn_args );
 $hn_has_ratings = $hn_q->have_posts();
 if ( ! $hn_has_ratings ) {
   wp_reset_postdata();
-  $hn_q = new WP_Query( array_merge(
+  $hn_fallback = array_merge(
     array(
       'post_type'           => $HN_POST_TYPES,
       'post_status'         => 'publish',
@@ -114,7 +117,9 @@ if ( ! $hn_has_ratings ) {
       'ignore_sticky_posts' => true,
     ),
     mt_home_popular_args( $HN_VIEWS_META )
-  ) );
+  );
+  if ( ! empty( $hn_excl ) ) { $hn_fallback['post__not_in'] = $hn_excl; }
+  $hn_q = new WP_Query( $hn_fallback );
 }
 if ( ! $hn_q->have_posts() ) { wp_reset_postdata(); return; }
 ?>

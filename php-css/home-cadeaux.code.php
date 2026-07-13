@@ -70,7 +70,8 @@ if ( ! function_exists( 'mt_home_card' ) ) {
 /* ---------------------------------------------------------------------
    Requête : dernières « listes » modifiées (toutes catégories)
    --------------------------------------------------------------------- */
-$hg_q = new WP_Query( array(
+$hg_excl = isset( $GLOBALS['mt_home_exclude'] ) ? array_map( 'intval', (array) $GLOBALS['mt_home_exclude'] ) : array();
+$hg_args = array(
   'post_type'           => $HG_POST_TYPE,
   'post_status'         => 'publish',
   'posts_per_page'      => (int) $HG_COUNT,
@@ -78,7 +79,9 @@ $hg_q = new WP_Query( array(
   'order'               => 'DESC',
   'no_found_rows'       => true,
   'ignore_sticky_posts' => true,
-) );
+);
+if ( ! empty( $hg_excl ) ) { $hg_args['post__not_in'] = $hg_excl; }
+$hg_q = new WP_Query( $hg_args );
 if ( ! $hg_q->have_posts() ) { wp_reset_postdata(); return; }
 ?>
 
