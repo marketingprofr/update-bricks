@@ -67,11 +67,15 @@ if ( ! $page_id ) { return; }   // pas de contexte de post (builder / archive) -
 
 $src_id = $page_id;
 $rows   = mt_choix_read( $src_id );
+$_dbg_step = 'page_direct(' . count( $rows ) . ')';
 if ( empty( $rows ) ) {
+  $_dbg_step = 'page_empty';
   $cached = mt_guide_cache_id( $page_id, 'choix' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_choix_read( $cached );
-    if ( ! empty( $alt ) ) { $src_id = $cached; $rows = $alt; }
+    $_dbg_step = 'fallback_read(' . count( $alt ) . ')';
+    if ( ! empty( $alt ) ) { $src_id = $cached; $rows = $alt; $_dbg_step .= '->OK'; }
+    else { $_dbg_step .= '->SKIP'; }
   }
 }
 
@@ -96,6 +100,7 @@ if ( empty( $duels ) ) {
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-choix — diagnostic (admin only)</strong> : aucun duel trouv&eacute;.<br>'
+       . '<b>fallback = ' . esc_html( $_dbg_step ) . '</b><br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
        . 'mltv5_cached_id_choix = ' . (int) $cached_id . '<br>'
        . 'repeater mltv5_choix_comparatif = ' . esc_html( gettype( $rr ) )

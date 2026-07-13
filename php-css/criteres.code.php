@@ -105,13 +105,19 @@ if ( ! function_exists( 'mt_guide_read' ) ) {
 
 $src_id = $page_id;
 $data   = mt_guide_read( $src_id );
+$_dbg_step = 'page_direct';
 if ( empty( $data['rows'] ) && trim( (string) $data['intro'] ) === '' && empty( $data['img'] ) ) {
+  $_dbg_step = 'page_empty';
   $cached = mt_guide_cache_id( $page_id, 'criteres' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_guide_read( $cached );
+    $_dbg_step = 'fallback_read(rows=' . count( $alt['rows'] ) . ',intro=' . strlen( $alt['intro'] ) . ')';
     if ( ! empty( $alt['rows'] ) || trim( (string) $alt['intro'] ) !== '' || ! empty( $alt['img'] ) ) {
       $src_id = $cached;
       $data   = $alt;
+      $_dbg_step .= '->OK';
+    } else {
+      $_dbg_step .= '->SKIP';
     }
   }
 }
@@ -139,6 +145,7 @@ if ( empty( $crits ) && $intro === '' && $img_url === '' ) {
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-guide — diagnostic (admin only)</strong> : aucun contenu trouvé.<br>'
+       . '<b>fallback = ' . esc_html( $_dbg_step ) . '</b><br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
        . 'mltv5_cached_id_criteres = ' . (int) $cached_id . '<br>'
        . 'groupe mltv5_partie_criteres_de_choix = ' . esc_html( gettype( $g ) ) . '<br>'
