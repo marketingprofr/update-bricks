@@ -59,7 +59,7 @@ if ( ! function_exists( 'mltv5_find_linked_post' ) ) {
 
     static $cache = array();
     $ck = implode( ',', $product_ids ) . '|' . implode( ',', $attr_ids ) . '|' . $target_type;
-    if ( isset( $cache[ $ck ] ) ) { return $cache[ $ck ]; }
+    if ( array_key_exists( $ck, $cache ) ) { return $cache[ $ck ]; } // null aussi mis en cache
 
     $candidates = get_posts( array(
       'post_type'      => $target_type,
@@ -87,18 +87,21 @@ if ( ! function_exists( 'mltv5_find_linked_post' ) ) {
       return null;
     }
 
-    // Si le comparatif a des attributs → chercher un match exact d'abord
-    if ( ! empty( $attr_ids ) ) {
-      foreach ( $candidates as $cid ) {
-        $c_attrs = mltv5_get_term_ids( (int) $cid, $tax_attr );
-        if ( $c_attrs === $attr_ids ) {
-          if ( $debug ) { error_log( "  → exact: {$cid}" ); }
-          $cache[ $ck ] = (int) $cid;
-          return (int) $cid;
-        }
+    // Pré-charge les termes de tous les candidats (1 requête au lieu de N)
+    update_object_term_cache( $candidates, $target_type );
+
+    /* Match exact : même ensemble de produits ET même ensemble d'attributs.
+       Un comparatif SANS attribut matche donc d'abord un candidat sans attribut
+       (plutôt qu'un candidat spécialisé qui aurait juste un ID plus petit). */
+    foreach ( $candidates as $cid ) {
+      if ( mltv5_get_term_ids( (int) $cid, $tax_attr ) === $attr_ids
+        && mltv5_get_term_ids( (int) $cid, $tax_product ) === $product_ids ) {
+        if ( $debug ) { error_log( "  → exact: {$cid}" ); }
+        $cache[ $ck ] = (int) $cid;
+        return (int) $cid;
       }
-      if ( $debug ) { error_log( '  → pas de match exact, fallback produit seul' ); }
     }
+    if ( $debug ) { error_log( '  → pas de match exact, fallback produit seul (plus petit ID)' ); }
 
     // Fallback : premier candidat (plus petit ID)
     $result = (int) $candidates[0];
