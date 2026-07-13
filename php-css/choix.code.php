@@ -91,27 +91,21 @@ foreach ( $rows as $r ) {
 /* Rien à afficher -> diagnostic admin (builder), invisible pour les visiteurs. */
 if ( empty( $duels ) ) {
   if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' ) ) {
+    $cached_id = mt_guide_cache_id( $page_id, 'choix' );
     $rr = function_exists( 'get_field' ) ? get_field( 'mltv5_choix_comparatif', $page_id ) : null;
-    $probe = array();
-    $all_meta = get_post_meta( $page_id );
-    foreach ( ( is_array( $all_meta ) ? $all_meta : array() ) as $mk => $mv ) {
-      if ( stripos( $mk, 'cache' ) !== false || stripos( $mk, 'type' ) !== false ) {
-        $mvv = is_array( $mv ) ? reset( $mv ) : $mv;
-        $probe[] = $mk . '=' . ( is_scalar( $mvv ) ? $mvv : gettype( $mvv ) );
-      }
-    }
-    global $wpdb;
-    $db_raw = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s LIMIT 1", $page_id, 'mltv5_cached_id_choix' ) );
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-choix — diagnostic (admin only)</strong> : aucun duel trouv&eacute;.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'meta(cache|type) : ' . esc_html( $probe ? implode( '  |  ', $probe ) : '(aucune)' ) . '<br>'
-       . 'SQL direct mltv5_cached_id_choix = ' . ( $db_raw === null ? '(absent en base)' : esc_html( (string) $db_raw ) ) . '<br>'
-       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'choix' ) . ' (brut mltv5_cached_id_choix : ' . gettype( get_field( 'mltv5_cached_id_choix', $page_id ) ) . ')<br>'
+       . 'mltv5_cached_id_choix = ' . (int) $cached_id . '<br>'
        . 'repeater mltv5_choix_comparatif = ' . esc_html( gettype( $rr ) )
-       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
-       . '</div>';
+       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' );
+    if ( $cached_id && $cached_id !== $page_id ) {
+      $crr = function_exists( 'get_field' ) ? get_field( 'mltv5_choix_comparatif', $cached_id ) : null;
+      echo '<br><b>--- post li&eacute; ' . (int) $cached_id . ' (type=' . esc_html( (string) get_post_type( $cached_id ) ) . ', status=' . esc_html( (string) get_post_status( $cached_id ) ) . ') ---</b><br>'
+         . 'get_field repeater = ' . esc_html( gettype( $crr ) ) . ( is_array( $crr ) ? ' (count=' . count( $crr ) . ')' : '' );
+    }
+    echo '</div>';
   }
   return;
 }

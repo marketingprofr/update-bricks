@@ -87,7 +87,7 @@ $type_sing = isset( $page_tv['type_de_produit_au_singulier'] ) ? trim( (string) 
 $src_id = $page_id;
 $data   = mt_types_read( $src_id );
 if ( empty( $data['rows'] ) ) {
-  $cached = mt_guide_cache_id( $page_id, 'choix' );
+  $cached = mt_guide_cache_id( $page_id, 'types' );
   if ( $cached && $cached !== $page_id ) {
     $alt = mt_types_read( $cached );
     if ( ! empty( $alt['rows'] ) ) { $src_id = $cached; $data = $alt; }
@@ -122,18 +122,20 @@ if ( empty( $types ) ) {
         $probe[] = $mk . '=' . ( is_scalar( $mvv ) ? $mvv : gettype( $mvv ) );
       }
     }
-    global $wpdb;
-    $db_raw = $wpdb->get_var( $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id = %d AND meta_key = %s LIMIT 1", $page_id, 'mltv5_cached_id_choix' ) );
+    $cached_id = mt_guide_cache_id( $page_id, 'types' );
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-types — diagnostic (admin only)</strong> : aucun type trouv&eacute;.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'SQL direct mltv5_cached_id_choix = ' . ( $db_raw === null ? '(absent en base)' : esc_html( (string) $db_raw ) ) . '<br>'
-       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'choix' ) . ' (brut mltv5_cached_id_choix : ' . gettype( get_field( 'mltv5_cached_id_choix', $page_id ) ) . ')<br>'
-       . 'meta(cache|type) : ' . esc_html( $probe ? implode( '  |  ', $probe ) : '(aucune)' ) . '<br>'
+       . 'mltv5_cached_id_types = ' . (int) $cached_id . '<br>'
        . 'repeater mltv5_types_de_produits = ' . esc_html( gettype( $rr ) )
-       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
-       . '</div>';
+       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' );
+    if ( $cached_id && $cached_id !== $page_id ) {
+      $crr = function_exists( 'get_field' ) ? get_field( 'mltv5_types_de_produits', $cached_id ) : null;
+      echo '<br><b>--- post li&eacute; ' . (int) $cached_id . ' (type=' . esc_html( (string) get_post_type( $cached_id ) ) . ', status=' . esc_html( (string) get_post_status( $cached_id ) ) . ') ---</b><br>'
+         . 'get_field repeater = ' . esc_html( gettype( $crr ) ) . ( is_array( $crr ) ? ' (count=' . count( $crr ) . ')' : '' );
+    }
+    echo '</div>';
   }
   return;
 }

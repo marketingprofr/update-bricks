@@ -79,15 +79,21 @@ foreach ( $rows as $r ) {
 /* Rien à afficher -> diagnostic admin (builder), invisible pour les visiteurs. */
 if ( empty( $brands ) ) {
   if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' ) ) {
+    $cached_id = mt_guide_cache_id( $page_id, 'marques' );
     $rr = function_exists( 'get_field' ) ? get_field( 'mltv5_marques_comparatif', $page_id ) : null;
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-marques — diagnostic (admin only)</strong> : aucune marque trouvée.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'marques' ) . ' (brut mltv5_cached_id_marques : ' . gettype( get_field( 'mltv5_cached_id_marques', $page_id ) ) . ')<br>'
+       . 'mltv5_cached_id_marques = ' . (int) $cached_id . '<br>'
        . 'repeater mltv5_marques_comparatif = ' . esc_html( gettype( $rr ) )
-       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' )
-       . '</div>';
+       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' );
+    if ( $cached_id && $cached_id !== $page_id ) {
+      $crr = function_exists( 'get_field' ) ? get_field( 'mltv5_marques_comparatif', $cached_id ) : null;
+      echo '<br><b>--- post li&eacute; ' . (int) $cached_id . ' (type=' . esc_html( (string) get_post_type( $cached_id ) ) . ', status=' . esc_html( (string) get_post_status( $cached_id ) ) . ') ---</b><br>'
+         . 'get_field repeater = ' . esc_html( gettype( $crr ) ) . ( is_array( $crr ) ? ' (count=' . count( $crr ) . ')' : '' );
+    }
+    echo '</div>';
   }
   return;
 }

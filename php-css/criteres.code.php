@@ -133,19 +133,27 @@ $img_url = mt_guide_img_url( $img_raw );
    pour identifier d'où le contenu doit être lu. Invisible pour les visiteurs. */
 if ( empty( $crits ) && $intro === '' && $img_url === '' ) {
   if ( function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' ) ) {
-    $g = function_exists( 'get_field' ) ? get_field( 'mltv5_partie_criteres_de_choix', $page_id ) : null;
+    $cached_id = mt_guide_cache_id( $page_id, 'criteres' );
+    $g  = function_exists( 'get_field' ) ? get_field( 'mltv5_partie_criteres_de_choix', $page_id ) : null;
     $rr = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $page_id ) : null;
     echo '<div style="border:1px dashed #c0392b;border-radius:8px;padding:12px 14px;margin:8px 0;'
        . 'font:13px/1.5 ui-monospace,Menlo,monospace;color:#7b241c;background:#fdecea">'
        . '<strong>mt-guide — diagnostic (admin only)</strong> : aucun contenu trouvé.<br>'
        . 'get_the_ID() = ' . (int) $page_id . ' &middot; post_type = ' . esc_html( (string) get_post_type( $page_id ) ) . '<br>'
-       . 'cache_id r&eacute;solu = ' . mt_guide_cache_id( $page_id, 'criteres' ) . ' (brut mltv5_cached_id_criteres : ' . gettype( get_field( 'mltv5_cached_id_criteres', $page_id ) ) . ')<br>'
-       . 'groupe mltv5_partie_criteres_de_choix = ' . esc_html( gettype( $g ) )
-       . ( is_array( $g ) ? ' [' . esc_html( implode( ', ', array_keys( $g ) ) ) . ']' : '' ) . '<br>'
-       . 'repeater mltv5_criteres_de_choix = ' . esc_html( gettype( $rr ) )
-       . ( is_array( $rr ) ? ' (count=' . count( $rr ) . ')' : '' ) . '<br>'
-       . 'ACF actif = ' . ( function_exists( 'get_field' ) ? 'oui' : 'NON' )
-       . '</div>';
+       . 'mltv5_cached_id_criteres = ' . (int) $cached_id . '<br>'
+       . 'groupe mltv5_partie_criteres_de_choix = ' . esc_html( gettype( $g ) ) . '<br>'
+       . 'repeater mltv5_criteres_de_choix = ' . esc_html( gettype( $rr ) ) . '<br>'
+       . 'ACF actif = ' . ( function_exists( 'get_field' ) ? 'oui' : 'NON' );
+    if ( $cached_id && $cached_id !== $page_id ) {
+      $cg  = function_exists( 'get_field' ) ? get_field( 'mltv5_partie_criteres_de_choix', $cached_id ) : null;
+      $crr = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $cached_id ) : null;
+      $cm  = get_post_meta( $cached_id, 'mltv5_criteres_de_choix', true );
+      echo '<br><b>--- post li&eacute; ' . (int) $cached_id . ' (type=' . esc_html( (string) get_post_type( $cached_id ) ) . ', status=' . esc_html( (string) get_post_status( $cached_id ) ) . ') ---</b><br>'
+         . 'get_field groupe = ' . esc_html( gettype( $cg ) ) . '<br>'
+         . 'get_field repeater = ' . esc_html( gettype( $crr ) ) . ( is_array( $crr ) ? ' (count=' . count( $crr ) . ')' : '' ) . '<br>'
+         . 'get_post_meta repeater = ' . esc_html( var_export( $cm, true ) );
+    }
+    echo '</div>';
   }
   return;
 }
