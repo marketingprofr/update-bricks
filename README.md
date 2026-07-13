@@ -17,6 +17,29 @@ un snippet ne fait donc rien tant que vous ne visitez pas son URL.
 | 4 | `scripts/04-apply.php` | `https://votre-site.fr/?catcleanup=apply` | **Oui** (simulation par défaut) |
 | 5 | `scripts/05-verify.php` | `https://votre-site.fr/?catcleanup=verify` | Non |
 
+Diagnostic : `https://votre-site.fr/?catcleanup=ping` liste les snippets
+réellement chargés sur la requête.
+
+## Dépannage : « l'URL affiche/redirige vers l'accueil »
+
+Ce symptôme signifie que le snippet ne s'est pas exécuté. Dans l'ordre :
+
+1. **Visitez `?catcleanup=ping`.** Chaque snippet chargé s'y déclare.
+   - Si le snippet manquant n'apparaît pas : il n'est pas actif dans
+     WPCodeBox, ou son mode d'exécution est restreint (il doit tourner
+     **partout**, pas « admin only » ni conditionné à une page).
+   - Si `ping` lui-même affiche l'accueil : aucun snippet n'est chargé,
+     ou un cache/CDN sert la page avant PHP — ajoutez un paramètre
+     aléatoire (`&x=123`) pour contourner le cache, et testez aussi
+     `https://votre-site.fr/wp-admin/?catcleanup=ping` (l'admin n'est
+     jamais mis en cache).
+2. **Message « acces refuse » (403)** : vous n'êtes pas reconnu comme
+   administrateur sur cette URL. Utilisez exactement le même domaine que
+   wp-admin (www/non-www, https) dans le même navigateur.
+3. Les handlers s'exécutent sur `init` en priorité 0, avant les plugins de
+   redirection (multilingue, SEO). Si une redirection persiste malgré un
+   ping OK, testez l'URL en passant par `/wp-admin/?catcleanup=...`.
+
 ## Procédure
 
 1. **Analyse** : vérifier l'arbre L1-L2 conservé et les stats par niveau.

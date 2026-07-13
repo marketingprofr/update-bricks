@@ -10,6 +10,50 @@
  *   4. Désactiver le snippet après usage
  */
 
+// Marqueur de chargement pour le diagnostic ?catcleanup=ping
+$GLOBALS['catcleanup_loaded'][] = '02-preview';
+
+// ─── Outils partagés : contrôle d'accès + diagnostic ─────────────────
+if (!function_exists('catcleanup_require_admin')) {
+    function catcleanup_require_admin() {
+        if (current_user_can('manage_options')) return true;
+        status_header(403);
+        nocache_headers();
+        header('Content-Type: text/plain; charset=utf-8');
+        echo "catcleanup : acces refuse.\n"
+            . "Vous n'etes pas reconnu comme administrateur sur cette URL.\n"
+            . "- Connectez-vous a wp-admin dans CE navigateur\n"
+            . "- Utilisez EXACTEMENT le meme domaine que wp-admin (www/non-www, https)\n"
+            . "- Ex : si l'admin est sur https://www.site.fr/wp-admin, utilisez https://www.site.fr/?catcleanup=...\n";
+        exit;
+    }
+}
+
+if (!function_exists('catcleanup_ping_handler')) {
+    function catcleanup_ping_handler() {
+        if (!isset($_GET['catcleanup']) || $_GET['catcleanup'] !== 'ping') return;
+        catcleanup_require_admin();
+        nocache_headers();
+        header('Content-Type: text/plain; charset=utf-8');
+        $loaded = isset($GLOBALS['catcleanup_loaded']) ? (array) $GLOBALS['catcleanup_loaded'] : [];
+        sort($loaded);
+        echo "Diagnostic catcleanup\n=====================\n";
+        echo 'Snippets charges dans cette requete (' . count($loaded) . ") :\n";
+        foreach ($loaded as $l) { echo "- {$l}\n"; }
+        echo "\nSi un snippet actif dans WPCodeBox n'apparait PAS ci-dessus :\n";
+        echo "- verifiez qu'il est bien ACTIF (bouton on/off)\n";
+        echo "- verifiez son mode d'execution : il doit tourner PARTOUT (frontend + admin), pas en 'admin only'\n";
+        echo "\nURLs disponibles : ?catcleanup=analyze | preview | backup | apply | verify\n";
+        exit;
+    }
+    if (did_action('init')) {
+        catcleanup_ping_handler();
+    } else {
+        add_action('init', 'catcleanup_ping_handler', 0);
+    }
+}
+
+
 // ─── Fonctions partagées (protégées contre la redéclaration) ─────────
 if (!function_exists('catcleanup_load_categories')) {
     function catcleanup_load_categories() {
@@ -62,7 +106,7 @@ if (!function_exists('catcleanup_ancestor_l2')) {
 // ─── Exécution à la demande uniquement ────────────────────────────────
 $catcleanup_preview = function () {
     if (!isset($_GET['catcleanup']) || $_GET['catcleanup'] !== 'preview') return;
-    if (!current_user_can('manage_options')) return;
+    catcleanup_require_admin();
 
     global $wpdb;
     if (function_exists('set_time_limit')) @set_time_limit(600);
@@ -158,7 +202,7 @@ $catcleanup_preview = function () {
         exit;
     }
     fwrite($fh, "\xEF\xBB\xBF"); // BOM UTF-8 pour Excel
-    fputcsv($fh, ['post_id', 'post_title', 'post_type', 'categories_actuelles', 'categories_L2_cibles'], ';');
+    fputcsv($fh, ['post_id', 'post_title', 'post_type', 'categories_actuelles', 'categories_L2_cibles'], ';', '"', '\\');
 
     $preview_rows = [];
     $ghost_count  = 0;
@@ -179,7 +223,7 @@ $catcleanup_preview = function () {
                 $type  = '?';
                 $ghost_count++;
             }
-            fputcsv($fh, [$pid, $title, $type, implode(' | ', $plan['old']), implode(' | ', $plan['new'])], ';');
+            fputcsv($fh, [$pid, $title, $type, implode(' | ', $plan['old']), implode(' | ', $plan['new'])], ';', '"', '\\');
 
             if (count($preview_rows) < 50) {
                 $preview_rows[] = ['pid' => $pid, 'title' => $title, 'type' => $type, 'old' => $plan['old'], 'new' => $plan['new']];
@@ -256,5 +300,5 @@ $catcleanup_preview = function () {
 if (did_action('init')) {
     $catcleanup_preview();
 } else {
-    add_action('init', $catcleanup_preview);
+    add_action('init', $catcleanup_preview, 0);
 }
