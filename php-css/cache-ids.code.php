@@ -6,14 +6,13 @@
    2 modes (cumulables) :
    • AU FIL DE L'EAU : sur `template_redirect`, chaque comparatif consulté
      est (re)calculé, au plus 1×/12h (verrou transient).
-   • BATCH (WP-Cron) : traite TOUS les comparatifs par lots de $BATCH_SIZE
-     toutes les 2 minutes, puis s'arrête tout seul. Pilotage (admin
-     connecté, sur n'importe quelle URL du site) :
-       ?mltv5_batch=start   → (re)lance le batch depuis le début
-       ?mltv5_batch=status  → avancement
-       ?mltv5_batch=stop    → arrête le batch
-     ⚠️ WP-Cron est déclenché par le trafic (ou le cron système Cloudways
-     vers wp-cron.php). `start` traite le 1er lot immédiatement.
+   • BATCH PAR PAGE AUTO-RELOAD (pas de cron) : une page admin traite un
+     lot de $BATCH_SIZE comparatifs puis se recharge toute seule toutes
+     les $BATCH_REFRESH secondes jusqu'à la fin. Laisser l'onglet ouvert.
+     Pilotage (admin connecté, sur n'importe quelle URL du site) :
+       ?mltv5_batch=start   → (re)démarre depuis le début et enchaîne
+       ?mltv5_batch=run     → reprend là où le curseur en est
+       ?mltv5_batch=status  → avancement (sans rien traiter)
 
    Logique de matching (taxonomies post-type-produit + post-type-attribut) :
    1. Match exact : même ensemble de produits ET même ensemble d'attributs
@@ -35,11 +34,12 @@
 // ========================================
 // CONFIGURATION
 // ========================================
-$debug       = true;
-$TAX_PRODUCT = 'post-type-produit';
-$TAX_ATTR    = 'post-type-attribut';
-$RECHECK_TTL = 12 * HOUR_IN_SECONDS;   // recalcul max 1×/12h par comparatif (0 = à chaque visite)
-$BATCH_SIZE  = 20;                      // comparatifs traités par lot de 2 minutes
+$debug         = true;
+$TAX_PRODUCT   = 'post-type-produit';
+$TAX_ATTR      = 'post-type-attribut';
+$RECHECK_TTL   = 12 * HOUR_IN_SECONDS;  // recalcul max 1×/12h par comparatif (0 = à chaque visite)
+$BATCH_SIZE    = 20;                     // comparatifs traités par lot
+$BATCH_REFRESH = 5;                      // secondes entre deux lots (reload de la page)
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -203,16 +203,10 @@ add_action( 'template_redirect', function() use ( $debug, $TAX_PRODUCT, $TAX_ATT
 } );
 
 // ============================================
-// MODE 2 — BATCH WP-CRON (lots de $BATCH_SIZE toutes les 2 min)
+// MODE 2 — BATCH PAR PAGE AUTO-RELOAD (sans cron)
 // ============================================
-add_filter( 'cron_schedules', function( $s ) {
-  if ( ! isset( $s['mltv5_2min'] ) ) {
-    $s['mltv5_2min'] = array( 'interval' => 120, 'display' => 'Toutes les 2 minutes (mltv5)' );
-  }
-  return $s;
-} );
 
-/* Traite UN lot. Renvoie le nb de comparatifs traités dans ce lot. */
+/* Traite UN lot. Renvoie array(done, cursor, finished, updated). */
 if ( ! function_exists( 'mltv5_cache_ids_run_batch' ) ) {
   function mltv5_cache_ids_run_batch( $batch_size, $tax_product, $tax_attr, $recheck_ttl, $debug = false ) {
     $cursor = (int) get_option( 'mltv5_cache_ids_cursor', 0 );
@@ -228,65 +222,97 @@ if ( ! function_exists( 'mltv5_cache_ids_run_batch' ) ) {
       'no_found_rows'  => true,
     ) );
 
+    $updated = 0;
     foreach ( $ids as $pid ) {
-      mltv5_process_comparatif( (int) $pid, $tax_product, $tax_attr, $debug );
+      $updated += mltv5_process_comparatif( (int) $pid, $tax_product, $tax_attr, $debug );
       /* Pose le même verrou que le mode visite : pas de re-calcul au prochain
          affichage front des pages déjà traitées par le batch. */
       if ( $recheck_ttl > 0 ) { set_transient( 'mltv5_cache_ids_' . $pid, 1, $recheck_ttl ); }
     }
 
-    $done = count( $ids );
-    update_option( 'mltv5_cache_ids_cursor', $cursor + $done, false );
-
-    if ( $done < (int) $batch_size ) {           // plus rien à traiter → fin
-      wp_clear_scheduled_hook( 'mltv5_cache_ids_batch_event' );
+    $done     = count( $ids );
+    $cursor  += $done;
+    $finished = ( $done < (int) $batch_size );
+    update_option( 'mltv5_cache_ids_cursor', $cursor, false );
+    if ( $finished ) {
       update_option( 'mltv5_cache_ids_batch_done', current_time( 'mysql' ), false );
-      error_log( 'mltv5_batch: TERMINÉ — ' . ( $cursor + $done ) . ' comparatifs traités.' );
+      error_log( 'mltv5_batch: TERMINÉ — ' . $cursor . ' comparatifs traités.' );
     } elseif ( $debug ) {
-      error_log( 'mltv5_batch: lot de ' . $done . ' traité, cursor=' . ( $cursor + $done ) );
+      error_log( 'mltv5_batch: lot de ' . $done . ' traité, cursor=' . $cursor );
     }
-    return $done;
+    return array( 'done' => $done, 'cursor' => $cursor, 'finished' => $finished, 'updated' => $updated );
   }
 }
 
-add_action( 'mltv5_cache_ids_batch_event', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $BATCH_SIZE ) {
-  mltv5_cache_ids_run_batch( $BATCH_SIZE, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $debug );
-} );
+/* Page de suivi : barre de progression + auto-reload tant que ce n'est pas fini. */
+if ( ! function_exists( 'mltv5_batch_render' ) ) {
+  function mltv5_batch_render( $cursor, $total, $finished, $refresh, $url, $note = '' ) {
+    $pct = $total > 0 ? min( 100, round( $cursor / $total * 100 ) ) : 100;
+    header( 'Content-Type: text/html; charset=utf-8' );
+    echo '<!doctype html><html lang="fr"><head><meta charset="utf-8">'
+       . '<meta name="robots" content="noindex">'
+       . '<title>Batch cache IDs — ' . (int) $pct . '%</title>';
+    if ( ! $finished ) {
+      echo '<meta http-equiv="refresh" content="' . (int) $refresh . ';url=' . esc_url( $url ) . '">';
+    }
+    echo '<style>body{font:15px/1.6 ui-monospace,Menlo,monospace;background:#14181d;color:#e8eaed;'
+       . 'display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}'
+       . '.card{width:min(560px,90vw);background:#2a3038;border-radius:12px;padding:28px 32px}'
+       . 'h1{font-size:17px;margin:0 0 16px}'
+       . '.bar{height:14px;background:#14181d;border-radius:999px;overflow:hidden;margin:12px 0}'
+       . '.fill{height:100%;background:' . ( $finished ? '#6dd6a8' : '#4a90d9' ) . ';width:' . (int) $pct . '%}'
+       . 'p{margin:8px 0;color:#9aa3ad}.ok{color:#6dd6a8;font-weight:700}</style></head><body><div class="card">'
+       . '<h1>Batch cache IDs (produit + attributs)</h1>'
+       . '<div class="bar"><div class="fill"></div></div>'
+       . '<p><b style="color:#e8eaed">' . (int) $cursor . ' / ' . (int) $total . '</b> comparatifs trait&eacute;s (' . (int) $pct . '%)</p>';
+    if ( $note !== '' ) { echo '<p>' . $note . '</p>'; }
+    if ( $finished ) {
+      echo '<p class="ok">✅ TERMIN&Eacute; — vous pouvez fermer cet onglet.</p>';
+    } else {
+      echo '<p>Prochain lot dans ' . (int) $refresh . '&nbsp;s&hellip; laissez cet onglet ouvert.</p>'
+         . '<p style="font-size:12px">Pour arr&ecirc;ter : fermez l&rsquo;onglet. Pour reprendre : <code>?mltv5_batch=run</code></p>';
+    }
+    echo '</div></body></html>';
+    exit;
+  }
+}
 
-/* Pilotage admin : ?mltv5_batch=start|status|stop sur n'importe quelle URL. */
-add_action( 'init', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $BATCH_SIZE ) {
+/* Pilotage admin : ?mltv5_batch=start|run|status sur n'importe quelle URL. */
+add_action( 'init', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $BATCH_SIZE, $BATCH_REFRESH ) {
   if ( ! isset( $_GET['mltv5_batch'] ) ) { return; }
   if ( ! current_user_can( 'manage_options' ) ) { return; }
 
+  nocache_headers();
   $cmd   = sanitize_key( $_GET['mltv5_batch'] );
   $total = wp_count_posts( 'comparatif' );
   $total = isset( $total->publish ) ? (int) $total->publish : 0;
+  $url   = home_url( '/?mltv5_batch=run' );
+
+  if ( $cmd === 'status' ) {
+    $cursor = (int) get_option( 'mltv5_cache_ids_cursor', 0 );
+    $fin    = (string) get_option( 'mltv5_cache_ids_batch_done', '' );
+    mltv5_batch_render( $cursor, $total, true, 0, '',
+      $fin !== '' ? 'Dernier passage complet : ' . esc_html( $fin ) : 'Batch non termin&eacute; (curseur en cours).' );
+  }
 
   if ( $cmd === 'start' ) {
     update_option( 'mltv5_cache_ids_cursor', 0, false );
     delete_option( 'mltv5_cache_ids_batch_done' );
-    if ( ! wp_next_scheduled( 'mltv5_cache_ids_batch_event' ) ) {
-      wp_schedule_event( time() + 120, 'mltv5_2min', 'mltv5_cache_ids_batch_event' );
+    wp_clear_scheduled_hook( 'mltv5_cache_ids_batch_event' ); // nettoie l'ancien mode cron s'il traîne
+    $cmd = 'run';
+  }
+
+  if ( $cmd === 'run' ) {
+    /* Verrou anti-doublon : si un lot tourne déjà (2e onglet), on attend. */
+    if ( get_transient( 'mltv5_batch_lock' ) ) {
+      mltv5_batch_render( (int) get_option( 'mltv5_cache_ids_cursor', 0 ), $total, false, $BATCH_REFRESH, $url,
+        'Un lot est d&eacute;j&agrave; en cours dans un autre onglet&hellip;' );
     }
-    $n = mltv5_cache_ids_run_batch( $BATCH_SIZE, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $debug ); // 1er lot tout de suite
-    wp_die( 'mltv5_batch : lancé. 1er lot traité (' . (int) $n . '), '
-      . (int) get_option( 'mltv5_cache_ids_cursor', 0 ) . '/' . $total
-      . ' — la suite tourne en WP-Cron toutes les 2 min. Suivi : ?mltv5_batch=status' );
-  }
+    set_transient( 'mltv5_batch_lock', 1, 300 );
+    $res = mltv5_cache_ids_run_batch( $BATCH_SIZE, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $debug );
+    delete_transient( 'mltv5_batch_lock' );
 
-  if ( $cmd === 'stop' ) {
-    wp_clear_scheduled_hook( 'mltv5_cache_ids_batch_event' );
-    wp_die( 'mltv5_batch : arrêté (cursor conservé à '
-      . (int) get_option( 'mltv5_cache_ids_cursor', 0 ) . '/' . $total . ').' );
-  }
-
-  if ( $cmd === 'status' ) {
-    $cursor = (int) get_option( 'mltv5_cache_ids_cursor', 0 );
-    $next   = wp_next_scheduled( 'mltv5_cache_ids_batch_event' );
-    $fin    = get_option( 'mltv5_cache_ids_batch_done', '' );
-    wp_die( 'mltv5_batch : ' . $cursor . '/' . $total . ' comparatifs traités. '
-      . ( $fin ? 'TERMINÉ le ' . esc_html( $fin ) . '.'
-               : ( $next ? 'Prochain lot dans ' . max( 0, $next - time() ) . ' s.'
-                         : 'Aucun batch planifié.' ) ) );
+    mltv5_batch_render( $res['cursor'], $total, $res['finished'], $BATCH_REFRESH, $url,
+      'Dernier lot : ' . (int) $res['done'] . ' comparatifs, ' . (int) $res['updated'] . ' champ(s) mis &agrave; jour.' );
   }
 } );
