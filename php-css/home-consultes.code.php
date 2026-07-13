@@ -26,8 +26,8 @@ if ( ! function_exists( 'mt_home_primary_cat' ) ) {
     $terms = get_the_terms( $post_id, 'category' );
     if ( ! is_array( $terms ) || empty( $terms ) ) { return ''; }
     $pc = (int) get_post_meta( $post_id, '_yoast_wpseo_primary_category', true );
-    if ( $pc ) { foreach ( $terms as $t ) { if ( (int) $t->term_id === $pc ) { return $t->name; } } }
-    return $terms[0]->name;
+    if ( $pc ) { foreach ( $terms as $t ) { if ( is_object( $t ) && (int) $t->term_id === $pc ) { return $t->name; } } }
+    return ( is_object( $terms[0] ) && isset( $terms[0]->name ) ) ? $terms[0]->name : '';
   }
 }
 if ( ! function_exists( 'mt_home_popular_args' ) ) {
