@@ -26,6 +26,7 @@
 $debug       = true;
 $TAX_PRODUCT = 'post-type-produit';
 $TAX_ATTR    = 'post-type-attribut';
+$RECHECK_TTL = 12 * HOUR_IN_SECONDS;   // recalcul max 1×/12h par comparatif (0 = à chaque visite)
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -114,12 +115,21 @@ if ( ! function_exists( 'mltv5_find_linked_post' ) ) {
 // ============================================
 // MAIN EXECUTION
 // ============================================
-add_action( 'template_redirect', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR ) {
+add_action( 'template_redirect', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL ) {
 
   if ( ! is_singular() ) { return; }
 
   $post_id = get_the_ID();
   if ( get_post_type( $post_id ) !== 'comparatif' ) { return; }
+
+  /* Verrou anti-recalcul : une fois traité, on ne refait le travail qu'après
+     expiration du transient (posé AVANT le traitement pour éviter les rafales
+     si plusieurs visites arrivent en même temps). */
+  if ( $RECHECK_TTL > 0 ) {
+    $lock = 'mltv5_cache_ids_' . $post_id;
+    if ( get_transient( $lock ) ) { return; }
+    set_transient( $lock, 1, $RECHECK_TTL );
+  }
 
   $product_ids = mltv5_get_term_ids( $post_id, $TAX_PRODUCT );
   $attr_ids    = mltv5_get_term_ids( $post_id, $TAX_ATTR );
