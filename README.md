@@ -58,6 +58,9 @@ Vues supplémentaires :
   leurs catégories actuelles ;
 - `?catcleanup=remap&post=<ID>` : relations brutes d'un post (détecte les
   relations fantômes/demi-fantômes) et verdict « catégorisé ou non » ;
+- `?catcleanup=remap&lost=1` : liste les posts publiés sans catégorie ni
+  terme produit (les « intraitables »), avec répartition par post type,
+  filtre `&type=avis`, et liens d'édition/inspection directs ;
 - `?catcleanup=remap&fixcache=1` : purge le cache objet des relations de
   catégories de tous les posts (par lots, rechargement automatique). À
   lancer si l'admin affiche des catégories qui ne correspondent pas à la

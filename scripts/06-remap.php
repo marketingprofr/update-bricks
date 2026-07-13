@@ -299,6 +299,103 @@ $catcleanup_remap_run = function () use ($catcleanup_produit_tax, $catcleanup_ig
         exit;
     }
 
+    // ─── VUE LOST : posts sans catégorie NI terme produit ───
+    // ?catcleanup=remap&lost=1[&type=avis] — liste les posts que la page
+    // de réattribution ne peut pas traiter, avec lien d'édition direct.
+    if (!empty($_GET['lost'])) {
+        $type_filter = isset($_GET['type']) ? sanitize_key(wp_unslash((string) $_GET['type'])) : '';
+
+        $junk_types = "'attachment', 'revision', 'nav_menu_item', 'custom_css', 'customize_changeset', 'oembed_cache', 'wp_global_styles', 'wp_navigation', 'wp_template', 'wp_template_part', 'wp_font_face', 'wp_font_family'";
+        $where_type = $type_filter !== '' ? $wpdb->prepare(' AND p.post_type = %s', $type_filter) : '';
+
+        $lost_where = "
+            p.post_status = 'publish'
+            AND p.post_type NOT IN ({$junk_types})
+            {$where_type}
+            AND NOT EXISTS (
+                SELECT 1 FROM {$wpdb->term_relationships} tr2
+                JOIN {$wpdb->term_taxonomy} tt2 ON tt2.term_taxonomy_id = tr2.term_taxonomy_id
+                JOIN {$wpdb->terms} t2 ON t2.term_id = tt2.term_id
+                WHERE tr2.object_id = p.ID AND tt2.taxonomy = 'category'{$not_default}
+            )
+            AND NOT EXISTS (
+                SELECT 1 FROM {$wpdb->term_relationships} tr3
+                WHERE tr3.object_id = p.ID AND tr3.term_taxonomy_id IN ({$produit_in})
+            )
+        ";
+
+        echo '<h2>Posts sans categorie ni terme produit</h2>';
+        echo "<p><a href='?catcleanup=remap'>&larr; retour a la liste</a></p>";
+
+        // Répartition par post type (toujours globale, sans le filtre type)
+        $by_type = $wpdb->get_results("
+            SELECT p.post_type, COUNT(*) AS n
+            FROM {$wpdb->posts} p
+            WHERE " . str_replace($where_type, '', $lost_where) . "
+            GROUP BY p.post_type
+            ORDER BY n DESC
+        ", ARRAY_A);
+
+        if (!empty($by_type)) {
+            echo '<p><strong>Repartition :</strong> ';
+            $links = [];
+            foreach ($by_type as $bt) {
+                $t = esc_html($bt['post_type']);
+                $links[] = "<a href='?catcleanup=remap&amp;lost=1&amp;type=" . rawurlencode($bt['post_type']) . "'>{$t} ({$bt['n']})</a>";
+            }
+            echo implode(' &nbsp;|&nbsp; ', $links);
+            echo " &nbsp;|&nbsp; <a href='?catcleanup=remap&amp;lost=1'>tous</a></p>";
+        }
+
+        $lost_posts = $wpdb->get_results("
+            SELECT p.ID, p.post_title, p.post_type, p.post_date
+            FROM {$wpdb->posts} p
+            WHERE {$lost_where}
+            ORDER BY p.post_type, p.post_title
+            LIMIT 1000
+        ", ARRAY_A);
+
+        if ($type_filter !== '') {
+            echo '<p>Filtre actif : <code>' . esc_html($type_filter) . '</code> — ' . count($lost_posts) . ' posts.</p>';
+        } else {
+            echo '<p>' . count($lost_posts) . ' posts affiches (1000 max).</p>';
+        }
+
+        echo '<table style="border-collapse:collapse;width:100%;">';
+        echo '<tr style="background:#f0f0f0;">'
+            . '<th style="padding:8px;border:1px solid #ddd;">ID</th>'
+            . '<th style="padding:8px;border:1px solid #ddd;">Titre</th>'
+            . '<th style="padding:8px;border:1px solid #ddd;">Type</th>'
+            . '<th style="padding:8px;border:1px solid #ddd;">Date</th>'
+            . '<th style="padding:8px;border:1px solid #ddd;">Actions</th></tr>';
+        foreach ((array) $lost_posts as $p) {
+            $pid      = (int) $p['ID'];
+            $edit_url = function_exists('admin_url')
+                ? admin_url('post.php?post=' . $pid . '&action=edit')
+                : '/wp-admin/post.php?post=' . $pid . '&action=edit';
+            echo '<tr>'
+                . "<td style='padding:8px;border:1px solid #ddd;'>{$pid}</td>"
+                . "<td style='padding:8px;border:1px solid #ddd;'>" . esc_html($p['post_title']) . '</td>'
+                . "<td style='padding:8px;border:1px solid #ddd;'>" . esc_html($p['post_type']) . '</td>'
+                . "<td style='padding:8px;border:1px solid #ddd;'>" . esc_html(substr($p['post_date'], 0, 10)) . '</td>'
+                . "<td style='padding:8px;border:1px solid #ddd;'>"
+                    . "<a href='" . esc_url($edit_url) . "' target='_blank'>editer</a> &nbsp; "
+                    . "<a href='?catcleanup=remap&amp;post={$pid}'>inspecter</a></td>"
+                . '</tr>';
+        }
+        if (empty($lost_posts)) {
+            echo '<tr><td colspan="5" style="padding:8px;border:1px solid #ddd;"><em>Aucun post.</em></td></tr>';
+        }
+        echo '</table>';
+
+        echo "<p style='color:#666;'>Ces posts n'ont ni categorie ni terme \"" . esc_html($PRODUIT_TAX) . "\" : "
+            . 'la reattribution automatique ne peut pas les traiter. Attribuez la categorie (ou le terme produit) a la main via "editer", '
+            . 'ou dites-moi s\'il y a un motif commun exploitable (autre taxonomie, titre...).</p>';
+
+        echo '</div>';
+        exit;
+    }
+
     // ─── VUE POST : relations brutes d'un post donné ────────
     // ?catcleanup=remap&post=77002 — montre TOUT ce que la base contient
     // pour ce post (y compris les relations fantomes), et dit pourquoi il
@@ -719,7 +816,7 @@ $catcleanup_remap_run = function () use ($catcleanup_produit_tax, $catcleanup_ig
     if ($lost > 0) {
         echo "<p style='padding:12px;background:#fff3cd;border:1px solid #ffc107;border-radius:4px;'>"
             . "<strong>{$lost} posts publies</strong> n'ont ni categorie ni terme produit — cette page ne peut pas les traiter. "
-            . 'Ils devront etre categorises a la main (ou via une autre taxonomie).</p>';
+            . "<a href='?catcleanup=remap&amp;lost=1'>Voir la liste detaillee</a> (avec repartition par post type et liens d'edition).</p>";
     }
 
     echo '</div>';
