@@ -2,10 +2,22 @@
 /* =====================================================================
    MEILLEURTEST — Résolution automatique des cache IDs
    Snippet WPCodeBox / mu-plugin (PAS un bloc Bricks).
-   Tourne sur `template_redirect` pour chaque comparatif consulté.
+
+   2 modes (cumulables) :
+   • AU FIL DE L'EAU : sur `template_redirect`, chaque comparatif consulté
+     est (re)calculé, au plus 1×/12h (verrou transient).
+   • BATCH (WP-Cron) : traite TOUS les comparatifs par lots de $BATCH_SIZE
+     toutes les 2 minutes, puis s'arrête tout seul. Pilotage (admin
+     connecté, sur n'importe quelle URL du site) :
+       ?mltv5_batch=start   → (re)lance le batch depuis le début
+       ?mltv5_batch=status  → avancement
+       ?mltv5_batch=stop    → arrête le batch
+     ⚠️ WP-Cron est déclenché par le trafic (ou le cron système Cloudways
+     vers wp-cron.php). `start` traite le 1er lot immédiatement.
 
    Logique de matching (taxonomies post-type-produit + post-type-attribut) :
-   1. Match exact : même produit ET mêmes attributs (ensemble identique)
+   1. Match exact : même ensemble de produits ET même ensemble d'attributs
+      (un comparatif sans attribut matche d'abord un candidat sans attribut)
    2. Fallback   : même produit (peu importe les attributs)
    Départage : plus petit ID.
 
@@ -27,6 +39,7 @@ $debug       = true;
 $TAX_PRODUCT = 'post-type-produit';
 $TAX_ATTR    = 'post-type-attribut';
 $RECHECK_TTL = 12 * HOUR_IN_SECONDS;   // recalcul max 1×/12h par comparatif (0 = à chaque visite)
+$BATCH_SIZE  = 20;                      // comparatifs traités par lot de 2 minutes
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -52,8 +65,8 @@ if ( ! function_exists( 'mltv5_find_linked_post' ) ) {
    * Trouve le meilleur post lié de type $target_type pour un comparatif.
    *
    * 1 seule WP_Query : tous les posts du type cible ayant le même produit.
-   * Parmi les candidats : d'abord match exact sur les attributs, sinon
-   * fallback = plus petit ID avec le même produit.
+   * Parmi les candidats : d'abord match exact (produits + attributs),
+   * sinon fallback = plus petit ID avec le même produit.
    */
   function mltv5_find_linked_post( $product_ids, $attr_ids, $target_type, $tax_product, $tax_attr, $debug = false ) {
     if ( empty( $product_ids ) ) { return null; }
@@ -112,8 +125,63 @@ if ( ! function_exists( 'mltv5_find_linked_post' ) ) {
   }
 }
 
+if ( ! function_exists( 'mltv5_process_comparatif' ) ) {
+  /* Recalcule les 8 cache IDs d'UN comparatif. Renvoie le nb de champs modifiés. */
+  function mltv5_process_comparatif( $post_id, $tax_product, $tax_attr, $debug = false ) {
+    $product_ids = mltv5_get_term_ids( $post_id, $tax_product );
+    $attr_ids    = mltv5_get_term_ids( $post_id, $tax_attr );
+
+    if ( empty( $product_ids ) ) {
+      if ( $debug ) { error_log( "mltv5_cache: aucun {$tax_product} pour comparatif {$post_id}" ); }
+      return 0;
+    }
+
+    if ( $debug ) {
+      error_log( 'mltv5_cache: comparatif ' . $post_id
+        . ' produit=[' . implode( ',', $product_ids ) . ']'
+        . ' attr=[' . implode( ',', $attr_ids ) . ']' );
+    }
+
+    $field_mapping = array(
+      'mltv5_cached_id_astuces'  => 'astuce',
+      'mltv5_cached_id_criteres' => 'critere',
+      'mltv5_cached_id_faq'      => 'faq',
+      'mltv5_cached_id_marques'  => 'marque',
+      'mltv5_cached_id_raisons'  => 'raison',
+      'mltv5_cached_id_choix'    => 'type-de-produit',
+      'mltv5_cached_id_types'    => 'type-de-produit',
+      'mltv5_cached_id_vs'       => 'vs',
+    );
+
+    $updated = 0;
+    foreach ( $field_mapping as $acf_field => $target_type ) {
+      $current = get_field( $acf_field, $post_id );
+      if ( is_object( $current ) && isset( $current->ID ) ) {
+        $current = (int) $current->ID;
+      } elseif ( is_array( $current ) && isset( $current['ID'] ) ) {
+        $current = (int) $current['ID'];
+      } else {
+        $current = $current ? (int) $current : null;
+      }
+
+      $expected = mltv5_find_linked_post( $product_ids, $attr_ids, $target_type, $tax_product, $tax_attr, $debug );
+
+      if ( $current !== $expected ) {
+        update_field( $acf_field, $expected, $post_id );
+        $updated++;
+        if ( $debug ) {
+          error_log( '  🔄 ' . $acf_field . ': ' . ( $current ?: 'null' ) . ' → ' . ( $expected ?: 'null' ) );
+        }
+      } elseif ( $debug ) {
+        error_log( '  ✓ ' . $acf_field . ' = ' . ( $current ?: 'null' ) );
+      }
+    }
+    return $updated;
+  }
+}
+
 // ============================================
-// MAIN EXECUTION
+// MODE 1 — AU FIL DE L'EAU (visite d'un comparatif)
 // ============================================
 add_action( 'template_redirect', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL ) {
 
@@ -131,52 +199,94 @@ add_action( 'template_redirect', function() use ( $debug, $TAX_PRODUCT, $TAX_ATT
     set_transient( $lock, 1, $RECHECK_TTL );
   }
 
-  $product_ids = mltv5_get_term_ids( $post_id, $TAX_PRODUCT );
-  $attr_ids    = mltv5_get_term_ids( $post_id, $TAX_ATTR );
+  mltv5_process_comparatif( $post_id, $TAX_PRODUCT, $TAX_ATTR, $debug );
+} );
 
-  if ( empty( $product_ids ) ) {
-    if ( $debug ) { error_log( "mltv5_cache: aucun {$TAX_PRODUCT} pour comparatif {$post_id}" ); }
-    return;
+// ============================================
+// MODE 2 — BATCH WP-CRON (lots de $BATCH_SIZE toutes les 2 min)
+// ============================================
+add_filter( 'cron_schedules', function( $s ) {
+  if ( ! isset( $s['mltv5_2min'] ) ) {
+    $s['mltv5_2min'] = array( 'interval' => 120, 'display' => 'Toutes les 2 minutes (mltv5)' );
   }
+  return $s;
+} );
 
-  if ( $debug ) {
-    error_log( 'mltv5_cache: comparatif ' . $post_id
-      . ' produit=[' . implode( ',', $product_ids ) . ']'
-      . ' attr=[' . implode( ',', $attr_ids ) . ']' );
-  }
+/* Traite UN lot. Renvoie le nb de comparatifs traités dans ce lot. */
+if ( ! function_exists( 'mltv5_cache_ids_run_batch' ) ) {
+  function mltv5_cache_ids_run_batch( $batch_size, $tax_product, $tax_attr, $recheck_ttl, $debug = false ) {
+    $cursor = (int) get_option( 'mltv5_cache_ids_cursor', 0 );
 
-  $field_mapping = array(
-    'mltv5_cached_id_astuces'  => 'astuce',
-    'mltv5_cached_id_criteres' => 'critere',
-    'mltv5_cached_id_faq'      => 'faq',
-    'mltv5_cached_id_marques'  => 'marque',
-    'mltv5_cached_id_raisons'  => 'raison',
-    'mltv5_cached_id_choix'    => 'type-de-produit',
-    'mltv5_cached_id_types'    => 'type-de-produit',
-    'mltv5_cached_id_vs'       => 'vs',
-  );
+    $ids = get_posts( array(
+      'post_type'      => 'comparatif',
+      'post_status'    => 'publish',
+      'posts_per_page' => (int) $batch_size,
+      'offset'         => $cursor,
+      'fields'         => 'ids',
+      'orderby'        => 'ID',
+      'order'          => 'ASC',
+      'no_found_rows'  => true,
+    ) );
 
-  foreach ( $field_mapping as $acf_field => $target_type ) {
-    $current = get_field( $acf_field, $post_id );
-    if ( is_object( $current ) && isset( $current->ID ) ) {
-      $current = (int) $current->ID;
-    } elseif ( is_array( $current ) && isset( $current['ID'] ) ) {
-      $current = (int) $current['ID'];
-    } else {
-      $current = $current ? (int) $current : null;
+    foreach ( $ids as $pid ) {
+      mltv5_process_comparatif( (int) $pid, $tax_product, $tax_attr, $debug );
+      /* Pose le même verrou que le mode visite : pas de re-calcul au prochain
+         affichage front des pages déjà traitées par le batch. */
+      if ( $recheck_ttl > 0 ) { set_transient( 'mltv5_cache_ids_' . $pid, 1, $recheck_ttl ); }
     }
 
-    $expected = mltv5_find_linked_post( $product_ids, $attr_ids, $target_type, $TAX_PRODUCT, $TAX_ATTR, $debug );
+    $done = count( $ids );
+    update_option( 'mltv5_cache_ids_cursor', $cursor + $done, false );
 
-    if ( $current !== $expected ) {
-      update_field( $acf_field, $expected, $post_id );
-      if ( $debug ) {
-        error_log( '  🔄 ' . $acf_field . ': ' . ( $current ?: 'null' ) . ' → ' . ( $expected ?: 'null' ) );
-      }
+    if ( $done < (int) $batch_size ) {           // plus rien à traiter → fin
+      wp_clear_scheduled_hook( 'mltv5_cache_ids_batch_event' );
+      update_option( 'mltv5_cache_ids_batch_done', current_time( 'mysql' ), false );
+      error_log( 'mltv5_batch: TERMINÉ — ' . ( $cursor + $done ) . ' comparatifs traités.' );
     } elseif ( $debug ) {
-      error_log( '  ✓ ' . $acf_field . ' = ' . ( $current ?: 'null' ) );
+      error_log( 'mltv5_batch: lot de ' . $done . ' traité, cursor=' . ( $cursor + $done ) );
     }
+    return $done;
+  }
+}
+
+add_action( 'mltv5_cache_ids_batch_event', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $BATCH_SIZE ) {
+  mltv5_cache_ids_run_batch( $BATCH_SIZE, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $debug );
+} );
+
+/* Pilotage admin : ?mltv5_batch=start|status|stop sur n'importe quelle URL. */
+add_action( 'init', function() use ( $debug, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $BATCH_SIZE ) {
+  if ( ! isset( $_GET['mltv5_batch'] ) ) { return; }
+  if ( ! current_user_can( 'manage_options' ) ) { return; }
+
+  $cmd   = sanitize_key( $_GET['mltv5_batch'] );
+  $total = wp_count_posts( 'comparatif' );
+  $total = isset( $total->publish ) ? (int) $total->publish : 0;
+
+  if ( $cmd === 'start' ) {
+    update_option( 'mltv5_cache_ids_cursor', 0, false );
+    delete_option( 'mltv5_cache_ids_batch_done' );
+    if ( ! wp_next_scheduled( 'mltv5_cache_ids_batch_event' ) ) {
+      wp_schedule_event( time() + 120, 'mltv5_2min', 'mltv5_cache_ids_batch_event' );
+    }
+    $n = mltv5_cache_ids_run_batch( $BATCH_SIZE, $TAX_PRODUCT, $TAX_ATTR, $RECHECK_TTL, $debug ); // 1er lot tout de suite
+    wp_die( 'mltv5_batch : lancé. 1er lot traité (' . (int) $n . '), '
+      . (int) get_option( 'mltv5_cache_ids_cursor', 0 ) . '/' . $total
+      . ' — la suite tourne en WP-Cron toutes les 2 min. Suivi : ?mltv5_batch=status' );
   }
 
-  if ( $debug ) { error_log( 'mltv5_cache: terminé pour comparatif ' . $post_id ); }
+  if ( $cmd === 'stop' ) {
+    wp_clear_scheduled_hook( 'mltv5_cache_ids_batch_event' );
+    wp_die( 'mltv5_batch : arrêté (cursor conservé à '
+      . (int) get_option( 'mltv5_cache_ids_cursor', 0 ) . '/' . $total . ').' );
+  }
+
+  if ( $cmd === 'status' ) {
+    $cursor = (int) get_option( 'mltv5_cache_ids_cursor', 0 );
+    $next   = wp_next_scheduled( 'mltv5_cache_ids_batch_event' );
+    $fin    = get_option( 'mltv5_cache_ids_batch_done', '' );
+    wp_die( 'mltv5_batch : ' . $cursor . '/' . $total . ' comparatifs traités. '
+      . ( $fin ? 'TERMINÉ le ' . esc_html( $fin ) . '.'
+               : ( $next ? 'Prochain lot dans ' . max( 0, $next - time() ) . ' s.'
+                         : 'Aucun batch planifié.' ) ) );
+  }
 } );
