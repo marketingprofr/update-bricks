@@ -147,11 +147,12 @@ if ( empty( $crits ) && $intro === '' && $img_url === '' ) {
     if ( $cached_id && $cached_id !== $page_id ) {
       $cg  = function_exists( 'get_field' ) ? get_field( 'mltv5_partie_criteres_de_choix', $cached_id ) : null;
       $crr = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $cached_id ) : null;
-      $cm  = get_post_meta( $cached_id, 'mltv5_criteres_de_choix', true );
       echo '<br><b>--- post li&eacute; ' . (int) $cached_id . ' (type=' . esc_html( (string) get_post_type( $cached_id ) ) . ', status=' . esc_html( (string) get_post_status( $cached_id ) ) . ') ---</b><br>'
-         . 'get_field groupe = ' . esc_html( gettype( $cg ) ) . '<br>'
-         . 'get_field repeater = ' . esc_html( gettype( $crr ) ) . ( is_array( $crr ) ? ' (count=' . count( $crr ) . ')' : '' ) . '<br>'
-         . 'get_post_meta repeater = ' . esc_html( var_export( $cm, true ) );
+         . 'get_field groupe = ' . esc_html( gettype( $cg ) ) . ( is_array( $cg ) ? ' keys=[' . esc_html( implode( ', ', array_keys( $cg ) ) ) . ']' : '' ) . '<br>'
+         . 'get_field repeater = ' . esc_html( gettype( $crr ) ) . ( is_array( $crr ) ? ' (count=' . count( $crr ) . ')' : '' );
+      if ( is_array( $crr ) && ! empty( $crr ) ) {
+        echo '<br>row[0] keys = [' . esc_html( implode( ', ', array_keys( $crr[0] ) ) ) . ']';
+      }
     }
     echo '</div>';
   }

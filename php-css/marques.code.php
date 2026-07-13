@@ -92,6 +92,9 @@ if ( empty( $brands ) ) {
       $crr = function_exists( 'get_field' ) ? get_field( 'mltv5_marques_comparatif', $cached_id ) : null;
       echo '<br><b>--- post li&eacute; ' . (int) $cached_id . ' (type=' . esc_html( (string) get_post_type( $cached_id ) ) . ', status=' . esc_html( (string) get_post_status( $cached_id ) ) . ') ---</b><br>'
          . 'get_field repeater = ' . esc_html( gettype( $crr ) ) . ( is_array( $crr ) ? ' (count=' . count( $crr ) . ')' : '' );
+      if ( is_array( $crr ) && ! empty( $crr ) ) {
+        echo '<br>row[0] keys = [' . esc_html( implode( ', ', array_keys( $crr[0] ) ) ) . ']';
+      }
     }
     echo '</div>';
   }
