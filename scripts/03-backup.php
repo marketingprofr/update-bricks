@@ -53,7 +53,7 @@ if (!function_exists('catcleanup_ping_handler')) {
         echo "\nSi un snippet actif dans WPCodeBox n'apparait PAS ci-dessus :\n";
         echo "- verifiez qu'il est bien ACTIF (bouton on/off)\n";
         echo "- verifiez son mode d'execution : il doit tourner PARTOUT (frontend + admin), pas en 'admin only'\n";
-        echo "\nURLs disponibles : ?catcleanup=analyze | preview | backup | apply | verify\n";
+        echo "\nURLs disponibles : ?catcleanup=analyze | preview | backup | apply | verify | remap\n";
         exit;
     }
     if (did_action('init')) {

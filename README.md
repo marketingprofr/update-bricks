@@ -20,6 +20,29 @@ un snippet ne fait donc rien tant que vous ne visitez pas son URL.
 Diagnostic : `https://votre-site.fr/?catcleanup=ping` liste les snippets
 réellement chargés sur la requête.
 
+## Réparation : `scripts/06-remap.php` (`?catcleanup=remap`)
+
+Page interactive pour recatégoriser les posts restés **sans catégorie**
+après le nettoyage, en s'appuyant sur la taxonomie produit
+(`post-type-produit`, configurable en haut du snippet) :
+
+- une ligne par terme produit ayant des posts sans catégorie, triées par
+  volume : `Casque audio — 19/189 sans catégorie`
+- **catégorie détectée** : celle que portent déjà majoritairement les
+  autres posts du même terme (avec taux de confiance, ex. `Audio —
+  154/170 posts classés`)
+- case à cocher pour valider la détection (cochée par défaut), ou champ
+  manuel prioritaire acceptant un **ID**, un **slug** ou un chemin
+  **`Parent > Enfant`**
+- bouton « Appliquer » : chaque terme validé attribue la catégorie choisie
+  **uniquement aux posts sans aucune catégorie** — purement additif,
+  protégé par nonce, relançable à volonté
+- la page signale aussi les posts sans catégorie **et** sans terme produit
+  (à traiter à la main)
+
+Si une catégorie a été supprimée à tort : la recréer dans
+Articles → Catégories, puis mettre son ID dans le champ manuel.
+
 ## Dépannage : « l'étape apply a crashé en cours de route »
 
 Pas de panique : l'ordre des opérations garantit qu'aucun post ne perd ses
