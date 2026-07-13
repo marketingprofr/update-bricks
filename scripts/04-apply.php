@@ -2,16 +2,22 @@
  * PHASE 4 : APPLICATION DES RÉAFFECTATIONS ET SUPPRESSION
  * /!\ CE SCRIPT MODIFIE LA BASE DE DONNÉES /!\
  *
- * Workflow :
- *   1. Vérifie que le backup a été fait (03-backup.php)
- *   2. Ajoute les catégories L2 aux posts concernés (SQL direct)
- *   3. Retire les catégories profondes des posts (SQL direct)
- *   4. Supprime les catégories profondes (wp_delete_term, du plus profond
- *      au moins profond)
- *   5. Recalcule les compteurs et purge les caches
+ * Fonctionnement PAR LOTS : chaque requête traite un nombre limité de
+ * suppressions (300 par défaut, ~20 s max), puis la page se recharge
+ * automatiquement et continue — jusqu'à la fin. C'est ce qui évite le
+ * timeout serveur quand il y a des milliers de catégories : chaque
+ * wp_delete_term déclenche les hooks des plugins (SEO, cache...), on ne
+ * peut pas tout faire en une seule requête HTTP.
  *
- * Le script est relançable sans danger : en cas de timeout serveur,
- * relancez la même URL, il reprend là où il s'est arrêté.
+ * Ordre des opérations (garantit zéro perte même en cas d'interruption) :
+ *   1. Ajout des catégories L2 aux posts concernés (SQL direct)
+ *   2. Retrait des relations vers les catégories profondes (SQL par lots)
+ *   3. Suppression des catégories profondes par lots (wp_delete_term)
+ *   4. Quand tout est supprimé : recalcul des compteurs + purge caches
+ *
+ * L'état est recalculé à chaque requête : le script REPREND toujours là où
+ * il s'est arrêté, on peut le relancer sans danger après un crash/timeout.
+ * Un verrou empêche deux exécutions simultanées.
  *
  * Utilisation :
  *   1. Coller ce code dans un snippet PHP WPCodeBox (à la suite de la balise <?php)
@@ -19,7 +25,8 @@
  *   3. Visiter : https://votre-site.fr/?catcleanup=apply  (connecté en admin)
  *      → s'exécute en SIMULATION tant que $catcleanup_dry_run vaut true
  *   4. Passer $catcleanup_dry_run à false ci-dessous, sauvegarder, revisiter l'URL
- *   5. Désactiver le snippet après usage
+ *   5. Laisser la page se recharger toute seule jusqu'au message final
+ *   6. Désactiver le snippet après usage
  */
 
 // Marqueur de chargement pour le diagnostic ?catcleanup=ping
@@ -65,14 +72,16 @@ if (!function_exists('catcleanup_ping_handler')) {
     }
 }
 
-
 // ─── CONFIGURATION ────────────────────────────────────────────────────
 // true  = simulation (aucune modification)
 // false = exécution réelle
 $catcleanup_dry_run = true;
 
-// Nombre de catégories supprimées par lot (affichage de progression)
-$catcleanup_batch_size = 200;
+// Suppressions de catégories max par requête (la page se recharge ensuite)
+$catcleanup_batch_size = 300;
+
+// Budget temps max (secondes) de suppression par requête
+$catcleanup_time_budget = 20;
 // ──────────────────────────────────────────────────────────────────────
 
 // ─── Fonctions partagées (protégées contre la redéclaration) ─────────
@@ -125,12 +134,14 @@ if (!function_exists('catcleanup_ancestor_l2')) {
 }
 
 // ─── Exécution à la demande uniquement ────────────────────────────────
-$catcleanup_apply = function () use ($catcleanup_dry_run, $catcleanup_batch_size) {
+$catcleanup_apply = function () use ($catcleanup_dry_run, $catcleanup_batch_size, $catcleanup_time_budget) {
     if (!isset($_GET['catcleanup']) || $_GET['catcleanup'] !== 'apply') return;
     catcleanup_require_admin();
 
     global $wpdb;
-    $DRY_RUN = (bool) $catcleanup_dry_run;
+    $DRY_RUN     = (bool) $catcleanup_dry_run;
+    $BATCH_SIZE  = max(1, (int) $catcleanup_batch_size);
+    $TIME_BUDGET = max(5, (int) $catcleanup_time_budget);
 
     if (function_exists('set_time_limit')) @set_time_limit(0);
     ignore_user_abort(true);
@@ -146,14 +157,54 @@ $catcleanup_apply = function () use ($catcleanup_dry_run, $catcleanup_batch_size
         exit;
     }
 
+    // ─── Verrou anti double-exécution (exécution réelle uniquement) ──
+    // Un navigateur peut relancer automatiquement une requête GET qui a
+    // expiré : sans verrou, deux traitements tourneraient en parallèle.
+    $LOCK_NAME = 'catcleanup_apply_lock';
+    if (!$DRY_RUN) {
+        $now      = time();
+        $acquired = $wpdb->query($wpdb->prepare(
+            "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'no')",
+            $LOCK_NAME, (string) $now
+        ));
+        if (!$acquired) {
+            $held_at = (int) $wpdb->get_var($wpdb->prepare(
+                "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $LOCK_NAME
+            ));
+            $age = $now - $held_at;
+            if ($age < 600) {
+                echo "<div style='padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:4px;margin:20px;'>"
+                    . "<strong>Un traitement est deja en cours</strong> (demarre il y a {$age} s). "
+                    . 'Attendez la fin ou reessayez dans quelques minutes. '
+                    . "<script>setTimeout(function(){location.reload();}, 15000);</script>"
+                    . 'Cette page se rechargera automatiquement dans 15 s.'
+                    . '</div>';
+                exit;
+            }
+            // Verrou périmé (crash précédent) : on le reprend
+            $wpdb->query($wpdb->prepare(
+                "UPDATE {$wpdb->options} SET option_value = %s WHERE option_name = %s",
+                (string) $now, $LOCK_NAME
+            ));
+        }
+    }
+    $release_lock = function () use ($wpdb, $DRY_RUN, $LOCK_NAME) {
+        if (!$DRY_RUN) {
+            $wpdb->query($wpdb->prepare(
+                "DELETE FROM {$wpdb->options} WHERE option_name = %s", $LOCK_NAME
+            ));
+        }
+    };
+
     if (!$DRY_RUN) {
         wp_defer_term_counting(true);
     }
 
-    // ─── Chargement et arbre ────────────────────────────────
+    // ─── Chargement et arbre (état recalculé à chaque requête) ──────
     $by_id = catcleanup_load_categories();
     if (empty($by_id)) {
         echo '<p>Aucune categorie trouvee.</p>';
+        $release_lock();
         exit;
     }
 
@@ -164,7 +215,6 @@ $catcleanup_apply = function () use ($catcleanup_dry_run, $catcleanup_batch_size
 
     $default_cat = (int) get_option('default_category');
 
-    // ─── Catégories à supprimer ─────────────────────────────
     $deep_cats = [];
     foreach ($by_id as $id => $c) {
         if ($depths[$id] <= 2) continue;
@@ -183,22 +233,6 @@ $catcleanup_apply = function () use ($catcleanup_dry_run, $catcleanup_batch_size
         ];
     }
 
-    if (empty($deep_cats)) {
-        echo '<p>Aucune categorie de niveau 3+ a supprimer. Rien a faire (deja applique ?).</p>';
-        exit;
-    }
-
-    // Trier du plus profond au moins profond (pour suppression)
-    usort($deep_cats, function ($a, $b) { return $b['depth'] - $a['depth']; });
-
-    // Grouper par ancêtre L2 (pour réaffectation bulk)
-    $groups = [];
-    foreach ($deep_cats as $dc) {
-        $groups[$dc['ancestor_id']]['ancestor_ttid'] = $dc['ancestor_ttid'];
-        $groups[$dc['ancestor_id']]['ancestor_name'] = $dc['ancestor_name'];
-        $groups[$dc['ancestor_id']]['deep_ttids'][]  = $dc['ttid'];
-    }
-
     $flush_output = function () {
         if (ob_get_level() > 0) { @ob_flush(); }
         flush();
@@ -207,196 +241,204 @@ $catcleanup_apply = function () use ($catcleanup_dry_run, $catcleanup_batch_size
     // ─── En-tête ────────────────────────────────────────────
     echo "<div style='font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:1200px;margin:20px auto;padding:20px;'>";
 
-    $mode_label = $DRY_RUN ? 'MODE SIMULATION (dry run)' : 'EXECUTION REELLE';
+    $mode_label = $DRY_RUN ? 'MODE SIMULATION (dry run)' : 'EXECUTION REELLE (par lots)';
     $mode_bg    = $DRY_RUN ? '#fff3cd' : '#ffebee';
     echo "<h1>Application du nettoyage &mdash; {$mode_label}</h1>";
     echo "<div style='padding:12px;background:{$mode_bg};border-radius:4px;margin-bottom:20px;'>";
     if ($DRY_RUN) {
-        echo 'Aucune modification ne sera faite. Passez <code>$catcleanup_dry_run = false;</code> dans le snippet pour executer.';
+        echo 'Aucune modification ne sera faite. Passez <code>$catcleanup_dry_run = false;</code> dans le snippet pour executer. '
+            . "L'execution reelle traitera {$BATCH_SIZE} suppressions max par requete, avec rechargement automatique jusqu'a la fin.";
     } else {
-        echo '<strong>Les modifications sont en cours. Ne fermez pas cette page.</strong>';
+        echo '<strong>Traitement par lots en cours. Laissez cette page ouverte, elle se recharge toute seule.</strong>';
     }
     echo '</div>';
 
-    echo '<p>' . count($deep_cats) . ' categories a supprimer, reparties en ' . count($groups) . ' groupes L2.</p>';
-    $flush_output();
-
-    // ─── ÉTAPE 1 : Réaffectation des posts ──────────────────
-    echo '<h2>Etape 1 : Reaffectation des posts</h2>';
-
-    $total_inserted = 0;
-    foreach ($groups as $anc_id => $group) {
-        $anc_ttid      = (int) $group['ancestor_ttid'];
-        $deep_ttid_str = implode(',', array_map('intval', $group['deep_ttids']));
-
-        $post_count = (int) $wpdb->get_var("
-            SELECT COUNT(DISTINCT object_id)
-            FROM {$wpdb->term_relationships}
-            WHERE term_taxonomy_id IN ({$deep_ttid_str})
-        ");
-
-        $already_count = 0;
-        if ($post_count > 0) {
-            $already_count = (int) $wpdb->get_var("
-                SELECT COUNT(DISTINCT tr1.object_id)
-                FROM {$wpdb->term_relationships} tr1
-                WHERE tr1.term_taxonomy_id IN ({$deep_ttid_str})
-                AND EXISTS (
-                    SELECT 1 FROM {$wpdb->term_relationships} tr2
-                    WHERE tr2.object_id = tr1.object_id
-                    AND tr2.term_taxonomy_id = {$anc_ttid}
-                )
-            ");
-        }
-
-        $to_insert = $post_count - $already_count;
-
-        echo '<p>L2 <strong>' . esc_html($group['ancestor_name']) . "</strong> (ID {$anc_id}) : "
-            . "{$post_count} posts, {$already_count} ont deja la L2, <strong>{$to_insert} a ajouter</strong></p>";
-
-        if (!$DRY_RUN && $to_insert > 0) {
-            $inserted = $wpdb->query("
-                INSERT IGNORE INTO {$wpdb->term_relationships} (object_id, term_taxonomy_id, term_order)
-                SELECT DISTINCT tr.object_id, {$anc_ttid}, 0
-                FROM {$wpdb->term_relationships} tr
-                WHERE tr.term_taxonomy_id IN ({$deep_ttid_str})
-            ");
-            $total_inserted += (int) $inserted;
+    // ─── Fin du traitement ? ────────────────────────────────
+    if (empty($deep_cats)) {
+        echo '<h2>Finalisation</h2>';
+        if (!$DRY_RUN) {
+            wp_defer_term_counting(false);
+            $remaining_tt_ids = array_map('intval', (array) $wpdb->get_col("
+                SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'category'
+            "));
+            if (!empty($remaining_tt_ids)) {
+                wp_update_term_count_now($remaining_tt_ids, 'category');
+            }
+            clean_taxonomy_cache('category');
+            wp_cache_flush();
+            delete_transient('category_cleanup_backup_done');
+            echo '<p>Compteurs recalcules, caches purges.</p>';
+            echo "<div style='padding:16px;background:#e8f5e9;border:1px solid #4caf50;border-radius:4px;'>"
+                . '<strong>Operation terminee.</strong> Toutes les categories de niveau 3+ ont ete supprimees. '
+                . 'Executez 05-verify.php (?catcleanup=verify) pour la verification complete, '
+                . 'puis reindexez votre plugin SEO et videz le cache du site.'
+                . '</div>';
         } else {
-            $total_inserted += max(0, $to_insert);
+            echo '<p>Aucune categorie de niveau 3+ a supprimer. Rien a faire (deja applique ?).</p>';
         }
+        $release_lock();
+        echo '</div>';
+        exit;
     }
 
-    echo "<p><strong>Total : {$total_inserted} relations ajoutees" . ($DRY_RUN ? ' (prevision)' : '') . '.</strong></p>';
+    usort($deep_cats, function ($a, $b) { return $b['depth'] - $a['depth']; });
+
+    $all_deep_ttids = array_map('intval', array_column($deep_cats, 'ttid'));
+    $all_deep_str   = implode(',', $all_deep_ttids);
+    $total_deep     = count($deep_cats);
+
+    echo "<p><strong>Etat actuel :</strong> {$total_deep} categories de niveau 3+ restantes.</p>";
     $flush_output();
 
-    // ─── ÉTAPE 2 : Suppression des relations profondes ──────
-    echo '<h2>Etape 2 : Suppression des relations profondes</h2>';
-
-    $all_deep_str = implode(',', array_map('intval', array_column($deep_cats, 'ttid')));
-
-    $rel_count = (int) $wpdb->get_var("
-        SELECT COUNT(*) FROM {$wpdb->term_relationships}
-        WHERE term_taxonomy_id IN ({$all_deep_str})
+    // Combien de relations profondes restent ? (0 = étapes 1-2 déjà faites)
+    $deep_rels = (int) $wpdb->get_var("
+        SELECT COUNT(*) FROM {$wpdb->term_relationships} WHERE term_taxonomy_id IN ({$all_deep_str})
     ");
 
-    echo "<p>{$rel_count} relations a supprimer.</p>";
+    // ─── ÉTAPES 1-2 : Réaffectation puis retrait des relations ──────
+    if ($deep_rels > 0) {
+        echo '<h2>Etape 1 : Reaffectation des posts vers les categories L2</h2>';
 
-    if (!$DRY_RUN && $rel_count > 0) {
-        $deleted = $wpdb->query("
-            DELETE FROM {$wpdb->term_relationships}
-            WHERE term_taxonomy_id IN ({$all_deep_str})
-        ");
-        echo "<p><strong>{$deleted} relations supprimees.</strong></p>";
-    }
-    $flush_output();
+        $groups = [];
+        foreach ($deep_cats as $dc) {
+            $groups[$dc['ancestor_id']]['ancestor_ttid'] = $dc['ancestor_ttid'];
+            $groups[$dc['ancestor_id']]['ancestor_name'] = $dc['ancestor_name'];
+            $groups[$dc['ancestor_id']]['deep_ttids'][]  = $dc['ttid'];
+        }
 
-    // ─── ÉTAPE 3 : Suppression des catégories ───────────────
-    echo '<h2>Etape 3 : Suppression des categories</h2>';
+        $total_inserted = 0;
+        $group_lines    = 0;
+        foreach ($groups as $anc_id => $group) {
+            $anc_ttid      = (int) $group['ancestor_ttid'];
+            $deep_ttid_str = implode(',', array_map('intval', $group['deep_ttids']));
 
-    $deleted_terms = 0;
-    $errors        = [];
-    $batches       = array_chunk($deep_cats, max(1, (int) $catcleanup_batch_size));
-    $total_batches = count($batches);
+            $post_count = (int) $wpdb->get_var("
+                SELECT COUNT(DISTINCT object_id)
+                FROM {$wpdb->term_relationships}
+                WHERE term_taxonomy_id IN ({$deep_ttid_str})
+            ");
+            if ($post_count === 0) continue;
 
-    foreach ($batches as $bi => $batch) {
-        $batch_num = $bi + 1;
-        echo "<p>Lot {$batch_num}/{$total_batches} (" . count($batch) . ' categories)...</p>';
+            if (!$DRY_RUN) {
+                $inserted = $wpdb->query("
+                    INSERT IGNORE INTO {$wpdb->term_relationships} (object_id, term_taxonomy_id, term_order)
+                    SELECT DISTINCT tr.object_id, {$anc_ttid}, 0
+                    FROM {$wpdb->term_relationships} tr
+                    WHERE tr.term_taxonomy_id IN ({$deep_ttid_str})
+                ");
+                $total_inserted += (int) $inserted;
+            } else {
+                $total_inserted += $post_count; // majorant en simulation
+            }
+
+            if (++$group_lines <= 30) {
+                echo '<p>L2 <strong>' . esc_html($group['ancestor_name']) . "</strong> (ID {$anc_id}) : {$post_count} posts concernes</p>";
+            }
+        }
+        if ($group_lines > 30) {
+            echo '<p><em>... et ' . ($group_lines - 30) . ' autres groupes L2.</em></p>';
+        }
+        echo "<p><strong>Relations L2 ajoutees : {$total_inserted}" . ($DRY_RUN ? ' max (simulation)' : '') . '.</strong></p>';
         $flush_output();
 
-        foreach ($batch as $dc) {
-            if ($DRY_RUN) {
-                $deleted_terms++;
-                continue;
-            }
+        echo '<h2>Etape 2 : Retrait des relations vers les categories profondes</h2>';
+        echo "<p>{$deep_rels} relations a retirer.</p>";
 
-            $result = wp_delete_term($dc['term_id'], 'category');
-            if (is_wp_error($result)) {
-                $errors[] = 'Erreur sur ' . $dc['name'] . ' (ID ' . $dc['term_id'] . '): ' . $result->get_error_message();
-            } elseif ($result === false || $result === 0) {
-                $errors[] = 'Impossible de supprimer ' . $dc['name'] . ' (ID ' . $dc['term_id'] . ')';
-            } else {
-                $deleted_terms++;
-            }
+        if (!$DRY_RUN) {
+            $deleted_rels = 0;
+            do {
+                $chunk = $wpdb->query("
+                    DELETE FROM {$wpdb->term_relationships}
+                    WHERE term_taxonomy_id IN ({$all_deep_str})
+                    LIMIT 20000
+                ");
+                $deleted_rels += (int) $chunk;
+                $flush_output();
+            } while ($chunk > 0);
+            echo "<p><strong>{$deleted_rels} relations retirees.</strong></p>";
         }
-    }
-
-    echo "<p><strong>{$deleted_terms} categories supprimees" . ($DRY_RUN ? ' (prevision)' : '') . '.</strong></p>';
-
-    if (!empty($errors)) {
-        echo '<h3>Erreurs</h3><ul>';
-        foreach ($errors as $e) {
-            echo "<li style='color:red;'>" . esc_html($e) . '</li>';
-        }
-        echo '</ul>';
-    }
-    $flush_output();
-
-    // ─── ÉTAPE 4 : Recalcul des compteurs ───────────────────
-    echo '<h2>Etape 4 : Recalcul des compteurs et caches</h2>';
-
-    if (!$DRY_RUN) {
-        wp_defer_term_counting(false);
-
-        $remaining_tt_ids = array_map('intval', (array) $wpdb->get_col("
-            SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'category'
-        "));
-
-        if (!empty($remaining_tt_ids)) {
-            wp_update_term_count_now($remaining_tt_ids, 'category');
-        }
-
-        clean_taxonomy_cache('category');
-        wp_cache_flush();
-        delete_transient('category_cleanup_backup_done');
-
-        echo '<p>Compteurs recalcules, caches purges.</p>';
+        $flush_output();
     } else {
-        echo '<p><em>(simulation : pas de recalcul)</em></p>';
+        echo '<p><em>Etapes 1-2 (reaffectation et retrait des relations) : deja effectuees, on passe aux suppressions.</em></p>';
     }
 
-    // ─── Vérification rapide ────────────────────────────────
-    echo '<h2>Verification rapide</h2>';
+    // ─── ÉTAPE 3 : Suppression des catégories (lot borné) ───────────
+    echo '<h2>Etape 3 : Suppression des categories (par lots)</h2>';
 
-    if (!$DRY_RUN) {
-        $remaining_deep = (int) $wpdb->get_var("
-            SELECT COUNT(*)
-            FROM {$wpdb->term_taxonomy} tt
-            WHERE tt.taxonomy = 'category'
-            AND tt.parent != 0
-            AND tt.parent IN (
-                SELECT tt2.term_id FROM (
-                    SELECT term_id, parent FROM {$wpdb->term_taxonomy} WHERE taxonomy = 'category'
-                ) tt2
-                WHERE tt2.parent != 0
-            )
-        ");
-        echo $remaining_deep === 0
-            ? "<p style='color:green;'>Aucune categorie de niveau 3+ restante.</p>"
-            : "<p style='color:orange;'>{$remaining_deep} categorie(s) de niveau 3+ encore presente(s) "
-              . '(categorie par defaut ou cas particuliers ignores). Verifiez avec 05-verify.php.</p>';
-    } else {
-        echo '<p><em>(simulation : verification non disponible)</em></p>';
-    }
-
-    // ─── Résumé final ───────────────────────────────────────
-    echo '<h2>Resume</h2>';
-    echo '<ul>'
-        . "<li>Relations ajoutees : {$total_inserted}</li>"
-        . "<li>Relations supprimees : {$rel_count}" . ($DRY_RUN ? ' (prevision)' : '') . '</li>'
-        . "<li>Categories supprimees : {$deleted_terms}</li>"
-        . '<li>Erreurs : ' . count($errors) . '</li>'
-        . '</ul>';
+    $deadline  = time() + $TIME_BUDGET;
+    $processed = 0;
+    $errors    = [];
 
     if ($DRY_RUN) {
-        echo "<p style='padding:12px;background:#e3f2fd;border:1px solid #2196f3;border-radius:4px;'>"
-            . 'Pour executer reellement, modifiez <code>$catcleanup_dry_run = false;</code> en haut du snippet et revisitez cette URL.</p>';
+        echo "<p>{$total_deep} categories seraient supprimees, par lots de {$BATCH_SIZE} et par ordre de profondeur decroissante.</p>";
     } else {
-        echo "<p style='padding:12px;background:#e8f5e9;border:1px solid #4caf50;border-radius:4px;'>"
-            . 'Operation terminee. Executez 05-verify.php (?catcleanup=verify) pour une verification complete, '
-            . 'puis reindexez votre plugin SEO et videz le cache du site.</p>';
+        foreach ($deep_cats as $dc) {
+            if ($processed >= $BATCH_SIZE || time() >= $deadline) break;
+
+            try {
+                $result = wp_delete_term($dc['term_id'], 'category');
+                if (is_wp_error($result)) {
+                    $errors[] = $dc['name'] . ' (ID ' . $dc['term_id'] . '): ' . $result->get_error_message();
+                } elseif ($result === false || $result === 0) {
+                    $errors[] = $dc['name'] . ' (ID ' . $dc['term_id'] . '): suppression refusee';
+                }
+            } catch (\Throwable $e) {
+                // Un hook de plugin a plante sur ce terme : on note et on continue
+                $errors[] = $dc['name'] . ' (ID ' . $dc['term_id'] . '): exception ' . $e->getMessage();
+            }
+            $processed++;
+        }
+
+        $remaining = $total_deep - $processed;
+        echo "<p><strong>{$processed} categories traitees dans ce lot.</strong> Restant : {$remaining}.</p>";
+
+        if (!empty($errors)) {
+            echo '<h3>Erreurs sur ce lot</h3><ul>';
+            foreach (array_slice($errors, 0, 20) as $e) {
+                echo "<li style='color:red;'>" . esc_html($e) . '</li>';
+            }
+            if (count($errors) > 20) echo '<li>... et ' . (count($errors) - 20) . ' autres</li>';
+            echo '</ul>';
+        }
+
+        $release_lock();
+
+        if ($remaining > 0) {
+            // Continuation automatique : nouvelle requête, état recalculé
+            $pct = $total_deep > 0 ? round(100 * $processed / $total_deep) : 0;
+            echo "<div style='padding:16px;background:#e3f2fd;border:1px solid #2196f3;border-radius:4px;margin-top:16px;'>"
+                . "<strong>Traitement en cours...</strong> Cette page va se recharger automatiquement dans 2 s "
+                . "pour continuer ({$remaining} categories restantes). "
+                . "<a href='javascript:location.reload();'>Continuer maintenant</a>"
+                . '</div>'
+                . "<script>setTimeout(function(){ location.reload(); }, 2000);</script>";
+            echo '</div>';
+            exit;
+        }
+
+        // Dernier lot terminé : la finalisation se fera au prochain
+        // rechargement (deep_cats sera vide → recalcul compteurs + caches)
+        echo "<div style='padding:16px;background:#e3f2fd;border:1px solid #2196f3;border-radius:4px;margin-top:16px;'>"
+            . '<strong>Suppressions terminees.</strong> Rechargement pour la finalisation '
+            . '(recalcul des compteurs et purge des caches)... '
+            . "<a href='javascript:location.reload();'>Finaliser maintenant</a>"
+            . '</div>'
+            . "<script>setTimeout(function(){ location.reload(); }, 2000);</script>";
+        echo '</div>';
+        exit;
     }
 
+    // ─── Résumé simulation ──────────────────────────────────
+    $release_lock();
+    echo '<h2>Resume (simulation)</h2>';
+    echo '<ul>'
+        . "<li>Categories a supprimer : {$total_deep}</li>"
+        . "<li>Relations profondes a retirer : {$deep_rels}</li>"
+        . "<li>Lots necessaires : environ " . max(1, (int) ceil($total_deep / $BATCH_SIZE)) . "</li>"
+        . '</ul>';
+    echo "<p style='padding:12px;background:#e3f2fd;border:1px solid #2196f3;border-radius:4px;'>"
+        . 'Pour executer reellement, modifiez <code>$catcleanup_dry_run = false;</code> en haut du snippet et revisitez cette URL. '
+        . 'La page se rechargera automatiquement entre chaque lot : laissez-la ouverte jusqu\'au message final.</p>';
     echo '</div>';
     exit;
 };

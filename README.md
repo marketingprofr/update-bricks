@@ -20,6 +20,21 @@ un snippet ne fait donc rien tant que vous ne visitez pas son URL.
 Diagnostic : `https://votre-site.fr/?catcleanup=ping` liste les snippets
 réellement chargés sur la requête.
 
+## Dépannage : « l'étape apply a crashé en cours de route »
+
+Pas de panique : l'ordre des opérations garantit qu'aucun post ne perd ses
+catégories (les L2 sont ajoutées **avant** tout retrait, les retraits
+**avant** toute suppression). Un crash laisse un état incomplet mais sain.
+
+1. Attendez 5-10 minutes : la requête interrompue côté navigateur peut
+   continuer côté serveur (`ignore_user_abort`).
+2. Lancez `?catcleanup=verify` (lecture seule) : le check n°1 indique
+   combien de catégories de niveau 3+ restent. Zéro → le traitement était
+   en fait terminé, passez à la réindexation SEO + purge des caches.
+3. S'il en reste : revisitez `?catcleanup=apply` (toujours avec
+   `dry_run = false`) et laissez la page se recharger jusqu'au message
+   final. Le script reprend là où il s'est arrêté.
+
 ## Dépannage : « l'URL affiche/redirige vers l'accueil »
 
 Ce symptôme signifie que le snippet ne s'est pas exécuté. Dans l'ordre :
@@ -50,8 +65,13 @@ Ce symptôme signifie que le snippet ne s'est pas exécuté. Dans l'ordre :
 4. **Application en simulation** : visiter l'URL apply avec
    `$catcleanup_dry_run = true` (valeur par défaut) et lire le rapport.
 5. **Application réelle** : passer `$catcleanup_dry_run = false` dans le
-   snippet, sauvegarder, revisiter l'URL. En cas de timeout serveur,
-   revisiter la même URL : le script reprend où il s'est arrêté.
+   snippet, sauvegarder, revisiter l'URL. Le traitement se fait **par lots**
+   (300 suppressions max ou ~20 s par requête) : la page se recharge toute
+   seule entre les lots — laissez-la ouverte jusqu'au message
+   « Opération terminée ». En cas de crash ou timeout, revisitez la même
+   URL : l'état est recalculé à chaque requête, le script reprend
+   exactement où il s'est arrêté. Un verrou empêche deux exécutions
+   simultanées (il se libère seul après 10 minutes en cas de crash).
 6. **Vérification** : contrôler les 6 checks du rapport.
 7. **Après coup** : réindexer le plugin SEO, vider les caches, désactiver
    tous les snippets, supprimer les fichiers CSV/SQL générés dans
