@@ -302,7 +302,7 @@ $top5_set      = array_flip( $ids );
       <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
       <p class="t5-meta">Notre classement <?php echo esc_html( date_i18n( 'Y' ) ); ?>, impartial et v&eacute;rifi&eacute; par la r&eacute;daction</p>
 <?php if ( $show_range ) : ?>
-      <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $display_min, 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $display_max, 1, ',', '' ) ); ?></b> sur <?php echo (int) $display_count; ?> produits<?php if ( $display_count > 50 ) { $mt_years = (int) date_i18n('Y') - 2014; echo ' analys&eacute;s <b>en ' . $mt_years . '&nbsp;ans</b>'; } ?>. Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.</p>
+      <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $display_min, 1, ',', '' ) ); ?></b> &agrave; <b><?php echo esc_html( number_format( $display_max, 1, ',', '' ) ); ?></b> sur <?php echo (int) $display_count; ?> produits<?php if ( $display_count > 50 ) { $mt_years = (int) date_i18n('Y') - 2014; echo ' analys&eacute;s <b>en ' . $mt_years . '&nbsp;ans</b>'; } ?>.<?php if ( $show_ranking ) : ?> Classement complet disponible sous notre s&eacute;lection.<?php else : ?> Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.<?php endif; ?></p>
 <?php endif; ?>
 <?php if ( current_user_can( 'edit_posts' ) ) : ?>
       <p class="t5-admin-debug" style="margin:6px 0 0;font-size:11px;color:#888;font-style:italic"><?php echo esc_html( implode( ' - ', array_map( function( $p ) { return ( $p['brand'] !== '' ? $p['brand'] . ' ' : '' ) . $p['name']; }, $products ) ) ); ?></p>
