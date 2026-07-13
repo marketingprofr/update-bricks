@@ -57,7 +57,14 @@ Vues supplémentaires :
 - `?catcleanup=remap&inspect=<slug ou ID du terme>` : posts d'un terme avec
   leurs catégories actuelles ;
 - `?catcleanup=remap&post=<ID>` : relations brutes d'un post (détecte les
-  relations fantômes/demi-fantômes) et verdict « catégorisé ou non ».
+  relations fantômes/demi-fantômes) et verdict « catégorisé ou non » ;
+- `?catcleanup=remap&fixcache=1` : purge le cache objet des relations de
+  catégories de tous les posts (par lots, rechargement automatique). À
+  lancer si l'admin affiche des catégories qui ne correspondent pas à la
+  base (symptôme : l'inspecteur `&post=` dit « catégorisé » mais la
+  colonne Catégories de wp-admin est vide) — conséquence des
+  réaffectations SQL directes quand un cache objet persistant
+  (Redis/Memcached) est actif.
 
 Si une catégorie a été supprimée à tort : la recréer dans
 Articles → Catégories, puis mettre son ID dans le champ manuel.

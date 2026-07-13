@@ -78,6 +78,9 @@ $catcleanup_produit_tax = 'post-type-produit';
 // vraie catégorie : un post qui n'a qu'elle est considéré sans catégorie,
 // et elle est ignorée par la détection.
 $catcleanup_ignore_default_cat = true;
+
+// Nombre de posts purgés du cache objet par requête (vue &fixcache)
+$catcleanup_cache_chunk = 10000;
 // ──────────────────────────────────────────────────────────────────────
 
 // ─── Fonctions partagées (protégées contre la redéclaration) ─────────
@@ -133,7 +136,7 @@ if (!function_exists('catcleanup_normalize')) {
 }
 
 // ─── Exécution à la demande uniquement ────────────────────────────────
-$catcleanup_remap_run = function () use ($catcleanup_produit_tax, $catcleanup_ignore_default_cat) {
+$catcleanup_remap_run = function () use ($catcleanup_produit_tax, $catcleanup_ignore_default_cat, $catcleanup_cache_chunk) {
     if (!isset($_GET['catcleanup']) || $_GET['catcleanup'] !== 'remap') return;
     catcleanup_require_admin();
 
@@ -232,6 +235,68 @@ $catcleanup_remap_run = function () use ($catcleanup_produit_tax, $catcleanup_ig
     if ($IGNORE_DEFAULT) {
         echo "<p style='color:#666;'>La categorie par defaut <strong>" . esc_html($by_id[$default_cat]['name'])
             . "</strong> (ID {$default_cat}) ne compte pas comme une vraie categorie : un post qui n'a qu'elle est traite comme sans categorie.</p>";
+    }
+
+    // ─── VUE FIXCACHE : purge du cache objet des relations ──
+    // ?catcleanup=remap&fixcache=1 — les réaffectations du nettoyage ont
+    // été faites en SQL direct : si le site utilise un cache objet
+    // persistant (Redis/Memcached), le cache par post des catégories peut
+    // être resté périmé (l'admin affiche l'ancien état, la base est bonne).
+    // Cette vue purge le cache 'category_relationships' de tous les posts,
+    // par lots avec rechargement automatique.
+    if (isset($_GET['fixcache'])) {
+        $CHUNK = max(100, (int) $catcleanup_cache_chunk);
+        $after = isset($_GET['after']) ? (int) $_GET['after'] : 0;
+
+        echo '<h2>Purge du cache objet (relations de categories)</h2>';
+        echo "<p><a href='?catcleanup=remap'>&larr; retour a la liste</a></p>";
+
+        if ($after === 0) {
+            $ext    = function_exists('wp_using_ext_object_cache') ? (bool) wp_using_ext_object_cache() : false;
+            $dropin = defined('WP_CONTENT_DIR') && file_exists(WP_CONTENT_DIR . '/object-cache.php');
+            global $wp_object_cache;
+            $backend = is_object($wp_object_cache) ? get_class($wp_object_cache) : 'inconnu';
+
+            echo '<p>Cache objet persistant : <strong>' . ($ext ? 'OUI' : 'NON') . '</strong>'
+                . ' — drop-in object-cache.php : ' . ($dropin ? 'present' : 'absent')
+                . ' — backend : <code>' . esc_html($backend) . '</code></p>';
+
+            $flushed = wp_cache_flush();
+            echo '<p>wp_cache_flush() global : ' . ($flushed ? 'OK' : '<strong>refuse par le backend</strong> (la purge ciblee ci-dessous reste efficace)') . '</p>';
+
+            if (!$ext && !$dropin) {
+                echo "<p style='padding:12px;background:#fff3cd;border:1px solid #ffc107;border-radius:4px;'>"
+                    . '<strong>Aucun cache objet persistant detecte.</strong> Si des posts affichent toujours de mauvaises categories '
+                    . 'dans l\'admin apres cette purge, le probleme vient d\'ailleurs (filtre de plugin type Polylang/WPML/SEO) — dites-le moi.</p>';
+            }
+        }
+
+        $ids = array_map('intval', (array) $wpdb->get_col("
+            SELECT DISTINCT object_id FROM {$wpdb->term_relationships}
+            WHERE object_id > {$after}
+            ORDER BY object_id
+            LIMIT {$CHUNK}
+        "));
+        foreach ($ids as $oid) {
+            wp_cache_delete($oid, 'category_relationships');
+        }
+        $n = count($ids);
+        echo "<p>{$n} caches de posts purges dans ce lot" . ($after > 0 ? " (reprise apres l'ID {$after})" : '') . '.</p>';
+
+        if ($n === $CHUNK) {
+            $last = end($ids);
+            echo "<div style='padding:12px;background:#e3f2fd;border:1px solid #2196f3;border-radius:4px;'>"
+                . 'Purge en cours... rechargement automatique. '
+                . "<a href='?catcleanup=remap&amp;fixcache=1&amp;after={$last}'>Continuer maintenant</a></div>"
+                . "<script>setTimeout(function(){ location.href = '?catcleanup=remap&fixcache=1&after={$last}'; }, 1500);</script>";
+        } else {
+            echo "<div style='padding:12px;background:#e8f5e9;border:1px solid #4caf50;border-radius:4px;'>"
+                . '<strong>Purge terminee.</strong> Rechargez la liste des posts dans wp-admin : '
+                . 'les categories affichees doivent maintenant correspondre a la base (verifiez le Hama DM20). '
+                . 'Pensez aussi a vider le cache de PAGES de votre site (plugin de cache/CDN) pour le frontend.</div>';
+        }
+        echo '</div>';
+        exit;
     }
 
     // ─── VUE POST : relations brutes d'un post donné ────────
@@ -434,14 +499,25 @@ $catcleanup_remap_run = function () use ($catcleanup_produit_tax, $catcleanup_ig
                        )"
                     : '';
 
-                $added = (int) $wpdb->query("
-                    INSERT IGNORE INTO {$wpdb->term_relationships} (object_id, term_taxonomy_id, term_order)
-                    SELECT DISTINCT tr.object_id, {$cat_ttid}, 0
+                $sql_tail = "
                     FROM {$wpdb->term_relationships} tr
                     JOIN {$wpdb->posts} p ON p.ID = tr.object_id
                     WHERE tr.term_taxonomy_id = {$pt_ttid}
                     {$filter}
+                ";
+                // IDs cibles AVANT l'insert (le filtre 'sans catégorie' ne
+                // les matcherait plus après), pour purger leur cache objet
+                $target_ids = array_map('intval', (array) $wpdb->get_col(
+                    "SELECT DISTINCT tr.object_id {$sql_tail}"
+                ));
+                $added = (int) $wpdb->query("
+                    INSERT IGNORE INTO {$wpdb->term_relationships} (object_id, term_taxonomy_id, term_order)
+                    SELECT DISTINCT tr.object_id, {$cat_ttid}, 0
+                    {$sql_tail}
                 ");
+                foreach ($target_ids as $oid) {
+                    wp_cache_delete($oid, 'category_relationships');
+                }
                 $total_added  += $added;
                 $affected_tt[] = $cat_ttid;
                 $done[]        = esc_html($prod['name']) . ' → ' . esc_html(catcleanup_full_path($cat_id, $by_id)) . " : +{$added} posts";
