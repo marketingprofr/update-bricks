@@ -123,7 +123,10 @@ if ( empty( $data['rows'] ) && trim( (string) $data['intro'] ) === '' && empty( 
 }
 
 $crits = array();
-foreach ( $data['rows'] as $r ) {
+$_dbg_rows = array();
+foreach ( $data['rows'] as $_ri => $r ) {
+  $_dbg_rows[] = 'r[' . $_ri . '] type=' . gettype( $r ) . ( is_array( $r ) ? ' keys=[' . implode(',', array_keys( $r ) ) . '] t=' . var_export( isset( $r['mltv5_critere_de_choix'] ) ? $r['mltv5_critere_de_choix'] : '(unset)', true ) : '' );
+  if ( ! is_array( $r ) ) { continue; }
   $t = trim( (string) ( isset( $r['mltv5_critere_de_choix'] ) ? $r['mltv5_critere_de_choix'] : '' ) );
   $d = (string) ( isset( $r['mltv5_description_du_critere'] ) ? $r['mltv5_description_du_critere'] : '' );
   if ( $t === '' && trim( $d ) === '' ) { continue; }
