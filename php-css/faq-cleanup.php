@@ -2,16 +2,19 @@
 /* =====================================================================
    MEILLEURTEST — Nettoyage des FAQ manuelles (doublons auto Q/R)
    À coller dans WPCodeBox. N'agit QUE si ?faq_cleanup=1 est présent.
-   Paginé par lots de 50 pour ne pas exploser la mémoire (6000+ posts).
+
+   LECTURE via post meta BRUT (pas get_field) : évite le formatage ACF
+   (wptexturize + do_shortcode sur les WYSIWYG) qui faisait fataler/
+   timeouter sur 50 posts. L'écriture (runall) utilise update_field.
+   Paginé par lots pour la mémoire (6300+ posts).
    ===================================================================== */
 if ( ! isset( $_GET['faq_cleanup'] ) ) { return; }
 if ( ! function_exists( 'current_user_can' ) || ! current_user_can( 'manage_options' ) ) { return; }
-if ( ! function_exists( 'get_field' ) ) { echo '<p>ACF requis.</p>'; return; }
 
 $faq_action  = isset( $_GET['faq_action'] ) ? sanitize_text_field( $_GET['faq_action'] ) : '';
 $faq_page    = isset( $_GET['faq_page'] ) ? max( 1, (int) $_GET['faq_page'] ) : 1;
 $faq_base    = home_url( '/?faq_cleanup=1' );
-$PER_PAGE    = 50;
+$PER_PAGE    = 25;
 
 /* CONFIG */
 $faq_repeater = 'mltv5_faq_comparatif';
@@ -24,7 +27,7 @@ $faq_bad_words = array(
   'marque','marques','choisir','critere','criteres',
 );
 
-/* Troncature safe (pas de mb_strimwidth) */
+/* Troncature safe */
 $trunc = function( $s, $len ) {
   $s = (string) $s;
   if ( function_exists( 'mb_strlen' ) && mb_strlen( $s, 'UTF-8' ) > $len ) {
@@ -34,12 +37,12 @@ $trunc = function( $s, $len ) {
   return $s;
 };
 
-/* Strip accents pour la comparaison */
+/* Strip accents pour comparaison */
 $faq_strip = function( $s ) {
   return strtr( strtolower( trim( wp_strip_all_tags( (string) $s ) ) ), array(
     'à'=>'a','â'=>'a','ä'=>'a','é'=>'e','è'=>'e','ê'=>'e','ë'=>'e',
     'î'=>'i','ï'=>'i','ô'=>'o','ö'=>'o','ù'=>'u','û'=>'u','ü'=>'u',
-    'ç'=>'c','œ'=>'oe','æ'=>'ae','ô'=>'o',
+    'ç'=>'c','œ'=>'oe','æ'=>'ae',
   ));
 };
 
@@ -51,28 +54,46 @@ $faq_match = function( $question ) use ( $faq_strip, $faq_bad_words ) {
   return false;
 };
 
+/* Reconstruit les rows du repeater depuis le meta BRUT (pas get_field).
+   ACF stocke :  {repeater} = count ; {repeater}_{i}_{subfield} = valeur.
+   get_post_meta($pid) prime tout le meta en 1 requête (cache). */
+$faq_rows = function( $pid ) use ( $faq_repeater, $faq_q_key, $faq_a_key ) {
+  $count = (int) get_post_meta( $pid, $faq_repeater, true );
+  if ( $count < 1 ) { return array(); }
+  $out = array();
+  for ( $i = 0; $i < $count; $i++ ) {
+    $out[] = array(
+      'i' => $i,
+      'q' => (string) get_post_meta( $pid, $faq_repeater . '_' . $i . '_' . $faq_q_key, true ),
+      'a' => (string) get_post_meta( $pid, $faq_repeater . '_' . $i . '_' . $faq_a_key, true ),
+    );
+  }
+  return $out;
+};
+
 /* Compte total */
 $count_q = new WP_Query( array(
   'post_type'      => 'faq',
   'post_status'    => array( 'publish', 'draft', 'private' ),
   'posts_per_page' => 1,
   'fields'         => 'ids',
-  'no_found_rows'  => false,
 ) );
 $total_posts = (int) $count_q->found_posts;
 $total_pages = max( 1, (int) ceil( $total_posts / $PER_PAGE ) );
 wp_reset_postdata();
 
-/* Lot courant */
+/* Lot courant (IDs + cache meta amorcé pour éviter le N+1) */
 $faq_posts = get_posts( array(
-  'post_type'      => 'faq',
-  'post_status'    => array( 'publish', 'draft', 'private' ),
-  'posts_per_page' => $PER_PAGE,
-  'paged'          => $faq_page,
-  'fields'         => 'ids',
-  'no_found_rows'  => true,
-  'orderby'        => 'ID',
-  'order'          => 'ASC',
+  'post_type'              => 'faq',
+  'post_status'            => array( 'publish', 'draft', 'private' ),
+  'posts_per_page'         => $PER_PAGE,
+  'paged'                  => $faq_page,
+  'fields'                 => 'ids',
+  'no_found_rows'          => true,
+  'orderby'                => 'ID',
+  'order'                  => 'ASC',
+  'update_post_meta_cache' => true,
+  'update_post_term_cache' => false,
 ) );
 
 /* Pagination */
@@ -112,17 +133,16 @@ if ( $faq_action === 'export' ) {
 
   $n = 0;
   foreach ( $faq_posts as $pid ) {
-    $raw = get_field( $faq_repeater, (int) $pid );
-    if ( ! is_array( $raw ) ) { continue; }
+    $rows = $faq_rows( (int) $pid );
+    if ( empty( $rows ) ) { continue; }
     $t = (string) get_the_title( (int) $pid );
-    foreach ( $raw as $i => $r ) {
-      if ( ! is_array( $r ) ) { continue; }
-      $q = isset( $r[ $faq_q_key ] ) ? trim( wp_strip_all_tags( (string) $r[ $faq_q_key ] ) ) : '';
-      $a = isset( $r[ $faq_a_key ] ) ? trim( wp_strip_all_tags( (string) $r[ $faq_a_key ] ) ) : '';
+    foreach ( $rows as $r ) {
+      $q = trim( wp_strip_all_tags( $r['q'] ) );
+      $a = trim( wp_strip_all_tags( $r['a'] ) );
       echo '<tr>';
       echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $pid . '</td>';
       echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 35 ) ) . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $i . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $r['i'] . '</td>';
       echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $q, 70 ) ) . '</td>';
       echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#888">' . esc_html( $trunc( $a, 80 ) ) . '</td>';
       echo '</tr>';
@@ -145,18 +165,16 @@ if ( $faq_action === 'dryrun' ) {
 
   $n_rm = 0;
   foreach ( $faq_posts as $pid ) {
-    $raw = get_field( $faq_repeater, (int) $pid );
-    if ( ! is_array( $raw ) ) { continue; }
+    $rows = $faq_rows( (int) $pid );
+    if ( empty( $rows ) ) { continue; }
     $t = (string) get_the_title( (int) $pid );
-    foreach ( $raw as $r ) {
-      if ( ! is_array( $r ) ) { continue; }
-      $q = isset( $r[ $faq_q_key ] ) ? trim( (string) $r[ $faq_q_key ] ) : '';
-      $w = $faq_match( $q );
+    foreach ( $rows as $r ) {
+      $w = $faq_match( $r['q'] );
       if ( $w === false ) { continue; }
       $n_rm++;
       echo '<tr style="background:#fff8e1">';
       echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 40 ) ) . ' #' . (int) $pid . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( wp_strip_all_tags( $q ), 75 ) ) . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( wp_strip_all_tags( $r['q'] ), 75 ) ) . '</td>';
       echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#e67e22"><b>' . esc_html( $w ) . '</b></td>';
       echo '</tr>';
     }
@@ -170,22 +188,26 @@ if ( $faq_action === 'dryrun' ) {
 
 /* ── RUNALL (lot par lot, auto-reload) ───────────────────── */
 if ( $faq_action === 'runall' ) {
+  if ( ! function_exists( 'update_field' ) ) { echo '<p>ACF requis pour l\'ecriture.</p>'; return; }
+
   $n_rm = 0; $n_kept = 0; $n_touched = 0;
 
   foreach ( $faq_posts as $pid ) {
-    $raw = get_field( $faq_repeater, (int) $pid );
-    if ( ! is_array( $raw ) ) { continue; }
+    $rows = $faq_rows( (int) $pid );
+    if ( empty( $rows ) ) { continue; }
 
     $kept = array();
-    $had = false;
-    foreach ( $raw as $r ) {
-      if ( ! is_array( $r ) ) { continue; }
-      $q = isset( $r[ $faq_q_key ] ) ? trim( (string) $r[ $faq_q_key ] ) : '';
-      if ( $faq_match( $q ) !== false ) {
+    $had  = false;
+    foreach ( $rows as $r ) {
+      if ( $faq_match( $r['q'] ) !== false ) {
         $n_rm++;
         $had = true;
       } else {
-        $kept[] = $r;
+        /* Row reconstruite au format ACF (clés = noms de sous-champs). */
+        $kept[] = array(
+          $faq_q_key => $r['q'],
+          $faq_a_key => $r['a'],
+        );
       }
     }
     if ( $had ) {
@@ -197,12 +219,12 @@ if ( $faq_action === 'runall' ) {
 
   echo '<div style="max-width:700px;margin:40px auto;font:14px/1.6 system-ui,sans-serif">';
   echo '<h2 style="font-size:18px">Lot ' . $faq_page . '/' . $total_pages . '</h2>';
-  echo '<p>' . $n_touched . ' posts modifies, ' . $n_rm . ' rows supprimees, ' . $n_kept . ' conservees.</p>';
+  echo '<p>' . $n_touched . ' posts modifies, ' . $n_rm . ' rows supprimees, ' . $n_kept . ' conservees sur ce lot.</p>';
 
   if ( $faq_page < $total_pages ) {
     $next = $faq_base . '&faq_action=runall&faq_page=' . ( $faq_page + 1 );
-    echo '<p>Lot suivant dans 3s...</p>';
-    echo '<meta http-equiv="refresh" content="3;url=' . esc_url( $next ) . '">';
+    echo '<p>Lot suivant dans 2s...</p>';
+    echo '<meta http-equiv="refresh" content="2;url=' . esc_url( $next ) . '">';
     echo '<p><a href="' . esc_url( $next ) . '">Cliquer si pas de redirection</a></p>';
   } else {
     echo '<p style="color:green"><b>Termine ! ' . $total_posts . ' posts traites.</b></p>';
