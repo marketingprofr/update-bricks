@@ -130,10 +130,60 @@ if ( $faq_action === '' ) {
   echo '<h2>Nettoyage FAQ</h2>';
   echo '<p>' . $total_posts . ' posts FAQ. Lots de ' . $PER_PAGE . '.</p>';
   echo '<ol style="line-height:2.2">';
-  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=export' ) . '">Exporter</a></li>';
-  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=dryrun' ) . '">Dry-run</a></li>';
+  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=exportcsv' ) . '" onclick="return confirm(\'Generer le CSV complet (' . $total_posts . ' posts) ?\')"><b>Telecharger le CSV complet</b></a> (sauvegarde, auto-reload par lots)</li>';
+  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=export' ) . '">Previsualiser</a> (tableau HTML, page par page)</li>';
+  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=dryrun' ) . '">Dry-run</a> (ce qui serait supprime)</li>';
   echo '<li><a href="' . esc_url( $faq_base . '&faq_action=runall' ) . '" onclick="return confirm(\'OK ?\')">Tout nettoyer (auto-reload)</a></li>';
   echo '</ol></div>';
+  return;
+}
+
+/* ── EXPORT CSV COMPLET (fichier serveur, batché, auto-reload) ─── */
+if ( $faq_action === 'exportcsv' ) {
+  $up   = wp_upload_dir();
+  $file = trailingslashit( $up['basedir'] ) . 'faq-export.csv';
+  $url  = trailingslashit( $up['baseurl'] ) . 'faq-export.csv';
+  $done = isset( $_GET['faq_done'] ) ? (int) $_GET['faq_done'] : 0;
+
+  $mode = ( $faq_page <= 1 ) ? 'w' : 'a';
+  $fh   = @fopen( $file, $mode );
+  if ( ! $fh ) {
+    echo '<div style="max-width:700px;margin:40px auto;font:14px system-ui"><p style="color:#c0392b">Impossible d\'ouvrir le fichier : ' . esc_html( $file ) . '</p></div>';
+    return;
+  }
+  if ( $mode === 'w' ) {
+    fwrite( $fh, "\xEF\xBB\xBF" );                                   // BOM UTF-8 (Excel)
+    fputcsv( $fh, array( 'post_id', 'post_title', 'row_index', 'question', 'reponse' ) );
+  }
+
+  $batch = 0;
+  foreach ( $faq_posts as $pid ) {
+    try {
+      $rows = $faq_rows( (int) $pid );
+      if ( empty( $rows ) ) { continue; }
+      $t = (string) get_the_title( (int) $pid );
+      foreach ( $rows as $r ) {
+        fputcsv( $fh, array( (int) $pid, $t, (int) $r['i'], $r['q'], $r['a'] ) ); // valeurs BRUTES (restaurables)
+        $batch++;
+      }
+    } catch ( \Throwable $e ) { /* post ignoré */ }
+  }
+  fclose( $fh );
+  $done += $batch;
+
+  echo '<div style="max-width:700px;margin:40px auto;font:14px/1.6 system-ui,sans-serif">';
+  echo '<h2 style="font-size:18px">Export CSV — lot ' . $faq_page . '/' . $total_pages . '</h2>';
+  echo '<p>' . $done . ' Q/R ecrites dans le fichier.</p>';
+  if ( $faq_page < $total_pages ) {
+    $next = $faq_base . '&faq_action=exportcsv&faq_page=' . ( $faq_page + 1 ) . '&faq_done=' . $done;
+    echo '<meta http-equiv="refresh" content="1;url=' . esc_url( $next ) . '">';
+    echo '<p>Lot suivant dans 1s... <a href="' . esc_url( $next ) . '">(continuer)</a></p>';
+  } else {
+    echo '<p style="color:green;font-weight:700">Termine ! ' . $done . ' Q/R exportees.</p>';
+    echo '<p><a href="' . esc_url( $url ) . '" download style="display:inline-block;padding:10px 20px;background:#14181d;color:#fff;border-radius:6px;text-decoration:none;font-weight:600">Telecharger faq-export.csv</a></p>';
+    echo '<p style="font-size:12px;color:#888">' . esc_html( $file ) . '</p>';
+  }
+  echo '<p><a href="' . esc_url( $faq_base ) . '">Retour</a></p></div>';
   return;
 }
 
