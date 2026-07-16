@@ -11,6 +11,20 @@
 if ( ! isset( $_GET['faq_cleanup'] ) ) { return; }
 if ( ! function_exists( 'current_user_can' ) || ! current_user_can( 'manage_options' ) ) { return; }
 
+/* DEBUG : capture le vrai fatal que WPCodeBox avale et l'affiche. */
+@ini_set( 'display_errors', '1' );
+register_shutdown_function( function () {
+  $e = error_get_last();
+  if ( $e && in_array( $e['type'], array( E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR ), true ) ) {
+    echo '<pre style="background:#fdecea;border:2px solid #c0392b;padding:12px;margin:20px;white-space:pre-wrap;font:13px monospace;color:#7b241c;position:relative;z-index:99999">'
+       . 'FAQ CLEANUP — FATAL CAPTURÉ :' . "\n"
+       . htmlspecialchars( (string) $e['message'] ) . "\n"
+       . 'Fichier : ' . htmlspecialchars( (string) $e['file'] ) . ':' . (int) $e['line'] . "\n"
+       . 'Mémoire pic : ' . round( memory_get_peak_usage( true ) / 1048576, 1 ) . ' Mo / limite ' . ini_get( 'memory_limit' )
+       . '</pre>';
+  }
+} );
+
 $faq_action  = isset( $_GET['faq_action'] ) ? sanitize_text_field( $_GET['faq_action'] ) : '';
 $faq_page    = isset( $_GET['faq_page'] ) ? max( 1, (int) $_GET['faq_page'] ) : 1;
 $faq_base    = home_url( '/?faq_cleanup=1' );
@@ -133,20 +147,26 @@ if ( $faq_action === 'export' ) {
 
   $n = 0;
   foreach ( $faq_posts as $pid ) {
-    $rows = $faq_rows( (int) $pid );
-    if ( empty( $rows ) ) { continue; }
-    $t = (string) get_the_title( (int) $pid );
-    foreach ( $rows as $r ) {
-      $q = trim( wp_strip_all_tags( $r['q'] ) );
-      $a = trim( wp_strip_all_tags( $r['a'] ) );
-      echo '<tr>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $pid . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 35 ) ) . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $r['i'] . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $q, 70 ) ) . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#888">' . esc_html( $trunc( $a, 80 ) ) . '</td>';
-      echo '</tr>';
-      $n++;
+    try {
+      $rows = $faq_rows( (int) $pid );
+      if ( empty( $rows ) ) { continue; }
+      $t = (string) get_the_title( (int) $pid );
+      foreach ( $rows as $r ) {
+        $q = trim( wp_strip_all_tags( $r['q'] ) );
+        $a = trim( wp_strip_all_tags( $r['a'] ) );
+        echo '<tr>';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $pid . '</td>';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 35 ) ) . '</td>';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $r['i'] . '</td>';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $q, 70 ) ) . '</td>';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#888">' . esc_html( $trunc( $a, 80 ) ) . '</td>';
+        echo '</tr>';
+        $n++;
+      }
+    } catch ( \Throwable $e ) {
+      echo '<tr><td colspan="5" style="padding:6px;background:#fdecea;color:#c0392b">'
+         . 'ERREUR post #' . (int) $pid . ' : ' . esc_html( $e->getMessage() )
+         . ' (' . esc_html( basename( (string) $e->getFile() ) ) . ':' . (int) $e->getLine() . ')</td></tr>';
     }
   }
   echo '</table>';
