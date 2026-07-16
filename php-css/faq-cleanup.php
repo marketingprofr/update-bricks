@@ -21,7 +21,7 @@ $action = isset( $_GET['faq_action'] ) ? sanitize_text_field( $_GET['faq_action'
 $FAQ_REPEATER = 'mltv5_faq_comparatif';
 $FAQ_Q_KEY    = 'mltv5_faq_comparatif_question';
 $FAQ_A_KEY    = 'mltv5_faq_comparatif_reponse';
-$FAQ_PT       = 'comparatif';
+$FAQ_PT       = 'faq';
 
 /* Mots-clés de détection (minuscules, sans accents). Si l'un de ces
    mots apparaît dans la question, la row est considérée comme doublon
