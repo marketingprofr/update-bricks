@@ -280,7 +280,7 @@ if ( ! empty( $prods ) ) {
     } else {
       $a2 .= 'L&rsquo;option la plus accessible est <strong>' . esc_html( $cheap['name'] ) . '</strong> (environ ' . $euro( $cheap['price'] ) . ')';
       $a2 .= ( $cheap['score'] > 0 )
-        ? ', qui obtient tout de m&ecirc;me la note de ' . $note( $cheap['score'] ) . '/10&nbsp;: il n&rsquo;est donc pas indispensable de viser le haut du panier pour faire un bon choix.'
+        ? ', qui obtient tout de m&ecirc;me la note de ' . $note( $cheap['score'] ) . '/10&nbsp;: il n&rsquo;est donc pas indispensable de viser le plus cher pour faire un bon choix.'
         : '.';
     }
     $a2 .= ' Le bon budget d&eacute;pend surtout de votre usage&nbsp;: mieux vaut investir sur les crit&egrave;res qui comptent vraiment pour vous'
