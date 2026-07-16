@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Every comparison, guide, and review — one click away</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: oklch(0.18 0 0);
+    --ink-2: oklch(0.38 0 0);
+    --ink-3: oklch(0.58 0 0);
+    --line: oklch(0.90 0 0);
+    --accent: oklch(0.45 0.16 25);
+    --accent-hover: oklch(0.38 0.16 25);
+    --serif: "Source Serif 4", Georgia, serif;
+    --sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #ffffff; color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 1.5; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-hover); }
+
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- SITEMAP / DEEP LINKS ---------- */
+  .sitemap {
+    padding: 88px 0 96px;
+    background: #ffffff;
+    border-top: 1px solid var(--line);
+  }
+  .sitemap-head {
+    display: flex; align-items: end; justify-content: space-between;
+    gap: 32px; margin-bottom: 48px;
+    padding-bottom: 28px; border-bottom: 1px solid var(--line);
+  }
+  .sitemap-head h2 {
+    font-family: var(--serif); font-weight: 600;
+    font-size: 44px; line-height: 1.05; letter-spacing: -0.02em;
+    margin: 0;
+    max-width: 22ch; text-wrap: balance;
+  }
+  .sitemap-head h2 em { font-style: italic; color: var(--accent); }
+  .sitemap-head .lead {
+    font-family: var(--serif); font-size: 16px; line-height: 1.55;
+    color: var(--ink-2); max-width: 38ch;
+    margin: 0;
+  }
+  .sitemap-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 48px 40px;
+  }
+  .sitemap-col h4 {
+    font-family: var(--sans); font-weight: 600;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); margin: 0 0 16px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .sitemap-col h4 .num {
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: 14px; letter-spacing: 0; text-transform: none;
+    color: var(--ink-3);
+  }
+  .sitemap-col ul {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; gap: 9px;
+  }
+  .sitemap-col li a {
+    font-family: var(--serif); font-size: 15px;
+    color: var(--ink); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: color .15s;
+  }
+  .sitemap-col li a::before {
+    content: ""; width: 6px; height: 1px;
+    background: var(--ink-3); flex: none;
+    transition: width .2s, background .15s;
+  }
+  .sitemap-col li a:hover { color: var(--accent); }
+  .sitemap-col li a:hover::before { width: 14px; background: var(--accent); }
+  .sitemap-col li a.all-link { color: var(--accent); font-style: italic; }
+  .sitemap-col li a.all-link::before { background: var(--accent); }
+  .sitemap-col li a.all-link:hover { color: var(--accent-hover); }
+  .sitemap-col li a.all-link:hover::before { background: var(--accent-hover); }
+  .sitemap-foot {
+    margin-top: 48px; padding-top: 28px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 12px;
+    letter-spacing: 0.06em; color: var(--ink-3);
+  }
+  .sitemap-foot a {
+    color: var(--ink); text-decoration: none;
+    border-bottom: 1px solid var(--ink-3);
+    padding-bottom: 1px;
+  }
+  .sitemap-foot a:hover { color: var(--accent); border-color: var(--accent); }
+
+  @media (max-width: 1024px) {
+    .wrap { padding: 0 24px; }
+    .sitemap-head { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .sitemap-head .lead { max-width: 60ch; }
+  }
+  @media (max-width: 900px) {
+    .sitemap-grid { grid-template-columns: repeat(2, 1fr); gap: 40px 32px; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 18px; }
+    .sitemap-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ SITEMAP / DEEP LINKS ============ -->
+<section class="sitemap">
+  <div class="wrap">
+    <div class="sitemap-head">
+      <div>
+        <span class="eyebrow">The full index</span>
+        <h2>Every comparison, guide, and review — <em>one click away</em>.</h2>
+      </div>
+      <p class="lead">412 active reviews and 86 head-to-head comparisons, organized by what you're actually trying to decide.</p>
+    </div>
+
+    <div class="sitemap-grid">
+
+      <div class="sitemap-col">
+        <h4>Comparisons <span class="num">86</span></h4>
+        <ul>
+          <li><a href="#">Sony WH-1000XM6 vs Bose QC Ultra</a></li>
+          <li><a href="#">AirPods Pro 3 vs WF-1000XM6</a></li>
+          <li><a href="#">Sonos Era 300 vs HomePod 2</a></li>
+          <li><a href="#">KEF LSX II LT vs Audioengine HD6</a></li>
+          <li><a href="#">Sennheiser Momentum 4 vs B&amp;W Px8</a></li>
+          <li><a href="#">SteelSeries Arctis Nova vs Astro A50 X</a></li>
+          <li><a href="#">Sonos Arc Ultra vs Samsung HW-Q990D</a></li>
+          <li><a href="#">Shokz OpenRun Pro 2 vs Bose Ultra Open</a></li>
+          <li><a href="#">Focal Bathys vs Mark Levinson No.5909</a></li>
+          <li><a href="#" class="all-link">All 86 comparisons →</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-col">
+        <h4>Buying guides <span class="num">54</span></h4>
+        <ul>
+          <li><a href="#">Best wireless earbuds under $200</a></li>
+          <li><a href="#">What "noise cancelling" actually means</a></li>
+          <li><a href="#">How to pick a soundbar for your TV</a></li>
+          <li><a href="#">First headphone amp buyer's guide</a></li>
+          <li><a href="#">Reading a frequency response graph</a></li>
+          <li><a href="#">Lossless on Apple Music, decoded</a></li>
+          <li><a href="#">Multi-room audio in 2026</a></li>
+          <li><a href="#">Open-back vs closed-back, decided</a></li>
+          <li><a href="#">Spatial audio: hype vs payoff</a></li>
+          <li><a href="#" class="all-link">All 54 guides →</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-col">
+        <h4>Headphone reviews <span class="num">82</span></h4>
+        <ul>
+          <li><a href="#">Sony WH-1000XM6</a></li>
+          <li><a href="#">Bose QuietComfort Ultra</a></li>
+          <li><a href="#">Sennheiser Momentum 4</a></li>
+          <li><a href="#">Bowers &amp; Wilkins Px8</a></li>
+          <li><a href="#">Apple AirPods Max (USB-C)</a></li>
+          <li><a href="#">Focal Bathys</a></li>
+          <li><a href="#">Mark Levinson No.5909</a></li>
+          <li><a href="#">Audio-Technica ATH-M50xBT2</a></li>
+          <li><a href="#">Beyerdynamic Aventho 300</a></li>
+          <li><a href="#" class="all-link">All 82 reviews →</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-col">
+        <h4>Earbud reviews <span class="num">68</span></h4>
+        <ul>
+          <li><a href="#">Apple AirPods Pro 3</a></li>
+          <li><a href="#">Sony WF-1000XM6</a></li>
+          <li><a href="#">Bose QuietComfort Earbuds II</a></li>
+          <li><a href="#">Beats Studio Buds +</a></li>
+          <li><a href="#">Nothing Ear (3)</a></li>
+          <li><a href="#">Samsung Galaxy Buds3 Pro</a></li>
+          <li><a href="#">Technics EAH-AZ100</a></li>
+          <li><a href="#">Shokz OpenRun Pro 2</a></li>
+          <li><a href="#">Bose Ultra Open</a></li>
+          <li><a href="#" class="all-link">All 68 reviews →</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-col">
+        <h4>Speaker reviews <span class="num">59</span></h4>
+        <ul>
+          <li><a href="#">Sonos Era 300</a></li>
+          <li><a href="#">Apple HomePod 2</a></li>
+          <li><a href="#">KEF LSX II LT</a></li>
+          <li><a href="#">Audioengine HD6</a></li>
+          <li><a href="#">Sonos Move 2</a></li>
+          <li><a href="#">Bose SoundLink Max</a></li>
+          <li><a href="#">JBL Charge 6</a></li>
+          <li><a href="#">Bang &amp; Olufsen Beosound A5</a></li>
+          <li><a href="#">Devialet Mania</a></li>
+          <li><a href="#" class="all-link">All 59 reviews →</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-col">
+        <h4>Home theater <span class="num">37</span></h4>
+        <ul>
+          <li><a href="#">Sonos Arc Ultra</a></li>
+          <li><a href="#">Samsung HW-Q990D</a></li>
+          <li><a href="#">Sony Bravia Theatre Bar 9</a></li>
+          <li><a href="#">Bose Smart Ultra Soundbar</a></li>
+          <li><a href="#">LG S95TR</a></li>
+          <li><a href="#">Sennheiser Ambeo Mini</a></li>
+          <li><a href="#">Denon AVR-X3800H</a></li>
+          <li><a href="#">Marantz Cinema 50</a></li>
+          <li><a href="#">SVS PB-2000 Pro Subwoofer</a></li>
+          <li><a href="#" class="all-link">All 37 reviews →</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-col">
+        <h4>Gaming audio <span class="num">44</span></h4>
+        <ul>
+          <li><a href="#">SteelSeries Arctis Nova Pro Wireless</a></li>
+          <li><a href="#">Astro A50 X</a></li>
+          <li><a href="#">Logitech G Pro X 2 Lightspeed</a></li>
+          <li><a href="#">Razer BlackShark V2 Pro (2024)</a></li>
+          <li><a href="#">HyperX Cloud Alpha Wireless</a></li>
+          <li><a href="#">Sony InZone H9 II</a></li>
+          <li><a href="#">Audeze Maxwell</a></li>
+          <li><a href="#">EPOS H6 Pro</a></li>
+          <li><a href="#">Corsair Virtuoso Max</a></li>
+          <li><a href="#" class="all-link">All 44 reviews →</a></li>
+        </ul>
+      </div>
+
+      <div class="sitemap-col">
+        <h4>Hi-Fi &amp; DACs <span class="num">52</span></h4>
+        <ul>
+          <li><a href="#">Schiit Modi+ DAC</a></li>
+          <li><a href="#">Topping E50 DAC</a></li>
+          <li><a href="#">Chord Mojo 2</a></li>
+          <li><a href="#">FiiO K11 R2R</a></li>
+          <li><a href="#">iFi Zen DAC v3</a></li>
+          <li><a href="#">Cambridge Audio CXA81 MkII</a></li>
+          <li><a href="#">NAD C 3050 LE</a></li>
+          <li><a href="#">Sennheiser HD 660S2</a></li>
+          <li><a href="#">Hifiman Arya Organic</a></li>
+          <li><a href="#" class="all-link">All 52 reviews →</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="sitemap-foot">
+      <span>Can't find what you're looking for? <a href="#">Browse the full archive</a></span>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
