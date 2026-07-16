@@ -10,11 +10,14 @@
        . mltv5_faq_comparatif_reponse   (réponse — WYSIWYG)
    Repli sur le post lié `mltv5_cache_id_faq` (lecture robuste).
 
-   + 3 Q/R AUTOMATIQUES en tête, générées depuis les données dynamiques du
-   guide (classement top, prix, avis clients, stats). Conçues pour fonctionner
-   sur TOUT type de produit (smartphones, chaussures, huile d'olive, couches…) :
-   accords dérivés de `lalalesmeilleur`, tournures neutres, sections muettes
-   si la donnée manque.
+   + jusqu'à 5 Q/R AUTOMATIQUES en tête, générées depuis les données dynamiques
+   du guide (classement top + points forts/faibles + libellé de note, marques,
+   prix / avis clients / confiance, critères du guide d'achat, méthodologie +
+   date de mise à jour). Réponses en 2 paragraphes avec renvois d'ancres internes
+   (#produit-n-1, #partie-tableau-comparatif, #partie-guide-achat). Conçues pour
+   fonctionner sur TOUT type de produit (smartphones, chaussures, huile d'olive,
+   couches…) : accords dérivés de `lalalesmeilleur`, tournures neutres, sections
+   muettes si la donnée manque.
 
    STANDARDS WEB :
    - Accordéon natif <details>/<summary> -> accessible, sans JS.
@@ -68,6 +71,20 @@ if ( ! function_exists( 'mt_faq_join_et' ) ) {
     if ( $n === 1 ) { return $items[0]; }
     $last = array_pop( $items );
     return implode( ', ', $items ) . ' et ' . $last;
+  }
+}
+if ( ! function_exists( 'mt5_points' ) ) {
+  /* Lignes d'un repeater de points -> tableau de textes non vides. */
+  function mt5_points( $field, $pid, $subkey ) {
+    $rows = get_field( $field, $pid );
+    $out  = array();
+    if ( is_array( $rows ) ) {
+      foreach ( $rows as $r ) {
+        $p = isset( $r[ $subkey ] ) ? trim( (string) $r[ $subkey ] ) : '';
+        if ( $p !== '' ) { $out[] = $p; }
+      }
+    }
+    return $out;
   }
 }
 if ( ! function_exists( 'mt_faq_read' ) ) {
@@ -133,10 +150,30 @@ if ( ! empty( $ids ) ) {
       'price'  => mt5_num( get_field( 'mltv5_prix_indicatif', $pid ) ),
       'crate'  => mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ),
       'ccount' => (int) preg_replace( '/[^0-9]/', '', (string) get_field( 'mltv5_nombre_avis_clients', $pid ) ),
+      'label'  => function_exists( 'get_acf_score_label' ) ? trim( (string) get_acf_score_label() ) : '',
+      'pros'   => array_slice( mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' ), 0, 3 ),
+      'cons'   => array_slice( mt5_points( 'mltv5_points_negatifs_produit', $pid, 'mltv5_point_negatif' ), 0, 1 ),
     );
   }
   $post = $saved;
   wp_reset_postdata();
+}
+
+/* Titres des critères du guide d'achat (page courante -> repli post lié) :
+   alimentent la question « Comment bien choisir ? » et les renvois d'ancre. */
+$crit_titles = array();
+$crit_rows   = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $page_id ) : null;
+if ( ! is_array( $crit_rows ) || empty( $crit_rows ) ) {
+  $crit_src = mt_guide_cache_id( $page_id, 'criteres' );
+  if ( $crit_src && $crit_src !== $page_id ) {
+    $crit_rows = function_exists( 'get_field' ) ? get_field( 'mltv5_criteres_de_choix', $crit_src ) : null;
+  }
+}
+if ( is_array( $crit_rows ) ) {
+  foreach ( $crit_rows as $r ) {
+    $t = ( is_array( $r ) && isset( $r['mltv5_critere_de_choix'] ) ) ? trim( (string) $r['mltv5_critere_de_choix'] ) : '';
+    if ( $t !== '' ) { $crit_titles[] = $t; }
+  }
 }
 
 $autos = array();
@@ -147,6 +184,7 @@ if ( ! empty( $prods ) ) {
   $plural = ( strpos( $low, 'les ' ) === 0 );
   $fem    = $plural ? ( strpos( $low, 'meilleures' ) !== false ) : ( strpos( $low, 'la ' ) === 0 );
   $euro   = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0&euro;"; };
+  $note   = function ( $v ) { return number_format( (float) $v, 1, ',', '' ); };
   /* Élision « de » / « d' » devant voyelle ou h (ex. d'huiles d'olive). */
   $de = function ( $w ) {
     $w = ltrim( (string) $w );
@@ -154,6 +192,15 @@ if ( ! empty( $prods ) ) {
     $first = function_exists( 'mb_substr' ) ? mb_strtolower( mb_substr( $w, 0, 1, 'UTF-8' ), 'UTF-8' ) : strtolower( $w[0] );
     return ( mb_strpos( 'aàâäeéèêëiîïoôöuùûühyœæ', $first ) !== false ) ? 'd&rsquo;' : 'de ';
   };
+  /* Produit « podium » : nom en gras + note entre parenthèses si dispo. */
+  $pod = function ( $p ) use ( $note ) {
+    $s = '<strong>' . esc_html( $p['name'] ) . '</strong>';
+    if ( $p['score'] > 0 ) { $s .= ' (' . $note( $p['score'] ) . '/10)'; }
+    return $s;
+  };
+  $nbp      = count( $prods );
+  $p1       = $prods[0];
+  $has_crit = ! empty( $crit_titles );
 
   /* --- Q1 : le meilleur produit --------------------------------------- */
   $best_noun = $plural ? ( $type_plur !== '' ? $type_plur : $type_sing ) : ( $type_sing !== '' ? $type_sing : $type_plur );
@@ -164,30 +211,48 @@ if ( ! empty( $prods ) ) {
     $noun = $best_noun !== '' ? $best_noun : 'produit';
     $q1 = 'Quel est le meilleur ' . esc_html( $noun ) . '&nbsp;?';
   }
-  $b  = $prods[0];
-  $a1 = '<p>Au terme de notre comparatif, c&rsquo;est <strong>' . esc_html( $b['name'] ) . '</strong> qui se classe en t&ecirc;te de notre s&eacute;lection';
-  if ( $b['score'] > 0 ) { $a1 .= ', avec une note de ' . number_format( $b['score'], 1, ',', '' ) . '/10'; }
-  $a1 .= '.';
-  if ( count( $prods ) >= 3 ) {
-    $a1 .= ' Sur le podium, on retrouve &eacute;galement ' . esc_html( $prods[1]['name'] ) . ' et ' . esc_html( $prods[2]['name'] ) . '.';
-  } elseif ( count( $prods ) === 2 ) {
-    $a1 .= ' Juste derri&egrave;re arrive ' . esc_html( $prods[1]['name'] ) . '.';
+  $a1 = '<p>Au terme de notre comparatif, c&rsquo;est <strong>' . esc_html( $p1['name'] ) . '</strong> qui se classe en t&ecirc;te de notre s&eacute;lection';
+  if ( $p1['score'] > 0 ) {
+    $a1 .= ', avec une note de <strong>' . $note( $p1['score'] ) . '/10</strong>';
+    if ( $p1['label'] !== '' ) { $a1 .= ' (&laquo;&nbsp;' . esc_html( $p1['label'] ) . '&nbsp;&raquo;)'; }
   }
-  $a1 .= ' Retrouvez le classement complet et nos avis d&eacute;taill&eacute;s plus haut sur cette page.</p>';
+  $a1 .= '.';
+  if ( ! empty( $p1['pros'] ) ) {
+    $a1 .= ' Ses principaux atouts&nbsp;: ' . esc_html( mt_faq_join_et( $p1['pros'] ) ) . '.';
+  }
+  if ( ! empty( $p1['cons'] ) ) {
+    $a1 .= ' Son principal b&eacute;mol&nbsp;: ' . esc_html( $p1['cons'][0] ) . '.';
+  }
+  $a1 .= '</p><p>';
+  if ( $nbp >= 3 ) {
+    $a1 .= 'Sur le podium, on retrouve &eacute;galement ' . $pod( $prods[1] ) . ' et ' . $pod( $prods[2] ) . '. ';
+  } elseif ( $nbp === 2 ) {
+    $a1 .= 'Juste derri&egrave;re arrive ' . $pod( $prods[1] ) . '. ';
+  }
+  $a1 .= 'Le &laquo;&nbsp;meilleur&nbsp;&raquo; choix reste toutefois celui qui correspond &agrave; votre usage et &agrave; votre budget&nbsp;: un mod&egrave;le un peu moins bien class&eacute; peut tr&egrave;s bien &ecirc;tre plus adapt&eacute; &agrave; votre situation. Pour trancher, parcourez nos <a href="#produit-n-1">avis d&eacute;taill&eacute;s</a> et le <a href="#partie-tableau-comparatif">tableau comparatif</a>, un peu plus haut sur cette page.</p>';
   $autos[] = array( 'q' => $q1, 'a' => $a1 );
 
-  /* --- Q « marques » : marques distinctes du classement (ordre de rang) --- */
-  $brands_ord = array();
-  foreach ( $prods as $p ) {
+  /* --- Q « marques » : marques distinctes du classement (ordre de rang,
+         annotées : n°1 du classement / nb de produits classés) ----------- */
+  $brands_ord = array();   // marque -> ['rank' => meilleur rang, 'n' => nb produits]
+  foreach ( $prods as $bi => $p ) {
     $bn = trim( (string) $p['brand'] );
-    if ( $bn !== '' && ! in_array( $bn, $brands_ord, true ) ) { $brands_ord[] = $bn; }
+    if ( $bn === '' ) { continue; }
+    if ( ! isset( $brands_ord[ $bn ] ) ) { $brands_ord[ $bn ] = array( 'rank' => $bi + 1, 'n' => 0 ); }
+    $brands_ord[ $bn ]['n']++;
   }
   if ( count( $brands_ord ) >= 2 ) {
-    $top_brands = array_slice( $brands_ord, 0, 4 );
-    $bstr = array_map( function ( $b ) { return '<strong>' . esc_html( $b ) . '</strong>'; }, $top_brands );
+    $bstr = array();
+    foreach ( array_slice( $brands_ord, 0, 4, true ) as $bn => $binf ) {
+      $s = '<strong>' . esc_html( $bn ) . '</strong>';
+      if ( $binf['rank'] === 1 )  { $s .= ' (qui signe le num&eacute;ro&nbsp;1 de notre classement)'; }
+      elseif ( $binf['n'] >= 2 )  { $s .= ' (' . (int) $binf['n'] . ' produits class&eacute;s)'; }
+      $bstr[] = $s;
+    }
     $qm = 'Quelles sont les meilleures marques' . ( $type_plur !== '' ? ' ' . $de( $type_plur ) . esc_html( $type_plur ) : '' ) . '&nbsp;?';
-    $am = '<p>Les marques les plus repr&eacute;sent&eacute;es dans notre s&eacute;lection sont ' . mt_faq_join_et( $bstr )
-        . '. Le meilleur choix d&eacute;pend toutefois de vos besoins&nbsp;: mieux vaut comparer les produits que les marques.</p>';
+    $am = '<p>Les marques qui dominent notre s&eacute;lection sont ' . mt_faq_join_et( $bstr )
+        . '. Ce sont elles qui proposent aujourd&rsquo;hui les mod&egrave;les les plus convaincants au regard de nos crit&egrave;res et des retours d&rsquo;utilisateurs.</p>'
+        . '<p>Une marque install&eacute;e apporte de vraies garanties&nbsp;: s&eacute;rieux du service client, fiabilit&eacute; &eacute;prouv&eacute;e dans le temps, pi&egrave;ces et accessoires plus faciles &agrave; trouver. Mais elle ne fait pas tout&nbsp;: au sein d&rsquo;un m&ecirc;me catalogue, tous les mod&egrave;les ne se valent pas. Notre conseil&nbsp;: comparez les produits plut&ocirc;t que les logos, en partant du classement ci-dessus.</p>';
     $autos[] = array( 'q' => $qm, 'a' => $am );
   }
 
@@ -205,23 +270,62 @@ if ( ! empty( $prods ) ) {
       : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
     $noun_pl = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
     $q2 = 'Quel budget pr&eacute;voir pour ' . esc_html( trim( $indef ) ) . '&nbsp;?';
-    $a2 = '<p>Les ' . esc_html( $noun_pl ) . ' de notre s&eacute;lection s&rsquo;&eacute;chelonnent d&rsquo;environ ' . $euro( $min ) . ' &agrave; ' . $euro( $max ) . '. L&rsquo;option la plus accessible est <strong>' . esc_html( $cheap['name'] ) . '</strong> (environ ' . $euro( $cheap['price'] ) . ').</p>';
+    $a2 = '<p>Les ' . esc_html( $noun_pl ) . ' de notre s&eacute;lection s&rsquo;&eacute;chelonnent d&rsquo;environ ' . $euro( $min ) . ' &agrave; ' . $euro( $max ) . '.';
+    if ( $p1['price'] > 0 && $cheap['name'] !== $p1['name'] ) {
+      $a2 .= ' Notre num&eacute;ro&nbsp;1, <strong>' . esc_html( $p1['name'] ) . '</strong>, se situe autour de ' . $euro( $p1['price'] ) . '.';
+    }
+    $a2 .= '</p><p>';
+    if ( $cheap['name'] === $p1['name'] ) {
+      $a2 .= 'Bonne nouvelle&nbsp;: l&rsquo;option la plus accessible, <strong>' . esc_html( $cheap['name'] ) . '</strong> (environ ' . $euro( $cheap['price'] ) . '), est aussi la mieux class&eacute;e de notre comparatif.';
+    } else {
+      $a2 .= 'L&rsquo;option la plus accessible est <strong>' . esc_html( $cheap['name'] ) . '</strong> (environ ' . $euro( $cheap['price'] ) . ')';
+      $a2 .= ( $cheap['score'] > 0 )
+        ? ', qui obtient tout de m&ecirc;me la note de ' . $note( $cheap['score'] ) . '/10&nbsp;: il n&rsquo;est donc pas indispensable de viser le haut du panier pour &ecirc;tre bien &eacute;quip&eacute;.'
+        : '.';
+    }
+    $a2 .= ' Le bon budget d&eacute;pend surtout de votre usage&nbsp;: mieux vaut payer pour les crit&egrave;res qui comptent vraiment pour vous'
+        . ( $has_crit ? ' (nous les passons en revue dans le <a href="#partie-guide-achat">guide d&rsquo;achat</a>)' : '' )
+        . ' que pour des options qui ne serviront jamais.</p>';
     $autos[] = array( 'q' => $q2, 'a' => $a2 );
   } elseif ( count( $rated ) >= 2 ) {
     $best_r = $rated[0];
     foreach ( $rated as $p ) {
       if ( $p['crate'] > $best_r['crate'] || ( $p['crate'] === $best_r['crate'] && $p['ccount'] > $best_r['ccount'] ) ) { $best_r = $p; }
     }
+    $tot_avis = 0;
+    foreach ( $prods as $p ) { $tot_avis += (int) $p['ccount']; }
     $q2 = 'Quel produit a les meilleurs avis clients&nbsp;?';
-    $a2 = '<p>Avec une note de ' . number_format( $best_r['crate'], 1, ',', '' ) . '/5';
+    $a2 = '<p>Avec une note de <strong>' . $note( $best_r['crate'] ) . '/5</strong>';
     if ( $best_r['ccount'] > 0 ) { $a2 .= ' fond&eacute;e sur ' . number_format( $best_r['ccount'], 0, ',', "\xc2\xa0" ) . ' avis'; }
-    $a2 .= ', c&rsquo;est <strong>' . esc_html( $best_r['name'] ) . '</strong> qui recueille les meilleurs retours d&rsquo;utilisateurs.</p>';
+    $a2 .= ', c&rsquo;est <strong>' . esc_html( $best_r['name'] ) . '</strong> qui recueille les meilleurs retours d&rsquo;utilisateurs.';
+    if ( $best_r['name'] === $p1['name'] ) {
+      $a2 .= ' Les acheteurs rejoignent donc notre verdict, puisqu&rsquo;il s&rsquo;agit aussi du num&eacute;ro&nbsp;1 de notre classement.';
+    } else {
+      $a2 .= ' Notre num&eacute;ro&nbsp;1 reste toutefois <strong>' . esc_html( $p1['name'] ) . '</strong>&nbsp;: les avis clients sont un signal pr&eacute;cieux, mais ils refl&egrave;tent parfois davantage le rapport qualit&eacute;-prix que la performance pure.';
+    }
+    $a2 .= '</p>';
+    if ( $tot_avis > 0 ) {
+      $a2 .= '<p>Au total, les produits de notre s&eacute;lection cumulent ' . number_format( $tot_avis, 0, ',', "\xc2\xa0" ) . ' avis clients&nbsp;: un volume qui permet de d&eacute;gager des tendances fiables sur la dur&eacute;e (fiabilit&eacute;, service apr&egrave;s-vente, d&eacute;fauts r&eacute;currents), et que nous int&eacute;grons &agrave; notre analyse.</p>';
+    }
     $autos[] = array( 'q' => $q2, 'a' => $a2 );
   } else {
     $autos[] = array(
       'q' => 'Pourquoi faire confiance &agrave; ce comparatif&nbsp;?',
-      'a' => '<p>Nos comparatifs sont r&eacute;alis&eacute;s en toute ind&eacute;pendance par notre r&eacute;daction. Aucune marque ne peut acheter sa place&nbsp;: le classement repose sur des tests, des crit&egrave;res objectifs et l&rsquo;analyse des avis d&rsquo;utilisateurs.</p>',
+      'a' => '<p>Notre r&eacute;daction travaille en toute ind&eacute;pendance&nbsp;: aucune marque ne peut acheter sa place dans un classement, et nous n&rsquo;acceptons ni publicit&eacute; ni cadeau des fabricants. Le classement repose sur des crit&egrave;res objectifs (caract&eacute;ristiques, rapport qualit&eacute;-prix, fiabilit&eacute;) et sur l&rsquo;analyse des retours d&rsquo;utilisateurs.</p>'
+         . '<p>En toute transparence&nbsp;: nous pouvons toucher une commission si vous achetez via nos liens. Elle ne change ni le prix que vous payez, ni l&rsquo;ordre de notre s&eacute;lection, et c&rsquo;est ce qui nous permet de rester libres de nos verdicts. Nos comparatifs sont par ailleurs mis &agrave; jour r&eacute;guli&egrave;rement pour suivre les nouveaut&eacute;s et les &eacute;volutions du march&eacute;.</p>',
     );
+  }
+
+  /* --- Q « comment choisir » : titres réels des critères du guide ------- */
+  if ( $has_crit ) {
+    $poss   = $plural ? 'vos' : 'votre';
+    $noun_q = $best_noun !== '' ? $best_noun : 'produit';
+    $list   = array_map( 'esc_html', array_slice( $crit_titles, 0, 6 ) );
+    $qc = 'Comment bien choisir ' . esc_html( $poss . ' ' . $noun_q ) . '&nbsp;?';
+    $ac = '<p>Avant de comparer les mod&egrave;les, prenez le temps de cerner vos besoins. Les crit&egrave;res qui font vraiment la diff&eacute;rence sont'
+        . ( count( $crit_titles ) > 6 ? ' notamment' : '' ) . '&nbsp;: ' . mt_faq_join_et( $list ) . '.</p>'
+        . '<p>Chacun de ces points est d&eacute;taill&eacute; dans notre <a href="#partie-guide-achat">guide d&rsquo;achat</a>, un peu plus haut sur cette page, avec nos conseils pour arbitrer selon votre usage et votre budget. Et si vous ne souhaitez pas entrer dans le d&eacute;tail&nbsp;: notre classement tient d&eacute;j&agrave; compte de l&rsquo;ensemble de ces crit&egrave;res.</p>';
+    $autos[] = array( 'q' => $qc, 'a' => $ac );
   }
 
   /* --- Slot 3 : méthodologie (stats si dispo, sinon générique) --------- */
@@ -235,10 +339,13 @@ if ( ! empty( $prods ) ) {
   if ( $s_src  !== '' ) { $bits[] = 'consult&eacute; ' . esc_html( $s_src ) . ' sources'; }
   if ( $s_heu  !== '' ) { $bits[] = 'pass&eacute; ' . esc_html( $s_heu ) . ' heures &agrave; les analyser'; }
   if ( ! empty( $bits ) ) {
-    $a3 = '<p>Pour ce comparatif, notre &eacute;quipe a ' . mt_faq_join_et( $bits ) . '. Le classement est r&eacute;guli&egrave;rement mis &agrave; jour pour rester fiable.</p>';
+    $a3 = '<p>Pour &eacute;tablir ce classement, notre &eacute;quipe a ' . mt_faq_join_et( $bits ) . '.</p>';
   } else {
-    $a3 = '<p>Ce classement r&eacute;sulte d&rsquo;un travail de recherche et de comparaison men&eacute; par notre r&eacute;daction&nbsp;: analyse des caract&eacute;ristiques, des performances et des avis d&rsquo;utilisateurs, mis &agrave; jour r&eacute;guli&egrave;rement.</p>';
+    $a3 = '<p>Ce classement r&eacute;sulte d&rsquo;un travail de recherche et de comparaison men&eacute; par notre r&eacute;daction&nbsp;: analyse des caract&eacute;ristiques et des performances, confrontation des sources sp&eacute;cialis&eacute;es et synth&egrave;se des avis d&rsquo;utilisateurs.</p>';
   }
+  $upd = get_the_modified_date( 'F Y', $page_id );
+  $a3 .= '<p>Concr&egrave;tement, chaque produit est &eacute;valu&eacute; sur ses caract&eacute;ristiques, son rapport qualit&eacute;-prix et la synth&egrave;se des retours d&rsquo;utilisateurs, puis re&ccedil;oit une note sur 10 qui d&eacute;termine sa place dans la s&eacute;lection. Aucun placement n&rsquo;est sponsoris&eacute;&nbsp;: les marques n&rsquo;interviennent jamais dans nos choix.'
+      . ( $upd ? ' Derni&egrave;re mise &agrave; jour de ce comparatif&nbsp;: ' . esc_html( $upd ) . '.' : '' ) . '</p>';
   $autos[] = array( 'q' => 'Comment avons-nous &eacute;tabli ce classement&nbsp;?', 'a' => $a3 );
 }
 

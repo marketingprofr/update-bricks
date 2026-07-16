@@ -480,7 +480,10 @@ Code Bricks. Scope `.mt-faq`.
   ancre sommaire + jauge de lecture. Couvre le TODO « poser l'ancre `partie-faq` ».
 - Intro statique : « Voici les questions les plus fréquemment posées par nos
   lecteurs et la communauté. »
-- **Q/R AUTOMATIQUES en tête** (avant les manuelles), pensées **type-agnostiques**
+- **Q/R AUTOMATIQUES en tête** (avant les manuelles ; **enrichies 07/2026** :
+  réponses en 2 paragraphes, données étoffées, renvois d'ancres internes
+  `#produit-n-1` / `#partie-tableau-comparatif` / `#partie-guide-achat`),
+  pensées **type-agnostiques**
   (smartphones, chaussures, huile d'olive, couches…) — ne s'affichent que si le
   guide a des produits (`top_avis_ids` → fallback `mltv5_best_products`, même
   sourcing + passe `setup_postdata` que resume/comparatif) :
@@ -497,9 +500,22 @@ Code Bricks. Scope `.mt-faq`.
     plus accessible ; article un/une/des dérivé du genre/nombre) → sinon avis
     clients si **≥2 notes** (`mltv5_score_avis_clients`) → sinon « confiance /
     indépendance » (générique).
-  - **Q3** = méthodologie : stats `produits_analyses`/`avis_etudies`/
+  - **Q1 enrichie** : note en gras + libellé (`get_acf_score_label`), points
+    forts (max 3) + bémol (max 1) du n°1 via `mt5_points` (repeaters
+    `mltv5_points_positifs/negatifs_produit`), podium avec notes.
+  - **Q marques enrichie** : marques annotées (« n°1 du classement », « N
+    produits classés ») + paragraphe garanties vs logos.
+  - **Q budget enrichie** : fourchette + prix du n°1 + option accessible (avec
+    sa note si dispo, cas « la moins chère est aussi n°1 » géré) + renvoi guide
+    d'achat. **Q avis enrichie** : meilleur noté + convergence/divergence avec
+    notre n°1 + cumul d'avis de la sélection.
+  - **Q « Comment bien choisir votre/vos {type} ? »** (nouvelle, si critères
+    présents) : liste des titres réels du repeater `mltv5_criteres_de_choix`
+    (page → repli `cached_id_criteres`, max 6) + renvoi `#partie-guide-achat`.
+  - **Q méthodologie** : stats `produits_analyses`/`avis_etudies`/
     `sources_consultees`/`heures_investies` si présentes (assemblées via
-    `mt_faq_join_et`), sinon générique.
+    `mt_faq_join_et`), sinon générique + paragraphe process (note /10, pas de
+    sponsoring) + **date de dernière mise à jour** (`get_the_modified_date`).
   - Tournures choisies pour **éviter les accords genrés piégeux**, normalisation
     des espaces, montants `number_format` + nbsp + €. Les 3 autos sont **incluses
     dans le JSON-LD FAQPage** (`name` re-décodé en texte brut pour le schema).
