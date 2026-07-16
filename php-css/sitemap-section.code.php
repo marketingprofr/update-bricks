@@ -139,7 +139,6 @@ $sm_total = isset( $sm_total->publish ) ? (int) $sm_total->publish : 0;
 <section class="mt-smap" id="partie-index-comparatifs" aria-labelledby="mt-smap-title">
   <div class="mt-smap-head">
     <div>
-      <p class="mt-smap-eyebrow">L&rsquo;index complet</p>
       <h2 class="mt-smap-h2" id="mt-smap-title">Tous nos comparatifs, <em>&agrave; port&eacute;e de clic</em>.</h2>
     </div>
     <p class="mt-smap-lead"><?php echo (int) $sm_total; ?> comparatifs class&eacute;s par univers, pour aller droit &agrave; celui qui r&eacute;pond &agrave; votre question.</p>
