@@ -44,7 +44,7 @@ $hh_univ_disp  = $hh_univ > 0 ? number_format_i18n( $hh_univ ) : '8';
     </span>
 
     <h1>Le bon choix,<br><em>quel que soit</em> votre achat</h1>
-    <p class="mt-hh-lede">De la maison au high-tech, de la beauté au sport — nous testons, comparons et classons des milliers de produits pour vous aider à choisir en toute confiance. Sans pub, sans sponsor, sans cadeau des marques.</p>
+    <p class="mt-hh-lede">De la maison au high-tech, de la beauté au sport, nous testons, comparons et classons des milliers de produits pour vous aider à choisir en toute confiance. Sans pub, sans sponsor, sans cadeau des marques.</p>
 
     <form class="mt-hh-search" method="get" action="<?php echo esc_url( $HH_SEARCH_ACTION ); ?>" role="search">
       <svg class="si" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>

@@ -172,7 +172,7 @@ content = [
                        "_padding:tablet_portrait": {"top": "10", "bottom": "10", "left": "20", "right": "20"}}),
      "label": "Trust -- Wrap"},
     {"id": "trsttx", "name": "text-basic", "parent": "trstwr", "children": [],
-     "settings": {"text": "Nos recommandations sont 100% ind&eacute;pendantes &mdash; sans pub ni cadeau des marques. Nous pouvons toucher une commission si vous achetez via nos liens.", "tag": "div"},
+     "settings": {"text": "Nos recommandations sont 100% ind&eacute;pendantes&nbsp;: sans pub ni cadeau des marques. Nous pouvons toucher une commission si vous achetez via nos liens.", "tag": "div"},
      "label": "Trust -- Text"},
 ]
 
