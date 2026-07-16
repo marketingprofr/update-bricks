@@ -185,18 +185,23 @@ if ( $faq_action === 'dryrun' ) {
 
   $n_rm = 0;
   foreach ( $faq_posts as $pid ) {
-    $rows = $faq_rows( (int) $pid );
-    if ( empty( $rows ) ) { continue; }
-    $t = (string) get_the_title( (int) $pid );
-    foreach ( $rows as $r ) {
-      $w = $faq_match( $r['q'] );
-      if ( $w === false ) { continue; }
-      $n_rm++;
-      echo '<tr style="background:#fff8e1">';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 40 ) ) . ' #' . (int) $pid . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( wp_strip_all_tags( $r['q'] ), 75 ) ) . '</td>';
-      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#e67e22"><b>' . esc_html( $w ) . '</b></td>';
-      echo '</tr>';
+    try {
+      $rows = $faq_rows( (int) $pid );
+      if ( empty( $rows ) ) { continue; }
+      $t = (string) get_the_title( (int) $pid );
+      foreach ( $rows as $r ) {
+        $w = $faq_match( $r['q'] );
+        if ( $w === false ) { continue; }
+        $n_rm++;
+        echo '<tr style="background:#fff8e1">';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 40 ) ) . ' #' . (int) $pid . '</td>';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( wp_strip_all_tags( $r['q'] ), 75 ) ) . '</td>';
+        echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#e67e22"><b>' . esc_html( $w ) . '</b></td>';
+        echo '</tr>';
+      }
+    } catch ( \Throwable $e ) {
+      echo '<tr><td colspan="3" style="padding:6px;background:#fdecea;color:#c0392b">'
+         . 'ERREUR post #' . (int) $pid . ' : ' . esc_html( $e->getMessage() ) . '</td></tr>';
     }
   }
   echo '</table>';
@@ -210,36 +215,44 @@ if ( $faq_action === 'dryrun' ) {
 if ( $faq_action === 'runall' ) {
   if ( ! function_exists( 'update_field' ) ) { echo '<p>ACF requis pour l\'ecriture.</p>'; return; }
 
-  $n_rm = 0; $n_kept = 0; $n_touched = 0;
+  $n_rm = 0; $n_kept = 0; $n_touched = 0; $n_err = 0; $err_ids = array();
 
   foreach ( $faq_posts as $pid ) {
-    $rows = $faq_rows( (int) $pid );
-    if ( empty( $rows ) ) { continue; }
+    try {
+      $rows = $faq_rows( (int) $pid );
+      if ( empty( $rows ) ) { continue; }
 
-    $kept = array();
-    $had  = false;
-    foreach ( $rows as $r ) {
-      if ( $faq_match( $r['q'] ) !== false ) {
-        $n_rm++;
-        $had = true;
-      } else {
-        /* Row reconstruite au format ACF (clés = noms de sous-champs). */
-        $kept[] = array(
-          $faq_q_key => $r['q'],
-          $faq_a_key => $r['a'],
-        );
+      $kept = array();
+      $had  = false;
+      foreach ( $rows as $r ) {
+        if ( $faq_match( $r['q'] ) !== false ) {
+          $n_rm++;
+          $had = true;
+        } else {
+          /* Row reconstruite au format ACF (clés = noms de sous-champs). */
+          $kept[] = array(
+            $faq_q_key => $r['q'],
+            $faq_a_key => $r['a'],
+          );
+        }
       }
+      if ( $had ) {
+        update_field( $faq_repeater, array_values( $kept ), (int) $pid );
+        $n_touched++;
+      }
+      $n_kept += count( $kept );
+    } catch ( \Throwable $e ) {
+      $n_err++;
+      $err_ids[] = (int) $pid;
     }
-    if ( $had ) {
-      update_field( $faq_repeater, array_values( $kept ), (int) $pid );
-      $n_touched++;
-    }
-    $n_kept += count( $kept );
   }
 
   echo '<div style="max-width:700px;margin:40px auto;font:14px/1.6 system-ui,sans-serif">';
   echo '<h2 style="font-size:18px">Lot ' . $faq_page . '/' . $total_pages . '</h2>';
   echo '<p>' . $n_touched . ' posts modifies, ' . $n_rm . ' rows supprimees, ' . $n_kept . ' conservees sur ce lot.</p>';
+  if ( $n_err > 0 ) {
+    echo '<p style="color:#c0392b">' . $n_err . ' post(s) ignore(s) sur erreur : #' . esc_html( implode( ', #', $err_ids ) ) . '</p>';
+  }
 
   if ( $faq_page < $total_pages ) {
     $next = $faq_base . '&faq_action=runall&faq_page=' . ( $faq_page + 1 );
