@@ -320,11 +320,14 @@ if ( ! empty( $prods ) ) {
   if ( $has_crit ) {
     $poss   = $plural ? 'vos' : 'votre';
     $noun_q = $best_noun !== '' ? $best_noun : 'produit';
-    $list   = array_map( 'esc_html', array_slice( $crit_titles, 0, 6 ) );
+    $list   = array_map( function( $t ) {
+      $t = mb_strtolower( mb_substr( $t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $t, 1, null, 'UTF-8' );
+      return esc_html( $t );
+    }, array_slice( $crit_titles, 0, 6 ) );
     $qc = 'Comment bien choisir ' . esc_html( $poss . ' ' . $noun_q ) . '&nbsp;?';
     $ac = '<p>Avant de comparer les produits, prenez le temps de cerner vos besoins. Les crit&egrave;res qui font vraiment la diff&eacute;rence sont'
         . ( count( $crit_titles ) > 6 ? ' notamment' : '' ) . '&nbsp;: ' . mt_faq_join_et( $list ) . '.</p>'
-        . '<p>Chacun de ces points est d&eacute;taill&eacute; dans notre <a href="#partie-guide-achat">guide d&rsquo;achat</a>, un peu plus haut sur cette page, avec nos conseils pour arbitrer selon votre usage et votre budget. Et si vous ne souhaitez pas entrer dans le d&eacute;tail&nbsp;: notre classement tient d&eacute;j&agrave; compte de l&rsquo;ensemble de ces crit&egrave;res.</p>';
+        . '<p>Chacun de ces points est d&eacute;taill&eacute; dans notre <a href="#partie-guide-achat">guide d&rsquo;achat</a>, un peu plus haut sur cette page, avec nos conseils pour arbitrer selon vos besoins et votre budget. Et si vous ne souhaitez pas entrer dans le d&eacute;tail&nbsp;: notre classement tient d&eacute;j&agrave; compte de l&rsquo;ensemble de ces crit&egrave;res.</p>';
     $autos[] = array( 'q' => $qc, 'a' => $ac );
   }
 
