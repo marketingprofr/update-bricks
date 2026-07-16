@@ -14,7 +14,7 @@
      texte principal #eaf2fb · chapô #cdd8e4 · petits labels #b7c6d8 ·
      surbrillance #9ecbef · icônes #8fb8dd · filets rgba(255,255,255,.16) ·
      surfaces rgba(255,255,255,.07) · pilule #e9f1f9 / texte #12507f ·
-     champ #ffffff / texte #14181d / filet #e8eaed / placeholder #6b7480 ·
+     champ #f5f6f8 / texte #14181d / filet #e8eaed / placeholder #6b7480 ·
      bouton #155e9e (hover #124f85) / texte #ffffff.
    ===================================================================== */
 .mt-hh {
@@ -34,7 +34,7 @@
 .mt-hh h1 em { font-style: normal; color: #9ecbef; }
 .mt-hh-lede { font-size: clamp(15.5px, 1.5vw, 18px); line-height: 1.6; color: #cdd8e4; margin: 0 auto 32px; max-width: 60ch; }
 
-.mt-hh-search { display: flex; align-items: center; gap: 8px; max-width: 620px; margin: 0 auto; background: #ffffff; border: 1px solid #ffffff; border-radius: 999px; padding: 7px 7px 7px 20px; box-shadow: 0 14px 40px rgba(0,0,0,0.28); }
+.mt-hh-search { display: flex; align-items: center; gap: 8px; max-width: 620px; margin: 0 auto; background: #f5f6f8; border: 1px solid #f5f6f8; border-radius: 999px; padding: 7px 7px 7px 20px; box-shadow: 0 14px 40px rgba(0,0,0,0.28); }
 .mt-hh-search .si { width: 20px; height: 20px; color: #6b7480; flex-shrink: 0; }
 .mt-hh-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; font-size: 16px; color: #14181d; }
 .mt-hh-search input::placeholder { color: #6b7480; }
