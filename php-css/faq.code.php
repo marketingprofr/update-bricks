@@ -241,7 +241,7 @@ if ( ! empty( $prods ) ) {
     if ( ! isset( $brands_ord[ $bn ] ) ) { $brands_ord[ $bn ] = array( 'rank' => $bi + 1, 'n' => 0 ); }
     $brands_ord[ $bn ]['n']++;
   }
-  if ( count( $brands_ord ) >= 2 ) {
+  if ( count( $brands_ord ) >= 3 ) {
     $bstr = array();
     foreach ( array_slice( $brands_ord, 0, 4, true ) as $bn => $binf ) {
       $s = '<strong>' . esc_html( $bn ) . '</strong>';
