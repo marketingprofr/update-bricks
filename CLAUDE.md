@@ -641,8 +641,10 @@ section > container > code comme guides-similaires). Adaptation de la maquette
   comparatifs → » vers l'archive de la catégorie. En-tête : eyebrow + h2 serif
   (em italique accent) + lead avec le nb total de comparatifs publiés.
 - **Random sans RAND()** : tous les IDs par catégorie (`fields=>ids`) puis
-  `shuffle()` PHP. **Transient `mt_smap_data` 12h** (`$SM_TTL`) : zéro requête
+  `shuffle()` PHP. **Transient `mt_smap_data_v2` 12h** (`$SM_TTL`) : zéro requête
   entre deux rotations, l'index tourne 2×/jour. Vider le transient pour forcer.
+- **Exclusion** : `$SM_EXCL_SLUGS = ['sexe-et-erotisme']` — les comparatifs de
+  ces catégories (descendants inclus, `category__not_in`) ne sont jamais listés.
 - Libellés **nettoyés** via helpers partagés `mt_sim_ucfirst`/`mt_sim_clean_label`
   (byte-identiques à similaires.code.php, guardés `function_exists`).
 - Grille 4 → 3 (≤991) → 2 (≤767) → 1 (≤478). Ancre `id="partie-index-comparatifs"`

@@ -27,6 +27,7 @@ $SM_PER_CAT   = 10;                    // comparatifs aléatoires par catégorie
 $SM_POST_TYPE = 'comparatif';
 $SM_TTL       = 12 * HOUR_IN_SECONDS;  // rotation de la sélection aléatoire
 $SM_FOOT_URL  = '';                    // lien « tout parcourir » (vide = ligne masquée)
+$SM_EXCL_SLUGS = array( 'sexe-et-erotisme' );  // catégories à exclure (descendants inclus)
 
 /* ---------------------------------------------------------------------
    Helpers partagés avec similaires.code.php (byte-identiques, guardés)
@@ -57,7 +58,7 @@ if ( ! function_exists( 'mt_sim_clean_label' ) ) {
 /* ---------------------------------------------------------------------
    Données (transient 12h : sélection aléatoire figée entre deux rotations)
    --------------------------------------------------------------------- */
-$cols = get_transient( 'mt_smap_data' );
+$cols = get_transient( 'mt_smap_data_v2' );
 if ( ! is_array( $cols ) || empty( $cols ) ) {
 
   /* 1) Catégories principales : items « category » du menu 13, dans l'ordre
@@ -80,21 +81,36 @@ if ( ! is_array( $cols ) || empty( $cols ) ) {
   }
   $cat_ids = array_slice( $cat_ids, 0, (int) $SM_MAX_CATS );
 
+  /* Catégories exclues (slug -> term_id, descendants inclus) : leurs
+     comparatifs ne sont jamais listés, dans aucune colonne. */
+  $excl_ids = array();
+  foreach ( $SM_EXCL_SLUGS as $slug ) {
+    $t = get_term_by( 'slug', $slug, 'category' );
+    if ( $t && ! is_wp_error( $t ) ) {
+      $excl_ids[] = (int) $t->term_id;
+      $kids = get_term_children( (int) $t->term_id, 'category' );
+      if ( is_array( $kids ) ) { foreach ( $kids as $k ) { $excl_ids[] = (int) $k; } }
+    }
+  }
+
   /* 2) Par catégorie : tous les IDs de comparatifs (enfants de catégorie
         inclus), mélange PHP (pas de ORDER BY RAND()), coupe à $SM_PER_CAT. */
   $cols = array();
   foreach ( $cat_ids as $cid ) {
+    if ( in_array( (int) $cid, $excl_ids, true ) ) { continue; }
     $term = get_term( $cid, 'category' );
     if ( ! $term || is_wp_error( $term ) ) { continue; }
 
-    $ids = get_posts( array(
+    $q_args = array(
       'post_type'      => $SM_POST_TYPE,
       'post_status'    => 'publish',
       'posts_per_page' => -1,
       'fields'         => 'ids',
       'no_found_rows'  => true,
       'cat'            => $cid,          // inclut les sous-catégories
-    ) );
+    );
+    if ( ! empty( $excl_ids ) ) { $q_args['category__not_in'] = $excl_ids; }
+    $ids = get_posts( $q_args );
     if ( empty( $ids ) ) { continue; }
 
     $total = count( $ids );
@@ -118,7 +134,7 @@ if ( ! is_array( $cols ) || empty( $cols ) ) {
     );
   }
 
-  if ( ! empty( $cols ) ) { set_transient( 'mt_smap_data', $cols, (int) $SM_TTL ); }
+  if ( ! empty( $cols ) ) { set_transient( 'mt_smap_data_v2', $cols, (int) $SM_TTL ); }
 }
 
 /* Rien à afficher -> diagnostic admin, invisible pour les visiteurs. */
