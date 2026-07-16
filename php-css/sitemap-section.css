@@ -1,0 +1,97 @@
+/* =====================================================================
+   MEILLEURTEST — Section « Index des comparatifs » (onglet CSS)
+   Scope : .mt-smap. 100 % variables Advanced Themer → bascule dark auto.
+   FOND DE SECTION À RÉGLER DANS BRICKS : var(--at-grey-l-5)
+   + filet haut 1px var(--at-grey-l-3) + padding vertical ~72px.
+   Le container Bricks borne/aligne → aucun padding latéral ici.
+   ===================================================================== */
+.mt-smap {
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3);
+  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-1);
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink); width: 100%; line-height: 1.5; -webkit-font-smoothing: antialiased;
+}
+.mt-smap * { box-sizing: border-box; }
+.mt-smap a { text-decoration: none; }
+
+/* ---------- En-tête ---------- */
+.mt-smap-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 32px; margin-bottom: 40px; padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.mt-smap-eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 10px;
+}
+.mt-smap-h2 {
+  font-family: "Source Serif 4", Georgia, serif; font-weight: 600;
+  font-size: clamp(26px, 3.4vw, 38px); line-height: 1.1; letter-spacing: -0.02em;
+  margin: 0; max-width: 24ch; text-wrap: balance; color: var(--ink);
+}
+.mt-smap-h2 em { font-style: italic; color: var(--accent); }
+.mt-smap-lead {
+  font-size: 15px; line-height: 1.55; color: var(--ink-2);
+  max-width: 40ch; margin: 0;
+}
+
+/* ---------- Grille des catégories ---------- */
+.mt-smap-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 40px 32px;
+}
+.mt-smap-col h3 {
+  font-family: inherit; font-weight: 600;
+  font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 14px; padding-bottom: 11px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+}
+.mt-smap-col h3 a { color: inherit; transition: color .15s; }
+.mt-smap-col h3 a:hover { color: var(--accent); }
+.mt-smap-col h3 .num {
+  font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 400;
+  font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--muted-2);
+}
+.mt-smap-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.mt-smap-col li a {
+  font-family: "Source Serif 4", Georgia, serif; font-size: 15px;
+  color: var(--ink); display: flex; align-items: center; gap: 8px;
+  transition: color .15s;
+}
+.mt-smap-col li a::before {
+  content: ""; width: 6px; height: 1px; background: var(--muted-2); flex: none;
+  transition: width .2s, background .15s;
+}
+.mt-smap-col li a:hover { color: var(--accent); }
+.mt-smap-col li a:hover::before { width: 14px; background: var(--accent); }
+.mt-smap-col li a.all { color: var(--accent); font-style: italic; }
+.mt-smap-col li a.all::before { background: var(--accent); }
+.mt-smap-col li a.all:hover { color: var(--accent-dark); }
+.mt-smap-col li a.all:hover::before { background: var(--accent-dark); }
+
+/* ---------- Pied ---------- */
+.mt-smap-foot {
+  margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line);
+  font-size: 13px; color: var(--muted);
+}
+.mt-smap-foot a {
+  color: var(--ink); border-bottom: 1px solid var(--muted-2); padding-bottom: 1px;
+  transition: color .15s, border-color .15s;
+}
+.mt-smap-foot a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 991px) {
+  .mt-smap-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .mt-smap-lead { max-width: 60ch; }
+  .mt-smap-grid { grid-template-columns: repeat(3, 1fr); gap: 34px 28px; }
+}
+@media (max-width: 767px) {
+  .mt-smap-grid { grid-template-columns: repeat(2, 1fr); gap: 30px 24px; }
+}
+@media (max-width: 478px) {
+  .mt-smap-grid { grid-template-columns: 1fr; gap: 28px; }
+}

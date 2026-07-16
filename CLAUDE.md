@@ -625,6 +625,31 @@ extrait). Comparatif **courant exclu** (« N autres guides »).
   (top 12 = préfixe des 20 recommandations des pastilles → mêmes comparatifs,
   la grille en montre juste moins).
 
+## État de la section « Index des comparatifs » (sitemap — cf. `Sitemap Section.html`)
+
+Livrables : **`php-css/sitemap-section.code.php`** + **`php-css/sitemap-section.css`**.
+UN seul élément Code Bricks. Scope `.mt-smap`. Emplacement : **au-dessus du
+footer**, bande **`var(--at-grey-l-5)`** portée par la SECTION Bricks en natif
+(+ filet haut `1px var(--at-grey-l-3)` + padding vertical ~72px ; structure
+section > container > code comme guides-similaires). Adaptation de la maquette
+(polices/couleurs de l'autre site remplacées par Source Serif/Inter + tokens AT).
+
+- **Contenu** : pour chaque **catégorie principale** (items `category` de 1er
+  niveau du **menu 13**, ordre du menu ; repli = catégories racines par nb de
+  posts ; coupe à `$SM_MAX_CATS = 8`) → **10 comparatifs AU HASARD**
+  (`$SM_PER_CAT`, sous-catégories incluses via `cat`) + lien « Tous les N
+  comparatifs → » vers l'archive de la catégorie. En-tête : eyebrow + h2 serif
+  (em italique accent) + lead avec le nb total de comparatifs publiés.
+- **Random sans RAND()** : tous les IDs par catégorie (`fields=>ids`) puis
+  `shuffle()` PHP. **Transient `mt_smap_data` 12h** (`$SM_TTL`) : zéro requête
+  entre deux rotations, l'index tourne 2×/jour. Vider le transient pour forcer.
+- Libellés **nettoyés** via helpers partagés `mt_sim_ucfirst`/`mt_sim_clean_label`
+  (byte-identiques à similaires.code.php, guardés `function_exists`).
+- Grille 4 → 3 (≤991) → 2 (≤767) → 1 (≤478). Ancre `id="partie-index-comparatifs"`
+  (bloc de nav : hors sommaire, pas `.contenu-principal`). `$SM_FOOT_URL` (config,
+  vide = masqué) pour une ligne « parcourez toutes les catégories ». Diagnostic
+  admin-only si aucune donnée.
+
 ## État du footer (rangée de confiance en haut)
 
 On **ne refait pas** le footer from scratch : on part du **footer réel**
