@@ -24,31 +24,43 @@ $faq_bad_words = array(
   'marque','marques','choisir','critere','criteres',
 );
 
+/* Troncature safe (pas de mb_strimwidth) */
+$trunc = function( $s, $len ) {
+  $s = (string) $s;
+  if ( function_exists( 'mb_strlen' ) && mb_strlen( $s, 'UTF-8' ) > $len ) {
+    return mb_substr( $s, 0, $len, 'UTF-8' ) . '...';
+  }
+  if ( strlen( $s ) > $len ) { return substr( $s, 0, $len ) . '...'; }
+  return $s;
+};
+
+/* Strip accents pour la comparaison */
 $faq_strip = function( $s ) {
-  return strtr( mb_strtolower( trim( wp_strip_all_tags( $s ) ), 'UTF-8' ), array(
+  return strtr( strtolower( trim( wp_strip_all_tags( (string) $s ) ) ), array(
     'à'=>'a','â'=>'a','ä'=>'a','é'=>'e','è'=>'e','ê'=>'e','ë'=>'e',
     'î'=>'i','ï'=>'i','ô'=>'o','ö'=>'o','ù'=>'u','û'=>'u','ü'=>'u',
-    'ç'=>'c','œ'=>'oe','æ'=>'ae',
+    'ç'=>'c','œ'=>'oe','æ'=>'ae','ô'=>'o',
   ));
 };
 
 $faq_match = function( $question ) use ( $faq_strip, $faq_bad_words ) {
   $q = $faq_strip( $question );
   foreach ( $faq_bad_words as $w ) {
-    if ( mb_strpos( $q, $w ) !== false ) { return $w; }
+    if ( strpos( $q, $w ) !== false ) { return $w; }
   }
   return false;
 };
 
-/* Compte total (léger : juste les IDs) */
-$total_q = new WP_Query( array(
+/* Compte total */
+$count_q = new WP_Query( array(
   'post_type'      => 'faq',
   'post_status'    => array( 'publish', 'draft', 'private' ),
   'posts_per_page' => 1,
   'fields'         => 'ids',
+  'no_found_rows'  => false,
 ) );
-$total_posts = $total_q->found_posts;
-$total_pages = max( 1, ceil( $total_posts / $PER_PAGE ) );
+$total_posts = (int) $count_q->found_posts;
+$total_pages = max( 1, (int) ceil( $total_posts / $PER_PAGE ) );
 wp_reset_postdata();
 
 /* Lot courant */
@@ -63,140 +75,138 @@ $faq_posts = get_posts( array(
   'order'          => 'ASC',
 ) );
 
-/* Pagination HTML */
-$pager = function( $act ) use ( $faq_base, $faq_page, $total_pages, $total_posts, $PER_PAGE ) {
-  $s  = '<div style="margin:12px 0;font-size:13px;color:#666">';
-  $s .= $total_posts . ' posts FAQ &mdash; page ' . $faq_page . '/' . $total_pages . ' (lot de ' . $PER_PAGE . ')';
+/* Pagination */
+$pager = function( $act ) use ( $faq_base, $faq_page, $total_pages, $total_posts ) {
+  $s  = '<p style="font-size:13px;color:#666">';
+  $s .= $total_posts . ' posts &mdash; page ' . $faq_page . '/' . $total_pages;
   if ( $faq_page > 1 ) {
-    $s .= ' &middot; <a href="' . esc_url( $faq_base . '&faq_action=' . $act . '&faq_page=' . ( $faq_page - 1 ) ) . '">&larr; Pr&eacute;c&eacute;dent</a>';
+    $s .= ' | <a href="' . esc_url( $faq_base . '&faq_action=' . $act . '&faq_page=' . ( $faq_page - 1 ) ) . '">Prec.</a>';
   }
   if ( $faq_page < $total_pages ) {
-    $s .= ' &middot; <a href="' . esc_url( $faq_base . '&faq_action=' . $act . '&faq_page=' . ( $faq_page + 1 ) ) . '">Suivant &rarr;</a>';
+    $s .= ' | <a href="' . esc_url( $faq_base . '&faq_action=' . $act . '&faq_page=' . ( $faq_page + 1 ) ) . '">Suiv.</a>';
   }
-  $s .= '</div>';
+  $s .= '</p>';
   return $s;
 };
 
 /* ── PAGE D'ACCUEIL ─────────────────────────────────────── */
 if ( $faq_action === '' ) {
-  echo '<div style="max-width:700px;margin:40px auto;font:15px/1.6 system-ui,sans-serif;color:#14181d">';
-  echo '<h2 style="margin:0 0 16px">Nettoyage des FAQ manuelles</h2>';
-  echo '<p><strong>' . $total_posts . '</strong> posts FAQ trouv&eacute;s. Traitement par lots de ' . $PER_PAGE . '.</p>';
-  echo '<ol style="margin:20px 0;line-height:2">';
-  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=export' ) . '">1. Exporter</a> (v&eacute;rifier les donn&eacute;es, page par page)</li>';
-  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=dryrun' ) . '">2. Dry-run</a> (voir ce qui serait supprim&eacute;, page par page)</li>';
-  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=runall' ) . '" onclick="return confirm(\'Lancer le nettoyage sur les ' . $total_posts . ' posts ?\')">3. Tout nettoyer</a> (traite TOUT, lot par lot, avec auto-reload)</li>';
+  echo '<div style="max-width:700px;margin:40px auto;font:15px/1.6 system-ui,sans-serif">';
+  echo '<h2>Nettoyage FAQ</h2>';
+  echo '<p>' . $total_posts . ' posts FAQ. Lots de ' . $PER_PAGE . '.</p>';
+  echo '<ol style="line-height:2.2">';
+  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=export' ) . '">Exporter</a></li>';
+  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=dryrun' ) . '">Dry-run</a></li>';
+  echo '<li><a href="' . esc_url( $faq_base . '&faq_action=runall' ) . '" onclick="return confirm(\'OK ?\')">Tout nettoyer (auto-reload)</a></li>';
   echo '</ol></div>';
   return;
 }
 
-/* ── EXPORT (page par page) ──────────────────────────────── */
+/* ── EXPORT ──────────────────────────────────────────────── */
 if ( $faq_action === 'export' ) {
-  echo '<div style="max-width:1200px;margin:40px auto;font:13px/1.5 system-ui,sans-serif;color:#14181d">';
-  echo '<h2 style="margin:0 0 4px;font-size:18px">Export FAQ</h2>';
+  echo '<div style="max-width:1200px;margin:20px auto;font:13px/1.5 system-ui,sans-serif">';
+  echo '<h2 style="font-size:18px">Export</h2>';
   echo $pager( 'export' );
-
-  echo '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">';
-  echo '<tr style="background:#f5f6f8"><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">ID</th><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">Post</th><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">#</th><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">Question</th><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">R&eacute;ponse (extrait)</th></tr>';
+  echo '<table style="width:100%;border-collapse:collapse">';
+  echo '<tr style="background:#eee"><th style="padding:4px 6px;text-align:left">ID</th><th style="padding:4px 6px;text-align:left">Post</th><th style="padding:4px 6px;text-align:left">#</th><th style="padding:4px 6px;text-align:left">Question</th><th style="padding:4px 6px;text-align:left">Reponse</th></tr>';
 
   $n = 0;
   foreach ( $faq_posts as $pid ) {
-    $rows = get_field( $faq_repeater, $pid );
-    if ( ! is_array( $rows ) || empty( $rows ) ) { continue; }
-    $t = get_the_title( $pid );
-    foreach ( $rows as $i => $r ) {
+    $raw = get_field( $faq_repeater, (int) $pid );
+    if ( ! is_array( $raw ) ) { continue; }
+    $t = (string) get_the_title( (int) $pid );
+    foreach ( $raw as $i => $r ) {
+      if ( ! is_array( $r ) ) { continue; }
       $q = isset( $r[ $faq_q_key ] ) ? trim( wp_strip_all_tags( (string) $r[ $faq_q_key ] ) ) : '';
       $a = isset( $r[ $faq_a_key ] ) ? trim( wp_strip_all_tags( (string) $r[ $faq_a_key ] ) ) : '';
-      echo '<tr><td style="padding:4px 8px;border-bottom:1px solid #eee">' . (int) $pid . '</td>';
-      echo '<td style="padding:4px 8px;border-bottom:1px solid #eee">' . esc_html( mb_strimwidth( $t, 0, 40, '...' ) ) . '</td>';
-      echo '<td style="padding:4px 8px;border-bottom:1px solid #eee">' . (int) $i . '</td>';
-      echo '<td style="padding:4px 8px;border-bottom:1px solid #eee">' . esc_html( $q ) . '</td>';
-      echo '<td style="padding:4px 8px;border-bottom:1px solid #eee;color:#666">' . esc_html( mb_strimwidth( $a, 0, 100, '...' ) ) . '</td></tr>';
+      echo '<tr>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $pid . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 35 ) ) . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . (int) $i . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $q, 70 ) ) . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#888">' . esc_html( $trunc( $a, 80 ) ) . '</td>';
+      echo '</tr>';
       $n++;
     }
   }
-  echo '</table></div>';
-  echo '<p>' . $n . ' Q/R sur cette page.</p>';
-  echo $pager( 'export' );
-  echo '<p><a href="' . esc_url( $faq_base ) . '">&larr; Retour</a></p>';
-  echo '</div>';
+  echo '</table>';
+  echo '<p>' . $n . ' Q/R. ' . $pager( 'export' ) . '</p>';
+  echo '<p><a href="' . esc_url( $faq_base ) . '">Retour</a></p></div>';
   return;
 }
 
-/* ── DRYRUN (page par page) ──────────────────────────────── */
+/* ── DRYRUN ──────────────────────────────────────────────── */
 if ( $faq_action === 'dryrun' ) {
-  echo '<div style="max-width:1000px;margin:40px auto;font:13px/1.5 system-ui,sans-serif;color:#14181d">';
-  echo '<h2 style="margin:0 0 4px;font-size:18px">DRY-RUN</h2>';
+  echo '<div style="max-width:1000px;margin:20px auto;font:13px/1.5 system-ui,sans-serif">';
+  echo '<h2 style="font-size:18px">Dry-run</h2>';
   echo $pager( 'dryrun' );
+  echo '<table style="width:100%;border-collapse:collapse">';
+  echo '<tr style="background:#eee"><th style="padding:4px 6px;text-align:left">Post</th><th style="padding:4px 6px;text-align:left">Question</th><th style="padding:4px 6px;text-align:left">Mot</th></tr>';
 
   $n_rm = 0;
-  echo '<table style="width:100%;border-collapse:collapse">';
-  echo '<tr style="background:#f5f6f8"><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">Post</th><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">Question</th><th style="padding:6px 8px;text-align:left;border-bottom:2px solid #ddd">Mot</th></tr>';
-
   foreach ( $faq_posts as $pid ) {
-    $rows = get_field( $faq_repeater, $pid );
-    if ( ! is_array( $rows ) || empty( $rows ) ) { continue; }
-    $t = get_the_title( $pid );
-    foreach ( $rows as $r ) {
+    $raw = get_field( $faq_repeater, (int) $pid );
+    if ( ! is_array( $raw ) ) { continue; }
+    $t = (string) get_the_title( (int) $pid );
+    foreach ( $raw as $r ) {
+      if ( ! is_array( $r ) ) { continue; }
       $q = isset( $r[ $faq_q_key ] ) ? trim( (string) $r[ $faq_q_key ] ) : '';
       $w = $faq_match( $q );
       if ( $w === false ) { continue; }
       $n_rm++;
       echo '<tr style="background:#fff8e1">';
-      echo '<td style="padding:4px 8px;border-bottom:1px solid #eee">' . esc_html( mb_strimwidth( $t, 0, 45, '...' ) ) . ' <span style="color:#999">#' . (int) $pid . '</span></td>';
-      echo '<td style="padding:4px 8px;border-bottom:1px solid #eee">' . esc_html( mb_strimwidth( wp_strip_all_tags( $q ), 0, 80, '...' ) ) . '</td>';
-      echo '<td style="padding:4px 8px;border-bottom:1px solid #eee;color:#e67e22"><strong>' . esc_html( $w ) . '</strong></td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( $t, 40 ) ) . ' #' . (int) $pid . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd">' . esc_html( $trunc( wp_strip_all_tags( $q ), 75 ) ) . '</td>';
+      echo '<td style="padding:3px 6px;border-bottom:1px solid #ddd;color:#e67e22"><b>' . esc_html( $w ) . '</b></td>';
       echo '</tr>';
     }
   }
   echo '</table>';
-  echo '<p><strong>' . $n_rm . '</strong> rows &agrave; supprimer sur cette page.</p>';
+  echo '<p><b>' . $n_rm . '</b> a supprimer sur cette page.</p>';
   echo $pager( 'dryrun' );
-  echo '<p><a href="' . esc_url( $faq_base ) . '">&larr; Retour</a></p>';
-  echo '</div>';
+  echo '<p><a href="' . esc_url( $faq_base ) . '">Retour</a></p></div>';
   return;
 }
 
-/* ── RUNALL : traite un lot, puis auto-reload vers le suivant ── */
+/* ── RUNALL (lot par lot, auto-reload) ───────────────────── */
 if ( $faq_action === 'runall' ) {
   $n_rm = 0; $n_kept = 0; $n_touched = 0;
 
   foreach ( $faq_posts as $pid ) {
-    $rows = get_field( $faq_repeater, $pid );
-    if ( ! is_array( $rows ) || empty( $rows ) ) { continue; }
+    $raw = get_field( $faq_repeater, (int) $pid );
+    if ( ! is_array( $raw ) ) { continue; }
 
     $kept = array();
-    $had_remove = false;
-    foreach ( $rows as $r ) {
+    $had = false;
+    foreach ( $raw as $r ) {
+      if ( ! is_array( $r ) ) { continue; }
       $q = isset( $r[ $faq_q_key ] ) ? trim( (string) $r[ $faq_q_key ] ) : '';
       if ( $faq_match( $q ) !== false ) {
         $n_rm++;
-        $had_remove = true;
+        $had = true;
       } else {
         $kept[] = $r;
       }
     }
-    if ( $had_remove ) {
-      update_field( $faq_repeater, array_values( $kept ), $pid );
+    if ( $had ) {
+      update_field( $faq_repeater, array_values( $kept ), (int) $pid );
       $n_touched++;
     }
     $n_kept += count( $kept );
   }
 
-  echo '<div style="max-width:700px;margin:40px auto;font:14px/1.6 system-ui,sans-serif;color:#14181d">';
-  echo '<h2 style="margin:0 0 8px;font-size:18px">Lot ' . $faq_page . '/' . $total_pages . ' termin&eacute;</h2>';
-  echo '<p>' . $n_touched . ' posts modifi&eacute;s, ' . $n_rm . ' rows supprim&eacute;es, ' . $n_kept . ' conserv&eacute;es.</p>';
+  echo '<div style="max-width:700px;margin:40px auto;font:14px/1.6 system-ui,sans-serif">';
+  echo '<h2 style="font-size:18px">Lot ' . $faq_page . '/' . $total_pages . '</h2>';
+  echo '<p>' . $n_touched . ' posts modifies, ' . $n_rm . ' rows supprimees, ' . $n_kept . ' conservees.</p>';
 
   if ( $faq_page < $total_pages ) {
     $next = $faq_base . '&faq_action=runall&faq_page=' . ( $faq_page + 1 );
-    echo '<p>Passage au lot suivant dans 3 secondes...</p>';
+    echo '<p>Lot suivant dans 3s...</p>';
     echo '<meta http-equiv="refresh" content="3;url=' . esc_url( $next ) . '">';
     echo '<p><a href="' . esc_url( $next ) . '">Cliquer si pas de redirection</a></p>';
   } else {
-    echo '<p style="color:#27ae60;font-weight:700">Termin&eacute; ! Tous les ' . $total_posts . ' posts ont &eacute;t&eacute; trait&eacute;s.</p>';
+    echo '<p style="color:green"><b>Termine ! ' . $total_posts . ' posts traites.</b></p>';
   }
-
-  echo '<p><a href="' . esc_url( $faq_base ) . '">&larr; Retour</a></p>';
-  echo '</div>';
+  echo '<p><a href="' . esc_url( $faq_base ) . '">Retour</a></p></div>';
   return;
 }
