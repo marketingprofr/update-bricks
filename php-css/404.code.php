@@ -12,14 +12,12 @@ $home_url = esc_url( home_url( '/' ) );
 $menu_items = wp_get_nav_menu_items( 13 );
 $cats = array();
 if ( $menu_items ) {
-    $count = 0;
     foreach ( $menu_items as $item ) {
-        if ( (int) $item->menu_item_parent === 0 && $count < 6 ) {
+        if ( (int) $item->menu_item_parent === 0 ) {
             $cats[] = array(
                 'label' => esc_html( $item->title ),
                 'url'   => esc_url( $item->url ),
             );
-            $count++;
         }
     }
 }
