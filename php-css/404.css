@@ -1,0 +1,98 @@
+/* =====================================================================
+   MEILLEURTEST — Page 404 (onglet CSS)
+   Scope : .mt-404. 100 % variables Advanced Themer.
+   ===================================================================== */
+.mt-404 {
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3); --bg-pill: var(--at-grey-l-5);
+  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2);
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink); text-align: center;
+  max-width: 620px; margin: 0 auto;
+  padding: 80px 24px 60px;
+  -webkit-font-smoothing: antialiased;
+}
+.mt-404 * { box-sizing: border-box; }
+
+/* ---------- Gros « 404 » ---------- */
+.mt-404-code {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 700; font-size: clamp(80px, 14vw, 140px);
+  line-height: 1; letter-spacing: -0.04em;
+  color: var(--at-grey-l-3);
+  margin-bottom: 16px;
+}
+
+/* ---------- Titre ---------- */
+.mt-404-title {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-weight: 600; font-size: clamp(24px, 3.6vw, 34px);
+  line-height: 1.15; letter-spacing: -0.02em;
+  color: var(--ink); margin: 0 0 14px;
+}
+
+/* ---------- Description ---------- */
+.mt-404-desc {
+  font-size: 15px; line-height: 1.6;
+  color: var(--ink-2); max-width: 44ch;
+  margin: 0 auto 32px;
+}
+
+/* ---------- Barre de recherche ---------- */
+.mt-404-search {
+  display: flex; max-width: 440px; margin: 0 auto 24px;
+  border: 1px solid var(--line); border-radius: 999px;
+  overflow: hidden; background: var(--at-white);
+  transition: border-color .2s;
+}
+.mt-404-search:focus-within { border-color: var(--accent); }
+.mt-404-search input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font: inherit; font-size: 14px; color: var(--ink);
+  padding: 12px 18px;
+}
+.mt-404-search input::placeholder { color: var(--muted-2); }
+.mt-404-search button {
+  border: none; background: var(--accent); color: var(--at-white);
+  padding: 0 18px; cursor: pointer; font-size: 14px;
+  transition: background .15s;
+}
+.mt-404-search button:hover { background: var(--accent-dark); }
+
+/* ---------- Lien retour ---------- */
+.mt-404-home {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 500; color: var(--accent);
+  text-decoration: none; transition: color .15s;
+  margin-bottom: 48px;
+}
+.mt-404-home:hover { color: var(--accent-dark); }
+.mt-404-home i { font-size: 12px; }
+
+/* ---------- Catégories ---------- */
+.mt-404-cats { border-top: 1px solid var(--line); padding-top: 32px; }
+.mt-404-cats-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 16px;
+}
+.mt-404-cats ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+}
+.mt-404-cats li a {
+  display: block; padding: 8px 18px; border-radius: 999px;
+  background: var(--bg-pill); color: var(--ink);
+  font-size: 13px; font-weight: 500; text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.mt-404-cats li a:hover {
+  background: var(--accent); color: var(--at-white);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 767px) {
+  .mt-404 { padding: 56px 20px 48px; }
+  .mt-404-cats ul { gap: 8px; }
+  .mt-404-cats li a { padding: 7px 14px; font-size: 12px; }
+}
