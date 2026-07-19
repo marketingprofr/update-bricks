@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "seo-google": {
+      "source": "agricidaniel/claude-seo",
+      "sourceType": "github",
+      "skillPath": "skills/seo-google/SKILL.md",
+      "computedHash": "0fb0f39b1b9680ef932d45fef9421cc76eded46e83c18566a729207b73a7de20"
+    }
+  }
+}
