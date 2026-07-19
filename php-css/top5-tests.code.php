@@ -306,6 +306,7 @@ foreach ( $ids as $pid ) {
     'offer_urls'  => $offer_urls,
     'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
     'cta_text'    => $has_price ? 'Voir le prix' : ( $btn_first !== '' ? $btn_first : "Voir l'offre" ),
+    'prix'        => $has_price ? mt5_num( $prix ) : 0,
     'admin'       => $admin_meta,
   );
 }
@@ -474,3 +475,71 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
   </article>
 <?php endforeach; ?>
 </section>
+<?php
+/* ---------------------------------------------------------------------
+   Données structurées Product (JSON-LD) — un objet par produit
+   --------------------------------------------------------------------- */
+$author_name = get_the_author_meta( 'display_name', get_post_field( 'post_author', $page_id ) );
+if ( $author_name === '' ) { $author_name = 'Meilleurtest.fr'; }
+
+$ld_products = array();
+foreach ( $products as $it ) {
+  $ld = array(
+    '@type' => 'Product',
+    'name'  => trim( $it['brand'] . ' ' . $it['name'] ),
+  );
+  if ( $it['img'] )             { $ld['image'] = $it['img']; }
+  if ( $it['summary'] !== '' )  { $ld['description'] = wp_strip_all_tags( $it['summary'] ); }
+  if ( $it['brand'] !== '' )    { $ld['brand'] = array( '@type' => 'Brand', 'name' => $it['brand'] ); }
+
+  if ( $it['score10'] > 0 ) {
+    $ld['review'] = array(
+      '@type'        => 'Review',
+      'author'       => array( '@type' => 'Organization', 'name' => $author_name ),
+      'reviewRating' => array(
+        '@type'      => 'Rating',
+        'ratingValue' => number_format( (float) $it['score10'], 1, '.', '' ),
+        'bestRating'  => '10',
+        'worstRating' => '1',
+      ),
+    );
+  }
+
+  $cust_r = mt5_num( $it['cust_rating'] );
+  $cust_c = (int) preg_replace( '/[^0-9]/', '', (string) $it['cust_count'] );
+  if ( $cust_r > 0 && $cust_c > 0 ) {
+    $ld['aggregateRating'] = array(
+      '@type'       => 'AggregateRating',
+      'ratingValue' => number_format( $cust_r, 1, '.', '' ),
+      'bestRating'  => '5',
+      'reviewCount' => $cust_c,
+    );
+  }
+
+  if ( $it['prix'] > 0 && ! empty( $it['offer_urls'] ) ) {
+    $ld['offers'] = array(
+      '@type'         => 'AggregateOffer',
+      'lowPrice'      => number_format( $it['prix'], 2, '.', '' ),
+      'priceCurrency' => 'EUR',
+      'offerCount'    => count( $it['offer_urls'] ),
+      'url'           => $it['primary_url'],
+    );
+  } elseif ( ! empty( $it['offer_urls'] ) ) {
+    $ld['offers'] = array(
+      '@type' => 'Offer',
+      'url'   => $it['primary_url'],
+      'availability' => 'https://schema.org/InStock',
+    );
+  }
+
+  $ld_products[] = $ld;
+}
+
+if ( ! empty( $ld_products ) ) :
+  $ld_json = array(
+    '@context' => 'https://schema.org',
+    '@graph'   => $ld_products,
+  );
+?>
+<script type="application/ld+json"><?php echo wp_json_encode( $ld_json, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP ); ?></script>
+<?php endif; ?>
