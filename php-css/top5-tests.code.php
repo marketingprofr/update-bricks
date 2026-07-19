@@ -482,7 +482,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
 $author_name = get_the_author_meta( 'display_name', get_post_field( 'post_author', $page_id ) );
 if ( $author_name === '' ) { $author_name = 'Meilleurtest.fr'; }
 
-$ld_products = array();
+$ld_items = array();
 foreach ( $products as $it ) {
   $ld = array(
     '@type' => 'Product',
@@ -532,13 +532,21 @@ foreach ( $products as $it ) {
     );
   }
 
-  $ld_products[] = $ld;
+  $ld_items[] = array(
+    '@type'    => 'ListItem',
+    'position' => (int) $it['pos'],
+    'item'     => $ld,
+  );
 }
 
-if ( ! empty( $ld_products ) ) :
+if ( ! empty( $ld_items ) ) :
+  $list_name = 'Les meilleurs' . ( $type_plur !== '' ? ' ' . $type_plur : ' produits' );
   $ld_json = array(
     '@context' => 'https://schema.org',
-    '@graph'   => $ld_products,
+    '@type'    => 'ItemList',
+    'name'     => $list_name,
+    'numberOfItems'   => count( $ld_items ),
+    'itemListElement' => $ld_items,
   );
 ?>
 <script type="application/ld+json"><?php echo wp_json_encode( $ld_json, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP ); ?></script>
