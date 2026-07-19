@@ -1,17 +1,21 @@
 /**
- * Redirect deep category URLs (3+ levels) to /comparatif-{slug}/
+ * Redirect deep category URLs (3+ levels) to the correct comparatif canonical.
  *
  * Ex: /maison/electromenager/ventilateur/ventilateur-de-table
- *  -> /comparatif-ventilateur-de-table/
+ *  -> /comparatif-ventilateur-de-table/  (si taggé 2026/2027/2028)
+ *  -> /comparatif/ventilateur-de-table/  (si non taggé)
+ *
+ * Compatible avec le snippet "URLs plates pour comparatifs taggés" :
+ * utilise mlt_comparatif_uses_flat_url() pour envoyer directement vers
+ * la bonne URL canonique, sans chaîne de redirections.
  *
  * A coller dans WPCode / Codebox en tant que snippet PHP
  * Emplacement : Exécuter partout (Run Everywhere)
- * Priorité : 1 (le plus tôt possible)
+ * Priorité : 2 (après le snippet URLs plates qui est en priorité 1)
  */
 
 add_action( 'template_redirect', function () {
 
-    // Ne rien faire dans l'admin ou pour les requêtes POST
     if ( is_admin() || $_SERVER['REQUEST_METHOD'] !== 'GET' ) {
         return;
     }
@@ -24,7 +28,6 @@ add_action( 'template_redirect', function () {
     // Retirer le slash de fin pour compter les segments
     $path_trimmed = trim( $path, '/' );
 
-    // Ignorer les chemins vides
     if ( empty( $path_trimmed ) ) {
         return;
     }
@@ -32,13 +35,12 @@ add_action( 'template_redirect', function () {
     $segments = explode( '/', $path_trimmed );
 
     // On ne redirige que s'il y a 3 segments ou plus
-    // (au moins 2 niveaux de catégories + le slug final)
     if ( count( $segments ) < 3 ) {
         return;
     }
 
-    // Ne pas toucher aux URLs qui commencent déjà par "comparatif-"
-    if ( strpos( $segments[0], 'comparatif-' ) === 0 ) {
+    // Ne pas toucher aux URLs qui commencent déjà par "comparatif"
+    if ( strpos( $segments[0], 'comparatif' ) === 0 ) {
         return;
     }
 
@@ -61,8 +63,29 @@ add_action( 'template_redirect', function () {
     // Le dernier segment est le slug du comparatif
     $slug = end( $segments );
 
-    // Construire l'URL de destination
-    $destination = home_url( '/comparatif-' . $slug . '/' );
+    // Vérifier que ce comparatif existe réellement
+    $posts = get_posts( array(
+        'name'           => $slug,
+        'post_type'      => 'comparatif',
+        'post_status'    => 'publish',
+        'posts_per_page' => 1,
+        'fields'         => 'ids',
+    ) );
+
+    if ( empty( $posts ) ) {
+        return; // Pas de comparatif trouvé — laisser WP gérer (404 ou autre)
+    }
+
+    $post_id = (int) $posts[0];
+
+    // Déterminer la bonne URL canonique selon le tag
+    if ( function_exists( 'mlt_comparatif_uses_flat_url' ) && mlt_comparatif_uses_flat_url( $post_id ) ) {
+        // Comparatif taggé → URL plate
+        $destination = home_url( '/comparatif-' . $slug . '/' );
+    } else {
+        // Comparatif non taggé → URL native du CPT
+        $destination = home_url( '/comparatif/' . $slug . '/' );
+    }
 
     // Conserver la query string si présente
     $query_string = $_SERVER['QUERY_STRING'] ?? '';
@@ -70,8 +93,7 @@ add_action( 'template_redirect', function () {
         $destination .= '?' . $query_string;
     }
 
-    // Redirect 301 permanent
     wp_redirect( $destination, 301 );
     exit;
 
-}, 1 ); // Priorité 1 = s'exécute très tôt
+}, 2 ); // Priorité 2 = après le snippet URLs plates (priorité 1)
