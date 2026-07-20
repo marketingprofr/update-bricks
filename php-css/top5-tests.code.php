@@ -516,18 +516,29 @@ foreach ( $products as $it ) {
     );
   }
 
-  if ( $it['prix'] > 0 && ! empty( $it['offer_urls'] ) ) {
+  $offer_count = count( $it['offer_urls'] );
+  if ( $it['prix'] > 0 && $offer_count > 1 ) {
+    $formatted_price = number_format( $it['prix'], 2, '.', '' );
     $ld['offers'] = array(
       '@type'         => 'AggregateOffer',
-      'lowPrice'      => number_format( $it['prix'], 2, '.', '' ),
+      'lowPrice'      => $formatted_price,
+      'highPrice'     => $formatted_price,
       'priceCurrency' => 'EUR',
-      'offerCount'    => count( $it['offer_urls'] ),
+      'offerCount'    => $offer_count,
       'url'           => $it['primary_url'],
     );
-  } elseif ( ! empty( $it['offer_urls'] ) ) {
+  } elseif ( $it['prix'] > 0 && $offer_count === 1 ) {
     $ld['offers'] = array(
-      '@type' => 'Offer',
-      'url'   => $it['primary_url'],
+      '@type'         => 'Offer',
+      'price'         => number_format( $it['prix'], 2, '.', '' ),
+      'priceCurrency' => 'EUR',
+      'url'           => $it['primary_url'],
+      'availability'  => 'https://schema.org/InStock',
+    );
+  } elseif ( $offer_count > 0 ) {
+    $ld['offers'] = array(
+      '@type'        => 'Offer',
+      'url'          => $it['primary_url'],
       'availability' => 'https://schema.org/InStock',
     );
   }
