@@ -121,7 +121,9 @@ RESOURCES = [
     "offersV2.listings.availability",
     "offersV2.listings.condition",
     "offersV2.listings.merchantInfo",
-    "offersV2.listings.deliveryInfo",
+    # NB: OffersV2 n'expose PAS deliveryInfo (contrairement à Offers v1).
+    # Ressources OffersV2 valides : price, availability, condition,
+    # merchantInfo, type, isBuyBoxWinner, dealDetails, loyaltyPoints.
 ]
 
 BATCH_SIZE = 10
@@ -375,8 +377,9 @@ def classify_product(item: dict | None, error: dict | None) -> dict:
         result["availability_type"] = avail_type
 
         result["merchant"] = dig(listing, "merchantInfo.name")
-        result["is_amazon_fulfilled"] = dig(
-            listing, "deliveryInfo.isAmazonFulfilled")
+        # OffersV2 n'expose pas deliveryInfo → on ne peut pas savoir
+        # "fulfilled by Amazon". Le vendeur reste dispo via `merchant`.
+        result["is_amazon_fulfilled"] = None
 
         if avail_type == "Now":
             result["status"] = "available"
