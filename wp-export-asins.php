@@ -9,7 +9,8 @@
 
 // --- Configuration ---
 $ASIN_FIELD_KEY  = 'mltv5_asin_amazon';      // Nom du champ ACF contenant l'ASIN
-$POST_TYPE       = 'post-type-produit';       // CPT produit
+$POST_TYPE       = 'avis';                    // CPT des produits (posts "avis")
+$POST_STATUS     = 'publish';                 // 'publish' ou ['publish','draft',…] pour élargir
 $FALLBACK_FIELDS = [                          // Champs alternatifs si le principal est vide
     'mltv5_lien_du_bouton_1',                 // L'ASIN est parfois dans l'URL affiliée
 ];
@@ -22,9 +23,11 @@ echo "post_id,asin,title\n";
 
 $posts = get_posts([
     'post_type'      => $POST_TYPE,
-    'post_status'    => 'publish',
+    'post_status'    => $POST_STATUS,
     'posts_per_page' => -1,
     'fields'         => 'ids',
+    // Ne récupère que les posts qui ont bien le champ ASIN renseigné.
+    'meta_query'     => [[ 'key' => $ASIN_FIELD_KEY, 'compare' => 'EXISTS' ]],
 ]);
 
 $count = 0;
