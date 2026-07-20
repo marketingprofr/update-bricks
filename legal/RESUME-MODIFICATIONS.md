@@ -45,6 +45,16 @@ Date : 20 juillet 2026
 | Force majeure elargie (pandemie, cyberattaque, etc.) | — | art.23 | — | — |
 | Indemnisation renforcee | — | art.22 | — | — |
 
+### Page Affiliation (refonte)
+- Suppression de **tout le surlignage jaune** (`<mark>`) : mise en forme propre
+- Suppression des claims d'achat de produits (« nous n'achetons qu'une partie ») : **plus d'actualite**
+- **Test physique deplace en derniere position** comme exception (« le cas echeant »)
+- Ajout disclaimer explicite : produits **pas necessairement achetes/testes**
+- Clarification : « test/avis/comparatif » = **processus editorial**, pas prise en main
+- Ajout clause : relations commerciales susceptibles d'influencer la selection
+- Ton juridique protecteur coherent avec les autres documents legaux
+- Numerotation des sections (1-8)
+
 ## Comment deployer
 
 1. **Mentions legales** : remplacer le contenu de la page WordPress par
@@ -53,9 +63,10 @@ Date : 20 juillet 2026
 3. **Declaration de confidentialite** : remplacer par
    `legal/declaration-de-confidentialite.html`
 4. **Avertissement** : remplacer par `legal/avertissement.html`
-5. **Politique de cookies** : suivre les instructions de
-   `legal/politique-cookies-notes.md` (reglages Complianz + bloc a ajouter)
-6. **Purger le cache** Varnish + Breeze apres chaque mise a jour
+5. **Politique de cookies** : remplacer par
+   `legal/politique-de-cookies.html`
+6. **Affiliation** : remplacer par `legal/affiliation.html`
+7. **Purger le cache** Varnish + Breeze apres chaque mise a jour
 
 ## Points a valider avec un juriste
 
