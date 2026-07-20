@@ -115,6 +115,7 @@ RESOURCES = [
     "customerReviews.starRating",
     "images.primary.medium",
     "images.primary.large",
+    "images.primary.highRes",
     "itemInfo.title",
     "itemInfo.byLineInfo",
     "offersV2.listings.price",
@@ -320,7 +321,7 @@ def classify_product(item: dict | None, error: dict | None) -> dict:
         "status": None, "title": None, "brand": None,
         "review_count": None, "review_score": None,
         "price": None, "price_currency": None, "price_display": None,
-        "image_medium": None, "image_large": None,
+        "image": None, "image_large": None,
         "availability_message": None, "availability_type": None,
         "merchant": None, "is_amazon_fulfilled": None,
     }
@@ -352,8 +353,10 @@ def classify_product(item: dict | None, error: dict | None) -> dict:
     result["review_score"] = dig(
         item, "customerReviews.starRating.value", "customerReviews.starRating")
 
-    # Images
-    result["image_medium"] = dig(item, "images.primary.medium.url")
+    # Images — "image" = image principale (primary), meilleure qualité dispo
+    # (highRes → large → medium). image_large = 500px, si tu préfères plus léger.
+    result["image"] = dig(item, "images.primary.highRes.url",
+                          "images.primary.large.url", "images.primary.medium.url")
     result["image_large"] = dig(item, "images.primary.large.url")
 
     # Offres (offersV2, avec repli sur l'ancienne forme offers par prudence)
@@ -529,7 +532,7 @@ def write_csv(results: list, path: str):
         "post_id", "asin", "status", "title", "brand",
         "review_count", "review_score",
         "price", "price_currency", "price_display",
-        "image_medium", "image_large",
+        "image", "image_large",
         "availability_message", "availability_type",
         "merchant", "is_amazon_fulfilled", "fetched_at",
     ]
@@ -552,7 +555,7 @@ def print_summary(results: list):
         statuses[s] = statuses.get(s, 0) + 1
     with_reviews = sum(1 for r in results if r.get("review_count"))
     with_price = sum(1 for r in results if r.get("price") is not None)
-    with_image = sum(1 for r in results if r.get("image_medium"))
+    with_image = sum(1 for r in results if r.get("image"))
 
     log.info("=" * 52)
     log.info("RÉSUMÉ — %d produits", total)
@@ -594,7 +597,7 @@ def run_selftest(api: CreatorsAPI, asins: list):
         log.info("Parsé %s → status=%s prix=%s avis=%s note=%s img=%s",
                  asin, parsed["status"], parsed["price"],
                  parsed["review_count"], parsed["review_score"],
-                 "oui" if parsed["image_medium"] else "non")
+                 "oui" if parsed["image"] else "non")
     log.info("Self-test terminé. Si un champ clé est None mais présent dans le "
              "JSON brut ci-dessus, ajuste le chemin dans classify_product().")
 

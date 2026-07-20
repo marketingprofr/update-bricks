@@ -12,7 +12,7 @@ $FIELDS = [
     'review_count'    => 'mltv5_nombre_avis_clients',     // Nombre d'avis Amazon
     'review_score'    => 'mltv5_score_avis_clients',       // Note moyenne /5
     'price'           => 'mltv5_prix_indicatif',           // Prix actuel
-    'image_medium'    => 'mltv5_image_amazon',             // URL image
+    'image'           => 'mltv5_image_amazon',             // URL image primary (grande)
     'status'          => 'mltv5_amazon_status',            // available/out_of_stock/discontinued/not_found/restricted/no_data
     'fetched_at'      => 'mltv5_amazon_last_check',        // Date de dernière vérification
 ];
