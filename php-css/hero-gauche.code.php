@@ -16,7 +16,7 @@ $mod = date_i18n('j F Y', get_the_modified_time('U'));
 
   <div class="mt-eyebrow">
     <span class="pill">Vérifié</span>
-    <span>le <?php echo $mod; ?></span>
+    <span><?php echo $mod; ?></span>
   </div>
 
   <h1 class="mt-h1">
