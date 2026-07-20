@@ -1,0 +1,5 @@
+.env
+*.checkpoint
+results.json
+results.csv
+__pycache__/
