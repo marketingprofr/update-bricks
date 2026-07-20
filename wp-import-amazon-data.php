@@ -13,7 +13,7 @@ $FIELDS = [
     'review_score'    => 'mltv5_score_avis_clients',       // Note moyenne /5
     'price'           => 'mltv5_prix_indicatif',           // Prix actuel
     'image_medium'    => 'mltv5_image_amazon',             // URL image
-    'status'          => 'mltv5_amazon_status',            // available/out_of_stock/discontinued/not_found
+    'status'          => 'mltv5_amazon_status',            // available/out_of_stock/discontinued/not_found/restricted/no_data
     'fetched_at'      => 'mltv5_amazon_last_check',        // Date de dernière vérification
 ];
 // N'importe que les champs qui existent dans $FIELDS ; commentez une ligne pour ne pas l'importer.
