@@ -381,10 +381,14 @@ def classify_product(item: dict | None, error: dict | None) -> dict:
         # "fulfilled by Amazon". Le vendeur reste dispo via `merchant`.
         result["is_amazon_fulfilled"] = None
 
-        if avail_type == "Now":
-            result["status"] = "available"
-        elif any(w in avail_msg.lower() for w in ("rupture", "unavailable", "indispon")):
+        # OffersV2 renvoie availability.type en MAJUSCULES (IN_STOCK,
+        # OUT_OF_STOCK, IN_STOCK_SCARCE, PREORDER, BACKORDER…).
+        t = (avail_type or "").upper()
+        msg = (avail_msg or "").lower()
+        if "OUT_OF_STOCK" in t or any(w in msg for w in ("rupture", "indispon", "unavailable")):
             result["status"] = "out_of_stock"
+        elif t.startswith("IN_STOCK") or t in ("NOW", "PREORDER", "BACKORDER", "LEADTIME"):
+            result["status"] = "available"
         elif result["price"] is not None:
             result["status"] = "available"
         else:
