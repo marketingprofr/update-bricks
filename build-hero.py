@@ -100,7 +100,7 @@ if (!empty($forcer_affichage_du_titre ?? '')) {
     }
 } else {
     if ($post_type === 'liste') { $new_rank_math_title = get_the_title($this_id); }
-    else { $new_rank_math_title = "Comparatif : Les ".$total_avis." ".lcfirst($masculinsfeminins ?? 'meilleurs')." ".$type_de_produit_au_pluriel." 2026"; }
+    else { $new_rank_math_title = "Les ".$total_avis." ".lcfirst($masculinsfeminins ?? 'meilleurs')." ".$type_de_produit_au_pluriel." 2026 | Test par Meilleurtest"; }
     if (($new_rank_math_title <> $rank_math_title) && (($this_id ?? '') <> 4224)) {
         update_post_meta($this_id ?? '', 'rank_math_title', $new_rank_math_title);
     }
