@@ -202,6 +202,27 @@ def parse_product(product: dict) -> dict:
 # Entrée CSV / checkpoint / sortie
 # ---------------------------------------------------------------------------
 
+def read_from_results(path: str, keep_statuses: set) -> list:
+    """Construit la liste depuis un results.json Amazon, filtré par statut.
+    Écarte par défaut discontinued / not_found (produits définitivement morts).
+    """
+    with open(path, encoding="utf-8") as f:
+        amazon = json.load(f)
+    items, seen, dropped = [], set(), 0
+    for r in amazon:
+        asin = (r.get("asin") or "").strip().upper()
+        if not asin or asin in seen:
+            continue
+        if r.get("status") not in keep_statuses:
+            dropped += 1
+            continue
+        seen.add(asin)
+        items.append({"post_id": r.get("post_id"), "asin": asin})
+    log.info("Depuis %s : %d gardés, %d écartés (hors filtre de statut)",
+             path, len(items), dropped)
+    return items
+
+
 def read_asins(path: str) -> list:
     items, seen = [], set()
     with open(path, newline="", encoding="utf-8-sig") as f:
@@ -402,6 +423,13 @@ def main():
     parser.add_argument("-i", "--input", help="CSV d'entrée (colonnes: asin, post_id)")
     parser.add_argument("-o", "--output", default="keepa-reviews.json")
     parser.add_argument("--asins", help="ASINs séparés par des virgules")
+    parser.add_argument("--from-results",
+                        help="Construit la liste depuis un results.json Amazon, "
+                             "filtré par statut (voir --keep-status)")
+    parser.add_argument("--keep-status", default="available,out_of_stock,restricted",
+                        help="Statuts à garder avec --from-results "
+                             "(défaut: available,out_of_stock,restricted → "
+                             "exclut discontinued/not_found/no_data)")
     parser.add_argument("--selftest", action="store_true")
     parser.add_argument("--merge", nargs=2, metavar=("AMAZON_JSON", "KEEPA_JSON"),
                         help="Fusionne les avis Keepa dans les données Amazon")
@@ -435,6 +463,9 @@ def main():
     if args.asins:
         items = [{"post_id": None, "asin": a.strip().upper()}
                  for a in args.asins.split(",") if a.strip()]
+    elif args.from_results:
+        keep = {s.strip() for s in args.keep_status.split(",") if s.strip()}
+        items = read_from_results(args.from_results, keep)
     elif args.input:
         items = read_asins(args.input)
     else:
