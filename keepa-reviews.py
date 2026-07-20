@@ -110,11 +110,11 @@ class KeepaClient:
             "key": self.api_key,
             "domain": self.domain,
             "asin": ",".join(asins),
-            "stats": 1,       # renvoie stats.current (valeurs courantes)
-            "rating": 1,      # inclut note + nombre d'avis
-            "history": 0,     # pas besoin de l'historique complet
-            "offers": 0,
-            "update": 0,      # accepte des données en cache (moins de tokens)
+            "stats": 180,     # active stats.current (valeurs courantes)
+            "rating": 1,      # inclut note + nombre d'avis (coûte +1 token/produit)
+            # NB: 'offers' doit valoir 20-100 (jamais 0) → omis (inutile ici).
+            #     'update' omis → Keepa sert ses données en CACHE (tokens minimaux).
+            #     'history' laissé par défaut (1) → csv dispo en repli du parsing.
         }
 
         for attempt in range(MAX_RETRIES + 1):
