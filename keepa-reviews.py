@@ -77,10 +77,11 @@ KEEPA_DOMAINS = {
 KEEPA_IDX_RATING = 16        # note ×10 (47 = 4.7/5)
 KEEPA_IDX_REVIEW_COUNT = 17  # nombre d'avis
 
-BATCH_SIZE = 100             # Keepa : jusqu'à 100 ASINs/requête
-MAX_RETRIES = 4
+BATCH_SIZE = 50              # Keepa accepte 100, mais 50 = marge sous le plafond
+                             # de tokens + progression plus fine
+TOKENS_PER_PRODUCT = 2.2     # coût estimé (base + rating), avec marge
+MAX_ERROR_RETRIES = 4        # UNIQUEMENT pour les erreurs réseau/serveur (pas tokens)
 RETRY_BACKOFF = 2.0
-TOKEN_SAFETY = 25            # marge de tokens avant de temporiser
 
 
 # ---------------------------------------------------------------------------
@@ -92,20 +93,47 @@ class KeepaClient:
         self.api_key = api_key
         self.domain = domain
         self.session = session
-        self.tokens_left = None
+        self.tokens_left = None    # solde connu (peut être négatif chez Keepa)
+        self.refill_rate = None    # tokens rechargés par minute
 
-    def _wait_for_tokens(self, refill_in_ms):
-        """Temporise si le solde de tokens est trop bas."""
-        wait = max((refill_in_ms or 0) / 1000.0, 1.0)
-        log.info("Tokens bas (%s). Attente %.0fs pour recharge…",
-                 self.tokens_left, wait)
-        time.sleep(wait)
+    def _update_token_state(self, body):
+        if not isinstance(body, dict):
+            return
+        if body.get("tokensLeft") is not None:
+            self.tokens_left = body["tokensLeft"]
+        if body.get("refillRate"):
+            self.refill_rate = body["refillRate"]
+
+    def _wait_for_budget(self, target: float):
+        """Attend (par tranches, avec logs) que le solde ESTIMÉ atteigne `target`.
+
+        C'est le cœur du correctif : au lieu d'abandonner après quelques essais
+        d'1 min, on calcule le temps réel nécessaire pour revenir à `target`
+        tokens au rythme de recharge, et on patiente autant qu'il faut.
+        """
+        if self.tokens_left is None or not self.refill_rate:
+            return  # 1er appel : on ne connaît pas encore l'état → on tire
+        rate = max(self.refill_rate, 1)
+        while self.tokens_left < target:
+            deficit = target - self.tokens_left
+            eta_min = deficit / rate
+            wait_s = min(max(eta_min * 60.0, 5.0), 300.0)  # tranches 5s..5min
+            log.info("Tokens %.0f/%.0f (recharge %d/min) → ~%.0f min d'attente. "
+                     "Pause %.0fs…", self.tokens_left, target, self.refill_rate,
+                     eta_min, wait_s)
+            time.sleep(wait_s)
+            self.tokens_left += rate * (wait_s / 60.0)  # estimation post-pause
 
     def get_products(self, asins: list) -> dict:
-        """Requête /product pour 1-100 ASINs. Retourne le JSON brut."""
+        """Requête /product pour 1-100 ASINs. Retourne le JSON brut.
+
+        Ne renonce JAMAIS pour cause de tokens : attend le temps nécessaire.
+        Seules les erreurs réseau/serveur sont limitées à MAX_ERROR_RETRIES.
+        """
         if len(asins) > 100:
             raise ValueError("Maximum 100 ASINs par requête")
 
+        target = len(asins) * TOKENS_PER_PRODUCT  # budget nécessaire pour ce batch
         params = {
             "key": self.api_key,
             "domain": self.domain,
@@ -117,49 +145,49 @@ class KeepaClient:
             #     'history' laissé par défaut (1) → csv dispo en repli du parsing.
         }
 
-        for attempt in range(MAX_RETRIES + 1):
+        # 1) Attendre d'avoir de quoi payer le batch AVANT de tirer.
+        self._wait_for_budget(target)
+
+        # 2) Boucle : tokens insuffisants (429) = on attend et on refait,
+        #    SANS consommer de tentative. Seules les vraies erreurs comptent.
+        errors = 0
+        while True:
             try:
                 resp = self.session.get(KEEPA_ENDPOINT, params=params, timeout=60)
 
                 if resp.status_code == 429:
-                    # Plus de tokens : Keepa indique refillIn dans le corps.
                     body = {}
                     try:
                         body = resp.json()
                     except Exception:
                         pass
-                    self.tokens_left = body.get("tokensLeft")
-                    self._wait_for_tokens(body.get("refillIn"))
-                    continue
+                    self._update_token_state(body)
+                    if self.tokens_left is None:
+                        self.tokens_left = 0
+                    self._wait_for_budget(target)
+                    continue  # ← jamais compté comme une erreur
 
                 if resp.status_code >= 500:
-                    wait = RETRY_BACKOFF ** attempt
-                    log.warning("Erreur serveur %d. Retry dans %.1fs…",
-                                resp.status_code, wait)
-                    time.sleep(wait)
+                    errors += 1
+                    if errors > MAX_ERROR_RETRIES:
+                        raise RuntimeError(f"HTTP {resp.status_code} après {errors} essais")
+                    time.sleep(RETRY_BACKOFF ** errors)
                     continue
 
                 if resp.status_code >= 400:
                     raise RuntimeError(f"HTTP {resp.status_code} : {resp.text[:500]}")
 
                 data = resp.json()
-                self.tokens_left = data.get("tokensLeft")
-
-                # Auto-régulation : si le solde passe sous la marge, on attend.
-                if self.tokens_left is not None and self.tokens_left < TOKEN_SAFETY:
-                    self._wait_for_tokens(data.get("refillIn"))
-
+                self._update_token_state(data)
                 return data
 
             except requests.exceptions.RequestException as e:
-                if attempt < MAX_RETRIES:
-                    wait = RETRY_BACKOFF ** attempt
-                    log.warning("Erreur réseau : %s. Retry dans %.1fs…", e, wait)
-                    time.sleep(wait)
-                else:
+                errors += 1
+                if errors > MAX_ERROR_RETRIES:
                     raise
-
-        raise RuntimeError(f"Échec après {MAX_RETRIES} tentatives pour {asins}")
+                log.warning("Erreur réseau : %s. Retry dans %.1fs…",
+                            e, RETRY_BACKOFF ** errors)
+                time.sleep(RETRY_BACKOFF ** errors)
 
 
 # ---------------------------------------------------------------------------
@@ -266,7 +294,9 @@ def _now_iso() -> str:
 def process_all(client: KeepaClient, items: list, checkpoint_path: str) -> list:
     checkpoint = load_checkpoint(checkpoint_path)
     results = checkpoint.get("results", {})
-    processed = set(results.keys())
+    # On re-traite les enregistrements tombés en erreur (échecs transitoires,
+    # ex. batch abandonné faute de tokens avant le correctif).
+    processed = {a for a, r in results.items() if r.get("status") != "error"}
 
     remaining = [it for it in items if it["asin"] not in processed]
     total, done = len(items), len(processed)
