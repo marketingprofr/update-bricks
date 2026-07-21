@@ -9,8 +9,8 @@ $rt = 15 + (int) round($wc / 100);
 
 // Libelle "produits analyses" (accord en genre)
 $tp = $type_de_produit_au_pluriel ?? '';
-if (strlen($tp) >= 22) { $lblprod = 'Produits analysés'; }
-else { $lblprod = ($tp ?: 'Produits') . ((($masculinsfeminins ?? '') == 'Meilleures') ? ' analysées' : ' analysés'); }
+if (strlen($tp) >= 22) { $lblprod = 'Produits testés'; }
+else { $lblprod = ($tp ?: 'Produits') . ((($masculinsfeminins ?? '') == 'Meilleures') ? ' testées' : ' testés'); }
 
 // Compteur dynamique : vrai nombre d'avis publiés (même type + attributs), +5 si < 10
 $mt_real_count = 0;
