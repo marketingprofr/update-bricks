@@ -88,6 +88,7 @@
 .mt-top5 .t5-summary { display: none; }
 .mt-top5 .t5-readmore { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
 .mt-top5 .t5-readmore:hover { border-color: var(--accent); }
+.mt-top5 .t5-rm-score { display: none; }
 .mt-top5 .t5-pc { display: flex; flex-wrap: wrap; gap: 4px 14px; list-style: none; margin: 0; padding: 0; font-size: 12.5px; color: var(--ink-2); }
 .mt-top5 .t5-pc li { position: relative; padding-left: 15px; }
 .mt-top5 .t5-pc li::before { position: absolute; left: 0; top: 0; font-weight: 700; }
@@ -210,6 +211,50 @@
   .mt-top5 .t5-list > li:first-child.t5-no-cust .t5-ed { text-align: center; }
   .mt-top5 .t5-list > li:first-child.t5-no-cust .t5-ed .r-line { align-items: center; }
   .mt-top5 .t5-list > li:first-child.t5-no-cust .r-lbl { text-align: center; }
+}
+@media (max-width: 767px) {
+  /* Hide sort bar & rank numbers */
+  .mt-top5 .t5-bar { display: none; }
+  .mt-top5 .t5-rnum { display: none; }
+
+  /* Reduce text sizes (14.5 → 13) */
+  .mt-top5 .t5-name { font-size: 13px; }
+  .mt-top5 .t5-label { font-size: 12px; }
+  .mt-top5 .t5-list > li:first-child .t5-eyebrow { font-size: 12px; }
+  .mt-top5 .t5-list > li:first-child .t5-name { font-size: 20px; }
+  .mt-top5 .t5-list > li:first-child .t5-summary { font-size: 13px; }
+
+  /* Hide score from aside → shown in readmore button instead */
+  .mt-top5 .t5-ed,
+  .mt-top5 .t5-cust { display: none; }
+
+  /* Score badge in readmore (pill button) */
+  .mt-top5 .t5-rm-score {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--accent); color: var(--at-white);
+    font-size: 12px; font-weight: 700; line-height: 1;
+    padding: 6px 10px; border-radius: 999px;
+    margin-right: 6px; white-space: nowrap;
+  }
+  .mt-top5 .t5-readmore,
+  .mt-top5 .t5-list > li:first-child .t5-readmore {
+    display: inline-flex; align-items: center;
+    padding: 5px 14px 5px 5px;
+    border: 1.5px solid var(--accent); border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    margin-top: 10px;
+  }
+  .mt-top5 .t5-readmore .arr { transform: rotate(-90deg); }
+
+  /* Products 2+: image small on the right (~25% width) */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-card {
+    grid-template-columns: 1fr 25%;
+    grid-template-areas: "body media" "aside aside";
+    padding: 12px; align-items: start;
+  }
+  .mt-top5 .t5-list > li:not(:first-child) .t5-media { display: block; }
+  .mt-top5 .t5-list > li:not(:first-child) .ph { border-radius: 8px; }
+  .mt-top5 .t5-list > li:not(:first-child) .ph img { max-height: 80px; }
 }
 @media (max-width: 600px) {
   .mt-top5 .t5-h2 { font-size: 21px; }

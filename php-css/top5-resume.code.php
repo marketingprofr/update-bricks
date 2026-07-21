@@ -359,7 +359,7 @@ $top5_set      = array_flip( $ids );
             <?php endforeach; ?>
           </ul>
           <?php endif; ?>
-          <a class="t5-readmore" href="#produit-n-<?php echo esc_attr( $it['pos'] ); ?>">Lire l'avis complet <span class="arr" aria-hidden="true">&darr;</span></a>
+          <a class="t5-readmore" href="#produit-n-<?php echo esc_attr( $it['pos'] ); ?>"><span class="t5-rm-score"><?php echo esc_html( number_format( (float) $it['score10'], 1, ',', '' ) ); ?>/10</span> Lire l'avis complet <span class="arr" aria-hidden="true">&darr;</span></a>
         </div>
         <div class="t5-aside">
           <div class="t5-ratings">
