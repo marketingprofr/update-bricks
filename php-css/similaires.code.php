@@ -211,7 +211,7 @@ if ( ! empty( $ids ) ) :
   ?>
   <section class="mt-similar" id="<?php echo esc_attr( $CS_ANCHOR ); ?>">
     <h2 class="mt-similar-h2"><?php echo esc_html( $CS_TITLE ); ?></h2>
-    <details class="mt-similar-details">
+    <details class="mt-similar-details" open>
       <summary class="mt-similar-toggle">Voir les comparatifs similaires <span class="chev" aria-hidden="true"></span></summary>
       <div class="mt-similar-grid">
         <span class="mt-similar-pill is-current" aria-current="page"><?php echo esc_html( $cur_label ); ?></span>
@@ -223,5 +223,6 @@ if ( ! empty( $ids ) ) :
         <?php endforeach; ?>
       </div>
     </details>
+    <script>if(window.innerWidth<=767){var d=document.querySelector('.mt-similar-details');if(d)d.removeAttribute('open');}</script>
   </section>
 <?php endif; ?>

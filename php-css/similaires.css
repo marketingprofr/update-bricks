@@ -61,15 +61,12 @@ a.mt-similar-pill:focus-visible { outline: 2px solid var(--accent); outline-offs
 }
 
 /* Details/summary — desktop: always open, summary hidden */
-.mt-similar-details { display: contents; }
-.mt-similar-details[open] { display: contents; }
 .mt-similar-toggle { display: none; }
 
 /* === Responsive === */
 @media (max-width: 767px) {
   .mt-similar-h2 { font-size: 26px; }
   .mt-similar-details { display: block; }
-  .mt-similar-details:not([open]) .mt-similar-grid { display: none; }
   .mt-similar-toggle {
     display: flex; align-items: center; gap: 8px;
     width: 100%; padding: 10px 16px; margin-bottom: 12px;
