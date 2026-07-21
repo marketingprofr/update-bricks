@@ -77,9 +77,9 @@ $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
     <div class="mt-sc-process link-black"><p>Les guides d'achat de Meilleurtest résultent d'un processus de sélection approfondi et d'une vérification méticuleuse. Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
   </div>
   <div class="mt-sc-vote">
-    <h4>Noter ce guide</h4>
+    <h4>Avis des lecteurs sur cette s&eacute;lection</h4>
     <?php echo do_shortcode('[ratemypost]'); ?>
-    <p class="mt-sc-note">Votre note oriente les autres lecteurs et nous aide à améliorer ce contenu. Merci&nbsp;!</p>
+    <p class="mt-sc-note">Votre note oriente les autres lecteurs et nous aide &agrave; am&eacute;liorer ce contenu. Merci&nbsp;!</p>
   </div>
 
 </div>
