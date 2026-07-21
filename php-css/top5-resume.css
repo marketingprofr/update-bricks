@@ -282,6 +282,9 @@
   .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap .t5-readmore:hover {
     background: var(--accent-soft); border-color: var(--accent-dark);
   }
+  /* Classement complet: single-line text */
+  .mt-top5 .t5-ar-toggle { display: block; text-align: center; }
+
   /* Aside (buy) */
   .mt-top5 .t5-list > li:not(:first-child) .t5-aside {
     grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 0 12px 12px;
