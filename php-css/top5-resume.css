@@ -282,9 +282,6 @@
   .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap .t5-readmore:hover {
     background: var(--accent-soft); border-color: var(--accent-dark);
   }
-  /* Classement complet: single-line text */
-  .mt-top5 .t5-ar-toggle { display: block; text-align: center; }
-
   /* Aside (buy) */
   .mt-top5 .t5-list > li:not(:first-child) .t5-aside {
     grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 0 12px 12px;
@@ -377,6 +374,9 @@
   .mt-top5 .t5-allrank-h { font-size: 16px; }
   .mt-top5 .t5-ar-head, .mt-top5 .t5-ar-row { grid-template-columns: 36px 1fr 56px; padding: 8px; font-size: 12.5px; }
   .mt-top5 .t5-ar-score { font-size: 12.5px; }
+}
+@media (max-width: 767px) {
+  .mt-top5 .t5-ar-toggle { display: block; text-align: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   .mt-top5 * { transition: none !important; }
