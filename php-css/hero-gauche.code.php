@@ -16,7 +16,7 @@ $mod = date_i18n('j F Y', get_the_modified_time('U'));
 
   <div class="mt-eyebrow">
     <span class="pill">Vérifié</span>
-    <span><?php echo $mod; ?></span>
+    <span>le <?php echo $mod; ?></span>
   </div>
 
   <h1 class="mt-h1">
@@ -51,9 +51,11 @@ $mod = date_i18n('j F Y', get_the_modified_time('U'));
     <?php if (!empty($author_avatar_id ?? '')) {
         echo '<span class="mt-avatar">' . wp_get_attachment_image($author_avatar_id, array(30,30), '', array('alt'=>$author_avatar_alt ?? '')) . '</span>';
     } ?>
-    <span>Par <b><?php echo esc_html($author ?? ''); ?></b></span>
-    <span class="mt-dot">&bull;</span>
-    <span>Mis à jour le <?php echo $mod; ?></span>
+    <span class="mt-byline-text">
+      <span>Par <b><?php echo esc_html($author ?? ''); ?></b></span>
+      <span class="mt-dot">&bull;</span>
+      <span>Mis à jour le <?php echo $mod; ?></span>
+    </span>
   </div>
 
   <div class="mt-lede"><?php echo $introduction ?? ''; ?></div>
