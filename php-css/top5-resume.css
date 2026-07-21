@@ -287,6 +287,31 @@
     grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 0 12px 12px;
     border-top: none; margin-top: 0;
   }
+
+  /* ---- Product #1 mobile overrides ---- */
+  .mt-top5 .t5-list > li:first-child .t5-banner { padding: 3px 20px 6px 20px; }
+  .mt-top5 .t5-list > li:first-child .t5-media { max-height: 200px; padding: 12px 22px; border-bottom: none; }
+  .mt-top5 .t5-list > li:first-child .ph img { max-height: 160px; }
+  .mt-top5 .t5-list > li:first-child .t5-body { padding: 10px 20px 16px; }
+  .mt-top5 .t5-list > li:first-child .t5-aside { border-top: none; padding: 0 20px 16px; }
+  .mt-top5 .t5-list > li:first-child .t5-buy { border-top: none; padding-top: 4px; }
+  /* Readmore #1: pill format matching products 2+ */
+  .mt-top5 .t5-list > li:first-child .t5-rm-wrap {
+    display: block; width: 100%; box-sizing: border-box;
+    margin: 0; padding: 0;
+  }
+  .mt-top5 .t5-list > li:first-child .t5-readmore {
+    margin: 16px 0 0; width: 100%; position: relative;
+    border: 1.5px solid var(--accent); border-radius: 999px;
+    padding: 5px; justify-content: center;
+    background: var(--bg); transition: background .15s, border-color .15s;
+  }
+  .mt-top5 .t5-list > li:first-child .t5-rm-score {
+    position: absolute; left: 5px;
+  }
+  .mt-top5 .t5-list > li:first-child .t5-readmore:hover {
+    background: var(--accent-soft); border-color: var(--accent-dark);
+  }
 }
 @media (max-width: 600px) {
   .mt-top5 .t5-h2 { font-size: 21px; }
