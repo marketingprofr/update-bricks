@@ -70,9 +70,15 @@
 @media (max-width: 767px) {
   .mt-card { padding: 16px; border-radius: 12px; position: static; }
   .mt-card-h { margin-bottom: 12px; }
-  .mt-sc-cell { padding: 10px 12px; }
+  .mt-sc-grid { background: none; border: none; gap: 0; }
+  .mt-sc-cell { background: none; padding: 6px 8px; }
+  .mt-sc-cell > div { display: flex; align-items: baseline; gap: 6px; }
+  .mt-sc-cell:nth-child(-n+2) { padding-top: 0; }
+  .mt-sc-cell:nth-child(n+3) { padding-bottom: 0; }
+  .mt-sc-cell:nth-child(odd) { padding-left: 0; }
+  .mt-sc-cell:nth-child(even) { padding-right: 0; }
   .mt-sc-num { font-size: 16px; }
-  .mt-sc-lbl { font-size: 10px; }
+  .mt-sc-lbl { font-size: 10px; margin-top: 0; }
   .mt-sc-trust { margin-top: 12px; padding-top: 12px; gap: 8px; }
   .mt-sc-row { font-size: 12px; }
   .mt-ti { width: 26px; height: 26px; border-radius: 6px; }
