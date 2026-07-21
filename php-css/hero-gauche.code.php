@@ -61,7 +61,7 @@ $mod = date_i18n('j F Y', get_the_modified_time('U'));
   <div class="mt-lede"><?php echo $introduction ?? ''; ?></div>
 
   <div class="mt-photo">
-    <?php echo get_the_post_thumbnail($this_id, 'large', array('style'=>'display:block;width:100%;height:340px;object-fit:cover;')); ?>
+    <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img')); ?>
     <?php if ($post_type === 'comparatif') {
         echo '<img class="mt-badge" src="https://meilleurtest.fr/wp-content/uploads/2026/07/badge-mt3.png" alt="" style="position:absolute;top:0;left:0;max-width:130px;height:auto;">';
     } ?>
