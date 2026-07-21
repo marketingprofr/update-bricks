@@ -48,7 +48,7 @@ $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
 ?>
 <div class="mt-card">
 
-  <h3 class="mt-card-h"><span class="mt-card-hi"><?php echo $ic_shield; ?></span>Notre enquête</h3>
+  <h3 class="mt-card-h"><span class="mt-card-hi"><?php echo $ic_shield; ?></span>Pourquoi nous faire confiance</h3>
 
   <div class="mt-sc-grid">
     <div class="mt-sc-cell">

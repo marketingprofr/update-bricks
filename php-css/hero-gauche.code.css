@@ -35,4 +35,6 @@
   .mt-left { display: flex; flex-direction: column; }
   .mt-lede { order: 1; }
   .mt-photo-img { height: auto; aspect-ratio: 16/9; }
+  .mt-photo { margin-bottom: 20px; }
+  .mt-lede { margin-bottom: 10px; }
 }
