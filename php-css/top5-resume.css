@@ -213,22 +213,18 @@
   .mt-top5 .t5-list > li:first-child.t5-no-cust .r-lbl { text-align: center; }
 }
 @media (max-width: 767px) {
-  /* Hide sort bar & rank numbers */
   .mt-top5 .t5-bar { display: none; }
   .mt-top5 .t5-rnum { display: none; }
 
-  /* Reduce text sizes (14.5 → 13) */
   .mt-top5 .t5-name { font-size: 13px; }
   .mt-top5 .t5-label { font-size: 12px; }
   .mt-top5 .t5-list > li:first-child .t5-eyebrow { font-size: 12px; }
   .mt-top5 .t5-list > li:first-child .t5-name { font-size: 20px; }
   .mt-top5 .t5-list > li:first-child .t5-summary { font-size: 13px; }
 
-  /* Hide score from aside → shown in readmore button instead */
   .mt-top5 .t5-ed,
   .mt-top5 .t5-cust { display: none; }
 
-  /* Score badge in readmore (pill button) */
   .mt-top5 .t5-rm-score {
     display: inline-flex; align-items: center; justify-content: center;
     background: var(--accent); color: var(--at-white);
@@ -236,25 +232,45 @@
     padding: 6px 10px; border-radius: 999px;
     margin-right: 6px; white-space: nowrap;
   }
+
+  /* Readmore: full-width outlined button */
   .mt-top5 .t5-readmore,
   .mt-top5 .t5-list > li:first-child .t5-readmore {
-    display: inline-flex; align-items: center;
-    padding: 5px 14px 5px 5px;
-    border: 1.5px solid var(--accent); border-radius: 999px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 9px 14px 9px 8px;
+    border: 1.5px solid var(--accent); border-radius: 9px;
     font-size: 13px; font-weight: 600; color: var(--accent);
-    margin-top: 10px;
+    margin-top: 14px;
   }
   .mt-top5 .t5-readmore .arr { transform: rotate(-90deg); }
 
-  /* Products 2+: image small on the right (~25% width) */
+  /* ---- Products 2+: restructure with display:contents ---- */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-body { display: contents; }
   .mt-top5 .t5-list > li:not(:first-child) .t5-card {
-    grid-template-columns: 1fr 25%;
-    grid-template-areas: "body media" "aside aside";
-    padding: 12px; align-items: start;
+    grid-template-columns: 1fr 25%; padding: 0; overflow: hidden; align-items: start;
   }
-  .mt-top5 .t5-list > li:not(:first-child) .t5-media { display: block; }
+  /* Name + label: left column, next to image */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-name { grid-column: 1; padding: 12px 0 2px 12px; margin: 0; }
+  .mt-top5 .t5-list > li:not(:first-child) .t5-label { grid-column: 1; padding: 0 0 0 12px; margin: 0; }
+  /* Image: right column, spanning name+label */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-media {
+    display: block; grid-column: 2; grid-row: 1 / 3; align-self: center; padding: 8px 12px;
+  }
   .mt-top5 .t5-list > li:not(:first-child) .ph { border-radius: 8px; }
   .mt-top5 .t5-list > li:not(:first-child) .ph img { max-height: 80px; }
+  /* Pros/cons: full width below image */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-column: 1 / -1; padding: 6px 12px 0; margin: 0; }
+  /* Readmore: full width, grey zone */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-readmore {
+    grid-column: 1 / -1; margin: 0; padding: 12px;
+    background: var(--bg-2); border-top: 1px solid var(--line-2);
+    border-left: none; border-right: none; border-bottom: none; border-radius: 0;
+  }
+  /* Aside (buy): grey zone continues */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-aside {
+    grid-column: 1 / -1; padding: 0 12px 12px;
+    background: var(--bg-2); border-top: none; margin-top: 0;
+  }
 }
 @media (max-width: 600px) {
   .mt-top5 .t5-h2 { font-size: 21px; }
