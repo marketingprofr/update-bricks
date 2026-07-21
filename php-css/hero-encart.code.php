@@ -71,7 +71,7 @@ $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
 
   <div class="mt-sc-trust">
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_check; ?></span><span><b>100&nbsp;% indépendant</b> (et sans pub)</span></div>
-    <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_refresh; ?></span><span>Mis à jour le <b><?php echo $mod; ?></b></span></div>
+    <div class="mt-sc-row mt-sc-date"><span class="mt-ti"><?php echo $ic_refresh; ?></span><span>Mis à jour le <b><?php echo $mod; ?></b></span></div>
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_book; ?></span><span><b><?php echo $rt; ?> min</b> de lecture</span></div>
   </div>
     <div class="mt-sc-process link-black"><p>Les guides d'achat de Meilleurtest résultent d'un processus de sélection approfondi et d'une vérification méticuleuse. Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
