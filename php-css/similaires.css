@@ -63,5 +63,7 @@ a.mt-similar-pill:focus-visible { outline: 2px solid var(--accent); outline-offs
 /* === Responsive === */
 @media (max-width: 767px) {
   .mt-similar-h2 { font-size: 26px; }
-  .mt-similar-pill { padding: 8px 13px; font-size: 13px; }
+  .mt-similar-grid { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 4px; }
+  .mt-similar-grid::-webkit-scrollbar { display: none; }
+  .mt-similar-pill { flex-shrink: 0; padding: 8px 13px; font-size: 13px; white-space: nowrap; }
 }
