@@ -261,15 +261,16 @@
   .mt-top5 .t5-list > li:not(:first-child) .ph img { max-height: 80px; }
   /* Pros/cons: full width below image, spacing before button zone */
   .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-area: auto; grid-column: 1 / -1; grid-row: 3; padding: 6px 12px 14px; margin: 0; }
-  /* Readmore: full width, outlined button like product #1 */
+  /* Readmore: button on grey zone */
   .mt-top5 .t5-list > li:not(:first-child) .t5-readmore {
-    grid-area: auto; grid-column: 1 / -1; grid-row: 4; margin: 0 12px;
-    padding: 9px 14px 9px 8px;
-    background: none; border: 1.5px solid var(--accent); border-radius: 9px;
+    grid-area: auto; grid-column: 1 / -1; grid-row: 4;
+    width: auto; margin: 0; padding: 9px 12px 9px 8px;
+    background: var(--bg-3); border: 1.5px solid var(--accent);
+    border-radius: 9px 9px 0 0;
   }
-  /* Aside (buy): grey zone below */
+  /* Aside (buy): grey zone continues */
   .mt-top5 .t5-list > li:not(:first-child) .t5-aside {
-    grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 12px;
+    grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 0 12px 12px;
     background: var(--bg-3); border-top: none; margin-top: 0;
   }
 }
