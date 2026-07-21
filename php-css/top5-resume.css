@@ -247,7 +247,7 @@
   /* ---- Products 2+: restructure with display:contents ---- */
   .mt-top5 .t5-list > li:not(:first-child) .t5-body { display: contents; }
   .mt-top5 .t5-list > li:not(:first-child) .t5-card {
-    grid-template-columns: 1fr 25%; grid-template-areas: none;
+    grid-template-columns: 1fr 25%; grid-template-areas: none; gap: 0;
     padding: 0; overflow: hidden; align-items: start;
   }
   /* Name + label: left column, next to image */
@@ -264,13 +264,13 @@
   /* Readmore: full width, grey zone */
   .mt-top5 .t5-list > li:not(:first-child) .t5-readmore {
     grid-area: auto; grid-column: 1 / -1; grid-row: 4; margin: 0; padding: 12px;
-    background: var(--bg-2); border-top: 1px solid var(--line-2);
+    background: var(--bg-3); border-top: 1px solid var(--line-2);
     border-left: none; border-right: none; border-bottom: none; border-radius: 0;
   }
   /* Aside (buy): grey zone continues */
   .mt-top5 .t5-list > li:not(:first-child) .t5-aside {
     grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 0 12px 12px;
-    background: var(--bg-2); border-top: none; margin-top: 0;
+    background: var(--bg-3); border-top: none; margin-top: 0;
   }
 }
 @media (max-width: 600px) {
