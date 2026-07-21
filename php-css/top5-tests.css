@@ -183,6 +183,8 @@
   .ed-a-pc .col.pros { padding-right: 0; padding-bottom: 16px; }
   .ed-a-pc .col.cons { padding-left: 0; padding-top: 16px; border-left: 0; border-top: 1px solid var(--line-2); }
   .ed-a-specs dl { grid-template-columns: 1fr; gap: 0; }
+  .ed-a-col { display: flex; flex-direction: column; }
+  .ed-a-buy { order: 99; margin: 0 0 30px; }
 }
 @media (max-width: 478px) {
   /* Encart achat empilé : "Notre note" / "Avis clients" ou "Point fort" / "Voir le prix"
