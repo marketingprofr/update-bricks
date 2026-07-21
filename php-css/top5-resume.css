@@ -251,25 +251,25 @@
     padding: 0; overflow: hidden; align-items: start;
   }
   /* Name + label: left column, next to image */
-  .mt-top5 .t5-list > li:not(:first-child) .t5-name { grid-area: auto; grid-column: 1; grid-row: 1; padding: 12px 0 2px 12px; margin: 0; }
-  .mt-top5 .t5-list > li:not(:first-child) .t5-label { grid-area: auto; grid-column: 1; grid-row: 2; padding: 0 0 0 12px; margin: 0; }
+  .mt-top5 .t5-list > li:not(:first-child) .t5-name { grid-area: auto; grid-column: 1; grid-row: 1; padding: 12px 0 2px 12px; margin: 0; font-size: 18px; }
+  .mt-top5 .t5-list > li:not(:first-child) .t5-label { grid-area: auto; grid-column: 1; grid-row: 2; padding: 0 0 0 12px; margin: 0; font-size: 14px; }
   /* Image: right column, spanning name+label */
   .mt-top5 .t5-list > li:not(:first-child) .t5-media {
     grid-area: auto; display: block; grid-column: 2; grid-row: 1 / 3; align-self: center; padding: 8px 12px;
   }
   .mt-top5 .t5-list > li:not(:first-child) .ph { border-radius: 8px; }
   .mt-top5 .t5-list > li:not(:first-child) .ph img { max-height: 80px; }
-  /* Pros/cons: full width below image */
-  .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-area: auto; grid-column: 1 / -1; grid-row: 3; padding: 6px 12px 0; margin: 0; }
-  /* Readmore: full width, grey zone */
+  /* Pros/cons: full width below image, spacing before button zone */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-area: auto; grid-column: 1 / -1; grid-row: 3; padding: 6px 12px 14px; margin: 0; }
+  /* Readmore: full width, outlined button like product #1 */
   .mt-top5 .t5-list > li:not(:first-child) .t5-readmore {
-    grid-area: auto; grid-column: 1 / -1; grid-row: 4; margin: 0; padding: 12px;
-    background: var(--bg-3); border-top: 1px solid var(--line-2);
-    border-left: none; border-right: none; border-bottom: none; border-radius: 0;
+    grid-area: auto; grid-column: 1 / -1; grid-row: 4; margin: 0 12px;
+    padding: 9px 14px 9px 8px;
+    background: none; border: 1.5px solid var(--accent); border-radius: 9px;
   }
-  /* Aside (buy): grey zone continues */
+  /* Aside (buy): grey zone below */
   .mt-top5 .t5-list > li:not(:first-child) .t5-aside {
-    grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 0 12px 12px;
+    grid-area: auto; grid-column: 1 / -1; grid-row: 5; padding: 12px;
     background: var(--bg-3); border-top: none; margin-top: 0;
   }
 }
