@@ -70,17 +70,18 @@
 @media (max-width: 767px) {
   .mt-card { padding: 16px; border-radius: 12px; position: static; }
   .mt-card-h { margin-bottom: 12px; }
-  .mt-sc-cell { padding: 8px 10px; gap: 8px; }
+  .mt-sc-cell { padding: 12px 10px; gap: 8px; }
   .mt-sc-cell > div { display: flex; align-items: center; gap: 6px; }
   .mt-sc-ico svg { width: 15px; height: 15px; }
-  .mt-sc-num { font-size: 15px; }
+  .mt-sc-num { font-size: 21px; }
   .mt-sc-lbl { font-size: 10px; margin-top: 0; }
-  .mt-sc-trust { margin-top: 12px; padding-top: 12px; gap: 8px; }
+  .mt-sc-trust { margin-top: 12px; padding-top: 12px; gap: 2px; }
   .mt-sc-row { font-size: 12px; }
   .mt-ti { width: 26px; height: 26px; border-radius: 6px; }
   .mt-ti svg { width: 14px; height: 14px; }
   .mt-sc-process { margin-top: 12px; padding-top: 12px; }
-  .mt-sc-vote { margin-top: 12px; padding-top: 12px; }
+  .mt-sc-vote { margin-top: 12px; padding-top: 16px; }
+  .rmp-widgets-container.rmp-wp-plugin.rmp-main-container { margin: 4px 0 0 0; }
   .mt-sc-vote h4 { font-size: 12.5px; margin-bottom: 8px; }
   .mt-sc-note { display: none; }
   .mt-sc-date { display: none; }
