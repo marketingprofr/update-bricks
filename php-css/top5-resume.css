@@ -247,7 +247,8 @@
   /* ---- Products 2+: restructure with display:contents ---- */
   .mt-top5 .t5-list > li:not(:first-child) .t5-body { display: contents; }
   .mt-top5 .t5-list > li:not(:first-child) .t5-card {
-    grid-template-columns: 1fr 25%; padding: 0; overflow: hidden; align-items: start;
+    grid-template-columns: 1fr 25%; grid-template-areas: none;
+    padding: 0; overflow: hidden; align-items: start;
   }
   /* Name + label: left column, next to image */
   .mt-top5 .t5-list > li:not(:first-child) .t5-name { grid-column: 1; padding: 12px 0 2px 12px; margin: 0; }
