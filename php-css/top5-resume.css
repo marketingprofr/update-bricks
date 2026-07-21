@@ -261,12 +261,16 @@
   .mt-top5 .t5-list > li:not(:first-child) .ph img { max-height: 80px; }
   /* Pros/cons: full width below image, spacing before button zone */
   .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-area: auto; grid-column: 1 / -1; grid-row: 3; padding: 6px 12px 14px; margin: 0; }
-  /* Readmore: button on grey zone */
-  .mt-top5 .t5-list > li:not(:first-child) .t5-readmore {
+  /* Readmore wrapper: grey zone with button inside */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap {
     grid-area: auto; grid-column: 1 / -1; grid-row: 4;
-    width: auto; margin: 0; padding: 9px 12px 9px 8px;
-    background: var(--bg-3); border: 1.5px solid var(--accent);
-    border-radius: 9px 9px 0 0;
+    margin: 0; padding: 12px;
+    background: var(--bg-3); border-top: 1px solid var(--line-2);
+  }
+  .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap .t5-readmore {
+    margin: 0; width: 100%;
+    border: 1.5px solid var(--accent); border-radius: 9px;
+    background: none;
   }
   /* Aside (buy): grey zone continues */
   .mt-top5 .t5-list > li:not(:first-child) .t5-aside {
