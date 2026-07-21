@@ -261,9 +261,14 @@
   .mt-top5 .t5-list > li:not(:first-child) .ph img { max-height: 80px; }
   /* Pros/cons: full width below image, spacing before button zone */
   .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-area: auto; grid-column: 1 / -1; grid-row: 3; padding: 6px 12px 14px; margin: 0; }
+  /* Readmore: grid placement (fallback if wrapper absent) */
+  .mt-top5 .t5-list > li:not(:first-child) .t5-readmore {
+    grid-area: auto; grid-column: 1 / -1; grid-row: 4;
+  }
   /* Readmore wrapper: grey zone with button inside */
   .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap {
     grid-area: auto; grid-column: 1 / -1; grid-row: 4;
+    display: block; width: 100%; box-sizing: border-box;
     margin: 0; padding: 12px;
     background: var(--bg-3); border-top: 1px solid var(--line-2);
   }
