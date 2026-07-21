@@ -57,7 +57,7 @@ $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
     </div>
     <div class="mt-sc-cell">
       <span class="mt-sc-ico"><?php echo $ic_layers; ?></span>
-      <div><div class="mt-sc-num"><?php echo esc_html($sources_consultees ?? ''); ?></div><div class="mt-sc-lbl">sources consultées</div></div>
+      <div><div class="mt-sc-num">12+</div><div class="mt-sc-lbl">années d'expérience</div></div>
     </div>
     <div class="mt-sc-cell">
       <span class="mt-sc-ico"><?php echo $ic_tablet; ?></span>
