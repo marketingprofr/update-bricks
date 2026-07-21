@@ -290,8 +290,9 @@
 
   /* ---- Product #1 mobile overrides ---- */
   .mt-top5 .t5-list > li:first-child .t5-banner { padding: 3px 20px 6px 20px; }
-  .mt-top5 .t5-list > li:first-child .t5-media { max-height: 200px; padding: 12px 22px; border-bottom: none; }
-  .mt-top5 .t5-list > li:first-child .ph img { max-height: 160px; }
+  .mt-top5 .t5-list > li:first-child .t5-media { max-height: 200px; padding: 12px 22px; border-bottom: none; overflow: hidden; }
+  .mt-top5 .t5-list > li:first-child .ph { aspect-ratio: auto; max-height: 170px; }
+  .mt-top5 .t5-list > li:first-child .ph img { max-height: 150px; }
   .mt-top5 .t5-list > li:first-child .t5-body { padding: 10px 20px 16px; }
   .mt-top5 .t5-list > li:first-child .t5-aside { border-top: none; padding: 0 20px 16px; }
   .mt-top5 .t5-list > li:first-child .t5-buy { border-top: none; padding-top: 4px; }
