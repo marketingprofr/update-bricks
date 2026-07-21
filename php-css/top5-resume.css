@@ -127,15 +127,15 @@
     "media  body   aside";
   align-items: stretch; gap: 0;
   padding: 0; overflow: hidden; border-radius: 18px;
-  border-color: var(--at-primary-l-5);
-  box-shadow: 0 0 0 1px var(--at-primary-l-5), 0 10px 28px -22px rgba(20,24,29,.22);
+  border: 4px solid var(--at-primary);
+  box-shadow: 0 0 10px 0 var(--at-grey-l-2);
 }
 .mt-top5 .t5-list > li:first-child .t5-banner {
   grid-area: banner; margin: 0; display: flex; align-items: center; gap: 10px;
-  padding: 10px 20px; background: var(--accent-soft); border-bottom: 1px solid var(--at-primary-l-5);
-  font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent);
+  padding: 6px 20px; background: var(--accent); border-bottom: none;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--at-white);
 }
-.mt-top5 .t5-list > li:first-child .t5-banner .b-num { font-family: ui-monospace, monospace; font-size: 13px; background: var(--accent); color: var(--at-white); padding: 2px 8px; border-radius: 6px; letter-spacing: 0; }
+.mt-top5 .t5-list > li:first-child .t5-banner .b-num { font-family: ui-monospace, monospace; font-size: 13px; background: var(--at-white); color: var(--accent); padding: 2px 8px; border-radius: 6px; letter-spacing: 0; }
 
 .mt-top5 .t5-list > li:first-child .t5-rnum { display: none; }
 .mt-top5 .t5-list > li:first-child .t5-media { padding: 22px; display: grid; place-items: center; border-right: 1px solid var(--line-2); }
@@ -253,7 +253,7 @@
   /* Name + label + pc: left column, aligned top-left */
   .mt-top5 .t5-list > li:not(:first-child) .t5-name { grid-area: auto; grid-column: 1; grid-row: 1; padding: 18px 0 5px 12px; margin: 0; font-size: 18px; }
   .mt-top5 .t5-list > li:not(:first-child) .t5-label { grid-area: auto; grid-column: 1; grid-row: 2; padding: 0 0 10px 12px; margin: 0; font-size: 14px; }
-  .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-area: auto; grid-column: 1; padding: 6px 12px 14px; margin: 0; }
+  .mt-top5 .t5-list > li:not(:first-child) .t5-pc { grid-area: auto; grid-column: 1; padding: 6px 0 14px 12px; margin: 0; }
   /* Image: right column, top-aligned, spanning all left-column rows */
   .mt-top5 .t5-list > li:not(:first-child) .t5-media {
     grid-area: auto; display: block; grid-column: 2; grid-row: 1 / 4; align-self: start; padding: 12px 12px 8px;
@@ -271,10 +271,13 @@
     margin: 0; padding: 12px 12px 6px;
   }
   .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap .t5-readmore {
-    margin: 0; width: 100%;
+    margin: 0; width: 100%; position: relative;
     border: 1.5px solid var(--accent); border-radius: 999px;
-    padding: 5px; justify-content: flex-start;
+    padding: 5px; justify-content: center;
     background: var(--bg); transition: background .15s, border-color .15s;
+  }
+  .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap .t5-rm-score {
+    position: absolute; left: 5px;
   }
   .mt-top5 .t5-list > li:not(:first-child) .t5-rm-wrap .t5-readmore:hover {
     background: var(--accent-soft); border-color: var(--accent-dark);
