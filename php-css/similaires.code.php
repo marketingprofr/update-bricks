@@ -211,14 +211,17 @@ if ( ! empty( $ids ) ) :
   ?>
   <section class="mt-similar" id="<?php echo esc_attr( $CS_ANCHOR ); ?>">
     <h2 class="mt-similar-h2"><?php echo esc_html( $CS_TITLE ); ?></h2>
-    <div class="mt-similar-grid">
-      <span class="mt-similar-pill is-current" aria-current="page"><?php echo esc_html( $cur_label ); ?></span>
-      <?php foreach ( $ids as $pid ) :
-        $url = get_permalink( $pid );
-        if ( ! $url ) { continue; }
-        ?>
-        <a class="mt-similar-pill" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( mt_sim_label( $pid, $CS_LABEL_ACF ) ); ?></a>
-      <?php endforeach; ?>
-    </div>
+    <details class="mt-similar-details">
+      <summary class="mt-similar-toggle">Voir les comparatifs similaires <span class="chev" aria-hidden="true"></span></summary>
+      <div class="mt-similar-grid">
+        <span class="mt-similar-pill is-current" aria-current="page"><?php echo esc_html( $cur_label ); ?></span>
+        <?php foreach ( $ids as $pid ) :
+          $url = get_permalink( $pid );
+          if ( ! $url ) { continue; }
+          ?>
+          <a class="mt-similar-pill" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( mt_sim_label( $pid, $CS_LABEL_ACF ) ); ?></a>
+        <?php endforeach; ?>
+      </div>
+    </details>
   </section>
 <?php endif; ?>
