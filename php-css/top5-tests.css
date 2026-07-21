@@ -152,7 +152,8 @@
 .ed-a-specs { font-family: "Inter", sans-serif; margin-top: 26px; border-top: 1px solid var(--line); }
 .ed-a-specs summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 18px 2px; font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); }
 .ed-a-specs summary::-webkit-details-marker { display: none; }
-.ed-a-specs summary .chev { margin-left: auto; transition: transform .2s; color: var(--muted); font-size: 16px; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; line-height: 1; }
+.ed-a-specs summary .chev { margin-left: auto; transition: transform .2s; font-size: 0; width: 20px; height: 20px; position: relative; display: inline-block; }
+.ed-a-specs summary .chev::before { content: ""; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: translate(-50%, -65%) rotate(45deg); }
 .ed-a-specs[open] summary .chev { transform: rotate(180deg); }
 .ed-a-specs dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; margin: 0 0 10px; }
 .ed-a-specs .row { display: flex; justify-content: space-between; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--line-2); font-size: 13.5px; }
