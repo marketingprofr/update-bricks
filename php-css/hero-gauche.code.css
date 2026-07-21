@@ -32,5 +32,7 @@
 
 @media (max-width: 767px) {
   .mt-eyebrow { display: none; }
+  .mt-left { display: flex; flex-direction: column; }
+  .mt-photo { order: -1; }
   .mt-photo-img { height: auto; aspect-ratio: 16/9; }
 }
