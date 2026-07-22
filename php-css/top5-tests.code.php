@@ -481,16 +481,13 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
    --------------------------------------------------------------------- */
 $author_name = 'Meilleurtest.fr';
 $author_type = 'Organization';
-$fallback_img = get_the_post_thumbnail_url( $page_id, 'large' );
-
 $ld_items = array();
 foreach ( $products as $it ) {
   $ld = array(
     '@type' => 'Product',
     'name'  => trim( $it['brand'] . ' ' . $it['name'] ),
   );
-  $ld_img = $it['img'] ? $it['img'] : $fallback_img;
-  if ( $ld_img )                { $ld['image'] = $ld_img; }
+  if ( $it['img'] )             { $ld['image'] = $it['img']; }
   if ( $it['summary'] !== '' )  { $ld['description'] = wp_strip_all_tags( $it['summary'] ); }
   $ld_brand = $it['brand'];
   if ( $ld_brand === '' ) {
