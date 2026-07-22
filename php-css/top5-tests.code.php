@@ -481,6 +481,8 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
    --------------------------------------------------------------------- */
 $author_name = get_the_author_meta( 'display_name', get_post_field( 'post_author', $page_id ) );
 if ( $author_name === '' ) { $author_name = 'Meilleurtest.fr'; }
+$author_is_org = ( strpos( $author_name, '.' ) !== false || stripos( $author_name, 'meilleurtest' ) !== false );
+$author_type   = $author_is_org ? 'Organization' : 'Person';
 
 $ld_items = array();
 foreach ( $products as $it ) {
@@ -490,12 +492,17 @@ foreach ( $products as $it ) {
   );
   if ( $it['img'] )             { $ld['image'] = $it['img']; }
   if ( $it['summary'] !== '' )  { $ld['description'] = wp_strip_all_tags( $it['summary'] ); }
-  if ( $it['brand'] !== '' )    { $ld['brand'] = array( '@type' => 'Brand', 'name' => $it['brand'] ); }
+  $ld_brand = $it['brand'];
+  if ( $ld_brand === '' ) {
+    $words = explode( ' ', trim( $it['brand'] . ' ' . $it['name'] ), 2 );
+    if ( count( $words ) >= 2 && mb_strlen( $words[0] ) >= 2 ) { $ld_brand = $words[0]; }
+  }
+  if ( $ld_brand !== '' ) { $ld['brand'] = array( '@type' => 'Brand', 'name' => $ld_brand ); }
 
   if ( $it['score10'] > 0 ) {
     $ld['review'] = array(
       '@type'        => 'Review',
-      'author'       => array( '@type' => 'Organization', 'name' => $author_name ),
+      'author'       => array( '@type' => $author_type, 'name' => $author_name ),
       'reviewRating' => array(
         '@type'      => 'Rating',
         'ratingValue' => number_format( (float) $it['score10'], 1, '.', '' ),
