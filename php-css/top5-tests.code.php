@@ -479,10 +479,8 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
 /* ---------------------------------------------------------------------
    Données structurées Product (JSON-LD) — un objet par produit
    --------------------------------------------------------------------- */
-$author_name = get_the_author_meta( 'display_name', get_post_field( 'post_author', $page_id ) );
-if ( $author_name === '' ) { $author_name = 'Meilleurtest.fr'; }
-$author_is_org = ( strpos( $author_name, '.' ) !== false || stripos( $author_name, 'meilleurtest' ) !== false );
-$author_type   = $author_is_org ? 'Organization' : 'Person';
+$author_name = 'Meilleurtest.fr';
+$author_type = 'Organization';
 
 $ld_items = array();
 foreach ( $products as $it ) {
