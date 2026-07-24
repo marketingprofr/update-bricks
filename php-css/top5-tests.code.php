@@ -539,12 +539,6 @@ foreach ( $products as $it ) {
       'url'           => $it['primary_url'],
       'availability'  => 'https://schema.org/InStock',
     );
-  } elseif ( $offer_count > 0 ) {
-    $ld['offers'] = array(
-      '@type'        => 'Offer',
-      'url'          => $it['primary_url'],
-      'availability' => 'https://schema.org/InStock',
-    );
   }
 
   $ld_items[] = array(
