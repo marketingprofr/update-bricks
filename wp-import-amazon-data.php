@@ -109,7 +109,7 @@ foreach ($ids as $i => $pid) {
     }
     // -- Note /5 (remplace si dispo) --
     if (isset($d['review_score']) && $d['review_score'] !== null && $d['review_score'] !== '') {
-        $val = $d['review_score'];
+        $val = number_format((float) $d['review_score'], 1, '.', ''); // "4.0", "4.3"
         if ($LIVE) update_post_meta($pid, $F_SCORE, $val);
         $st['score']++;
         $changes[] = "note {$cur_score}→{$val}";
