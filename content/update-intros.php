@@ -1,12 +1,12 @@
 <?php
 /**
  * Met à jour le champ ACF mltv5_introduction pour chaque post.
- * Usage : wp eval-file update-intros.php [--dry-run]
+ * Usage : DRY_RUN=1 wp eval-file update-intros.php
  *
  * Le CSV doit être dans le même dossier que ce script.
  */
 
-$dry_run = in_array('--dry-run', $args ?? []);
+$dry_run = !empty(getenv('DRY_RUN'));
 $csv_path = __DIR__ . '/intros-export.csv';
 
 if (!file_exists($csv_path)) {
