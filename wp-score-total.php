@@ -1,15 +1,15 @@
 <?php
 /**
- * Score global (mltv5_score_total) à partir des avis Amazon — pondéré, idempotent par TAG.
+ * Score global (mltv5_score_total) à partir des avis Amazon — pondéré, idempotent par MARQUEUR meta.
  *
  * Usage :
- *   wp eval-file wp-score-total.php dry    # SIMULATION (défaut) — n'écrit rien, ne tague rien
- *   wp eval-file wp-score-total.php live   # ÉCRITURE (+ sauvegarde + pose le tag "score")
+ *   wp eval-file wp-score-total.php dry    # SIMULATION (défaut) — n'écrit rien, ne marque rien
+ *   wp eval-file wp-score-total.php live   # ÉCRITURE (+ sauvegarde + pose le marqueur meta)
  *
  * Éligibilité (les 3 requis) :
  *   - ASIN rempli (mltv5_asin_amazon)
  *   - note (mltv5_score_avis_clients) ET nombre d'avis (mltv5_nombre_avis_clients) remplis
- *   - PAS déjà le tag "score"  →  garantit qu'un produit n'est calculé qu'UNE fois (idempotent)
+ *   - PAS déjà le marqueur mltv5_score_calcule → garantit qu'un produit n'est calculé qu'UNE fois
  *
  * Calcul :
  *   w        = min(nb_avis, 100) / 100
@@ -18,9 +18,9 @@
  *   baisse (mélange <= ancien) : score = mélange                     (complet)
  *   hausse (mélange >  ancien) : score = ancien + 0.5*(mélange-ancien) (50% de l'écart)
  *   score_total = round(score)                          (entier le plus proche)
- *   → puis on POSE le tag "score".
+ *   → puis on POSE le marqueur mltv5_score_calcule = 1.
  *
- * Ne modifie QUE mltv5_score_total + le tag "score". Rien d'autre.
+ * Ne modifie QUE mltv5_score_total + le marqueur mltv5_score_calcule. Rien d'autre.
  */
 
 $MODE = strtolower($args[0] ?? 'dry');
@@ -34,8 +34,8 @@ $F_COUNT   = 'mltv5_nombre_avis_clients';  // nb avis  (n)
 $F_TOTAL   = 'mltv5_score_total';          // cible /100
 $F_ASIN    = 'mltv5_asin_amazon';
 
-$TAG_TAX  = 'post_tag';   // taxonomie du marqueur "déjà calculé"
-$TAG_TERM = 'score';      // terme
+$FLAG_META  = 'mltv5_score_calcule';   // marqueur "déjà calculé" (meta cachée, invisible)
+$FLAG_VALUE = '1';
 
 $BATCH = 500;
 
@@ -70,19 +70,19 @@ $ids = get_posts([
     ],
 ]);
 
-// Produits DÉJÀ tagués "score" → à sauter (1 requête ; vide si le terme n'existe pas encore)
-$tagged = get_posts([
+// Produits DÉJÀ calculés (marqueur meta présent) → à sauter (1 requête)
+$done = get_posts([
     'post_type'      => $POST_TYPE,
     'post_status'    => 'any',
     'posts_per_page' => -1,
     'fields'         => 'ids',
-    'tax_query'      => [[ 'taxonomy' => $TAG_TAX, 'field' => 'slug', 'terms' => $TAG_TERM ]],
+    'meta_query'     => [[ 'key' => $FLAG_META, 'compare' => 'EXISTS' ]],
 ]);
-$tagged_set = array_flip($tagged);
+$done_set = array_flip($done);
 
-WP_CLI::log(sprintf("%d posts avec ASIN+note+avis | déjà tagués « %s » : %d | Mode : %s",
-    count($ids), $TAG_TERM, count($tagged),
-    $LIVE ? '*** ÉCRITURE RÉELLE ***' : 'SIMULATION (rien écrit, aucun tag)'));
+WP_CLI::log(sprintf("%d posts avec ASIN+note+avis | déjà calculés (marqueur) : %d | Mode : %s",
+    count($ids), count($done),
+    $LIVE ? '*** ÉCRITURE RÉELLE ***' : 'SIMULATION (rien écrit, aucun marqueur)'));
 
 $bh = null;
 if ($LIVE) {
@@ -98,7 +98,7 @@ $ex = 0;
 
 foreach ($ids as $i => $pid) {
     $st['seen']++;
-    if (isset($tagged_set[$pid])) { $st['already']++; continue; }  // déjà calculé une fois
+    if (isset($done_set[$pid])) { $st['already']++; continue; }  // déjà calculé une fois
 
     $meta  = get_post_meta($pid);
     $asin  = strtoupper(trim((string) ($meta[$F_ASIN][0] ?? '')));
@@ -130,7 +130,7 @@ foreach ($ids as $i => $pid) {
     // Écriture (score si changé) + pose du tag (toujours, car "calculé une fois")
     if ($LIVE) {
         if ($kind !== 'kept') update_post_meta($pid, $F_TOTAL, $final);
-        wp_set_object_terms($pid, $TAG_TERM, $TAG_TAX, true);   // append, crée le terme au besoin
+        update_post_meta($pid, $FLAG_META, $FLAG_VALUE);   // marqueur "déjà calculé"
         if ($bh) fputcsv($bh, [$pid, $asin, $cur_raw, $final]);
     }
     $st[$kind]++;
@@ -157,7 +157,7 @@ WP_CLI::log(sprintf("  inchangés (calculés, tagués): %d", $st['kept']));
 WP_CLI::log(str_repeat('=', 56));
 
 if ($LIVE) {
-    WP_CLI::success("Fait. Tag « {$TAG_TERM} » posé sur les produits calculés (ils ne seront plus recalculés). ⚠️ Purge Varnish + Breeze.");
+    WP_CLI::success("Fait. Marqueur « {$FLAG_META} » posé sur les produits calculés (ils ne seront plus recalculés). ⚠️ Purge Varnish + Breeze.");
 } else {
-    WP_CLI::success("SIMULATION — rien écrit, aucun tag. Vérifie l'échelle des « total » ci-dessus, puis relance avec « live ».");
+    WP_CLI::success("SIMULATION — rien écrit, aucun marqueur. Vérifie l'échelle des « total » ci-dessus, puis relance avec « live ».");
 }
