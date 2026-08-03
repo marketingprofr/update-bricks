@@ -22,6 +22,8 @@ $LIVE = ($MODE === 'live');
 // true  = pose aussi le score là où mltv5_score_total est vide.
 $SET_IF_EMPTY = false;
 
+$MAX_POST_ID = 250000;   // ne JAMAIS modifier les produits d'ID WordPress > 250000
+
 $POST_TYPE = 'avis';
 $F_SCORE   = 'mltv5_score_avis_clients';   // note /5  (r)
 $F_COUNT   = 'mltv5_nombre_avis_clients';  // nb avis  (n)
@@ -73,11 +75,12 @@ if ($LIVE) {
 }
 
 wp_suspend_cache_addition(true);
-$st = ['seen'=>0,'noreview'=>0,'lowered'=>0,'kept'=>0,'set_empty'=>0,'skip_empty'=>0];
+$st = ['seen'=>0,'noreview'=>0,'lowered'=>0,'kept'=>0,'set_empty'=>0,'skip_empty'=>0,'skip_id'=>0];
 $ex = 0;
 
 foreach ($ids as $i => $pid) {
     $st['seen']++;
+    if ($pid > $MAX_POST_ID) { $st['skip_id']++; continue; }  // exclusion ID > 250000
     $meta = get_post_meta($pid);
 
     $r     = mt_parse_num($meta[$F_SCORE][0] ?? '');
@@ -122,7 +125,8 @@ wp_suspend_cache_addition(false);
 
 $v = $LIVE ? '' : '(simulation) ';
 WP_CLI::log(str_repeat('=', 54));
-WP_CLI::log(sprintf("Posts avec note+avis : %d  |  sans avis exploitables : %d", $st['seen'], $st['noreview']));
+WP_CLI::log(sprintf("Posts examinés : %d  |  exclus (ID > %d) : %d  |  sans avis exploitables : %d",
+    $st['seen'], $MAX_POST_ID, $st['skip_id'], $st['noreview']));
 WP_CLI::log(sprintf("  %sabaissés (calc < existant) : %d", $v, $st['lowered']));
 WP_CLI::log(sprintf("  %sgardés   (calc >= existant): %d", $v, $st['kept']));
 if ($SET_IF_EMPTY) {
