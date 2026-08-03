@@ -23,6 +23,7 @@ $LIVE = ($MODE === 'live');
 $SET_IF_EMPTY = false;
 
 $MAX_POST_ID = 250000;   // ne JAMAIS modifier les produits d'ID WordPress > 250000
+$MIN_REVIEWS = 50;       // n'appliquer le score QUE si le produit a plus de 50 avis
 
 $POST_TYPE = 'avis';
 $F_SCORE   = 'mltv5_score_avis_clients';   // note /5  (r)
@@ -75,7 +76,7 @@ if ($LIVE) {
 }
 
 wp_suspend_cache_addition(true);
-$st = ['seen'=>0,'noreview'=>0,'lowered'=>0,'kept'=>0,'set_empty'=>0,'skip_empty'=>0,'skip_id'=>0];
+$st = ['seen'=>0,'noreview'=>0,'too_few'=>0,'lowered'=>0,'kept'=>0,'set_empty'=>0,'skip_empty'=>0,'skip_id'=>0];
 $ex = 0;
 
 foreach ($ids as $i => $pid) {
@@ -87,6 +88,7 @@ foreach ($ids as $i => $pid) {
     $n_raw = $meta[$F_COUNT][0] ?? '';
     $n     = ($n_raw === '') ? null : (int) preg_replace('/[^0-9]/', '', (string) $n_raw);
     if ($r === null || $n === null || $n < 1) { $st['noreview']++; continue; }
+    if ($n <= $MIN_REVIEWS) { $st['too_few']++; continue; }  // seuil : > 50 avis requis
 
     $score = (int) floor(ecom_s10($r, $n) * 10.0);
     $score = max(0, min(100, $score));
@@ -125,8 +127,9 @@ wp_suspend_cache_addition(false);
 
 $v = $LIVE ? '' : '(simulation) ';
 WP_CLI::log(str_repeat('=', 54));
-WP_CLI::log(sprintf("Posts examinés : %d  |  exclus (ID > %d) : %d  |  sans avis exploitables : %d",
-    $st['seen'], $MAX_POST_ID, $st['skip_id'], $st['noreview']));
+WP_CLI::log(sprintf("Posts examinés : %d  |  exclus (ID > %d) : %d", $st['seen'], $MAX_POST_ID, $st['skip_id']));
+WP_CLI::log(sprintf("  sans avis exploitables : %d  |  <= %d avis (ignorés) : %d",
+    $st['noreview'], $MIN_REVIEWS, $st['too_few']));
 WP_CLI::log(sprintf("  %sabaissés (calc < existant) : %d", $v, $st['lowered']));
 WP_CLI::log(sprintf("  %sgardés   (calc >= existant): %d", $v, $st['kept']));
 if ($SET_IF_EMPTY) {
