@@ -1,29 +1,32 @@
 <?php
 /**
- * Score global (mltv5_score_total) à partir des avis Amazon.
- * Formule « ecom_score » portée en PHP (parité exacte vérifiée vs Python).
+ * Score global (mltv5_score_total) à partir des avis Amazon — pondéré, idempotent par TAG.
  *
  * Usage :
- *   wp eval-file wp-score-total.php dry    # SIMULATION (défaut) — n'écrit rien
- *   wp eval-file wp-score-total.php live   # ÉCRITURE (+ sauvegarde auto)
- *   (ajoute --path=… de ton install)
+ *   wp eval-file wp-score-total.php dry    # SIMULATION (défaut) — n'écrit rien, ne tague rien
+ *   wp eval-file wp-score-total.php live   # ÉCRITURE (+ sauvegarde + pose le tag "score")
  *
- * - Entrées : note /5 (mltv5_score_avis_clients) + nb avis (mltv5_nombre_avis_clients).
- * - Score /100 = floor( s10(note, nb) * 10 )   [s10 = score /10 de la formule].
- * - Ne calcule QUE « quand ils en ont » (note + nb avis présents, nb >= 1).
- * - Écrit dans mltv5_score_total UNIQUEMENT si le score calculé est PLUS FAIBLE
- *   que la valeur existante. Ne modifie AUCUN autre champ.
+ * Éligibilité (les 3 requis) :
+ *   - ASIN rempli (mltv5_asin_amazon)
+ *   - note (mltv5_score_avis_clients) ET nombre d'avis (mltv5_nombre_avis_clients) remplis
+ *   - PAS déjà le tag "score"  →  garantit qu'un produit n'est calculé qu'UNE fois (idempotent)
+ *
+ * Calcul :
+ *   w        = min(nb_avis, 100) / 100
+ *   amazon   = s10(note, nb_avis) * 10                  (score /100)
+ *   mélange  = ancien * (1 - w) + amazon * w
+ *   baisse (mélange <= ancien) : score = mélange                     (complet)
+ *   hausse (mélange >  ancien) : score = ancien + 0.5*(mélange-ancien) (50% de l'écart)
+ *   score_total = round(score)                          (entier le plus proche)
+ *   → puis on POSE le tag "score".
+ *
+ * Ne modifie QUE mltv5_score_total + le tag "score". Rien d'autre.
  */
 
 $MODE = strtolower($args[0] ?? 'dry');
 $LIVE = ($MODE === 'live');
 
-// false = ne touche QUE les score_total déjà renseignés (lecture stricte de la consigne).
-// true  = pose aussi le score là où mltv5_score_total est vide.
-$SET_IF_EMPTY = false;
-
-$MAX_POST_ID = 250000;   // ne JAMAIS modifier les produits d'ID WordPress > 250000
-$MIN_REVIEWS = 50;       // n'appliquer le score QUE si le produit a plus de 50 avis
+$POPULATE_EMPTY = true;   // score_total vide → poser le score Amazon direct (round(amazon))
 
 $POST_TYPE = 'avis';
 $F_SCORE   = 'mltv5_score_avis_clients';   // note /5  (r)
@@ -31,9 +34,12 @@ $F_COUNT   = 'mltv5_nombre_avis_clients';  // nb avis  (n)
 $F_TOTAL   = 'mltv5_score_total';          // cible /100
 $F_ASIN    = 'mltv5_asin_amazon';
 
+$TAG_TAX  = 'post_tag';   // taxonomie du marqueur "déjà calculé"
+$TAG_TERM = 'score';      // terme
+
 $BATCH = 500;
 
-// Formule (identique à factory/scripts/ecom_score.py, échelle /10)
+// Formule ecom_score (échelle /10) — parité exacte vérifiée vs Python
 if (!function_exists('ecom_s10')) {
     function ecom_s10($r, $n) {
         if ($n < 1) return 0.0;
@@ -50,7 +56,7 @@ if (!function_exists('mt_parse_num')) {
     }
 }
 
-// Posts « avis » publiés qui ont une note ET un nombre d'avis
+// Posts "avis" publiés avec ASIN + note + nombre d'avis
 $ids = get_posts([
     'post_type'      => $POST_TYPE,
     'post_status'    => 'publish',
@@ -58,89 +64,100 @@ $ids = get_posts([
     'fields'         => 'ids',
     'meta_query'     => [
         'relation' => 'AND',
+        [ 'key' => $F_ASIN,  'compare' => 'EXISTS' ],
         [ 'key' => $F_SCORE, 'compare' => 'EXISTS' ],
         [ 'key' => $F_COUNT, 'compare' => 'EXISTS' ],
     ],
 ]);
-WP_CLI::log(sprintf("%d posts avec note+avis. Mode : %s | score_total vide : %s",
-    count($ids), $LIVE ? '*** ÉCRITURE RÉELLE ***' : 'SIMULATION (rien écrit)',
-    $SET_IF_EMPTY ? 'POSÉS' : 'ignorés'));
 
-// Sauvegarde (mode live) : valeur AVANT de tout post modifié
+// Produits DÉJÀ tagués "score" → à sauter (1 requête ; vide si le terme n'existe pas encore)
+$tagged = get_posts([
+    'post_type'      => $POST_TYPE,
+    'post_status'    => 'any',
+    'posts_per_page' => -1,
+    'fields'         => 'ids',
+    'tax_query'      => [[ 'taxonomy' => $TAG_TAX, 'field' => 'slug', 'terms' => $TAG_TERM ]],
+]);
+$tagged_set = array_flip($tagged);
+
+WP_CLI::log(sprintf("%d posts avec ASIN+note+avis | déjà tagués « %s » : %d | Mode : %s",
+    count($ids), $TAG_TERM, count($tagged),
+    $LIVE ? '*** ÉCRITURE RÉELLE ***' : 'SIMULATION (rien écrit, aucun tag)'));
+
 $bh = null;
 if ($LIVE) {
     $backup = 'score-total-backup-' . date('Ymd-His') . '.csv';
     $bh = fopen($backup, 'w');
-    fputcsv($bh, ['post_id', 'asin', 'mltv5_score_total_avant']);
-    WP_CLI::log("Sauvegarde des valeurs actuelles → {$backup}");
+    fputcsv($bh, ['post_id', 'asin', 'score_total_avant', 'score_total_apres']);
+    WP_CLI::log("Sauvegarde → {$backup}");
 }
 
 wp_suspend_cache_addition(true);
-$st = ['seen'=>0,'noreview'=>0,'too_few'=>0,'lowered'=>0,'kept'=>0,'set_empty'=>0,'skip_empty'=>0,'skip_id'=>0];
+$st = ['seen'=>0,'already'=>0,'ineligible'=>0,'lowered'=>0,'raised'=>0,'populated'=>0,'kept'=>0];
 $ex = 0;
 
 foreach ($ids as $i => $pid) {
     $st['seen']++;
-    if ($pid > $MAX_POST_ID) { $st['skip_id']++; continue; }  // exclusion ID > 250000
-    $meta = get_post_meta($pid);
+    if (isset($tagged_set[$pid])) { $st['already']++; continue; }  // déjà calculé une fois
 
+    $meta  = get_post_meta($pid);
+    $asin  = strtoupper(trim((string) ($meta[$F_ASIN][0] ?? '')));
     $r     = mt_parse_num($meta[$F_SCORE][0] ?? '');
     $n_raw = $meta[$F_COUNT][0] ?? '';
     $n     = ($n_raw === '') ? null : (int) preg_replace('/[^0-9]/', '', (string) $n_raw);
-    if ($r === null || $n === null || $n < 1) { $st['noreview']++; continue; }
-    if ($n <= $MIN_REVIEWS) { $st['too_few']++; continue; }  // seuil : > 50 avis requis
+    if ($asin === '' || $r === null || $n === null || $n < 1) { $st['ineligible']++; continue; }
 
-    $score = (int) floor(ecom_s10($r, $n) * 10.0);
-    $score = max(0, min(100, $score));
-
+    $amazon  = max(0.0, min(100.0, ecom_s10($r, $n) * 10.0));
     $cur_raw = $meta[$F_TOTAL][0] ?? '';
     $cur     = mt_parse_num($cur_raw);
 
-    $action = null;
+    $kind = null; $final = null;
     if ($cur === null) {
-        if ($SET_IF_EMPTY) { $action = 'set_empty'; }
-        else { $st['skip_empty']++; }
-    } elseif ($score < $cur) {
-        $action = 'lowered';
+        if ($POPULATE_EMPTY) { $final = (int) round($amazon); $kind = 'populated'; }
+        else { continue; }   // pas d'ancien score et on ne pose pas → on ne touche/tague rien
     } else {
-        $st['kept']++;
-    }
-
-    if ($action) {
-        $asin = strtoupper(trim((string) ($meta[$F_ASIN][0] ?? '')));
-        if ($bh) fputcsv($bh, [$pid, $asin, $cur_raw]);
-        if ($LIVE) update_post_meta($pid, $F_TOTAL, $score);
-        $st[$action]++;
-        if (!$LIVE && $ex < 10) {
-            WP_CLI::log(sprintf("  ex. #%d (%s) : note %.1f, %d avis → calc %d/100 ; total %s → %d (%s)",
-                $pid, $asin, $r, $n, $score,
-                ($cur_raw === '' ? '(vide)' : $cur_raw), $score,
-                $action === 'lowered' ? 'abaissé' : 'posé'));
-            $ex++;
+        $w       = min($n, 100) / 100.0;
+        $blended = $cur * (1.0 - $w) + $amazon * $w;
+        if ($blended > $cur) {                                   // hausse → 50% de l'écart
+            $final = (int) round($cur + 0.5 * ($blended - $cur));
+            $kind  = ($final > $cur) ? 'raised' : 'kept';
+        } else {                                                 // baisse → complet
+            $final = (int) round($blended);
+            $kind  = ($final < $cur) ? 'lowered' : 'kept';
         }
     }
 
+    // Écriture (score si changé) + pose du tag (toujours, car "calculé une fois")
+    if ($LIVE) {
+        if ($kind !== 'kept') update_post_meta($pid, $F_TOTAL, $final);
+        wp_set_object_terms($pid, $TAG_TERM, $TAG_TAX, true);   // append, crée le terme au besoin
+        if ($bh) fputcsv($bh, [$pid, $asin, $cur_raw, $final]);
+    }
+    $st[$kind]++;
+
+    if (!$LIVE && $ex < 12 && $kind !== 'kept') {
+        WP_CLI::log(sprintf("  ex. #%d (%s) : note %.1f, %d avis, w=%.2f, amazon %.1f | total %s → %d (%s)",
+            $pid, $asin, $r, $n, min($n, 100) / 100.0, $amazon,
+            ($cur_raw === '' ? '(vide)' : $cur_raw), $final, $kind));
+        $ex++;
+    }
     if (($i + 1) % $BATCH === 0) WP_CLI::log(sprintf("… %d/%d parcourus", $i + 1, count($ids)));
 }
 if ($bh) fclose($bh);
 wp_suspend_cache_addition(false);
 
-$v = $LIVE ? '' : '(simulation) ';
-WP_CLI::log(str_repeat('=', 54));
-WP_CLI::log(sprintf("Posts examinés : %d  |  exclus (ID > %d) : %d", $st['seen'], $MAX_POST_ID, $st['skip_id']));
-WP_CLI::log(sprintf("  sans avis exploitables : %d  |  <= %d avis (ignorés) : %d",
-    $st['noreview'], $MIN_REVIEWS, $st['too_few']));
-WP_CLI::log(sprintf("  %sabaissés (calc < existant) : %d", $v, $st['lowered']));
-WP_CLI::log(sprintf("  %sgardés   (calc >= existant): %d", $v, $st['kept']));
-if ($SET_IF_EMPTY) {
-    WP_CLI::log(sprintf("  %sposés    (score_total vide): %d", $v, $st['set_empty']));
-} else {
-    WP_CLI::log(sprintf("  score_total vide (ignorés)  : %d", $st['skip_empty']));
-}
-WP_CLI::log(str_repeat('=', 54));
+WP_CLI::log(str_repeat('=', 56));
+WP_CLI::log(sprintf("Éligibles parcourus : %d", $st['seen']));
+WP_CLI::log(sprintf("  déjà tagués (sautés)        : %d", $st['already']));
+WP_CLI::log(sprintf("  inéligibles (ASIN/avis vide): %d", $st['ineligible']));
+WP_CLI::log(sprintf("  abaissés                    : %d", $st['lowered']));
+WP_CLI::log(sprintf("  montés (50%% de l'écart)     : %d", $st['raised']));
+WP_CLI::log(sprintf("  posés (score_total vide)    : %d", $st['populated']));
+WP_CLI::log(sprintf("  inchangés (calculés, tagués): %d", $st['kept']));
+WP_CLI::log(str_repeat('=', 56));
 
 if ($LIVE) {
-    WP_CLI::success("Score global mis à jour. ⚠️ Purge Varnish + Breeze.");
+    WP_CLI::success("Fait. Tag « {$TAG_TERM} » posé sur les produits calculés (ils ne seront plus recalculés). ⚠️ Purge Varnish + Breeze.");
 } else {
-    WP_CLI::success("SIMULATION terminée — RIEN écrit. Vérifie l'échelle des « total » ci-dessus, puis relance avec « live ».");
+    WP_CLI::success("SIMULATION — rien écrit, aucun tag. Vérifie l'échelle des « total » ci-dessus, puis relance avec « live ».");
 }
