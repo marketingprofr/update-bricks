@@ -4,6 +4,84 @@ extract(get_all_template_variables($this_id));
 $post_type = get_post_type($this_id);
 $total_avis = !empty($top_avis_ids) ? count($top_avis_ids) : 0;
 $mod = date_i18n('j F Y', get_the_modified_time('U'));
+
+if ( ! function_exists( 'mt_bold_intro' ) ) {
+  function mt_bold_intro( $html, $vars ) {
+    $ts  = mb_strtolower( trim( isset( $vars['sing'] ) ? $vars['sing'] : '' ), 'UTF-8' );
+    $tp  = mb_strtolower( trim( isset( $vars['plur'] ) ? $vars['plur'] : '' ), 'UTF-8' );
+    $llm = mb_strtolower( trim( isset( $vars['llm'] )  ? $vars['llm']  : '' ), 'UTF-8' );
+    $mf  = mb_strtolower( trim( isset( $vars['mf'] )   ? $vars['mf']   : '' ), 'UTF-8' );
+
+    if ( ( $ts === '' && $tp === '' ) || trim( $html ) === '' ) { return $html; }
+    if ( $ts === '' ) { $ts = rtrim( $tp, 's' ); }
+    if ( $tp === '' ) { $tp = $ts . 's'; }
+
+    $is_fem  = ( mb_strpos( $mf, 'meilleure' ) !== false );
+    $adj_sing = $is_fem ? 'meilleure' : 'meilleur';
+    $adj_plur = ( $mf !== '' ) ? $mf : ( $is_fem ? 'meilleures' : 'meilleurs' );
+
+    $patterns = array();
+
+    // « les meilleurs climatiseurs » (article + adj + type)
+    if ( $llm !== '' ) {
+      $llm_plur = ( mb_strpos( $llm, 'les ' ) === 0 );
+      $t = $llm_plur ? $tp : $ts;
+      if ( $t !== '' ) { $patterns[] = $llm . ' ' . $t; }
+    }
+    // « meilleurs climatiseurs » / « meilleur climatiseur »
+    if ( $adj_plur !== '' && $tp !== '' ) { $patterns[] = $adj_plur . ' ' . $tp; }
+    if ( $adj_sing !== '' && $ts !== '' ) { $patterns[] = $adj_sing . ' ' . $ts; }
+
+    // Combinaisons adjectivales fréquentes
+    // [avant_nom?, masc_sing, fem_sing, masc_plur, fem_plur]
+    $adjs = array(
+      array( false, 'idéal',   'idéale',   'idéaux',   'idéales' ),
+      array( false, 'parfait', 'parfaite', 'parfaits', 'parfaites' ),
+      array( true,  'bon',     'bonne',    'bons',     'bonnes' ),
+      array( false, 'adapté',  'adaptée',  'adaptés',  'adaptées' ),
+      array( false, 'fiable',  'fiable',   'fiables',  'fiables' ),
+    );
+    foreach ( $adjs as $a ) {
+      $as = $is_fem ? $a[2] : $a[1];
+      $ap = $is_fem ? $a[4] : $a[3];
+      if ( $a[0] ) {
+        $patterns[] = $as . ' ' . $ts;
+        $patterns[] = $ap . ' ' . $tp;
+      } else {
+        $patterns[] = $ts . ' ' . $as;
+        $patterns[] = $tp . ' ' . $ap;
+      }
+    }
+
+    // Mot nu (priorité la plus basse)
+    $patterns[] = $tp;
+    if ( $ts !== $tp ) { $patterns[] = $ts; }
+
+    // Dédoublonner + trier du plus long au plus court
+    $patterns = array_values( array_unique( array_filter( $patterns, function( $p ) { return trim( $p ) !== ''; } ) ) );
+    usort( $patterns, function( $a, $b ) { return mb_strlen( $b, 'UTF-8' ) - mb_strlen( $a, 'UTF-8' ); } );
+
+    $escaped = array_map( function( $p ) { return preg_quote( $p, '/' ); }, $patterns );
+    $regex = '/(?<!\w)(' . implode( '|', $escaped ) . ')(?!\w)/iu';
+
+    // Remplacer uniquement dans les nœuds texte (pas dans les balises HTML),
+    // et pas dans du texte déjà en <strong>/<b>
+    $in_bold = 0;
+    return preg_replace_callback(
+      '#(</?(?:strong|b)\b[^>]*>)|(<[^>]*>)|([^<]+)#iu',
+      function( $m ) use ( $regex, &$in_bold ) {
+        if ( $m[1] !== '' ) {
+          if ( $m[1][1] === '/' ) { $in_bold = max( 0, $in_bold - 1 ); } else { $in_bold++; }
+          return $m[1];
+        }
+        if ( $m[2] !== '' ) { return $m[2]; }
+        if ( $in_bold > 0 ) { return $m[3]; }
+        return preg_replace( $regex, '<strong>$1</strong>', $m[3] );
+      },
+      $html
+    );
+  }
+}
 ?>
 <div class="mt-left">
 
@@ -58,7 +136,12 @@ $mod = date_i18n('j F Y', get_the_modified_time('U'));
     </span>
   </div>
 
-  <div class="mt-lede"><?php echo $introduction ?? ''; ?></div>
+  <div class="mt-lede"><?php echo mt_bold_intro( $introduction ?? '', array(
+    'sing' => $type_de_produit_au_singulier ?? '',
+    'plur' => $type_de_produit_au_pluriel ?? '',
+    'llm'  => $lalalesmeilleur ?? '',
+    'mf'   => $masculinsfeminins ?? '',
+  ) ); ?></div>
 
   <div class="mt-photo">
     <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img')); ?>
