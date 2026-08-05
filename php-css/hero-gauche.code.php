@@ -39,7 +39,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       array( false, 'parfait', 'parfaite', 'parfaits', 'parfaites' ),
       array( true,  'bon',     'bonne',    'bons',     'bonnes' ),
       array( false, 'adapté',  'adaptée',  'adaptés',  'adaptées' ),
-      array( false, 'fiable',  'fiable',   'fiables',  'fiables' ),
+      array( false, 'recommandé', 'recommandée', 'recommandés', 'recommandées' ),
     );
     foreach ( $adjs as $a ) {
       $as = $is_fem ? $a[2] : $a[1];
