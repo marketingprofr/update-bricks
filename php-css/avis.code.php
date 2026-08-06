@@ -69,6 +69,7 @@ $FP_PHIST_VAL   = 'mltv5_prix_valeur';
 /* ═════════════════════════════════════════════════════════════════════
    3) LIMITES & CONFIG
    ═════════════════════════════════════════════════════════════════════ */
+$FP_TEST_ID        = 258978;   // ID de test — mettre à 0 pour utiliser le post courant
 $FP_RANK_MAX       = 20;
 $FP_RANK_VISIBLE   = 8;
 $FP_CAROUSEL_MAX   = 5;
@@ -159,7 +160,12 @@ $FP_SVG_SAVE  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 /* ═════════════════════════════════════════════════════════════════════
    5) CHARGEMENT DES DONNÉES
    ═════════════════════════════════════════════════════════════════════ */
-$pid       = get_the_ID();
+$pid       = ( ! empty( $FP_TEST_ID ) && get_post_status( $FP_TEST_ID ) ) ? (int) $FP_TEST_ID : get_the_ID();
+if ( ! empty( $FP_TEST_ID ) && $pid == $FP_TEST_ID ) {
+  global $post;
+  $post = get_post( $pid );
+  setup_postdata( $post );
+}
 $post_type = get_post_type( $pid );
 $brand     = get_field( $FP_BRAND, $pid ) ?: '';
 $model     = get_field( $FP_MODEL, $pid ) ?: '';
