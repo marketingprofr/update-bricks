@@ -59,8 +59,6 @@ $FP_IMG_EXT     = 'mltv5_image_external_url';
 $FP_CRITERIA    = 'mltv5_scores_des_criteres';
 $FP_CRIT_LBL    = 'mltv5_nom_du_critere';
 $FP_CRIT_VAL    = 'mltv5_score_du_critere';
-$FP_ALT_PREMIUM = 'mltv5_alternative_premium';
-$FP_ALT_BUDGET  = 'mltv5_alternative_budget';
 $FP_PRICE_HIST  = 'mltv5_prix_historiques';  // format : 210¤190¤230¤210¤205¤180 (1er = plus récent)
 
 /* ═════════════════════════════════════════════════════════════════════
@@ -272,17 +270,35 @@ if ( $ph_raw_str !== '' ) {
   }
 }
 
-/* Alternatives (premium / budget, optionnels) */
-$alt_premium_raw = get_field( $FP_ALT_PREMIUM, $pid );
-$alt_premium_id  = is_object( $alt_premium_raw ) ? $alt_premium_raw->ID : ( is_numeric( $alt_premium_raw ) ? (int) $alt_premium_raw : 0 );
-$alt_budget_raw  = get_field( $FP_ALT_BUDGET, $pid );
-$alt_budget_id   = is_object( $alt_budget_raw ) ? $alt_budget_raw->ID : ( is_numeric( $alt_budget_raw ) ? (int) $alt_budget_raw : 0 );
-
 /* Taxonomie type produit (pour queries) */
 $type_terms = wp_get_post_terms( $pid, $FP_TAX_TYPE, array( 'fields' => 'ids' ) );
 if ( is_wp_error( $type_terms ) ) $type_terms = array();
 $type_names = wp_get_post_terms( $pid, $FP_TAX_TYPE, array( 'fields' => 'names' ) );
 $type_label = ( ! is_wp_error( $type_names ) && ! empty( $type_names ) ) ? $type_names[0] : '';
+
+/* Alternatives dynamiques : mieux noté du même type, plus/moins cher */
+$alt_premium_id = 0;
+$alt_budget_id  = 0;
+if ( ! empty( $type_terms ) && $price_num > 0 ) {
+  $alt_base = array(
+    'post_type'      => $post_type,
+    'post__not_in'   => array( $pid ),
+    'post_status'    => 'publish',
+    'posts_per_page' => 1,
+    'tax_query'      => array( array( 'taxonomy' => $FP_TAX_TYPE, 'terms' => $type_terms ) ),
+    'meta_key'       => $FP_SCORE,
+    'orderby'        => 'meta_value_num',
+    'order'          => 'DESC',
+  );
+  $pq = new WP_Query( array_merge( $alt_base, array(
+    'meta_query' => array( array( 'key' => $FP_PRICE, 'value' => $price_num, 'compare' => '>', 'type' => 'NUMERIC' ) ),
+  ) ) );
+  if ( $pq->have_posts() ) { $pq->the_post(); $alt_premium_id = get_the_ID(); wp_reset_postdata(); }
+  $bq = new WP_Query( array_merge( $alt_base, array(
+    'meta_query' => array( array( 'key' => $FP_PRICE, 'value' => $price_num, 'compare' => '<', 'type' => 'NUMERIC' ) ),
+  ) ) );
+  if ( $bq->have_posts() ) { $bq->the_post(); $alt_budget_id = get_the_ID(); wp_reset_postdata(); }
+}
 
 /* ── Queries conditionnelles ── */
 
