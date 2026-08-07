@@ -26,7 +26,7 @@ $FP_BLOCKS = array(
 /* Blocs à position fixe (true = affiché, false = masqué) */
 $FP_SHOW_HERO    = true;
 $FP_SHOW_SIDEBAR = true;
-$FP_SHOW_GUIDES  = true;
+$FP_SHOW_GUIDES  = false;
 
 /* ═════════════════════════════════════════════════════════════════════
    2) CHAMPS ACF — modifier ici si les noms diffèrent
@@ -104,7 +104,7 @@ if ( ! function_exists( 'fp_stars' ) ) {
 if ( ! function_exists( 'fp_bar_class' ) ) {
   function fp_bar_class( $s ) {
     if ( $s >= 8.5 ) return 'excellent';
-    if ( $s >= 7 )   return 'good';
+    if ( $s >= 7.5 ) return 'good';
     return 'average';
   }
 }
@@ -588,8 +588,9 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         <div class="fp-criteria">
           <?php foreach ( $criteria as $cr ) :
             $cl = isset( $cr[ $FP_CRIT_LBL ] ) ? trim( $cr[ $FP_CRIT_LBL ] ) : '';
-            $cv = isset( $cr[ $FP_CRIT_VAL ] ) ? (float) $cr[ $FP_CRIT_VAL ] : 0;
-            if ( $cl === '' || $cv <= 0 ) continue;
+            $cv_raw = isset( $cr[ $FP_CRIT_VAL ] ) ? (float) $cr[ $FP_CRIT_VAL ] : 0;
+            if ( $cl === '' || $cv_raw <= 0 ) continue;
+            $cv  = round( $cv_raw / 10, 1 );
             $pct = min( 100, $cv * 10 );
           ?>
           <div class="fp-ci">
