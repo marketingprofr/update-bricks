@@ -544,6 +544,7 @@ if ( in_array( 'vs', $FP_BLOCKS, true ) ) {
     $vd['url']        = get_permalink( $vc_id );
     $vd['score_avis'] = get_field( $FP_SCORE_AVIS, $vc_id ) ?: '';
     $vd['nb_avis']    = get_field( $FP_NB_AVIS, $vc_id ) ?: '';
+    $vd['summary']    = get_field( $FP_SUMMARY, $vc_id ) ?: '';
     $vd_crit_raw      = get_field( $FP_CRITERIA, $vc_id ) ?: array();
     $vd['criteria']   = array();
     if ( ! empty( $vd_crit_raw ) && is_array( $vd_crit_raw ) ) {
@@ -851,34 +852,31 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         if ( $alt_premium_id > 0 ) {
           $d = fp_product_data( $alt_premium_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
           $d['type'] = 'premium'; $d['kicker'] = 'Choix haut de gamme'; $d['url'] = get_permalink( $alt_premium_id );
+          $d['summary'] = get_field( $FP_SUMMARY, $alt_premium_id ) ?: '';
           $alts[] = $d;
         }
         if ( $alt_budget_id > 0 ) {
           $d = fp_product_data( $alt_budget_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
           $d['type'] = 'budget'; $d['kicker'] = 'Choix pas cher'; $d['url'] = get_permalink( $alt_budget_id );
+          $d['summary'] = get_field( $FP_SUMMARY, $alt_budget_id ) ?: '';
           $alts[] = $d;
         }
+        $nb_alts = count( $alts );
         ?>
         <div class="fp-interblock">
-          <h3 class="fp-stitle"><?php echo count( $alts ); ?> alternative<?php echo count( $alts ) > 1 ? 's' : ''; ?> à considérer en fonction de votre budget</h3>
-          <div class="fp-pick-row">
-            <?php foreach ( $alts as $a ) : ?>
-            <a class="fp-pick-card" href="<?php echo esc_url( $a['url'] ); ?>">
-              <?php if ( ! empty( $a['img'] ) ) : ?>
-              <div class="pthumb"><img src="<?php echo esc_url( $a['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"></div>
-              <?php else : ?>
-              <div class="pthumb"></div>
-              <?php endif; ?>
-              <div class="pinfo">
-                <span class="kicker <?php echo $a['type']; ?>"><?php echo esc_html( $a['kicker'] ); ?></span>
-                <h4><?php echo esc_html( $a['name'] ); ?></h4>
-                <?php if ( $a['price'] > 0 ) : ?><span class="pprice">À partir de <b><?php echo fp_format_price( $a['price'] ); ?></b></span><?php endif; ?>
-              </div>
-              <?php if ( $a['score'] > 0 ) : ?>
-              <div class="fp-pick-score"><span class="n"><?php echo number_format( $a['score'], 1, ',', '' ); ?></span><span class="l">/10</span></div>
-              <?php endif; ?>
-            </a>
-            <?php endforeach; ?>
+          <h3 class="fp-stitle"><?php echo $nb_alts; ?> alternative<?php echo $nb_alts > 1 ? 's' : ''; ?> à considérer en fonction de votre budget</h3>
+          <div class="fp-pick-prose">
+            <p>Si <?php echo esc_html( $product_name ); ?> ne correspond pas tout à fait à votre budget, <?php echo $nb_alts > 1 ? 'deux options méritent' : 'une option mérite'; ?> le détour.</p>
+            <ul>
+              <?php foreach ( $alts as $a ) : ?>
+              <li><strong><?php echo esc_html( $a['kicker'] ); ?> —</strong> <a href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a><?php
+                $desc_parts = array();
+                if ( ! empty( $a['summary'] ) ) $desc_parts[] = wp_strip_all_tags( $a['summary'] );
+                if ( $a['price'] > 0 ) $desc_parts[] = 'À partir de ' . fp_format_price( $a['price'] );
+                if ( ! empty( $desc_parts ) ) echo ' : ' . implode( '. ', $desc_parts ) . '.';
+              ?></li>
+              <?php endforeach; ?>
+            </ul>
           </div>
         </div>
         <?php break;
@@ -944,6 +942,18 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               </div>
               <?php endforeach; ?>
             </div>
+            <?php if ( $summary !== '' || $vs['summary'] !== '' ) : ?>
+            <div class="fp-vs-verdict">
+              <div class="fp-vs-vcard this">
+                <div class="vh"><span class="dot"></span>En bref — <?php echo esc_html( $product_name ); ?></div>
+                <?php if ( $summary !== '' ) : ?><p><?php echo wp_kses_post( $summary ); ?></p><?php endif; ?>
+              </div>
+              <div class="fp-vs-vcard rival">
+                <div class="vh"><span class="dot"></span>En bref — <?php echo esc_html( $vs['name'] ); ?></div>
+                <?php if ( $vs['summary'] !== '' ) : ?><p><?php echo wp_kses_post( $vs['summary'] ); ?></p><?php endif; ?>
+              </div>
+            </div>
+            <?php endif; ?>
           </div>
         </div>
         <?php endforeach; break;
