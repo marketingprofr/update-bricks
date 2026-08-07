@@ -849,31 +849,49 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
       case 'alternatives':
         if ( $alt_premium_id <= 0 && $alt_budget_id <= 0 ) break;
         $alts = array();
-        if ( $alt_premium_id > 0 ) {
-          $d = fp_product_data( $alt_premium_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
-          $d['type'] = 'premium'; $d['kicker'] = 'Choix haut de gamme'; $d['url'] = get_permalink( $alt_premium_id );
-          $d['summary'] = get_field( $FP_SUMMARY, $alt_premium_id ) ?: '';
-          $alts[] = $d;
-        }
-        if ( $alt_budget_id > 0 ) {
-          $d = fp_product_data( $alt_budget_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
-          $d['type'] = 'budget'; $d['kicker'] = 'Choix pas cher'; $d['url'] = get_permalink( $alt_budget_id );
-          $d['summary'] = get_field( $FP_SUMMARY, $alt_budget_id ) ?: '';
+        foreach ( array(
+          array( 'id' => $alt_premium_id, 'type' => 'premium', 'kicker' => 'Choix haut de gamme' ),
+          array( 'id' => $alt_budget_id,  'type' => 'budget',  'kicker' => 'Choix pas cher' ),
+        ) as $alt_def ) {
+          if ( $alt_def['id'] <= 0 ) continue;
+          $aid = $alt_def['id'];
+          $d = fp_product_data( $aid, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+          $d['type']    = $alt_def['type'];
+          $d['kicker']  = $alt_def['kicker'];
+          $d['url']     = get_permalink( $aid );
+          $d['summary'] = get_field( $FP_SUMMARY, $aid ) ?: '';
+          $a_pros = function_exists( 'mt5_points' )
+            ? mt5_points( $FP_PROS, $aid, $FP_PROS_SUB )
+            : array();
+          $d['pros'] = array_slice( $a_pros, 0, 2 );
           $alts[] = $d;
         }
         $nb_alts = count( $alts );
+        if ( $nb_alts === 0 ) break;
         ?>
         <div class="fp-interblock">
           <h3 class="fp-stitle"><?php echo $nb_alts; ?> alternative<?php echo $nb_alts > 1 ? 's' : ''; ?> à considérer en fonction de votre budget</h3>
           <div class="fp-pick-prose">
             <p>Si <?php echo esc_html( $product_name ); ?> ne correspond pas tout à fait à votre budget, <?php echo $nb_alts > 1 ? 'deux options méritent' : 'une option mérite'; ?> le détour.</p>
             <ul>
-              <?php foreach ( $alts as $a ) : ?>
-              <li><strong><?php echo esc_html( $a['kicker'] ); ?> —</strong> <a href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a><?php
-                $desc_parts = array();
-                if ( ! empty( $a['summary'] ) ) $desc_parts[] = wp_strip_all_tags( $a['summary'] );
-                if ( $a['price'] > 0 ) $desc_parts[] = 'À partir de ' . fp_format_price( $a['price'] );
-                if ( ! empty( $desc_parts ) ) echo ' : ' . implode( '. ', $desc_parts ) . '.';
+              <?php foreach ( $alts as $a ) :
+                $bits = array();
+                if ( $a['score'] > 0 ) $bits[] = 'noté ' . number_format( $a['score'], 1, ',', '' ) . '/10';
+                if ( ! empty( $a['pros'] ) ) $bits[] = mb_strtolower( implode( ' et ', $a['pros'] ) );
+                $price_diff = '';
+                if ( $a['price'] > 0 && $price_num > 0 ) {
+                  $diff = abs( $a['price'] - $price_num );
+                  if ( $diff > 0 ) {
+                    $price_diff = $a['price'] > $price_num
+                      ? ' (+' . fp_format_price( $diff ) . ')'
+                      : ' (−' . fp_format_price( $diff ) . ')';
+                  }
+                }
+              ?>
+              <li><strong><?php echo esc_html( $a['kicker'] ); ?> —</strong> l'<a href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a><?php
+                if ( ! empty( $bits ) ) echo ' : ' . implode( ', ', $bits );
+                if ( $a['price'] > 0 ) echo '. À partir de ' . fp_format_price( $a['price'] ) . esc_html( $price_diff );
+                echo '.';
               ?></li>
               <?php endforeach; ?>
             </ul>
