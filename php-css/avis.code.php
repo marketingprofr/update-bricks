@@ -203,6 +203,14 @@ $price_fmt = fp_format_price( $price_num );
 $asin = get_field( $FP_ASIN, $pid ) ?: '';
 
 $criteria = get_field( $FP_CRITERIA, $pid ) ?: array();
+$fp_cur_criteria = array();
+if ( ! empty( $criteria ) && is_array( $criteria ) ) {
+  foreach ( $criteria as $ccr ) {
+    $ccl = isset( $ccr[ $FP_CRIT_LBL ] ) ? trim( $ccr[ $FP_CRIT_LBL ] ) : '';
+    $ccv = isset( $ccr[ $FP_CRIT_VAL ] ) ? round( (float) $ccr[ $FP_CRIT_VAL ] / 10, 1 ) : 0;
+    if ( $ccl !== '' && $ccv > 0 ) $fp_cur_criteria[ $ccl ] = $ccv;
+  }
+}
 
 $pros = function_exists( 'mt5_points' )
   ? mt5_points( $FP_PROS, $pid, $FP_PROS_SUB )
@@ -536,6 +544,15 @@ if ( in_array( 'vs', $FP_BLOCKS, true ) ) {
     $vd['url']        = get_permalink( $vc_id );
     $vd['score_avis'] = get_field( $FP_SCORE_AVIS, $vc_id ) ?: '';
     $vd['nb_avis']    = get_field( $FP_NB_AVIS, $vc_id ) ?: '';
+    $vd_crit_raw      = get_field( $FP_CRITERIA, $vc_id ) ?: array();
+    $vd['criteria']   = array();
+    if ( ! empty( $vd_crit_raw ) && is_array( $vd_crit_raw ) ) {
+      foreach ( $vd_crit_raw as $vcr ) {
+        $vl = isset( $vcr[ $FP_CRIT_LBL ] ) ? trim( $vcr[ $FP_CRIT_LBL ] ) : '';
+        $vv = isset( $vcr[ $FP_CRIT_VAL ] ) ? round( (float) $vcr[ $FP_CRIT_VAL ] / 10, 1 ) : 0;
+        if ( $vl !== '' && $vv > 0 ) $vd['criteria'][ $vl ] = $vv;
+      }
+    }
     if ( $vd['score'] > 0 ) $fp_vs_list[] = $vd;
   }
 }
@@ -914,6 +931,18 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
                 <div class="fp-vs-side<?php echo ! $aw ? ' win' : ''; ?>"><span class="val"><?php echo number_format( (float) $vs['score_avis'], 1, ',', '' ); ?><small style="color:var(--muted);font-weight:400"> /5</small></span><span class="stars"><?php echo fp_stars( (float) $vs['score_avis'] ); ?></span><span class="nb"><?php echo esc_html( $vs_nb ); ?></span></div>
               </div>
               <?php endif; ?>
+              <?php
+              $vs_common = array_intersect_key( $fp_cur_criteria, $vs['criteria'] );
+              foreach ( $vs_common as $crit_name => $cur_val ) :
+                $rival_val = $vs['criteria'][ $crit_name ];
+                $cw = ( $cur_val >= $rival_val );
+              ?>
+              <div class="fp-vs-row">
+                <div class="fp-vs-side left<?php echo $cw ? ' win' : ''; ?>"><span class="val"><?php echo number_format( $cur_val, 1, ',', '' ); ?></span><span class="mbar"><span class="<?php echo fp_bar_class( $cur_val ); ?>" style="width:<?php echo min( 100, $cur_val * 10 ); ?>%"></span></span></div>
+                <div class="lbl"><?php echo esc_html( $crit_name ); ?></div>
+                <div class="fp-vs-side<?php echo ! $cw ? ' win' : ''; ?>"><span class="val"><?php echo number_format( $rival_val, 1, ',', '' ); ?></span><span class="mbar"><span class="<?php echo fp_bar_class( $rival_val ); ?>" style="width:<?php echo min( 100, $rival_val * 10 ); ?>%"></span></span></div>
+              </div>
+              <?php endforeach; ?>
             </div>
           </div>
         </div>
