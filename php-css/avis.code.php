@@ -62,9 +62,7 @@ $FP_CRIT_VAL    = 'mltv5_critere_note';
 $FP_VS_PRODUCT  = 'mltv5_produit_concurrent';
 $FP_ALT_PREMIUM = 'mltv5_alternative_premium';
 $FP_ALT_BUDGET  = 'mltv5_alternative_budget';
-$FP_PRICE_HIST  = 'mltv5_historique_prix';
-$FP_PHIST_DATE  = 'mltv5_prix_date';
-$FP_PHIST_VAL   = 'mltv5_prix_valeur';
+$FP_PRICE_HIST  = 'mltv5_prix_historiques';  // format : 210¤190¤230¤210¤205¤180 (1er = plus récent)
 
 /* ═════════════════════════════════════════════════════════════════════
    3) LIMITES & CONFIG
@@ -243,8 +241,16 @@ $author_name = get_the_author_meta( 'display_name', $author_id );
 /* Contenu éditorial */
 $review_html = apply_filters( 'the_content', get_post_field( 'post_content', $pid ) );
 
-/* Historique des prix (repeater, optionnel) */
-$price_history = get_field( $FP_PRICE_HIST, $pid ) ?: array();
+/* Historique des prix (champ texte : 6 prix séparés par ¤, 1er = plus récent) */
+$ph_raw_str    = get_field( $FP_PRICE_HIST, $pid ) ?: '';
+$ph_vals       = array();
+if ( $ph_raw_str !== '' ) {
+  $ph_parts = array_map( 'trim', explode( "\xc2\xa4", $ph_raw_str ) );  // ¤ = U+00A4
+  $ph_parts = array_filter( $ph_parts, function( $v ) { return is_numeric( $v ) && (float) $v > 0; } );
+  if ( count( $ph_parts ) === 6 ) {
+    $ph_vals = array_reverse( array_map( 'floatval', array_values( $ph_parts ) ) );  // oldest → newest (gauche → droite)
+  }
+}
 
 /* VS concurrent (post object ou ID, optionnel) */
 $vs_raw = get_field( $FP_VS_PRODUCT, $pid );
@@ -612,19 +618,11 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
 
       /* ─── PRICE HISTORY ─── */
       case 'price_history':
-        if ( empty( $price_history ) || ! is_array( $price_history ) || count( $price_history ) < 2 ) break;
-        $ph_vals  = array();
-        $ph_dates = array();
-        foreach ( $price_history as $ph ) {
-          $v = isset( $ph[ $FP_PHIST_VAL ] ) ? (float) $ph[ $FP_PHIST_VAL ] : 0;
-          $d = isset( $ph[ $FP_PHIST_DATE ] ) ? $ph[ $FP_PHIST_DATE ] : '';
-          if ( $v > 0 ) { $ph_vals[] = $v; $ph_dates[] = $d; }
-        }
-        if ( count( $ph_vals ) < 2 ) break;
+        if ( count( $ph_vals ) !== 6 ) break;
         $ph_min = min( $ph_vals );
         $ph_max = max( $ph_vals );
         $ph_cur = end( $ph_vals );
-        $ph_avg = round( array_sum( $ph_vals ) / count( $ph_vals ) );
+        $ph_avg = round( array_sum( $ph_vals ) / 6 );
         ?>
         <div class="fp-interblock">
           <h3 class="fp-stitle">Évolution du prix</h3>
@@ -635,15 +633,14 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="fp-ph-stat"><div class="k">Plus haut</div><div class="v high"><?php echo fp_format_price( $ph_max ); ?></div></div>
               <div class="fp-ph-stat"><div class="k">Moyenne</div><div class="v"><?php echo fp_format_price( $ph_avg ); ?></div></div>
             </div>
-            <?php /* Chart SVG */
-            $n   = count( $ph_vals );
+            <?php /* Chart SVG — 6 points, oldest (gauche) → newest (droite) */
             $w   = 760;
             $h   = 130;
             $pad = 40;
             $range = max( 1, $ph_max - $ph_min );
             $points = array();
-            for ( $i = 0; $i < $n; $i++ ) {
-              $x = $pad + ( $i / max( 1, $n - 1 ) ) * ( $w - 2 * $pad );
+            for ( $i = 0; $i < 6; $i++ ) {
+              $x = $pad + ( $i / 5 ) * ( $w - 2 * $pad );
               $y = $h - 10 - ( ( $ph_vals[ $i ] - $ph_min ) / $range ) * ( $h - 30 );
               $points[] = array( $x, $y, $ph_vals[ $i ] );
             }
@@ -655,16 +652,13 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
                 <path class="area" d="<?php echo $area_d; ?>"/>
                 <path class="line" d="<?php echo $line_d; ?>"/>
                 <?php foreach ( $points as $i => $p ) :
-                  $is_last = ( $i === $n - 1 );
+                  $is_now = ( $i === 5 );
                 ?>
-                <text class="val<?php echo $is_last ? ' now' : ''; ?>" x="<?php echo round( $p[0], 1 ); ?>" y="<?php echo round( $p[1] - 10, 1 ); ?>"><?php echo fp_format_price( $p[2] ); ?></text>
-                <circle class="dot<?php echo $is_last ? ' now' : ''; ?>" cx="<?php echo round( $p[0], 1 ); ?>" cy="<?php echo round( $p[1], 1 ); ?>" r="<?php echo $is_last ? 5 : 4; ?>"/>
+                <text class="val<?php echo $is_now ? ' now' : ''; ?>" x="<?php echo round( $p[0], 1 ); ?>" y="<?php echo round( $p[1] - 10, 1 ); ?>"><?php echo fp_format_price( $p[2] ); ?></text>
+                <circle class="dot<?php echo $is_now ? ' now' : ''; ?>" cx="<?php echo round( $p[0], 1 ); ?>" cy="<?php echo round( $p[1], 1 ); ?>" r="<?php echo $is_now ? 5 : 4; ?>"/>
                 <?php endforeach; ?>
               </svg>
             </div>
-            <?php if ( ! empty( $ph_dates ) ) : ?>
-            <div class="fp-ph-labels"><?php foreach ( $ph_dates as $d ) : ?><span><?php echo esc_html( $d ); ?></span><?php endforeach; ?></div>
-            <?php endif; ?>
             <?php if ( $ph_cur <= $ph_min ) : ?>
             <p class="fp-ph-foot">→ <b>C'est le moment d'acheter :</b> le prix est actuellement au plus bas.</p>
             <?php endif; ?>
