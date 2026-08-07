@@ -859,11 +859,19 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
           $d['type']    = $alt_def['type'];
           $d['kicker']  = $alt_def['kicker'];
           $d['url']     = get_permalink( $aid );
-          $d['summary'] = get_field( $FP_SUMMARY, $aid ) ?: '';
           $a_pros = function_exists( 'mt5_points' )
             ? mt5_points( $FP_PROS, $aid, $FP_PROS_SUB )
             : array();
-          $d['pros'] = array_slice( $a_pros, 0, 2 );
+          if ( empty( $a_pros ) ) {
+            $raw_pros = get_field( $FP_PROS, $aid ) ?: array();
+            if ( is_array( $raw_pros ) ) {
+              foreach ( $raw_pros as $rp ) {
+                $txt = isset( $rp[ $FP_PROS_SUB ] ) ? trim( $rp[ $FP_PROS_SUB ] ) : '';
+                if ( $txt !== '' ) $a_pros[] = $txt;
+              }
+            }
+          }
+          $d['pros'] = array_slice( $a_pros, 0, 3 );
           $alts[] = $d;
         }
         $nb_alts = count( $alts );
@@ -874,24 +882,12 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
           <div class="fp-pick-prose">
             <p>Si <?php echo esc_html( $product_name ); ?> ne correspond pas tout à fait à votre budget, <?php echo $nb_alts > 1 ? 'deux options méritent' : 'une option mérite'; ?> le détour.</p>
             <ul>
-              <?php foreach ( $alts as $a ) :
-                $bits = array();
-                if ( $a['score'] > 0 ) $bits[] = 'noté ' . number_format( $a['score'], 1, ',', '' ) . '/10';
-                if ( ! empty( $a['pros'] ) ) $bits[] = mb_strtolower( implode( ' et ', $a['pros'] ) );
-                $price_diff = '';
-                if ( $a['price'] > 0 && $price_num > 0 ) {
-                  $diff = abs( $a['price'] - $price_num );
-                  if ( $diff > 0 ) {
-                    $price_diff = $a['price'] > $price_num
-                      ? ' (+' . fp_format_price( $diff ) . ')'
-                      : ' (−' . fp_format_price( $diff ) . ')';
-                  }
-                }
-              ?>
-              <li><strong><?php echo esc_html( $a['kicker'] ); ?> —</strong> l'<a href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a><?php
-                if ( ! empty( $bits ) ) echo ' : ' . implode( ', ', $bits );
-                if ( $a['price'] > 0 ) echo '. À partir de ' . fp_format_price( $a['price'] ) . esc_html( $price_diff );
+              <?php foreach ( $alts as $a ) : ?>
+              <li><strong><?php echo esc_html( $a['kicker'] ); ?></strong> : <?php if ( $type_label !== '' ) echo esc_html( $type_label ) . ', '; ?><a href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a><?php
+                if ( $a['score'] > 0 ) echo ' (' . number_format( $a['score'], 1, ',', '' ) . '/10)';
                 echo '.';
+                if ( ! empty( $a['pros'] ) ) echo ' ' . esc_html( implode( ', ', array_map( 'mb_strtolower', $a['pros'] ) ) ) . '.';
+                if ( $a['price'] > 0 ) echo ' Prix moyen constaté : ' . fp_format_price( $a['price'] ) . '.';
               ?></li>
               <?php endforeach; ?>
             </ul>
