@@ -56,9 +56,9 @@ $FP_SPEC_VAL    = 'mltv5_valeur_caracteristique_produit';
 $FP_VERDICT     = 'mltv5_verdict_court';
 $FP_AUDIENCE    = 'mltv5_pour_qui';
 $FP_IMG_EXT     = 'mltv5_image_external_url';
-$FP_CRITERIA    = 'mltv5_criteres_notation';
-$FP_CRIT_LBL    = 'mltv5_critere_label';
-$FP_CRIT_VAL    = 'mltv5_critere_note';
+$FP_CRITERIA    = 'mltv5_scores_des_criteres';
+$FP_CRIT_LBL    = 'mltv5_nom_du_critere';
+$FP_CRIT_VAL    = 'mltv5_score_du_critere';
 $FP_VS_PRODUCT  = 'mltv5_produit_concurrent';
 $FP_ALT_PREMIUM = 'mltv5_alternative_premium';
 $FP_ALT_BUDGET  = 'mltv5_alternative_budget';
@@ -129,6 +129,16 @@ if ( ! function_exists( 'fp_format_price' ) ) {
     return number_format( (float) $p, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€";
   }
 }
+if ( ! function_exists( 'fp_merchant_name' ) ) {
+  function fp_merchant_name( $url ) {
+    $host = parse_url( (string) $url, PHP_URL_HOST );
+    if ( ! $host ) return '';
+    $host  = preg_replace( '/^www\./i', '', $host );
+    $parts = explode( '.', $host );
+    $label = isset( $parts[0] ) ? $parts[0] : '';
+    return $label !== '' ? ucfirst( $label ) : '';
+  }
+}
 if ( ! function_exists( 'fp_product_data' ) ) {
   function fp_product_data( $id, $score_field, $price_field, $brand_field, $model_field, $img_ext_field ) {
     $raw   = get_field( $score_field, $id );
@@ -155,7 +165,7 @@ $FP_SVG_STAR  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9
 $FP_SVG_EXT   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
 $FP_SVG_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
 $FP_SVG_CHEV  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
-$FP_SVG_SAVE  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3v18l6-4 6 4V3z"/></svg>';
+
 
 /* ═════════════════════════════════════════════════════════════════════
    5) CHARGEMENT DES DONNÉES
@@ -233,7 +243,7 @@ for ( $i = 0; $i < 3; $i++ ) {
   $lnk = get_field( $link_fs[ $i ], $pid );
   $txt = get_field( $text_fs[ $i ], $pid );
   if ( ! empty( $lnk ) ) {
-    $nm = function_exists( 'mt5_merchant_name' ) ? mt5_merchant_name( $lnk ) : '';
+    $nm = function_exists( 'mt5_merchant_name' ) ? mt5_merchant_name( $lnk ) : fp_merchant_name( $lnk );
     $offers[] = array( 'url' => $lnk, 'text' => $txt ?: 'Voir l\'offre', 'name' => $nm );
   }
 }
@@ -247,8 +257,7 @@ if ( empty( $hero_img ) ) {
 }
 
 $mod_date   = get_the_modified_date( 'j F Y' );
-$author_id  = get_post_field( 'post_author', $pid );
-$author_name = get_the_author_meta( 'display_name', $author_id );
+
 
 /* Contenu éditorial */
 $review_html = apply_filters( 'the_content', get_post_field( 'post_content', $pid ) );
@@ -328,18 +337,23 @@ foreach ( $fp_comparatifs as $c ) {
   }
 }
 
-/* Attribute terms for badge label */
-$attr_terms  = wp_get_post_terms( $pid, $FP_TAX_ATTR, array( 'fields' => 'names' ) );
-if ( is_wp_error( $attr_terms ) ) $attr_terms = array();
-
-/* Badge label: "N°X · Type — Attr1, Attr2" */
+/* Badge label: type + attributes from the COMPARATIF (not the product) */
 $fp_badge_label = '';
-if ( $fp_best_rank > 0 ) {
+if ( $fp_best_rank > 0 && $fp_best_comp ) {
+  $comp_id = $fp_best_comp['id'];
+  $comp_type_names = wp_get_post_terms( $comp_id, $FP_TAX_TYPE, array( 'fields' => 'names' ) );
+  if ( is_wp_error( $comp_type_names ) ) $comp_type_names = array();
+  $comp_attr_names = wp_get_post_terms( $comp_id, $FP_TAX_ATTR, array( 'fields' => 'names' ) );
+  if ( is_wp_error( $comp_attr_names ) ) $comp_attr_names = array();
   $parts = array();
-  if ( $type_label !== '' ) $parts[] = mb_convert_case( mb_strtolower( $type_label ), MB_CASE_TITLE, 'UTF-8' );
-  foreach ( $attr_terms as $at ) $parts[] = mb_convert_case( mb_strtolower( $at ), MB_CASE_TITLE, 'UTF-8' );
+  foreach ( $comp_type_names as $ct ) $parts[] = mb_convert_case( mb_strtolower( $ct ), MB_CASE_TITLE, 'UTF-8' );
+  if ( ! empty( $comp_attr_names ) ) {
+    $attr_str = array();
+    foreach ( $comp_attr_names as $ca ) $attr_str[] = mb_convert_case( mb_strtolower( $ca ), MB_CASE_TITLE, 'UTF-8' );
+    $parts[] = implode( ', ', $attr_str );
+  }
   $fp_badge_label = 'N°' . $fp_best_rank;
-  if ( ! empty( $parts ) ) $fp_badge_label .= ' · ' . implode( ', ', $parts );
+  if ( ! empty( $parts ) ) $fp_badge_label .= ' · ' . implode( ' - ', $parts );
 }
 
 /* Idealo URL (search page with product name) */
@@ -538,7 +552,6 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
       <?php if ( ! empty( $hero_img ) ) : ?>
         <img src="<?php echo esc_url( $hero_img ); ?>" alt="<?php echo esc_attr( $product_name ); ?>" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply">
       <?php endif; ?>
-      <span class="save-btn"><?php echo $FP_SVG_SAVE; ?></span>
     </div>
     <div class="fp-info">
       <h1>
@@ -546,7 +559,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         <?php echo esc_html( $product_name ); ?>
         <?php if ( $subtitle !== '' ) : ?><span class="fp-sub"><?php echo esc_html( $subtitle ); ?></span><?php endif; ?>
       </h1>
-      <div class="fp-byline">Par <b><?php echo esc_html( $author_name ); ?></b> · Mise à jour le <?php echo esc_html( $mod_date ); ?></div>
+      <div class="fp-byline">Mis à jour le <?php echo esc_html( $mod_date ); ?></div>
       <?php if ( $summary !== '' ) : ?>
         <p class="fp-verdict"><?php echo wp_kses_post( $summary ); ?></p>
       <?php endif; ?>
@@ -987,7 +1000,6 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
       <div class="fp-side-block">
         <div class="fp-side-title">Classement<?php echo $type_label !== '' ? ' des ' . esc_html( mb_strtolower( $type_label ) ) : ''; ?></div>
         <div class="fp-side-count"><?php echo $fp_rank_total; ?> produit<?php echo $fp_rank_total > 1 ? 's' : ''; ?> testé<?php echo $fp_rank_total > 1 ? 's' : ''; ?></div>
-        <input type="checkbox" id="<?php echo $fp_uid; ?>-rk" class="fp-rank-toggle-cb" hidden>
         <table class="fp-rank-table">
           <thead><tr><th></th><th>Produit</th><th>Score</th></tr></thead>
           <tbody>
@@ -1002,11 +1014,11 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         </table>
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
           <?php if ( count( $fp_ranking ) > $FP_RANK_VISIBLE ) : ?>
-          <label class="fp-rank-collapse" for="<?php echo $fp_uid; ?>-rk">
+          <button type="button" class="fp-rank-collapse" onclick="var p=this.closest('.fp-side-block'),ex=p.querySelectorAll('tr.extra'),on=ex[0]&&ex[0].style.display!=='table-row';ex.forEach(function(r){r.style.display=on?'table-row':'none'});this.querySelector('.show-txt').style.display=on?'none':'inline';this.querySelector('.hide-txt').style.display=on?'inline':'none';var sv=this.querySelector('svg');if(sv)sv.style.transform=on?'rotate(180deg)':''">
             <span class="show-txt">Afficher le classement complet</span>
             <span class="hide-txt">Réduire le classement</span>
             <?php echo $FP_SVG_CHEV; ?>
-          </label>
+          </button>
           <?php endif; ?>
           <?php if ( $fp_ref_comp ) : ?>
           <a class="fp-rank-viewall" href="<?php echo esc_url( $fp_ref_comp['url'] ); ?>">Voir le comparatif <?php echo esc_html( $type_label !== '' ? 'des ' . mb_strtolower( $type_label ) : '' ); ?> <?php echo $FP_SVG_ARROW; ?></a>
@@ -1052,24 +1064,5 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
     bs.forEach(function(b){b.addEventListener('click',function(){t.scrollBy({left:+b.dataset.dir*s(),behavior:'smooth'})})});
     t.addEventListener('scroll',u,{passive:true});window.addEventListener('resize',u);u();
   });
-  /* Expand/collapse ranking */
-  var uid='<?php echo $fp_uid; ?>';
-  var cb=document.getElementById(uid+'-rk');
-  if(cb){
-    var tbl=cb.closest('.fp-side-block');
-    if(tbl){
-      var extras=tbl.querySelectorAll('tr.extra');
-      var lbl=tbl.querySelector('.fp-rank-collapse');
-      if(lbl){
-        cb.addEventListener('change',function(){
-          extras.forEach(function(r){r.style.display=cb.checked?'table-row':'none'});
-          var sh=lbl.querySelector('.show-txt'),hi=lbl.querySelector('.hide-txt'),sv=lbl.querySelector('svg');
-          if(sh)sh.style.display=cb.checked?'none':'inline';
-          if(hi)hi.style.display=cb.checked?'inline':'none';
-          if(sv)sv.style.transform=cb.checked?'rotate(180deg)':'';
-        });
-      }
-    }
-  }
 })();
 </script>
