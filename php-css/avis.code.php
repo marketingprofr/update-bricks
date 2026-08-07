@@ -59,7 +59,6 @@ $FP_IMG_EXT     = 'mltv5_image_external_url';
 $FP_CRITERIA    = 'mltv5_scores_des_criteres';
 $FP_CRIT_LBL    = 'mltv5_nom_du_critere';
 $FP_CRIT_VAL    = 'mltv5_score_du_critere';
-$FP_VS_PRODUCT  = 'mltv5_produit_concurrent';
 $FP_ALT_PREMIUM = 'mltv5_alternative_premium';
 $FP_ALT_BUDGET  = 'mltv5_alternative_budget';
 $FP_PRICE_HIST  = 'mltv5_prix_historiques';  // format : 210¤190¤230¤210¤205¤180 (1er = plus récent)
@@ -272,12 +271,6 @@ if ( $ph_raw_str !== '' ) {
     $ph_vals = array_reverse( array_map( 'floatval', array_values( $ph_parts ) ) );  // oldest → newest (gauche → droite)
   }
 }
-
-/* VS concurrent (post object ou ID, optionnel) */
-$vs_raw = get_field( $FP_VS_PRODUCT, $pid );
-$vs_id  = 0;
-if ( is_object( $vs_raw ) && isset( $vs_raw->ID ) ) $vs_id = $vs_raw->ID;
-elseif ( is_numeric( $vs_raw ) && (int) $vs_raw > 0 ) $vs_id = (int) $vs_raw;
 
 /* Alternatives (premium / budget, optionnels) */
 $alt_premium_raw = get_field( $FP_ALT_PREMIUM, $pid );
@@ -515,14 +508,20 @@ if ( $FP_SHOW_GUIDES && ! empty( $type_terms ) ) {
   wp_reset_postdata();
 }
 
-/* VS concurrent */
-$vs = null;
-if ( $vs_id > 0 && in_array( 'vs', $FP_BLOCKS, true ) ) {
-  $vs = fp_product_data( $vs_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
-  $vs['id']         = $vs_id;
-  $vs['url']        = get_permalink( $vs_id );
-  $vs['score_avis'] = get_field( $FP_SCORE_AVIS, $vs_id ) ?: '';
-  $vs['nb_avis']    = get_field( $FP_NB_AVIS, $vs_id ) ?: '';
+/* VS alternatives (premium + budget) */
+$fp_vs_list = array();
+if ( in_array( 'vs', $FP_BLOCKS, true ) ) {
+  $vs_candidates = array();
+  if ( $alt_premium_id > 0 ) $vs_candidates[] = $alt_premium_id;
+  if ( $alt_budget_id > 0 )  $vs_candidates[] = $alt_budget_id;
+  foreach ( $vs_candidates as $vc_id ) {
+    $vd = fp_product_data( $vc_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+    $vd['id']         = $vc_id;
+    $vd['url']        = get_permalink( $vc_id );
+    $vd['score_avis'] = get_field( $FP_SCORE_AVIS, $vc_id ) ?: '';
+    $vd['nb_avis']    = get_field( $FP_NB_AVIS, $vc_id ) ?: '';
+    if ( $vd['score'] > 0 ) $fp_vs_list[] = $vd;
+  }
 }
 
 /* UID unique pour les IDs HTML (checkbox expand/collapse) */
@@ -828,7 +827,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         }
         ?>
         <div class="fp-interblock">
-          <h3 class="fp-stitle"><?php echo count( $alts ); ?> alternative<?php echo count( $alts ) > 1 ? 's' : ''; ?> à considérer</h3>
+          <h3 class="fp-stitle"><?php echo count( $alts ); ?> alternative<?php echo count( $alts ) > 1 ? 's' : ''; ?> à considérer en fonction de votre budget</h3>
           <div class="fp-pick-row">
             <?php foreach ( $alts as $a ) : ?>
             <a class="fp-pick-card" href="<?php echo esc_url( $a['url'] ); ?>">
@@ -851,10 +850,11 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         </div>
         <?php break;
 
-      /* ─── VS ─── */
+      /* ─── VS (un bloc par alternative) ─── */
       case 'vs':
-        if ( ! $vs || $vs['score'] <= 0 ) break;
-        $cur_wins_score = ( $score >= $vs['score'] );
+        if ( empty( $fp_vs_list ) ) break;
+        foreach ( $fp_vs_list as $vs ) :
+          $cur_wins_score = ( $score >= $vs['score'] );
         ?>
         <div class="fp-interblock">
           <h3 class="fp-stitle"><?php echo esc_html( $product_name ); ?> ou <?php echo esc_html( $vs['name'] ); ?> ?</h3>
@@ -869,7 +869,6 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="fp-vs-badge">VS</div>
               <div class="fp-vs-prod<?php echo ! $cur_wins_score ? ' win' : ''; ?>">
                 <?php if ( ! empty( $vs['img'] ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $vs['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
-                <span class="fp-vs-tag rival">Concurrent direct</span>
                 <h4><?php echo esc_html( $vs['name'] ); ?></h4>
                 <div class="vscore"><span class="n"><?php echo number_format( $vs['score'], 1, ',', '' ); ?></span><span class="d">/10</span></div>
               </div>
@@ -902,7 +901,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             </div>
           </div>
         </div>
-        <?php break;
+        <?php endforeach; break;
 
       /* ─── CAROUSEL : similaires ─── */
       case 'carousel_similar':
