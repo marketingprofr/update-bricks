@@ -77,6 +77,8 @@ $FP_TAX_TYPE       = 'post-type-produit';
 $FP_COMPARATIF_CPT = 'comparatif';
 $FP_COMP_FIELD     = 'mltv5_best_products';
 $FP_PRICE_RANGE    = 0.3;
+$FP_COMP_VISIBLE   = 3;
+$FP_TAX_ATTR       = 'post-type-attribut';
 $FP_EYEBROW        = 'Test &amp; Avis';
 
 /* ═════════════════════════════════════════════════════════════════════
@@ -202,9 +204,19 @@ $cons = function_exists( 'mt5_points' )
   ? mt5_points( $FP_CONS, $pid, $FP_CONS_SUB )
   : array();
 
-$specs = function_exists( 'mt5_specs' )
-  ? mt5_specs( $FP_SPECS, $pid, $FP_SPEC_LBL, $FP_SPEC_VAL )
-  : array();
+$specs = array();
+if ( function_exists( 'mt5_specs' ) ) {
+  $specs = mt5_specs( $FP_SPECS, $pid, $FP_SPEC_LBL, $FP_SPEC_VAL );
+} else {
+  $sp_rows = get_field( $FP_SPECS, $pid );
+  if ( ! empty( $sp_rows ) && is_array( $sp_rows ) ) {
+    foreach ( $sp_rows as $sp_r ) {
+      $sl = isset( $sp_r[ $FP_SPEC_LBL ] ) ? trim( $sp_r[ $FP_SPEC_LBL ] ) : '';
+      $sv = isset( $sp_r[ $FP_SPEC_VAL ] ) ? trim( $sp_r[ $FP_SPEC_VAL ] ) : '';
+      if ( $sl !== '' && $sv !== '' ) $specs[] = array( $sl, $sv );
+    }
+  }
+}
 
 /* Offres */
 $offers     = array();
@@ -272,9 +284,9 @@ $type_label = ( ! is_wp_error( $type_names ) && ! empty( $type_names ) ) ? $type
 
 /* ── Queries conditionnelles ── */
 
-/* Comparatifs où ce produit apparaît */
+/* Comparatifs où ce produit apparaît (always queried for hero badge) */
 $fp_comparatifs = array();
-if ( in_array( 'comparatifs', $FP_BLOCKS, true ) ) {
+{
   $cq = new WP_Query( array(
     'post_type'      => $FP_COMPARATIF_CPT,
     'posts_per_page' => 5,
@@ -302,6 +314,58 @@ if ( in_array( 'comparatifs', $FP_BLOCKS, true ) ) {
         'rank'    => $rank,
       );
     }
+    wp_reset_postdata();
+  }
+}
+
+/* Best rank for hero badge */
+$fp_best_rank = 0;
+$fp_best_comp = null;
+foreach ( $fp_comparatifs as $c ) {
+  if ( $c['rank'] > 0 && ( $fp_best_rank === 0 || $c['rank'] < $fp_best_rank ) ) {
+    $fp_best_rank = $c['rank'];
+    $fp_best_comp = $c;
+  }
+}
+
+/* Attribute terms for badge label */
+$attr_terms  = wp_get_post_terms( $pid, $FP_TAX_ATTR, array( 'fields' => 'names' ) );
+if ( is_wp_error( $attr_terms ) ) $attr_terms = array();
+
+/* Badge label: "N°X · Type — Attr1, Attr2" */
+$fp_badge_label = '';
+if ( $fp_best_rank > 0 ) {
+  $parts = array();
+  if ( $type_label !== '' ) $parts[] = mb_convert_case( mb_strtolower( $type_label ), MB_CASE_TITLE, 'UTF-8' );
+  foreach ( $attr_terms as $at ) $parts[] = mb_convert_case( mb_strtolower( $at ), MB_CASE_TITLE, 'UTF-8' );
+  $fp_badge_label = 'N°' . $fp_best_rank;
+  if ( ! empty( $parts ) ) $fp_badge_label .= ' · ' . implode( ', ', $parts );
+}
+
+/* Idealo URL (search page with product name) */
+$fp_idealo_url = '';
+if ( $price_fmt !== '' ) {
+  $idealo_slug = sanitize_title( $product_name );
+  $fp_idealo_url = 'https://www.idealo.fr/prechcat.html?q=' . $idealo_slug;
+}
+
+/* Reference comparatif for sidebar (first comparatif matching the product type) */
+$fp_ref_comp = null;
+if ( ! empty( $type_terms ) ) {
+  $rcq = new WP_Query( array(
+    'post_type'      => $FP_COMPARATIF_CPT,
+    'post_status'    => 'publish',
+    'posts_per_page' => 1,
+    'tax_query'      => array( array( 'taxonomy' => $FP_TAX_TYPE, 'terms' => $type_terms ) ),
+    'orderby'        => 'date',
+    'order'          => 'DESC',
+  ) );
+  if ( $rcq->have_posts() ) {
+    $rcq->the_post();
+    $fp_ref_comp = array(
+      'title' => get_the_title(),
+      'url'   => get_permalink(),
+    );
     wp_reset_postdata();
   }
 }
@@ -460,6 +524,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
   $bc = function_exists( 'rank_math_the_breadcrumbs' ) ? do_shortcode( '[rank_math_breadcrumb]' ) : '';
   if ( ! empty( trim( $bc ) ) ) {
     $bc = preg_replace( '#(<span class="separator">).*?(</span>)#', '$1&nbsp;&rsaquo;&nbsp;$2', $bc );
+    $bc .= ' &nbsp;&rsaquo;&nbsp; <b>' . esc_html( $product_name ) . '</b>';
     echo '<div class="fp-crumb">' . $bc . '</div>';
   } ?>
 
@@ -467,6 +532,9 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
   if ( $FP_SHOW_HERO ) : ?>
   <section class="fp-hero">
     <div class="fp-media">
+      <?php if ( $fp_badge_label !== '' ) : ?>
+        <span class="badge-rank"><?php echo $FP_SVG_STAR; ?> <?php echo esc_html( $fp_badge_label ); ?></span>
+      <?php endif; ?>
       <?php if ( ! empty( $hero_img ) ) : ?>
         <img src="<?php echo esc_url( $hero_img ); ?>" alt="<?php echo esc_attr( $product_name ); ?>" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply">
       <?php endif; ?>
@@ -535,7 +603,13 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             ?></div>
           <?php endif; ?>
         </div>
-        <?php if ( $price_fmt !== '' ) : ?>
+        <?php if ( $fp_idealo_url !== '' ) : ?>
+        <div class="fp-buy-or"><span>ou</span></div>
+        <div class="fp-buy-opt">
+          <a class="fp-buy-btn secondary" href="<?php echo esc_url( $fp_idealo_url ); ?>" target="_blank" rel="nofollow noopener">Meilleur prix sur Idealo <?php echo $FP_SVG_ARROW; ?></a>
+          <div class="fp-price-avg">Prix moyen constaté : <b><?php echo $price_fmt; ?></b></div>
+        </div>
+        <?php elseif ( $price_fmt !== '' ) : ?>
         <div class="fp-price-avg">Prix moyen constaté : <b><?php echo $price_fmt; ?></b></div>
         <?php endif; ?>
       </div>
@@ -564,10 +638,10 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         $nb_comp = count( $fp_comparatifs );
         ?>
         <div class="fp-interblock">
-          <h3 class="fp-stitle"><?php echo esc_html( $product_name ); ?> apparaît dans <?php echo $nb_comp; ?> comparatif<?php echo $nb_comp > 1 ? 's' : ''; ?></h3>
+          <h3 class="fp-stitle"><?php echo esc_html( $product_name ); ?> est dans le top de <?php echo $nb_comp; ?> comparatif<?php echo $nb_comp > 1 ? 's' : ''; ?></h3>
           <div class="fp-comp-list">
-            <?php foreach ( $fp_comparatifs as $c ) : ?>
-            <a class="fp-comp-card" href="<?php echo esc_url( $c['url'] ); ?>">
+            <?php foreach ( $fp_comparatifs as $ci => $c ) : ?>
+            <a class="fp-comp-card<?php echo $ci >= $FP_COMP_VISIBLE ? ' fp-comp-extra' : ''; ?>" href="<?php echo esc_url( $c['url'] ); ?>"<?php echo $ci >= $FP_COMP_VISIBLE ? ' style="display:none"' : ''; ?>>
               <?php if ( ! empty( $c['thumb'] ) ) : ?>
               <div class="comp-thumb"><img src="<?php echo esc_url( $c['thumb'] ); ?>" alt="" style="width:100%;height:100%;object-fit:cover"></div>
               <?php endif; ?>
@@ -584,6 +658,12 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             </a>
             <?php endforeach; ?>
           </div>
+          <?php if ( $nb_comp > $FP_COMP_VISIBLE ) : ?>
+          <button type="button" class="fp-comp-toggle" onclick="(function(b){var e=b.closest('.fp-interblock').querySelectorAll('.fp-comp-extra'),v=e[0]&&e[0].style.display==='none';e.forEach(function(c){c.style.display=v?'flex':'none'});b.querySelector('.show-t').style.display=v?'none':'inline';b.querySelector('.hide-t').style.display=v?'inline':'none'})(this)">
+            <span class="show-t">Afficher les <?php echo $nb_comp - $FP_COMP_VISIBLE; ?> autres comparatifs <?php echo $FP_SVG_CHEV; ?></span>
+            <span class="hide-t" style="display:none">Masquer <?php echo $FP_SVG_CHEV; ?></span>
+          </button>
+          <?php endif; ?>
         </div>
         <?php break;
 
@@ -623,9 +703,15 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         $ph_max = max( $ph_vals );
         $ph_cur = end( $ph_vals );
         $ph_avg = round( array_sum( $ph_vals ) / 6 );
+        $ph_months = array();
+        $ph_month_names = array( 1=>'Jan', 2=>'Fév', 3=>'Mar', 4=>'Avr', 5=>'Mai', 6=>'Juin', 7=>'Juil', 8=>'Août', 9=>'Sep', 10=>'Oct', 11=>'Nov', 12=>'Déc' );
+        for ( $mi = 5; $mi >= 0; $mi-- ) {
+          $m = (int) date( 'n', strtotime( '-' . $mi . ' months' ) );
+          $ph_months[] = $ph_month_names[ $m ];
+        }
         ?>
         <div class="fp-interblock">
-          <h3 class="fp-stitle">Évolution du prix</h3>
+          <h3 class="fp-stitle">Évolution du prix sur les 6 derniers mois</h3>
           <div class="fp-price-hist">
             <div class="fp-ph-summary">
               <div class="fp-ph-stat"><div class="k">Prix actuel</div><div class="v<?php echo $ph_cur <= $ph_min ? ' low' : ''; ?>"><?php echo fp_format_price( $ph_cur ); ?></div></div>
@@ -659,8 +745,31 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
                 <?php endforeach; ?>
               </svg>
             </div>
+            <div class="fp-ph-labels"><?php foreach ( $ph_months as $ml ) : ?><span><?php echo $ml; ?></span><?php endforeach; ?></div>
             <?php if ( $ph_cur <= $ph_min ) : ?>
             <p class="fp-ph-foot">→ <b>C'est le moment d'acheter :</b> le prix est actuellement au plus bas.</p>
+            <?php endif; ?>
+            <?php if ( ! empty( $offers ) ) : ?>
+            <div class="fp-buy">
+              <?php $ph_primary = $offers[0]; $ph_others = array_slice( $offers, 1 ); ?>
+              <div class="fp-buy-opt">
+                <a class="fp-buy-btn" href="<?php echo esc_url( $ph_primary['url'] ); ?>" target="_blank" rel="nofollow sponsored noopener"><?php echo esc_html( $ph_primary['text'] ); ?> <?php echo $FP_SVG_EXT; ?></a>
+                <?php if ( ! empty( $ph_others ) ) : ?>
+                  <div class="fp-also">Également sur <?php
+                    $ph_names = array();
+                    foreach ( $ph_others as $o ) { $ph_names[] = '<a href="' . esc_url( $o['url'] ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $o['name'] ?: $o['text'] ) . '</a>'; }
+                    echo implode( ', ', $ph_names );
+                  ?></div>
+                <?php endif; ?>
+              </div>
+              <?php if ( $fp_idealo_url !== '' ) : ?>
+              <div class="fp-buy-or"><span>ou</span></div>
+              <div class="fp-buy-opt">
+                <a class="fp-buy-btn secondary" href="<?php echo esc_url( $fp_idealo_url ); ?>" target="_blank" rel="nofollow noopener">Meilleur prix sur Idealo <?php echo $FP_SVG_ARROW; ?></a>
+                <div class="fp-price-avg">Prix moyen constaté : <b><?php echo $price_fmt; ?></b></div>
+              </div>
+              <?php endif; ?>
+            </div>
             <?php endif; ?>
           </div>
         </div>
@@ -891,15 +1000,18 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             <?php endforeach; ?>
           </tbody>
         </table>
-        <?php if ( count( $fp_ranking ) > $FP_RANK_VISIBLE ) : ?>
         <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+          <?php if ( count( $fp_ranking ) > $FP_RANK_VISIBLE ) : ?>
           <label class="fp-rank-collapse" for="<?php echo $fp_uid; ?>-rk">
             <span class="show-txt">Afficher le classement complet</span>
             <span class="hide-txt">Réduire le classement</span>
             <?php echo $FP_SVG_CHEV; ?>
           </label>
+          <?php endif; ?>
+          <?php if ( $fp_ref_comp ) : ?>
+          <a class="fp-rank-viewall" href="<?php echo esc_url( $fp_ref_comp['url'] ); ?>">Voir le comparatif <?php echo esc_html( $type_label !== '' ? 'des ' . mb_strtolower( $type_label ) : '' ); ?> <?php echo $FP_SVG_ARROW; ?></a>
+          <?php endif; ?>
         </div>
-        <?php endif; ?>
       </div>
     </aside>
     <?php endif; ?>
