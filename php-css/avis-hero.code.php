@@ -14,8 +14,8 @@ $FP_BLOCKS = array(
   'comparatifs',      // Comparatifs où ce produit apparaît
   'pros_cons',        // Points forts / points faibles
   'audience',         // À qui s'adresse ce produit
-  'price_history',    // Évolution du prix
   'specs',            // Fiche technique
+  'price_history',    // Évolution du prix
   'alternatives',     // Alternatives budget (premium / pas cher)
   'vs',               // Face-à-face concurrent direct
   'carousel_similar', // Vous aimerez aussi
@@ -226,9 +226,27 @@ if ( ! empty( $criteria ) && is_array( $criteria ) ) {
 $pros = function_exists( 'mt5_points' )
   ? mt5_points( $FP_PROS, $pid, $FP_PROS_SUB )
   : array();
+if ( empty( $pros ) ) {
+  $raw_pros = get_field( $FP_PROS, $pid ) ?: array();
+  if ( is_array( $raw_pros ) ) {
+    foreach ( $raw_pros as $rp ) {
+      $txt = isset( $rp[ $FP_PROS_SUB ] ) ? trim( $rp[ $FP_PROS_SUB ] ) : '';
+      if ( $txt !== '' ) $pros[] = $txt;
+    }
+  }
+}
 $cons = function_exists( 'mt5_points' )
   ? mt5_points( $FP_CONS, $pid, $FP_CONS_SUB )
   : array();
+if ( empty( $cons ) ) {
+  $raw_cons = get_field( $FP_CONS, $pid ) ?: array();
+  if ( is_array( $raw_cons ) ) {
+    foreach ( $raw_cons as $rc ) {
+      $txt = isset( $rc[ $FP_CONS_SUB ] ) ? trim( $rc[ $FP_CONS_SUB ] ) : '';
+      if ( $txt !== '' ) $cons[] = $txt;
+    }
+  }
+}
 
 $specs = array();
 if ( function_exists( 'mt5_specs' ) ) {
@@ -547,11 +565,13 @@ if ( $FP_SHOW_GUIDES && ! empty( $type_terms ) ) {
 $fp_vs_list = array();
 if ( in_array( 'vs', $FP_BLOCKS, true ) ) {
   $vs_candidates = array();
-  if ( $alt_premium_id > 0 ) $vs_candidates[] = $alt_premium_id;
-  if ( $alt_budget_id > 0 )  $vs_candidates[] = $alt_budget_id;
-  foreach ( $vs_candidates as $vc_id ) {
+  if ( $alt_premium_id > 0 ) $vs_candidates[] = array( 'id' => $alt_premium_id, 'vs_type' => 'premium' );
+  if ( $alt_budget_id > 0 )  $vs_candidates[] = array( 'id' => $alt_budget_id, 'vs_type' => 'budget' );
+  foreach ( $vs_candidates as $vc_info ) {
+    $vc_id = $vc_info['id'];
     $vd = fp_product_data( $vc_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
     $vd['id']         = $vc_id;
+    $vd['vs_type']    = $vc_info['vs_type'];
     $vd['url']        = get_permalink( $vc_id );
     $vd['score_avis'] = get_field( $FP_SCORE_AVIS, $vc_id ) ?: '';
     $vd['nb_avis']    = get_field( $FP_NB_AVIS, $vc_id ) ?: '';
@@ -579,12 +599,29 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
 <div class="fp-avis">
 
   <?php /* ── Fil d'ariane ── */
-  $bc = function_exists( 'rank_math_the_breadcrumbs' ) ? do_shortcode( '[rank_math_breadcrumb]' ) : '';
-  if ( ! empty( trim( $bc ) ) ) {
-    $bc = preg_replace( '#(<span class="separator">).*?(</span>)#', '$1&nbsp;&rsaquo;&nbsp;$2', $bc );
-    $bc .= ' &nbsp;&rsaquo;&nbsp; <b>' . esc_html( $product_name ) . '</b>';
-    echo '<div class="fp-crumb">' . $bc . '</div>';
-  } ?>
+  $bc = '';
+  if ( function_exists( 'rank_math_the_breadcrumbs' ) ) {
+    $bc = do_shortcode( '[rank_math_breadcrumb]' );
+  }
+  $bc_text = trim( strip_tags( $bc ) );
+  if ( $bc_text !== '' && $bc_text !== $product_name && mb_strlen( $bc_text ) > mb_strlen( $product_name ) ) {
+    $bc = preg_replace( '#(<span class="separator">).*?(</span>)#', '$1 &rsaquo; $2', $bc );
+  } else {
+    $bc_links = array( '<a href="' . esc_url( home_url( '/' ) ) . '">Accueil</a>' );
+    if ( $type_label !== '' ) {
+      $tl = ! empty( $type_terms ) ? get_term_link( (int) $type_terms[0], $FP_TAX_TYPE ) : '';
+      if ( ! is_wp_error( $tl ) && $tl ) {
+        $bc_links[] = '<a href="' . esc_url( $tl ) . '">' . esc_html( $type_label ) . '</a>';
+      } else {
+        $bc_links[] = esc_html( $type_label );
+      }
+    }
+    if ( $brand !== '' ) $bc_links[] = esc_html( $brand );
+    $bc = implode( ' &rsaquo; ', $bc_links );
+  }
+  $bc .= ' &rsaquo; <b>' . esc_html( $product_name ) . '</b>';
+  echo '<div class="fp-crumb">' . $bc . '</div>';
+  ?>
 
   <?php /* ════════════ HERO ════════════ */
   if ( $FP_SHOW_HERO ) : ?>

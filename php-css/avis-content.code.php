@@ -15,8 +15,8 @@ $FP_BLOCKS = array(
   'comparatifs',      // Comparatifs où ce produit apparaît
   'pros_cons',        // Points forts / points faibles
   'audience',         // À qui s'adresse ce produit
-  'price_history',    // Évolution du prix
   'specs',            // Fiche technique
+  'price_history',    // Évolution du prix
   'alternatives',     // Alternatives budget (premium / pas cher)
   'vs',               // Face-à-face concurrent direct
   'carousel_similar', // Vous aimerez aussi
@@ -227,9 +227,27 @@ if ( ! empty( $criteria ) && is_array( $criteria ) ) {
 $pros = function_exists( 'mt5_points' )
   ? mt5_points( $FP_PROS, $pid, $FP_PROS_SUB )
   : array();
+if ( empty( $pros ) ) {
+  $raw_pros = get_field( $FP_PROS, $pid ) ?: array();
+  if ( is_array( $raw_pros ) ) {
+    foreach ( $raw_pros as $rp ) {
+      $txt = isset( $rp[ $FP_PROS_SUB ] ) ? trim( $rp[ $FP_PROS_SUB ] ) : '';
+      if ( $txt !== '' ) $pros[] = $txt;
+    }
+  }
+}
 $cons = function_exists( 'mt5_points' )
   ? mt5_points( $FP_CONS, $pid, $FP_CONS_SUB )
   : array();
+if ( empty( $cons ) ) {
+  $raw_cons = get_field( $FP_CONS, $pid ) ?: array();
+  if ( is_array( $raw_cons ) ) {
+    foreach ( $raw_cons as $rc ) {
+      $txt = isset( $rc[ $FP_CONS_SUB ] ) ? trim( $rc[ $FP_CONS_SUB ] ) : '';
+      if ( $txt !== '' ) $cons[] = $txt;
+    }
+  }
+}
 
 $specs = array();
 if ( function_exists( 'mt5_specs' ) ) {
@@ -518,11 +536,13 @@ if ( $FP_SHOW_GUIDES && ! empty( $type_terms ) ) {
 $fp_vs_list = array();
 if ( in_array( 'vs', $FP_BLOCKS, true ) ) {
   $vs_candidates = array();
-  if ( $alt_premium_id > 0 ) $vs_candidates[] = $alt_premium_id;
-  if ( $alt_budget_id > 0 )  $vs_candidates[] = $alt_budget_id;
-  foreach ( $vs_candidates as $vc_id ) {
+  if ( $alt_premium_id > 0 ) $vs_candidates[] = array( 'id' => $alt_premium_id, 'vs_type' => 'premium' );
+  if ( $alt_budget_id > 0 )  $vs_candidates[] = array( 'id' => $alt_budget_id, 'vs_type' => 'budget' );
+  foreach ( $vs_candidates as $vc_info ) {
+    $vc_id = $vc_info['id'];
     $vd = fp_product_data( $vc_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
     $vd['id']         = $vc_id;
+    $vd['vs_type']    = $vc_info['vs_type'];
     $vd['url']        = get_permalink( $vc_id );
     $vd['score_avis'] = get_field( $FP_SCORE_AVIS, $vc_id ) ?: '';
     $vd['nb_avis']    = get_field( $FP_NB_AVIS, $vc_id ) ?: '';
@@ -735,8 +755,8 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         if ( $alt_premium_id <= 0 && $alt_budget_id <= 0 ) break;
         $alts = array();
         foreach ( array(
-          array( 'id' => $alt_premium_id, 'type' => 'premium', 'kicker' => 'Choix haut de gamme' ),
-          array( 'id' => $alt_budget_id,  'type' => 'budget',  'kicker' => 'Choix pas cher' ),
+          array( 'id' => $alt_premium_id, 'type' => 'premium', 'kicker' => 'Alternative plus chère' ),
+          array( 'id' => $alt_budget_id,  'type' => 'budget',  'kicker' => 'Alternative moins chère' ),
         ) as $alt_def ) {
           if ( $alt_def['id'] <= 0 ) continue;
           $aid = $alt_def['id'];
@@ -800,6 +820,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="fp-vs-badge">VS</div>
               <div class="fp-vs-prod<?php echo ! $cur_wins_score ? ' win' : ''; ?>">
                 <?php if ( ! empty( $vs['img'] ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $vs['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
+                <span class="fp-vs-tag rival"><?php echo esc_html( isset( $vs['vs_type'] ) && $vs['vs_type'] === 'premium' ? 'Alternative plus chère' : 'Alternative moins chère' ); ?></span>
                 <h4><?php echo esc_html( $vs['name'] ); ?></h4>
                 <div class="vscore"><span class="n"><?php echo number_format( $vs['score'], 1, ',', '' ); ?></span><span class="d">/10</span></div>
               </div>
