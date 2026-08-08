@@ -156,6 +156,18 @@ if ( ! function_exists( 'fp_product_data' ) ) {
   }
 }
 
+$FP_LINK_MIN_ID = 250000;
+if ( ! function_exists( 'fp_product_link' ) ) {
+  function fp_product_link( $id, $url, $label, $attrs = '' ) {
+    global $FP_LINK_MIN_ID;
+    $safe = esc_html( $label );
+    if ( (int) $id >= $FP_LINK_MIN_ID && $url ) {
+      return '<a href="' . esc_url( $url ) . '"' . ( $attrs ? ' ' . $attrs : '' ) . '>' . $safe . '</a>';
+    }
+    return $safe;
+  }
+}
+
 /* SVG icons (inline) */
 $FP_SVG_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>';
 $FP_SVG_STAR  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17l-6.2 3.6 1.6-6.7L2.2 8.9l6.9-.6L12 2z"/></svg>';
@@ -856,6 +868,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
           if ( $alt_def['id'] <= 0 ) continue;
           $aid = $alt_def['id'];
           $d = fp_product_data( $aid, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+          $d['id']      = $aid;
           $d['type']    = $alt_def['type'];
           $d['kicker']  = $alt_def['kicker'];
           $d['url']     = get_permalink( $aid );
@@ -883,7 +896,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             <p>Si <?php echo esc_html( $product_name ); ?> ne correspond pas tout à fait à votre budget, <?php echo $nb_alts > 1 ? 'deux options méritent' : 'une option mérite'; ?> le détour.</p>
             <ul>
               <?php foreach ( $alts as $a ) : ?>
-              <li><strong><?php echo esc_html( $a['kicker'] ); ?></strong> : <?php if ( $type_label !== '' ) echo esc_html( $type_label ) . ', '; ?><a href="<?php echo esc_url( $a['url'] ); ?>"><?php echo esc_html( $a['name'] ); ?></a><?php
+              <li><strong><?php echo esc_html( $a['kicker'] ); ?></strong> : <?php if ( $type_label !== '' ) echo esc_html( $type_label ) . ', '; ?><?php echo fp_product_link( $a['id'], $a['url'], $a['name'] ); ?><?php
                 if ( $a['score'] > 0 ) echo ' (' . number_format( $a['score'], 1, ',', '' ) . '/10)';
                 echo '.';
                 if ( ! empty( $a['pros'] ) ) echo ' ' . esc_html( implode( ', ', array_map( 'mb_strtolower', $a['pros'] ) ) ) . '.';
@@ -985,12 +998,14 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             </div>
           </div>
           <div class="fp-carousel"><div class="fp-carousel-track">
-            <?php foreach ( $fp_similar as $s ) : ?>
-            <a class="fp-mini-card" href="<?php echo esc_url( $s['url'] ); ?>">
+            <?php foreach ( $fp_similar as $s ) :
+              $s_link = ( (int) $s['id'] >= $FP_LINK_MIN_ID );
+            ?>
+            <<?php echo $s_link ? 'a' : 'div'; ?> class="fp-mini-card"<?php if ( $s_link ) echo ' href="' . esc_url( $s['url'] ) . '"'; ?>>
               <div class="mthumb"><?php if ( ! empty( $s['img'] ) ) : ?><img src="<?php echo esc_url( $s['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"><?php endif; ?></div>
               <div class="minfo"><h4><?php echo esc_html( $s['name'] ); ?></h4><?php if ( $s['price'] > 0 ) : ?><div class="mprice">À partir de <b><?php echo fp_format_price( $s['price'] ); ?></b></div><?php endif; ?></div>
               <?php if ( $s['score'] > 0 ) : ?><div class="fp-mini-score"><span class="n"><?php echo number_format( $s['score'], 1, ',', '' ); ?></span><span class="l">/10</span></div><?php endif; ?>
-            </a>
+            </<?php echo $s_link ? 'a' : 'div'; ?>>
             <?php endforeach; ?>
           </div></div>
         </div>
@@ -1009,8 +1024,10 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             </div>
           </div>
           <div class="fp-carousel"><div class="fp-carousel-track">
-            <?php foreach ( $fp_same_price as $s ) : ?>
-            <a class="fp-mini-card" href="<?php echo esc_url( $s['url'] ); ?>">
+            <?php foreach ( $fp_same_price as $s ) :
+              $s_link = ( (int) $s['id'] >= $FP_LINK_MIN_ID );
+            ?>
+            <<?php echo $s_link ? 'a' : 'div'; ?> class="fp-mini-card"<?php if ( $s_link ) echo ' href="' . esc_url( $s['url'] ) . '"'; ?>>
               <div class="mthumb"><?php if ( ! empty( $s['img'] ) ) : ?><img src="<?php echo esc_url( $s['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"><?php endif; ?></div>
               <div class="minfo">
                 <h4><?php echo esc_html( $s['name'] ); ?></h4>
@@ -1025,7 +1042,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
                 <?php endif; ?>
               </div>
               <?php if ( $s['score'] > 0 ) : ?><div class="fp-mini-score"><span class="n"><?php echo number_format( $s['score'], 1, ',', '' ); ?></span><span class="l">/10</span></div><?php endif; ?>
-            </a>
+            </<?php echo $s_link ? 'a' : 'div'; ?>>
             <?php endforeach; ?>
           </div></div>
         </div>
@@ -1044,8 +1061,10 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             </div>
           </div>
           <div class="fp-carousel"><div class="fp-carousel-track">
-            <?php foreach ( $fp_brand_top as $s ) : ?>
-            <a class="fp-mini-card<?php echo $s['current'] ? ' current' : ''; ?>" href="<?php echo esc_url( $s['url'] ); ?>">
+            <?php foreach ( $fp_brand_top as $s ) :
+              $s_link = ( (int) $s['id'] >= $FP_LINK_MIN_ID );
+            ?>
+            <<?php echo $s_link ? 'a' : 'div'; ?> class="fp-mini-card<?php echo $s['current'] ? ' current' : ''; ?>"<?php if ( $s_link ) echo ' href="' . esc_url( $s['url'] ) . '"'; ?>>
               <span class="fp-mini-badge <?php echo fp_medal( $s['rank'] ); ?>"><?php echo $s['rank']; ?></span>
               <div class="mthumb"><?php if ( ! empty( $s['img'] ) ) : ?><img src="<?php echo esc_url( $s['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"><?php endif; ?></div>
               <div class="minfo">
@@ -1053,7 +1072,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
                 <div class="mprice"><?php echo $s['current'] ? 'Ce produit · ' : 'À partir de '; ?><b><?php echo fp_format_price( $s['price'] ); ?></b></div>
               </div>
               <?php if ( $s['score'] > 0 ) : ?><div class="fp-mini-score"><span class="n"><?php echo number_format( $s['score'], 1, ',', '' ); ?></span><span class="l">/10</span></div><?php endif; ?>
-            </a>
+            </<?php echo $s_link ? 'a' : 'div'; ?>>
             <?php endforeach; ?>
           </div></div>
         </div>
@@ -1075,7 +1094,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             <?php foreach ( $fp_ranking as $r ) : ?>
             <tr class="<?php echo $r['current'] ? 'current' : ''; ?> <?php echo $r['rank'] > $FP_RANK_VISIBLE ? 'extra' : ''; ?>">
               <td class="rk<?php echo $r['rank'] <= 3 ? ' top' : ''; ?>"><?php echo $r['rank']; ?></td>
-              <td class="pname"><a href="<?php echo esc_url( $r['url'] ); ?>"><?php echo esc_html( $r['name'] ); ?></a></td>
+              <td class="pname"><?php echo fp_product_link( $r['id'], $r['url'], $r['name'] ); ?></td>
               <td class="pscore <?php echo fp_score_class( $r['score'] ); ?>"><?php echo number_format( $r['score'], 1, ',', '' ); ?></td>
             </tr>
             <?php endforeach; ?>
