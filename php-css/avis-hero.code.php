@@ -605,21 +605,32 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
   }
   $bc_text = trim( strip_tags( $bc ) );
   if ( $bc_text !== '' && $bc_text !== $product_name && mb_strlen( $bc_text ) > mb_strlen( $product_name ) ) {
-    $bc = preg_replace( '#(<span class="separator">).*?(</span>)#', '$1 &rsaquo; $2', $bc );
+    $bc = preg_replace( '#(<span class="separator">).*?(</span>)#', '$1 &nbsp;&rsaquo;&nbsp; $2', $bc );
+    $bc .= ' &nbsp;&rsaquo;&nbsp; <b>' . esc_html( $product_name ) . '</b>';
   } else {
-    $bc_links = array( '<a href="' . esc_url( home_url( '/' ) ) . '">Accueil</a>' );
-    if ( $type_label !== '' ) {
-      $tl = ! empty( $type_terms ) ? get_term_link( (int) $type_terms[0], $FP_TAX_TYPE ) : '';
-      if ( ! is_wp_error( $tl ) && $tl ) {
-        $bc_links[] = '<a href="' . esc_url( $tl ) . '">' . esc_html( $type_label ) . '</a>';
-      } else {
-        $bc_links[] = esc_html( $type_label );
+    $bc_parts = array( '<a href="' . esc_url( home_url( '/' ) ) . '">Accueil</a>' );
+    $post_cats = wp_get_post_terms( $pid, 'category', array( 'fields' => 'all' ) );
+    if ( ! is_wp_error( $post_cats ) && ! empty( $post_cats ) ) {
+      $deepest = $post_cats[0];
+      foreach ( $post_cats as $pc ) {
+        if ( $pc->parent > 0 ) { $deepest = $pc; break; }
+      }
+      $cat_chain = array();
+      $cur_cat = $deepest;
+      while ( $cur_cat && ! is_wp_error( $cur_cat ) ) {
+        array_unshift( $cat_chain, $cur_cat );
+        $cur_cat = ( $cur_cat->parent > 0 ) ? get_term( $cur_cat->parent, 'category' ) : null;
+      }
+      foreach ( $cat_chain as $cc ) {
+        $cc_link = get_term_link( $cc );
+        $bc_parts[] = ! is_wp_error( $cc_link )
+          ? '<a href="' . esc_url( $cc_link ) . '">' . esc_html( $cc->name ) . '</a>'
+          : esc_html( $cc->name );
       }
     }
-    if ( $brand !== '' ) $bc_links[] = esc_html( $brand );
-    $bc = implode( ' &rsaquo; ', $bc_links );
+    $bc_parts[] = '<b>' . esc_html( $product_name ) . '</b>';
+    $bc = implode( ' &nbsp;&rsaquo;&nbsp; ', $bc_parts );
   }
-  $bc .= ' &rsaquo; <b>' . esc_html( $product_name ) . '</b>';
   echo '<div class="fp-crumb">' . $bc . '</div>';
   ?>
 
