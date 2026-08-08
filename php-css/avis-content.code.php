@@ -7,7 +7,8 @@
    ===================================================================== */
 
 /* Récupération des données chargées par avis-hero.code.php */
-if ( isset( $GLOBALS['fp_data'] ) ) extract( $GLOBALS['fp_data'], EXTR_SKIP );
+if ( ! isset( $GLOBALS['fp_data'] ) ) return;
+extract( $GLOBALS['fp_data'] );
 
 ?>
 

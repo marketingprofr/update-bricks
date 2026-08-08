@@ -159,9 +159,9 @@ if ( ! function_exists( 'fp_product_data' ) ) {
 $FP_LINK_MIN_ID = 250000;
 if ( ! function_exists( 'fp_product_link' ) ) {
   function fp_product_link( $id, $url, $label, $attrs = '' ) {
-    global $FP_LINK_MIN_ID;
+    $min = isset( $GLOBALS['fp_data']['FP_LINK_MIN_ID'] ) ? (int) $GLOBALS['fp_data']['FP_LINK_MIN_ID'] : 250000;
     $safe = esc_html( $label );
-    if ( (int) $id >= $FP_LINK_MIN_ID && $url ) {
+    if ( (int) $id >= $min && $url ) {
       return '<a href="' . esc_url( $url ) . '"' . ( $attrs ? ' ' . $attrs : '' ) . '>' . $safe . '</a>';
     }
     return $safe;
