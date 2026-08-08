@@ -820,7 +820,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="fp-vs-badge">VS</div>
               <div class="fp-vs-prod<?php echo ! $cur_wins_score ? ' win' : ''; ?>">
                 <?php if ( ! empty( $vs['img'] ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $vs['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
-                <span class="fp-vs-tag rival"><?php echo esc_html( isset( $vs['vs_type'] ) && $vs['vs_type'] === 'premium' ? 'Alternative plus chère' : 'Alternative moins chère' ); ?></span>
+                <span class="fp-vs-tag rival">Concurrent direct</span>
                 <h4><?php echo esc_html( $vs['name'] ); ?></h4>
                 <div class="vscore"><span class="n"><?php echo number_format( $vs['score'], 1, ',', '' ); ?></span><span class="d">/10</span></div>
               </div>
