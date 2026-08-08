@@ -623,20 +623,22 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
       case 'pros_cons':
         if ( empty( $pros ) && empty( $cons ) ) break;
         ?>
-        <h3 class="fp-stitle">Points forts et points faibles</h3>
-        <div class="fp-pc-grid">
-          <?php if ( ! empty( $pros ) ) : ?>
-          <div class="fp-pc pros">
-            <h4>Points forts</h4>
-            <ul><?php foreach ( $pros as $p ) : ?><li><?php echo esc_html( $p ); ?></li><?php endforeach; ?></ul>
+        <div class="fp-interblock">
+          <h3 class="fp-stitle">Points forts et points faibles</h3>
+          <div class="fp-pc-grid">
+            <?php if ( ! empty( $pros ) ) : ?>
+            <div class="fp-pc pros">
+              <h4>Points forts</h4>
+              <ul><?php foreach ( $pros as $p ) : ?><li><?php echo esc_html( $p ); ?></li><?php endforeach; ?></ul>
+            </div>
+            <?php endif; ?>
+            <?php if ( ! empty( $cons ) ) : ?>
+            <div class="fp-pc cons">
+              <h4>Points faibles</h4>
+              <ul><?php foreach ( $cons as $c ) : ?><li><?php echo esc_html( $c ); ?></li><?php endforeach; ?></ul>
+            </div>
+            <?php endif; ?>
           </div>
-          <?php endif; ?>
-          <?php if ( ! empty( $cons ) ) : ?>
-          <div class="fp-pc cons">
-            <h4>Points faibles</h4>
-            <ul><?php foreach ( $cons as $c ) : ?><li><?php echo esc_html( $c ); ?></li><?php endforeach; ?></ul>
-          </div>
-          <?php endif; ?>
         </div>
         <?php break;
 
@@ -644,8 +646,10 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
       case 'audience':
         if ( $audience === '' ) break;
         ?>
-        <h3 class="fp-stitle">À qui s'adresse ce produit ?</h3>
-        <div class="fp-review"><p><?php echo wp_kses_post( $audience ); ?></p></div>
+        <div class="fp-interblock">
+          <h3 class="fp-stitle">À qui s'adresse ce produit ?</h3>
+          <div class="fp-review"><p><?php echo wp_kses_post( $audience ); ?></p></div>
+        </div>
         <?php break;
 
       /* ─── PRICE HISTORY ─── */
@@ -820,7 +824,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="fp-vs-badge">VS</div>
               <div class="fp-vs-prod<?php echo ! $cur_wins_score ? ' win' : ''; ?>">
                 <?php if ( ! empty( $vs['img'] ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $vs['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
-                <span class="fp-vs-tag rival">Concurrent direct</span>
+                <span class="fp-vs-tag rival">Concurrent</span>
                 <h4><?php echo esc_html( $vs['name'] ); ?></h4>
                 <div class="vscore"><span class="n"><?php echo number_format( $vs['score'], 1, ',', '' ); ?></span><span class="d">/10</span></div>
               </div>
