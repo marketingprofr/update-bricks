@@ -44,7 +44,7 @@
 .fp-byline b { color: var(--ink-2); font-weight: 600; }
 .fp-info h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(26px,3vw,36px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.08; margin: 0 0 10px; }
 .fp-info h1 .fp-sub { display: block; font-family: "Inter", "Helvetica Neue", sans-serif; font-size: 15px; font-weight: 400; letter-spacing: 0; line-height: 1.5; color: var(--muted); margin-top: 8px; }
-.fp-verdict { font-size: 14.5px; line-height: 1.6; color: var(--ink-2); margin: 0 0 16px; max-width: 58ch; }
+.fp-verdict { font-size: 14.5px; line-height: 1.6; color: var(--ink-2); margin: 0 0 16px; }
 
 /* Score panel */
 .fp-scorepanel { border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--at-white); margin-bottom: 16px; }
@@ -93,7 +93,13 @@
    ============================================================ */
 @media (max-width: 860px) {
   .fp-hero { grid-template-columns: 1fr; }
-  .fp-media { aspect-ratio: 16/9; }
+  .fp-info { display: contents; }
+  .fp-info h1 { order: 1; }
+  .fp-byline { order: 2; }
+  .fp-media { order: 3; aspect-ratio: 16/9; }
+  .fp-verdict { order: 4; }
+  .fp-scorepanel { order: 5; }
+  .fp-buy { order: 6; }
   .fp-criteria { grid-template-columns: 1fr; }
   .fp-scorepanel-top { grid-template-columns: 1fr; }
   .fp-score-cell + .fp-score-cell { border-left: 0; border-top: 1px solid var(--line); }

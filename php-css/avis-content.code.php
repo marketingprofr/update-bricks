@@ -811,19 +811,19 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         foreach ( $fp_vs_list as $vs ) :
           $cur_wins_score = ( $score >= $vs['score'] );
         ?>
-        <div class="fp-interblock">
+        <div class="fp-interblock fp-vs-wrap">
           <h3 class="fp-stitle"><?php echo esc_html( $product_name ); ?> ou <?php echo esc_html( $vs['name'] ); ?> ?</h3>
           <div class="fp-vs">
             <div class="fp-vs-head">
               <div class="fp-vs-prod<?php echo $cur_wins_score ? ' win' : ''; ?>">
-                <?php if ( ! empty( $hero_img ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $hero_img ); ?>" alt="" style="width:100%;height:100%;object-fit:contain"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
+                <?php if ( ! empty( $hero_img ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $hero_img ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
                 <span class="fp-vs-tag this">Ce produit</span>
                 <h4><?php echo esc_html( $product_name ); ?></h4>
                 <div class="vscore"><span class="n"><?php echo number_format( $score, 1, ',', '' ); ?></span><span class="d">/10</span></div>
               </div>
               <div class="fp-vs-badge">VS</div>
               <div class="fp-vs-prod<?php echo ! $cur_wins_score ? ' win' : ''; ?>">
-                <?php if ( ! empty( $vs['img'] ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $vs['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
+                <?php if ( ! empty( $vs['img'] ) ) : ?><div class="vthumb"><img src="<?php echo esc_url( $vs['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"></div><?php else : ?><div class="vthumb"></div><?php endif; ?>
                 <span class="fp-vs-tag rival">Concurrent</span>
                 <h4><?php echo esc_html( $vs['name'] ); ?></h4>
                 <div class="vscore"><span class="n"><?php echo number_format( $vs['score'], 1, ',', '' ); ?></span><span class="d">/10</span></div>
