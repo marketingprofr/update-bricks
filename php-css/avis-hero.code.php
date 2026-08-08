@@ -599,39 +599,28 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
 <div class="fp-avis">
 
   <?php /* ── Fil d'ariane ── */
-  $bc = '';
-  if ( function_exists( 'rank_math_the_breadcrumbs' ) ) {
-    $bc = do_shortcode( '[rank_math_breadcrumb]' );
-  }
-  $bc_text = trim( strip_tags( $bc ) );
-  if ( $bc_text !== '' && $bc_text !== $product_name && mb_strlen( $bc_text ) > mb_strlen( $product_name ) ) {
-    $bc = preg_replace( '#(<span class="separator">).*?(</span>)#', '$1 &nbsp;&rsaquo;&nbsp; $2', $bc );
-    $bc .= ' &nbsp;&rsaquo;&nbsp; <b>' . esc_html( $product_name ) . '</b>';
-  } else {
-    $bc_parts = array( '<a href="' . esc_url( home_url( '/' ) ) . '">Accueil</a>' );
-    $post_cats = wp_get_post_terms( $pid, 'category', array( 'fields' => 'all' ) );
-    if ( ! is_wp_error( $post_cats ) && ! empty( $post_cats ) ) {
-      $deepest = $post_cats[0];
-      foreach ( $post_cats as $pc ) {
-        if ( $pc->parent > 0 ) { $deepest = $pc; break; }
-      }
-      $cat_chain = array();
-      $cur_cat = $deepest;
-      while ( $cur_cat && ! is_wp_error( $cur_cat ) ) {
-        array_unshift( $cat_chain, $cur_cat );
-        $cur_cat = ( $cur_cat->parent > 0 ) ? get_term( $cur_cat->parent, 'category' ) : null;
-      }
-      foreach ( $cat_chain as $cc ) {
-        $cc_link = get_term_link( $cc );
-        $bc_parts[] = ! is_wp_error( $cc_link )
-          ? '<a href="' . esc_url( $cc_link ) . '">' . esc_html( $cc->name ) . '</a>'
-          : esc_html( $cc->name );
-      }
+  $bc_parts = array( '<a href="' . esc_url( home_url( '/' ) ) . '">Accueil</a>' );
+  $post_cats = wp_get_post_terms( $pid, 'category', array( 'fields' => 'all' ) );
+  if ( ! is_wp_error( $post_cats ) && ! empty( $post_cats ) ) {
+    $deepest = $post_cats[0];
+    foreach ( $post_cats as $pc ) {
+      if ( $pc->parent > 0 ) { $deepest = $pc; break; }
     }
-    $bc_parts[] = '<b>' . esc_html( $product_name ) . '</b>';
-    $bc = implode( ' &nbsp;&rsaquo;&nbsp; ', $bc_parts );
+    $cat_chain = array();
+    $cur_cat = $deepest;
+    while ( $cur_cat && ! is_wp_error( $cur_cat ) ) {
+      array_unshift( $cat_chain, $cur_cat );
+      $cur_cat = ( $cur_cat->parent > 0 ) ? get_term( $cur_cat->parent, 'category' ) : null;
+    }
+    foreach ( $cat_chain as $cc ) {
+      $cc_link = get_term_link( $cc );
+      $bc_parts[] = ! is_wp_error( $cc_link )
+        ? '<a href="' . esc_url( $cc_link ) . '">' . esc_html( $cc->name ) . '</a>'
+        : esc_html( $cc->name );
+    }
   }
-  echo '<div class="fp-crumb">' . $bc . '</div>';
+  $bc_parts[] = '<b>' . esc_html( $product_name ) . '</b>';
+  echo '<div class="fp-crumb">' . implode( ' &nbsp;&rsaquo;&nbsp; ', $bc_parts ) . '</div>';
   ?>
 
   <?php /* ════════════ HERO ════════════ */
