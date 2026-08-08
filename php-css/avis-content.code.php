@@ -855,15 +855,18 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               </div>
               <?php endif; ?>
               <?php
-              $vs_common = array_intersect_key( $fp_cur_criteria, $vs['criteria'] );
-              foreach ( $vs_common as $crit_name => $cur_val ) :
-                $rival_val = $vs['criteria'][ $crit_name ];
-                $cw = ( $cur_val >= $rival_val );
+              foreach ( $fp_cur_criteria as $crit_name => $cur_val ) :
+                $rival_val = isset( $vs['criteria'][ $crit_name ] ) ? $vs['criteria'][ $crit_name ] : 0;
+                $cw = ( $rival_val <= 0 || $cur_val >= $rival_val );
               ?>
               <div class="fp-vs-row">
                 <div class="fp-vs-side left<?php echo $cw ? ' win' : ''; ?>"><span class="val"><?php echo number_format( $cur_val, 1, ',', '' ); ?></span><span class="mbar"><span class="<?php echo fp_bar_class( $cur_val ); ?>" style="width:<?php echo min( 100, $cur_val * 10 ); ?>%"></span></span></div>
                 <div class="lbl"><?php echo esc_html( $crit_name ); ?></div>
+                <?php if ( $rival_val > 0 ) : ?>
                 <div class="fp-vs-side<?php echo ! $cw ? ' win' : ''; ?>"><span class="val"><?php echo number_format( $rival_val, 1, ',', '' ); ?></span><span class="mbar"><span class="<?php echo fp_bar_class( $rival_val ); ?>" style="width:<?php echo min( 100, $rival_val * 10 ); ?>%"></span></span></div>
+                <?php else : ?>
+                <div class="fp-vs-side"><span class="val" style="color:var(--muted)">—</span></div>
+                <?php endif; ?>
               </div>
               <?php endforeach; ?>
             </div>
