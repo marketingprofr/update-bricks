@@ -1,16 +1,554 @@
 <?php
 /* =====================================================================
    FICHE PRODUIT / AVIS — CONTENU — avis-content.code.php
-   Doit être placé APRÈS avis-hero.code.php dans le template Bricks.
+   Bloc AUTONOME : charge ses propres données (ne dépend pas du hero).
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
    Le CSS correspondant va dans l'onglet CSS du même élément (avis-content.css).
    ===================================================================== */
 
-/* Récupération des données chargées par avis-hero.code.php */
-if ( ! isset( $GLOBALS['fp_data'] ) ) return;
-extract( $GLOBALS['fp_data'] );
+/* ═════════════════════════════════════════════════════════════════════
+   1) ORDRE D'AFFICHAGE — colonne principale
+   ⚠️ Doit rester IDENTIQUE à avis-hero.code.php si on modifie les deux.
+   ═════════════════════════════════════════════════════════════════════ */
+$FP_BLOCKS = array(
+  'review',           // Notre avis (contenu éditorial)
+  'comparatifs',      // Comparatifs où ce produit apparaît
+  'pros_cons',        // Points forts / points faibles
+  'audience',         // À qui s'adresse ce produit
+  'price_history',    // Évolution du prix
+  'specs',            // Fiche technique
+  'alternatives',     // Alternatives budget (premium / pas cher)
+  'vs',               // Face-à-face concurrent direct
+  'carousel_similar', // Vous aimerez aussi
+  'carousel_price',   // Dans la même gamme de prix
+  'carousel_brand',   // Top produits de la marque
+);
 
+/* Blocs à position fixe (true = affiché, false = masqué) */
+$FP_SHOW_HERO    = true;
+$FP_SHOW_SIDEBAR = true;
+$FP_SHOW_GUIDES  = false;
+
+/* ═════════════════════════════════════════════════════════════════════
+   2) CHAMPS ACF — modifier ici si les noms diffèrent
+   ═════════════════════════════════════════════════════════════════════ */
+$FP_BRAND       = 'mltv5_marque_du_produit';
+$FP_MODEL       = 'mltv5_modele_du_produit';
+$FP_SUBTITLE    = 'mltv5_sous_titre';
+$FP_SUMMARY     = 'mltv5_resume_produit';
+$FP_SCORE       = 'mltv5_score_recent';
+$FP_SCORE_AVIS  = 'mltv5_score_avis_clients';
+$FP_NB_AVIS     = 'mltv5_nombre_avis_clients';
+$FP_PRICE       = 'mltv5_prix_indicatif';
+$FP_ASIN        = 'mltv5_asin_amazon';
+$FP_LINK_1      = 'mltv5_lien_du_produit_1';
+$FP_LINK_2      = 'mltv5_lien_du_produit_2';
+$FP_LINK_3      = 'mltv5_lien_du_produit_3';
+$FP_TEXT_1      = 'mltv5_texte_du_bouton_1';
+$FP_TEXT_2      = 'mltv5_texte_du_bouton_2';
+$FP_TEXT_3      = 'mltv5_texte_du_bouton_3';
+$FP_PROS        = 'mltv5_points_positifs_produit';
+$FP_PROS_SUB    = 'mltv5_point_positif';
+$FP_CONS        = 'mltv5_points_negatifs_produit';
+$FP_CONS_SUB    = 'mltv5_point_negatif';
+$FP_SPECS       = 'mltv5_caracteristiques_du_produit';
+$FP_SPEC_LBL    = 'mltv5_caracteristique_produit';
+$FP_SPEC_VAL    = 'mltv5_valeur_caracteristique_produit';
+$FP_VERDICT     = 'mltv5_verdict_court';
+$FP_AUDIENCE    = 'mltv5_pour_qui';
+$FP_IMG_EXT     = 'mltv5_image_external_url';
+$FP_CRITERIA    = 'mltv5_scores_des_criteres';
+$FP_CRIT_LBL    = 'mltv5_nom_du_critere';
+$FP_CRIT_VAL    = 'mltv5_score_du_critere';
+$FP_PRICE_HIST  = 'mltv5_prix_historiques';
+
+/* ═════════════════════════════════════════════════════════════════════
+   3) LIMITES & CONFIG
+   ═════════════════════════════════════════════════════════════════════ */
+$FP_TEST_ID        = 258978;
+$FP_RANK_MAX       = 20;
+$FP_RANK_VISIBLE   = 8;
+$FP_CAROUSEL_MAX   = 5;
+$FP_GUIDES_MAX     = 3;
+$FP_AMAZON_TAG     = 'mlt00-21';
+$FP_TAX_TYPE       = 'post-type-produit';
+$FP_COMPARATIF_CPT = 'comparatif';
+$FP_COMP_FIELD     = 'mltv5_best_products';
+$FP_PRICE_RANGE    = 0.3;
+$FP_COMP_VISIBLE   = 3;
+$FP_TAX_ATTR       = 'post-type-attribut';
+$FP_EYEBROW        = 'Test &amp; Avis';
+
+/* ═════════════════════════════════════════════════════════════════════
+   4) HELPERS
+   ═════════════════════════════════════════════════════════════════════ */
+if ( ! function_exists( 'fp_score_label' ) ) {
+  function fp_score_label( $s ) {
+    if ( $s >= 9 ) return 'Excellent';
+    if ( $s >= 8 ) return 'Très bien';
+    if ( $s >= 7 ) return 'Bien';
+    if ( $s >= 6 ) return 'Correct';
+    if ( $s >= 5 ) return 'Moyen';
+    return 'Insuffisant';
+  }
+}
+if ( ! function_exists( 'fp_stars' ) ) {
+  function fp_stars( $r, $max = 5 ) {
+    $full  = (int) floor( $r );
+    $empty = $max - $full;
+    return str_repeat( '★', $full ) . str_repeat( '☆', $empty );
+  }
+}
+if ( ! function_exists( 'fp_bar_class' ) ) {
+  function fp_bar_class( $s ) {
+    if ( $s >= 8.5 ) return 'excellent';
+    if ( $s >= 7.5 ) return 'good';
+    return 'average';
+  }
+}
+if ( ! function_exists( 'fp_medal' ) ) {
+  function fp_medal( $r ) {
+    if ( $r == 1 ) return 'gold';
+    if ( $r == 2 ) return 'silver';
+    if ( $r == 3 ) return 'bronze';
+    return 'grey';
+  }
+}
+if ( ! function_exists( 'fp_score_class' ) ) {
+  function fp_score_class( $s ) {
+    if ( $s >= 8.5 ) return 'high';
+    if ( $s >= 7 )   return 'mid';
+    return 'low';
+  }
+}
+if ( ! function_exists( 'fp_format_price' ) ) {
+  function fp_format_price( $p ) {
+    if ( ! is_numeric( $p ) || $p <= 0 ) return '';
+    return number_format( (float) $p, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€";
+  }
+}
+if ( ! function_exists( 'fp_merchant_name' ) ) {
+  function fp_merchant_name( $url ) {
+    $host = parse_url( (string) $url, PHP_URL_HOST );
+    if ( ! $host ) return '';
+    $host  = preg_replace( '/^www\./i', '', $host );
+    $parts = explode( '.', $host );
+    $label = isset( $parts[0] ) ? $parts[0] : '';
+    return $label !== '' ? ucfirst( $label ) : '';
+  }
+}
+if ( ! function_exists( 'fp_product_data' ) ) {
+  function fp_product_data( $id, $score_field, $price_field, $brand_field, $model_field, $img_ext_field ) {
+    $raw   = get_field( $score_field, $id );
+    $score = function_exists( 'mt5_num' ) ? mt5_num( $raw ) / 10 : ( is_numeric( $raw ) ? round( $raw / 10, 1 ) : 0 );
+    $price = get_field( $price_field, $id );
+    $price = function_exists( 'mt5_num' ) ? mt5_num( $price ) : (float) $price;
+    $brand = get_field( $brand_field, $id ) ?: '';
+    $model = get_field( $model_field, $id ) ?: '';
+    $name  = trim( $brand . ' ' . $model );
+    if ( $name === '' ) $name = get_the_title( $id );
+    $img = get_the_post_thumbnail_url( $id, 'medium' );
+    if ( empty( $img ) ) {
+      $ext = get_field( $img_ext_field, $id );
+      if ( is_array( $ext ) && ! empty( $ext['url'] ) ) $img = $ext['url'];
+      elseif ( is_string( $ext ) && $ext !== '' ) $img = $ext;
+    }
+    return compact( 'score', 'price', 'brand', 'model', 'name', 'img' );
+  }
+}
+
+if ( ! defined( 'FP_LINK_MIN_ID' ) ) define( 'FP_LINK_MIN_ID', 250000 );
+if ( ! function_exists( 'fp_product_link' ) ) {
+  function fp_product_link( $id, $url, $label, $attrs = '' ) {
+    $safe = esc_html( $label );
+    if ( (int) $id >= FP_LINK_MIN_ID && $url ) {
+      return '<a href="' . esc_url( $url ) . '"' . ( $attrs ? ' ' . $attrs : '' ) . '>' . $safe . '</a>';
+    }
+    return $safe;
+  }
+}
+
+/* SVG icons (inline) */
+$FP_SVG_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>';
+$FP_SVG_STAR  = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.5 1.6 6.7L12 17l-6.2 3.6 1.6-6.7L2.2 8.9l6.9-.6L12 2z"/></svg>';
+$FP_SVG_EXT   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>';
+$FP_SVG_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+$FP_SVG_CHEV  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+
+/* ═════════════════════════════════════════════════════════════════════
+   5) CHARGEMENT DES DONNÉES
+   ═════════════════════════════════════════════════════════════════════ */
+$pid       = ( ! empty( $FP_TEST_ID ) && get_post_status( $FP_TEST_ID ) ) ? (int) $FP_TEST_ID : get_the_ID();
+if ( ! empty( $FP_TEST_ID ) && $pid == $FP_TEST_ID ) {
+  global $post;
+  $post = get_post( $pid );
+  setup_postdata( $post );
+}
+$post_type = get_post_type( $pid );
+$brand     = get_field( $FP_BRAND, $pid ) ?: '';
+$model     = get_field( $FP_MODEL, $pid ) ?: '';
+$product_name = trim( $brand . ' ' . $model );
+if ( $product_name === '' ) $product_name = get_the_title( $pid );
+
+$subtitle  = get_field( $FP_SUBTITLE, $pid ) ?: '';
+$summary   = get_field( $FP_SUMMARY, $pid ) ?: '';
+$verdict   = get_field( $FP_VERDICT, $pid ) ?: '';
+$audience  = get_field( $FP_AUDIENCE, $pid ) ?: '';
+
+$score_raw = get_field( $FP_SCORE, $pid );
+$score     = function_exists( 'get_acf_score_divided_by_10' )
+  ? get_acf_score_divided_by_10( $pid )
+  : ( function_exists( 'mt5_num' ) ? mt5_num( $score_raw ) / 10 : ( is_numeric( $score_raw ) ? round( $score_raw / 10, 1 ) : '' ) );
+$score_lbl = function_exists( 'get_acf_score_label' )
+  ? get_acf_score_label( $pid )
+  : ( is_numeric( $score ) ? fp_score_label( $score ) : '' );
+
+$score_avis = get_field( $FP_SCORE_AVIS, $pid ) ?: '';
+$nb_avis    = get_field( $FP_NB_AVIS, $pid ) ?: '';
+$nb_avis_fmt = function_exists( 'mt5_reviews_label' ) ? mt5_reviews_label( $nb_avis ) : ( (int) $nb_avis > 0 ? number_format( (int) $nb_avis, 0, ',', ' ' ) . ' avis' : '' );
+
+$price_raw = get_field( $FP_PRICE, $pid );
+$price_num = function_exists( 'mt5_num' ) ? mt5_num( $price_raw ) : (float) $price_raw;
+$price_fmt = fp_format_price( $price_num );
+
+$asin = get_field( $FP_ASIN, $pid ) ?: '';
+
+$criteria = get_field( $FP_CRITERIA, $pid ) ?: array();
+$fp_cur_criteria = array();
+if ( ! empty( $criteria ) && is_array( $criteria ) ) {
+  foreach ( $criteria as $ccr ) {
+    $ccl = isset( $ccr[ $FP_CRIT_LBL ] ) ? trim( $ccr[ $FP_CRIT_LBL ] ) : '';
+    $ccv = isset( $ccr[ $FP_CRIT_VAL ] ) ? round( (float) $ccr[ $FP_CRIT_VAL ] / 10, 1 ) : 0;
+    if ( $ccl !== '' && $ccv > 0 ) $fp_cur_criteria[ $ccl ] = $ccv;
+  }
+}
+
+$pros = function_exists( 'mt5_points' )
+  ? mt5_points( $FP_PROS, $pid, $FP_PROS_SUB )
+  : array();
+$cons = function_exists( 'mt5_points' )
+  ? mt5_points( $FP_CONS, $pid, $FP_CONS_SUB )
+  : array();
+
+$specs = array();
+if ( function_exists( 'mt5_specs' ) ) {
+  $specs = mt5_specs( $FP_SPECS, $pid, $FP_SPEC_LBL, $FP_SPEC_VAL );
+} else {
+  $sp_rows = get_field( $FP_SPECS, $pid );
+  if ( ! empty( $sp_rows ) && is_array( $sp_rows ) ) {
+    foreach ( $sp_rows as $sp_r ) {
+      $sl = isset( $sp_r[ $FP_SPEC_LBL ] ) ? trim( $sp_r[ $FP_SPEC_LBL ] ) : '';
+      $sv = isset( $sp_r[ $FP_SPEC_VAL ] ) ? trim( $sp_r[ $FP_SPEC_VAL ] ) : '';
+      if ( $sl !== '' && $sv !== '' ) $specs[] = array( $sl, $sv );
+    }
+  }
+}
+
+/* Offres */
+$offers     = array();
+$link_fs    = array( $FP_LINK_1, $FP_LINK_2, $FP_LINK_3 );
+$text_fs    = array( $FP_TEXT_1, $FP_TEXT_2, $FP_TEXT_3 );
+if ( ! empty( $asin ) ) {
+  $offers[] = array(
+    'url'  => 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=' . $FP_AMAZON_TAG,
+    'text' => 'Voir sur Amazon',
+    'name' => 'Amazon',
+  );
+}
+for ( $i = 0; $i < 3; $i++ ) {
+  $lnk = get_field( $link_fs[ $i ], $pid );
+  $txt = get_field( $text_fs[ $i ], $pid );
+  if ( ! empty( $lnk ) ) {
+    $nm = function_exists( 'mt5_merchant_name' ) ? mt5_merchant_name( $lnk ) : fp_merchant_name( $lnk );
+    $offers[] = array( 'url' => $lnk, 'text' => $txt ?: 'Voir l\'offre', 'name' => $nm );
+  }
+}
+
+/* Image produit */
+$hero_img = get_the_post_thumbnail_url( $pid, 'large' );
+if ( empty( $hero_img ) ) {
+  $ext = get_field( $FP_IMG_EXT, $pid );
+  if ( is_array( $ext ) && ! empty( $ext['url'] ) ) $hero_img = $ext['url'];
+  elseif ( is_string( $ext ) && $ext !== '' ) $hero_img = $ext;
+}
+
+$mod_date   = get_the_modified_date( 'j F Y' );
+
+/* Contenu éditorial */
+$review_html = apply_filters( 'the_content', get_post_field( 'post_content', $pid ) );
+
+/* Historique des prix */
+$ph_raw_str    = get_field( $FP_PRICE_HIST, $pid ) ?: '';
+$ph_vals       = array();
+if ( $ph_raw_str !== '' ) {
+  $ph_parts = array_map( 'trim', explode( "\xc2\xa4", $ph_raw_str ) );
+  $ph_parts = array_filter( $ph_parts, function( $v ) { return is_numeric( $v ) && (float) $v > 0; } );
+  if ( count( $ph_parts ) === 6 ) {
+    $ph_vals = array_reverse( array_map( 'floatval', array_values( $ph_parts ) ) );
+  }
+}
+
+/* Taxonomie type produit */
+$type_terms = wp_get_post_terms( $pid, $FP_TAX_TYPE, array( 'fields' => 'ids' ) );
+if ( is_wp_error( $type_terms ) ) $type_terms = array();
+$type_names = wp_get_post_terms( $pid, $FP_TAX_TYPE, array( 'fields' => 'names' ) );
+$type_label = ( ! is_wp_error( $type_names ) && ! empty( $type_names ) ) ? $type_names[0] : '';
+
+/* Alternatives dynamiques */
+$alt_premium_id = 0;
+$alt_budget_id  = 0;
+if ( ! empty( $type_terms ) && $price_num > 0 ) {
+  $alt_base = array(
+    'post_type'      => $post_type,
+    'post__not_in'   => array( $pid ),
+    'post_status'    => 'publish',
+    'posts_per_page' => 1,
+    'tax_query'      => array( array( 'taxonomy' => $FP_TAX_TYPE, 'terms' => $type_terms ) ),
+    'meta_key'       => $FP_SCORE,
+    'orderby'        => 'meta_value_num',
+    'order'          => 'DESC',
+  );
+  $pq = new WP_Query( array_merge( $alt_base, array(
+    'meta_query' => array( array( 'key' => $FP_PRICE, 'value' => $price_num, 'compare' => '>', 'type' => 'NUMERIC' ) ),
+  ) ) );
+  if ( $pq->have_posts() ) { $pq->the_post(); $alt_premium_id = get_the_ID(); wp_reset_postdata(); }
+  $bq = new WP_Query( array_merge( $alt_base, array(
+    'meta_query' => array( array( 'key' => $FP_PRICE, 'value' => $price_num, 'compare' => '<', 'type' => 'NUMERIC' ) ),
+  ) ) );
+  if ( $bq->have_posts() ) { $bq->the_post(); $alt_budget_id = get_the_ID(); wp_reset_postdata(); }
+}
+
+/* ── Queries conditionnelles ── */
+
+/* Comparatifs où ce produit apparaît */
+$fp_comparatifs = array();
+{
+  $cq = new WP_Query( array(
+    'post_type'      => $FP_COMPARATIF_CPT,
+    'posts_per_page' => 5,
+    'post_status'    => 'publish',
+    'meta_query'     => array( array( 'key' => $FP_COMP_FIELD, 'value' => '"' . $pid . '"', 'compare' => 'LIKE' ) ),
+  ) );
+  if ( $cq->have_posts() ) {
+    while ( $cq->have_posts() ) {
+      $cq->the_post();
+      $cid      = get_the_ID();
+      $products = get_field( $FP_COMP_FIELD, $cid );
+      $rank     = 0;
+      if ( is_array( $products ) ) {
+        foreach ( $products as $idx => $p ) {
+          $p_id = is_object( $p ) ? $p->ID : (int) $p;
+          if ( $p_id == $pid ) { $rank = $idx + 1; break; }
+        }
+      }
+      $fp_comparatifs[] = array(
+        'id'      => $cid,
+        'title'   => get_the_title( $cid ),
+        'url'     => get_permalink( $cid ),
+        'thumb'   => get_the_post_thumbnail_url( $cid, 'medium' ),
+        'excerpt' => wp_trim_words( get_the_excerpt( $cid ), 20, '…' ),
+        'rank'    => $rank,
+      );
+    }
+    wp_reset_postdata();
+  }
+}
+
+/* Idealo URL */
+$fp_idealo_url = '';
+if ( $price_fmt !== '' ) {
+  $idealo_slug = sanitize_title( $product_name );
+  $fp_idealo_url = 'https://www.idealo.fr/prechcat.html?q=' . $idealo_slug;
+}
+
+/* Reference comparatif for sidebar */
+$fp_ref_comp = null;
+if ( ! empty( $type_terms ) ) {
+  $rcq = new WP_Query( array(
+    'post_type'      => $FP_COMPARATIF_CPT,
+    'post_status'    => 'publish',
+    'posts_per_page' => 1,
+    'tax_query'      => array( array( 'taxonomy' => $FP_TAX_TYPE, 'terms' => $type_terms ) ),
+    'orderby'        => 'date',
+    'order'          => 'DESC',
+  ) );
+  if ( $rcq->have_posts() ) {
+    $rcq->the_post();
+    $fp_ref_comp = array(
+      'title' => get_the_title(),
+      'url'   => get_permalink(),
+    );
+    wp_reset_postdata();
+  }
+}
+
+/* Produits similaires / même prix / même marque */
+$fp_similar    = array();
+$fp_same_price = array();
+$fp_brand_top  = array();
+
+$need_type_q = ( in_array( 'carousel_similar', $FP_BLOCKS, true )
+  || in_array( 'carousel_price', $FP_BLOCKS, true )
+  || $FP_SHOW_SIDEBAR || $FP_SHOW_GUIDES );
+
+if ( $need_type_q && ! empty( $type_terms ) ) {
+  $base_args = array(
+    'post_type'      => $post_type,
+    'post__not_in'   => array( $pid ),
+    'post_status'    => 'publish',
+    'posts_per_page' => $FP_CAROUSEL_MAX,
+    'tax_query'      => array( array( 'taxonomy' => $FP_TAX_TYPE, 'terms' => $type_terms ) ),
+    'meta_key'       => $FP_SCORE,
+    'orderby'        => 'meta_value_num',
+    'order'          => 'DESC',
+  );
+
+  if ( in_array( 'carousel_similar', $FP_BLOCKS, true ) ) {
+    $sq = new WP_Query( $base_args );
+    while ( $sq->have_posts() ) {
+      $sq->the_post();
+      $sid = get_the_ID();
+      $d = fp_product_data( $sid, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+      $d['id']  = $sid;
+      $d['url'] = get_permalink( $sid );
+      $fp_similar[] = $d;
+    }
+    wp_reset_postdata();
+  }
+
+  if ( in_array( 'carousel_price', $FP_BLOCKS, true ) && $price_num > 0 ) {
+    $pq_args = $base_args;
+    $pq_args['meta_query'] = array(
+      array( 'key' => $FP_PRICE, 'value' => array( $price_num * ( 1 - $FP_PRICE_RANGE ), $price_num * ( 1 + $FP_PRICE_RANGE ) ), 'type' => 'NUMERIC', 'compare' => 'BETWEEN' ),
+    );
+    $pq = new WP_Query( $pq_args );
+    while ( $pq->have_posts() ) {
+      $pq->the_post();
+      $sid = get_the_ID();
+      $d = fp_product_data( $sid, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+      $d['id']    = $sid;
+      $d['url']   = get_permalink( $sid );
+      $d['delta'] = $d['price'] - $price_num;
+      $fp_same_price[] = $d;
+    }
+    wp_reset_postdata();
+  }
+}
+
+if ( in_array( 'carousel_brand', $FP_BLOCKS, true ) && $brand !== '' ) {
+  $bq = new WP_Query( array(
+    'post_type'      => $post_type,
+    'post_status'    => 'publish',
+    'posts_per_page' => $FP_CAROUSEL_MAX + 1,
+    'meta_query'     => array( array( 'key' => $FP_BRAND, 'value' => $brand, 'compare' => '=' ) ),
+    'meta_key'       => $FP_SCORE,
+    'orderby'        => 'meta_value_num',
+    'order'          => 'DESC',
+  ) );
+  $brank = 0;
+  while ( $bq->have_posts() ) {
+    $bq->the_post();
+    $brank++;
+    $sid = get_the_ID();
+    $d = fp_product_data( $sid, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+    $d['id']      = $sid;
+    $d['url']     = get_permalink( $sid );
+    $d['rank']    = $brank;
+    $d['current'] = ( $sid == $pid );
+    $fp_brand_top[] = $d;
+  }
+  wp_reset_postdata();
+}
+
+/* Ranking sidebar */
+$fp_ranking    = array();
+$fp_rank_total = 0;
+if ( $FP_SHOW_SIDEBAR && ! empty( $type_terms ) ) {
+  $rq = new WP_Query( array(
+    'post_type'      => $post_type,
+    'post_status'    => 'publish',
+    'posts_per_page' => $FP_RANK_MAX,
+    'tax_query'      => array( array( 'taxonomy' => $FP_TAX_TYPE, 'terms' => $type_terms ) ),
+    'meta_key'       => $FP_SCORE,
+    'orderby'        => 'meta_value_num',
+    'order'          => 'DESC',
+  ) );
+  $fp_rank_total = $rq->found_posts;
+  $rk = 0;
+  while ( $rq->have_posts() ) {
+    $rq->the_post();
+    $rk++;
+    $sid = get_the_ID();
+    $d = fp_product_data( $sid, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+    $d['id']      = $sid;
+    $d['url']     = get_permalink( $sid );
+    $d['rank']    = $rk;
+    $d['current'] = ( $sid == $pid );
+    $fp_ranking[] = $d;
+  }
+  wp_reset_postdata();
+}
+
+/* Guides associés */
+$fp_guides = array();
+if ( $FP_SHOW_GUIDES && ! empty( $type_terms ) ) {
+  $gq = new WP_Query( array(
+    'post_type'      => $FP_COMPARATIF_CPT,
+    'post_status'    => 'publish',
+    'posts_per_page' => $FP_GUIDES_MAX,
+    'tax_query'      => array( array( 'taxonomy' => $FP_TAX_TYPE, 'terms' => $type_terms ) ),
+  ) );
+  while ( $gq->have_posts() ) {
+    $gq->the_post();
+    $gid = get_the_ID();
+    $fp_guides[] = array(
+      'id'      => $gid,
+      'title'   => get_the_title( $gid ),
+      'url'     => get_permalink( $gid ),
+      'thumb'   => get_the_post_thumbnail_url( $gid, 'medium' ),
+      'excerpt' => wp_trim_words( get_the_excerpt( $gid ), 18, '…' ),
+      'cat'     => ( ! empty( $type_label ) ) ? $type_label : '',
+    );
+  }
+  wp_reset_postdata();
+}
+
+/* VS alternatives (premium + budget) */
+$fp_vs_list = array();
+if ( in_array( 'vs', $FP_BLOCKS, true ) ) {
+  $vs_candidates = array();
+  if ( $alt_premium_id > 0 ) $vs_candidates[] = $alt_premium_id;
+  if ( $alt_budget_id > 0 )  $vs_candidates[] = $alt_budget_id;
+  foreach ( $vs_candidates as $vc_id ) {
+    $vd = fp_product_data( $vc_id, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
+    $vd['id']         = $vc_id;
+    $vd['url']        = get_permalink( $vc_id );
+    $vd['score_avis'] = get_field( $FP_SCORE_AVIS, $vc_id ) ?: '';
+    $vd['nb_avis']    = get_field( $FP_NB_AVIS, $vc_id ) ?: '';
+    $vd['summary']    = get_field( $FP_SUMMARY, $vc_id ) ?: '';
+    $vd_crit_raw      = get_field( $FP_CRITERIA, $vc_id ) ?: array();
+    $vd['criteria']   = array();
+    if ( ! empty( $vd_crit_raw ) && is_array( $vd_crit_raw ) ) {
+      foreach ( $vd_crit_raw as $vcr ) {
+        $vl = isset( $vcr[ $FP_CRIT_LBL ] ) ? trim( $vcr[ $FP_CRIT_LBL ] ) : '';
+        $vv = isset( $vcr[ $FP_CRIT_VAL ] ) ? round( (float) $vcr[ $FP_CRIT_VAL ] / 10, 1 ) : 0;
+        if ( $vl !== '' && $vv > 0 ) $vd['criteria'][ $vl ] = $vv;
+      }
+    }
+    if ( $vd['score'] > 0 ) $fp_vs_list[] = $vd;
+  }
+}
+
+/* UID unique pour les IDs HTML */
+$fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
+
+
+/* ═════════════════════════════════════════════════════════════════════
+   6) RENDU HTML — CONTENU
+   ═════════════════════════════════════════════════════════════════════ */
 ?>
+<div class="fp-avis">
 
   <?php /* ════════════ BODY ════════════ */ ?>
   <div class="fp-body">
@@ -334,7 +872,7 @@ extract( $GLOBALS['fp_data'] );
           </div>
           <div class="fp-carousel"><div class="fp-carousel-track">
             <?php foreach ( $fp_similar as $s ) :
-              $s_link = ( (int) $s['id'] >= $FP_LINK_MIN_ID );
+              $s_link = ( (int) $s['id'] >= FP_LINK_MIN_ID );
             ?>
             <<?php echo $s_link ? 'a' : 'div'; ?> class="fp-mini-card"<?php if ( $s_link ) echo ' href="' . esc_url( $s['url'] ) . '"'; ?>>
               <div class="mthumb"><?php if ( ! empty( $s['img'] ) ) : ?><img src="<?php echo esc_url( $s['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"><?php endif; ?></div>
@@ -360,7 +898,7 @@ extract( $GLOBALS['fp_data'] );
           </div>
           <div class="fp-carousel"><div class="fp-carousel-track">
             <?php foreach ( $fp_same_price as $s ) :
-              $s_link = ( (int) $s['id'] >= $FP_LINK_MIN_ID );
+              $s_link = ( (int) $s['id'] >= FP_LINK_MIN_ID );
             ?>
             <<?php echo $s_link ? 'a' : 'div'; ?> class="fp-mini-card"<?php if ( $s_link ) echo ' href="' . esc_url( $s['url'] ) . '"'; ?>>
               <div class="mthumb"><?php if ( ! empty( $s['img'] ) ) : ?><img src="<?php echo esc_url( $s['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"><?php endif; ?></div>
@@ -397,7 +935,7 @@ extract( $GLOBALS['fp_data'] );
           </div>
           <div class="fp-carousel"><div class="fp-carousel-track">
             <?php foreach ( $fp_brand_top as $s ) :
-              $s_link = ( (int) $s['id'] >= $FP_LINK_MIN_ID );
+              $s_link = ( (int) $s['id'] >= FP_LINK_MIN_ID );
             ?>
             <<?php echo $s_link ? 'a' : 'div'; ?> class="fp-mini-card<?php echo $s['current'] ? ' current' : ''; ?>"<?php if ( $s_link ) echo ' href="' . esc_url( $s['url'] ) . '"'; ?>>
               <span class="fp-mini-badge <?php echo fp_medal( $s['rank'] ); ?>"><?php echo $s['rank']; ?></span>
@@ -474,7 +1012,7 @@ extract( $GLOBALS['fp_data'] );
   </section>
   <?php endif; ?>
 
-</div><?php /* /fp-avis */ ?>
+</div><?php /* /fp-avis (content) */ ?>
 
 <script>
 (function(){

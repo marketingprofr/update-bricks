@@ -156,12 +156,11 @@ if ( ! function_exists( 'fp_product_data' ) ) {
   }
 }
 
-$FP_LINK_MIN_ID = 250000;
+if ( ! defined( 'FP_LINK_MIN_ID' ) ) define( 'FP_LINK_MIN_ID', 250000 );
 if ( ! function_exists( 'fp_product_link' ) ) {
   function fp_product_link( $id, $url, $label, $attrs = '' ) {
-    $min = isset( $GLOBALS['fp_data']['FP_LINK_MIN_ID'] ) ? (int) $GLOBALS['fp_data']['FP_LINK_MIN_ID'] : 250000;
     $safe = esc_html( $label );
-    if ( (int) $id >= $min && $url ) {
+    if ( (int) $id >= FP_LINK_MIN_ID && $url ) {
       return '<a href="' . esc_url( $url ) . '"' . ( $attrs ? ' ' . $attrs : '' ) . '>' . $safe . '</a>';
     }
     return $safe;
@@ -574,47 +573,7 @@ if ( in_array( 'vs', $FP_BLOCKS, true ) ) {
 $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
 
 /* ═════════════════════════════════════════════════════════════════════
-   5b) EXPORT DES DONNÉES POUR avis-content.code.php
-   Les deux blocs Code Bricks tournent dans la même requête PHP,
-   donc $GLOBALS est partagé. Le bloc content fait extract() ci-dessous.
-   ═════════════════════════════════════════════════════════════════════ */
-$GLOBALS['fp_data'] = compact(
-  /* Section 1 — ordre d'affichage */
-  'FP_BLOCKS',
-  /* Blocs à position fixe */
-  'FP_SHOW_HERO', 'FP_SHOW_SIDEBAR', 'FP_SHOW_GUIDES',
-  /* Section 2 — champs ACF */
-  'FP_BRAND', 'FP_MODEL', 'FP_SUBTITLE', 'FP_SUMMARY', 'FP_SCORE', 'FP_SCORE_AVIS',
-  'FP_NB_AVIS', 'FP_PRICE', 'FP_ASIN',
-  'FP_LINK_1', 'FP_LINK_2', 'FP_LINK_3', 'FP_TEXT_1', 'FP_TEXT_2', 'FP_TEXT_3',
-  'FP_PROS', 'FP_PROS_SUB', 'FP_CONS', 'FP_CONS_SUB',
-  'FP_SPECS', 'FP_SPEC_LBL', 'FP_SPEC_VAL',
-  'FP_VERDICT', 'FP_AUDIENCE', 'FP_IMG_EXT',
-  'FP_CRITERIA', 'FP_CRIT_LBL', 'FP_CRIT_VAL', 'FP_PRICE_HIST',
-  /* Section 3 — limites & config */
-  'FP_TEST_ID', 'FP_RANK_MAX', 'FP_RANK_VISIBLE', 'FP_CAROUSEL_MAX', 'FP_GUIDES_MAX',
-  'FP_AMAZON_TAG', 'FP_TAX_TYPE', 'FP_COMPARATIF_CPT', 'FP_COMP_FIELD',
-  'FP_PRICE_RANGE', 'FP_COMP_VISIBLE', 'FP_TAX_ATTR', 'FP_EYEBROW',
-  /* Helpers — seuils */
-  'FP_LINK_MIN_ID',
-  /* SVG icons */
-  'FP_SVG_CHECK', 'FP_SVG_STAR', 'FP_SVG_EXT', 'FP_SVG_ARROW', 'FP_SVG_CHEV',
-  /* Données chargées */
-  'pid', 'product_name', 'brand', 'model', 'subtitle', 'summary', 'verdict', 'audience',
-  'score', 'score_lbl', 'score_raw', 'score_avis', 'nb_avis', 'nb_avis_fmt',
-  'price_num', 'price_fmt', 'asin',
-  'criteria', 'fp_cur_criteria', 'pros', 'cons', 'specs', 'offers',
-  'hero_img', 'mod_date', 'review_html', 'ph_vals',
-  'type_terms', 'type_label', 'alt_premium_id', 'alt_budget_id',
-  'fp_comparatifs', 'fp_best_rank', 'fp_best_comp', 'fp_badge_label',
-  'fp_idealo_url', 'fp_ref_comp', 'fp_similar', 'fp_same_price', 'fp_brand_top',
-  'fp_ranking', 'fp_rank_total', 'fp_guides', 'fp_vs_list', 'fp_uid',
-  'post_type'
-);
-
-/* ═════════════════════════════════════════════════════════════════════
    6) RENDU HTML — HERO
-   (le wrapper .fp-avis est ouvert ici et fermé dans avis-content)
    ═════════════════════════════════════════════════════════════════════ */
 ?>
 <div class="fp-avis">
@@ -716,3 +675,4 @@ $GLOBALS['fp_data'] = compact(
     </div>
   </section>
   <?php endif; /* /HERO */ ?>
+</div><?php /* /fp-avis (hero) */ ?>
