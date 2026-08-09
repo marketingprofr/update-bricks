@@ -12,9 +12,9 @@
 .fp-side { position: sticky; top: 20px; }
 .fp-stitle { font-family: "Source Serif 4", Georgia, serif; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 14px; line-height: 1.15; }
 h1.fp-stitle { font-size: clamp(22px,2.6vw,28px); }
-h2.fp-stitle { font-size: clamp(22px,2.5vw,27px); }
-h3.fp-stitle { font-size: clamp(17px,1.9vw,20px); }
-h2.fp-stitle.lead { font-size: clamp(22px,2.6vw,28px); }
+h2.fp-stitle { font-size: clamp(24px,2.8vw,30px); }
+h3.fp-stitle { font-size: clamp(19px,2.2vw,23px); }
+h2.fp-stitle.lead { font-size: clamp(24px,2.8vw,30px); }
 
 /* ============================================================
    REVIEW (contenu éditorial the_content)
@@ -23,8 +23,8 @@ h2.fp-stitle.lead { font-size: clamp(22px,2.6vw,28px); }
 .fp-review p b { color: var(--ink); font-weight: 600; }
 .fp-review blockquote,
 .fp-review .quote { border-left: 3px solid var(--accent); padding: 12px 18px; margin: 18px 0; font-style: italic; color: var(--ink); font-size: 15px; line-height: 1.6; background: var(--accent-soft); border-radius: 0 8px 8px 0; }
-.fp-review h2 { font-family: "Source Serif 4", Georgia, serif; font-size: 20px; font-weight: 600; margin: 26px 0 12px; letter-spacing: -0.015em; }
-.fp-review h3 { font-size: 17px; font-weight: 600; margin: 22px 0 10px; letter-spacing: -0.01em; }
+.fp-review h2 { font-family: "Source Serif 4", Georgia, serif; font-size: 23px; font-weight: 600; margin: 26px 0 12px; letter-spacing: -0.015em; }
+.fp-review h3 { font-size: 19px; font-weight: 600; margin: 22px 0 10px; letter-spacing: -0.01em; }
 .fp-review h4 { font-size: 15px; font-weight: 600; margin: 18px 0 8px; }
 .fp-review ul, .fp-review ol { padding-left: 22px; margin: 10px 0; }
 .fp-review li { font-size: 15px; line-height: 1.7; color: var(--ink-2); margin-bottom: 4px; }
