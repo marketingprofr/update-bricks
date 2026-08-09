@@ -5,6 +5,127 @@ $post_type = get_post_type($this_id);
 $total_avis = !empty($top_avis_ids) ? count($top_avis_ids) : 0;
 $mod = date_i18n('j F Y', get_the_modified_time('U'));
 
+if ( ! function_exists( 'mt_intro_reco' ) ) {
+  /* Phrase de recommandation dynamique en fin d'intro : n°1 du classement
+     + second produit (le meilleur pas cher s'il existe, sinon le rang 2).
+     Variantes déterministes tirées des chiffres de l'ID du comparatif :
+     dernier chiffre -> accroche, avant-dernier -> phrase n°1,
+     antépénultième -> phrase budget/alternative (10 variantes chacune). */
+  function mt_intro_reco( $page_id, $ids, $type_plur ) {
+    $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
+    if ( count( $ids ) < 2 ) { return ''; }
+
+    /* Données produits : nom + prix */
+    $prods = array();
+    foreach ( $ids as $i => $pid ) {
+      $brand = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
+      $model = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
+      if ( $model === '' ) { $model = (string) get_the_title( $pid ); }
+      $name = trim( $brand . ' ' . $model );
+      $raw  = get_field( 'mltv5_prix_indicatif', $pid );
+      $c    = str_replace( array( ' ', "\xc2\xa0", '€' ), '', (string) $raw );
+      $c    = str_replace( ',', '.', $c );
+      $prods[] = array( 'rank' => $i + 1, 'name' => $name, 'price' => is_numeric( $c ) ? (float) $c : 0.0 );
+    }
+    if ( $prods[0]['name'] === '' ) { return ''; }
+
+    /* Second produit : le moins cher hors n°1 (si >= 2 prix et vraiment moins
+       cher que le n°1), sinon le rang 2 en simple alternative. */
+    $n_price = 0; $budget = null;
+    foreach ( $prods as $p ) {
+      if ( $p['price'] > 0 ) {
+        $n_price++;
+        if ( $p['rank'] !== 1 && ( $budget === null || $p['price'] < $budget['price'] ) ) { $budget = $p; }
+      }
+    }
+    $is_budget = ( $n_price >= 2 && $budget !== null && $budget['name'] !== ''
+      && ( $prods[0]['price'] <= 0 || $budget['price'] < $prods[0]['price'] ) );
+    $second = $is_budget ? $budget : $prods[1];
+    if ( $second['name'] === '' ) { $second = null; }
+
+    /* Liens vers les avis détaillés (ancres #produit-n-{rang}) */
+    $p1 = '<a href="#produit-n-1">' . esc_html( $prods[0]['name'] ) . '</a>';
+    $p2 = '';
+    if ( $second ) {
+      $p2 = '<a href="#produit-n-' . (int) $second['rank'] . '">' . esc_html( $second['name'] ) . '</a>';
+      if ( $is_budget && $second['price'] > 0 ) {
+        $p2 .= ' (environ ' . number_format( $second['price'], 0, ',', "\xc2\xa0" ) . "\xc2\xa0€)";
+      }
+    }
+
+    $type  = trim( (string) $type_plur );
+    $parmi = $type !== '' ? 'parmi les ' . esc_html( mb_strtolower( $type, 'UTF-8' ) ) : 'de ce comparatif';
+
+    /* Chiffres de l'ID, de droite à gauche */
+    $s  = (string) abs( (int) $page_id );
+    $d1 = (int) substr( $s, -1 );
+    $d2 = strlen( $s ) >= 2 ? (int) substr( $s, -2, 1 ) : 0;
+    $d3 = strlen( $s ) >= 3 ? (int) substr( $s, -3, 1 ) : 0;
+
+    /* 1) Accroche (ponctuation incluse) */
+    $hooks = array(
+      'Si vous êtes pressé, ',
+      'Pour aller droit au but, ',
+      'En deux mots, ',
+      'Si vous n\'avez qu\'une minute, ',
+      'Pour faire simple, ',
+      'À retenir : ',
+      'L\'essentiel en bref : ',
+      'Verdict express : ',
+      'Sans suspense, ',
+      'Pour résumer, ',
+    );
+
+    /* 2) Recommandation du n°1 (%1$s = produit, %2$s = « parmi les {type} ») */
+    $mains = array(
+      '%1$s est notre coup de cœur %2$s',
+      '%1$s s\'impose en tête de ce comparatif',
+      '%1$s domine notre classement',
+      '%1$s reste notre recommandation numéro un',
+      '%1$s arrive en tête de notre sélection',
+      '%1$s décroche la première place de nos tests',
+      '%1$s est notre valeur sûre %2$s',
+      '%1$s remporte notre préférence cette année',
+      '%1$s signe le meilleur bilan de notre comparatif',
+      '%1$s sort vainqueur de nos essais',
+    );
+
+    /* 3a) Second produit, version « meilleur pas cher » */
+    $budgets = array(
+      'Si votre budget est serré, %s offre le meilleur rapport qualité-prix.',
+      'Côté petit budget, %s est l\'option la plus abordable de notre sélection.',
+      'Pour dépenser moins, %s fait le travail sans vous ruiner.',
+      'Les budgets serrés se tourneront vers %s, le choix le plus économique.',
+      'À prix plus doux, %s constitue une excellente alternative.',
+      'Envie d\'économiser ? %s est la meilleure option à petit prix.',
+      'Pour un investissement plus léger, %s reste une valeur sûre.',
+      'Si le prix compte avant tout, %s est l\'alternative la plus accessible.',
+      'Petit budget ? %s offre l\'essentiel pour moins cher.',
+      'En version plus économique, %s tire son épingle du jeu.',
+    );
+
+    /* 3b) Second produit, version « alternative » (pas de comparaison de prix possible) */
+    $alts = array(
+      'Si vous hésitez encore, %s constitue une solide alternative.',
+      '%s mérite aussi le détour en second choix.',
+      'En alternative sérieuse, %s a également convaincu notre équipe.',
+      'Juste derrière, %s complète le podium avec brio.',
+      'Autre option remarquée : %s, très proche au classement.',
+      'Dans son sillage, %s s\'illustre également.',
+      'Pour varier, %s représente un second choix pertinent.',
+      'À considérer aussi : %s, qui a marqué des points lors de nos tests.',
+      'En challenger, %s ne démérite pas.',
+      'Notre second favori ? %s, tout simplement.',
+    );
+
+    $out = $hooks[ $d1 ] . sprintf( $mains[ $d2 ], $p1, $parmi ) . '.';
+    if ( $p2 !== '' ) {
+      $out .= ' ' . sprintf( $is_budget ? $budgets[ $d3 ] : $alts[ $d3 ], $p2 );
+    }
+    return '<p class="mt-lede-reco">' . $out . '</p>';
+  }
+}
+
 if ( ! function_exists( 'mt_bold_intro' ) ) {
   function mt_bold_intro( $html, $vars ) {
     $ts  = mb_strtolower( trim( isset( $vars['sing'] ) ? $vars['sing'] : '' ), 'UTF-8' );
@@ -141,7 +262,10 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     'plur' => $type_de_produit_au_pluriel ?? '',
     'llm'  => $lalalesmeilleur ?? '',
     'mf'   => $masculinsfeminins ?? '',
-  ) ); ?></div>
+  ) );
+  if ( $post_type === 'comparatif' ) {
+      echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '' );
+  } ?></div>
 
   <div class="mt-photo">
     <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img')); ?>
