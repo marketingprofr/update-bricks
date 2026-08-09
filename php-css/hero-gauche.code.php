@@ -11,7 +11,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
      Variantes déterministes tirées des chiffres de l'ID du comparatif :
      dernier chiffre -> accroche, avant-dernier -> phrase n°1,
      antépénultième -> phrase budget/alternative (10 variantes chacune). */
-  function mt_intro_reco( $page_id, $ids, $type_plur ) {
+  function mt_intro_reco( $page_id, $ids, $type_plur, $llm = '' ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
     if ( count( $ids ) < 2 ) { return ''; }
 
@@ -56,71 +56,79 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     $type  = trim( (string) $type_plur );
     $parmi = $type !== '' ? 'parmi les ' . esc_html( mb_strtolower( $type, 'UTF-8' ) ) : 'de ce comparatif';
 
+    /* Accord en nombre : « les meilleur(e)s » -> le produit se conjugue au
+       pluriel (croquettes, couches…). $v( singulier, pluriel ). */
+    $pl = ( mb_stripos( trim( (string) $llm ), 'les ' ) === 0 );
+    $v  = function ( $sing, $plur ) use ( $pl ) { return $pl ? $plur : $sing; };
+
     /* Chiffres de l'ID, de droite à gauche */
     $s  = (string) abs( (int) $page_id );
     $d1 = (int) substr( $s, -1 );
     $d2 = strlen( $s ) >= 2 ? (int) substr( $s, -2, 1 ) : 0;
     $d3 = strlen( $s ) >= 3 ? (int) substr( $s, -3, 1 ) : 0;
 
-    /* 1) Accroche (ponctuation incluse) */
+    /* 1) Accroche (ponctuation incluse, jamais de « : ») */
     $hooks = array(
-      'Si vous êtes pressé, ',
-      'Pour aller droit au but, ',
-      'En deux mots, ',
-      'Si vous n\'avez qu\'une minute, ',
       'Pour faire simple, ',
-      'À retenir : ',
-      'L\'essentiel en bref : ',
-      'Verdict express : ',
+      'Pour faire court, ',
       'Sans suspense, ',
-      'Pour résumer, ',
+      'Pour aller à l\'essentiel, ',
+      'Disons-le d\'emblée, ',
+      'Pour ne rien vous cacher, ',
+      'Inutile de faire durer le suspense, ',
+      'Avant d\'entrer dans le détail, ',
+      'Disons-le sans détour, ',
+      'Si vous cherchez une réponse rapide, ',
     );
 
-    /* 2) Recommandation du n°1 (%1$s = produit, %2$s = « parmi les {type} ») */
+    /* 2) Recommandation du n°1 (verbes accordés ; attributs invariables :
+       coup de cœur, numéro un, première place…) */
     $mains = array(
-      '%1$s est notre coup de cœur %2$s',
-      '%1$s s\'impose en tête de ce comparatif',
-      '%1$s domine notre classement',
-      '%1$s reste notre recommandation numéro un',
-      '%1$s arrive en tête de notre sélection',
-      '%1$s décroche la première place de notre comparatif',
-      '%1$s est notre valeur sûre %2$s',
-      '%1$s remporte notre préférence cette année',
-      '%1$s signe le meilleur bilan de notre comparatif',
-      '%1$s ressort grand vainqueur de ce guide d\'achat',
+      $p1 . ' ' . $v( 'est', 'sont' ) . ' notre coup de cœur ' . $parmi,
+      $p1 . ' ' . $v( 's\'impose', 's\'imposent' ) . ' en tête de ce comparatif',
+      $p1 . ' ' . $v( 'domine', 'dominent' ) . ' notre classement',
+      $p1 . ' ' . $v( 'arrive', 'arrivent' ) . ' en première position de notre sélection',
+      $p1 . ' ' . $v( 'décroche', 'décrochent' ) . ' la première place de notre classement',
+      'notre préférence va à ' . $p1 . ', numéro un de ce comparatif',
+      $p1 . ' ' . $v( 'obtient', 'obtiennent' ) . ' la meilleure note de ce comparatif',
+      'nous recommandons ' . $p1 . ' en priorité',
+      'notre choix se porte sur ' . $p1 . ', en tête du classement',
+      'difficile de faire mieux que ' . $p1 . ' dans ce comparatif',
     );
 
-    /* 3a) Second produit, version « meilleur pas cher » */
+    /* 3a) Second produit, version « moins cher » — uniquement des tournures
+       RELATIVES (moins cher, plus abordable…), valables à tout niveau de prix */
     $budgets = array(
-      'Si votre budget est serré, %s offre le meilleur rapport qualité-prix.',
-      'Côté petit budget, %s est l\'option la plus abordable de notre sélection.',
-      'Pour dépenser moins, %s fait le travail sans vous ruiner.',
-      'Les budgets serrés se tourneront vers %s, le choix le plus économique.',
-      'À prix plus doux, %s constitue une excellente alternative.',
-      'Envie d\'économiser ? %s est la meilleure option à petit prix.',
-      'Pour un investissement plus léger, %s reste une valeur sûre.',
-      'Si le prix compte avant tout, %s est l\'alternative la plus accessible.',
-      'Petit budget ? %s offre l\'essentiel pour moins cher.',
-      'En version plus économique, %s tire son épingle du jeu.',
+      'Si vous souhaitez dépenser moins, ' . $p2 . ' ' . $v( 'offre', 'offrent' ) . ' le meilleur rapport qualité-prix.',
+      'Pour alléger la facture, ' . $p2 . ' ' . $v( 'constitue', 'constituent' ) . ' une excellente alternative.',
+      'À budget plus serré, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'option la plus abordable de notre sélection.',
+      'Si le prix pèse dans la balance, ' . $p2 . ' ' . $v( 'propose', 'proposent' ) . ' l\'essentiel pour moins cher.',
+      'Pour un budget plus contenu, ' . $p2 . ' ' . $v( 'représente', 'représentent' ) . ' le meilleur compromis.',
+      'Si vous comptez dépenser moins, regardez du côté de ' . $p2 . '.',
+      'En alternative plus abordable, ' . $p2 . ' ' . $v( 'mérite', 'méritent' ) . ' le détour.',
+      'Pour dépenser moins sans sacrifier la qualité, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' un excellent choix.',
+      'Côté tarif, ' . $p2 . ' ' . $v( 'permet', 'permettent' ) . ' de dépenser moins sans grande concession.',
+      'Si votre priorité est le prix, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'alternative la plus accessible du classement.',
     );
 
-    /* 3b) Second produit, version « alternative » (pas de comparaison de prix possible) */
+    /* 3b) Second produit, version « alternative » (toujours le rang 2 ici,
+       donc « deuxième place » est factuel) */
     $alts = array(
-      'Si vous hésitez encore, %s constitue une solide alternative.',
-      '%s mérite aussi le détour en second choix.',
-      'En alternative sérieuse, %s a également convaincu notre équipe.',
-      'Juste derrière, %s complète le podium avec brio.',
-      'Autre option remarquée : %s, très proche au classement.',
-      'Dans son sillage, %s s\'illustre également.',
-      'Pour varier, %s représente un second choix pertinent.',
-      'À considérer aussi : %s, qui a marqué des points dans notre classement.',
-      'En challenger, %s ne démérite pas.',
-      'Notre second favori ? %s, tout simplement.',
+      'Si vous hésitez encore, ' . $p2 . ' ' . $v( 'constitue', 'constituent' ) . ' une solide alternative.',
+      'Juste derrière, ' . $p2 . ' ' . $v( 'mérite', 'méritent' ) . ' aussi votre attention.',
+      $p2 . ' ' . $v( 'tient', 'tiennent' ) . ' la deuxième place de notre classement.',
+      'En deuxième position, ' . $p2 . ' ' . $v( 'a', 'ont' ) . ' également convaincu notre équipe.',
+      'Autre valeur sûre, ' . $p2 . ' ' . $v( 'arrive', 'arrivent' ) . ' juste derrière.',
+      $p2 . ' ' . $v( 'complète', 'complètent' ) . ' notre duo de tête.',
+      'Autre option sérieuse, ' . $p2 . ' ' . $v( 'occupe', 'occupent' ) . ' la deuxième place.',
+      'Si notre numéro un ne vous convainc pas, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' une alternative crédible.',
+      'En deuxième position, ' . $p2 . ' ne ' . $v( 'démérite', 'déméritent' ) . ' pas.',
+      'Notre deuxième choix se porte sur ' . $p2 . '.',
     );
 
-    $out = $hooks[ $d1 ] . sprintf( $mains[ $d2 ], $p1, $parmi ) . '.';
+    $out = $hooks[ $d1 ] . $mains[ $d2 ] . '.';
     if ( $p2 !== '' ) {
-      $out .= ' ' . sprintf( $is_budget ? $budgets[ $d3 ] : $alts[ $d3 ], $p2 );
+      $out .= ' ' . ( $is_budget ? $budgets[ $d3 ] : $alts[ $d3 ] );
     }
     return '<p class="mt-lede-reco">' . $out . '</p>';
   }
@@ -264,7 +272,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     'mf'   => $masculinsfeminins ?? '',
   ) );
   if ( $post_type === 'comparatif' ) {
-      echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '' );
+      echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
   <div class="mt-photo">
