@@ -181,9 +181,11 @@ foreach ( $ids as $pid ) {
   $pos++;
 
   /* Identité */
+  $forced  = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $pid ) );
   $brand   = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
   $model   = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
-  $name    = $model !== '' ? $model : get_the_title( $pid );
+  if ( $forced !== '' ) { $name = $forced; $brand = ''; }
+  else { $name = $model !== '' ? $model : get_the_title( $pid ); }
   $tagline = trim( (string) get_field( 'mltv5_sous_titre', $pid ) );
   $summary = trim( (string) get_field( 'mltv5_resume_produit', $pid ) );
   $verdict = trim( (string) get_field( $TT_VERDICT_FIELD, $pid ) );

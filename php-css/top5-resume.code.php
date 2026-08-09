@@ -118,9 +118,11 @@ if ( ! function_exists( 'mt_all_scored_avis' ) ) {
       $raw = get_field( 'mltv5_score_recent', $aid );
       $s10 = round( mt5_num( $raw ) / 10, 1 );
       if ( $s10 <= 0 ) { continue; }
+      $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $aid ) );
       $brand = trim( (string) get_field( 'mltv5_marque_du_produit', $aid ) );
       $model = trim( (string) get_field( 'mltv5_modele_du_produit', $aid ) );
-      $name  = $model !== '' ? $model : get_the_title( $aid );
+      if ( $forced !== '' ) { $name = $forced; $brand = ''; }
+      else { $name = $model !== '' ? $model : get_the_title( $aid ); }
       $items[] = array( 'id' => $aid, 'brand' => $brand, 'name' => $name, 'score' => $s10 );
     }
 
@@ -181,9 +183,11 @@ foreach ( $ids as $pid ) {
   $pos++;
 
   /* Identité */
+  $forced  = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $pid ) );
   $brand   = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
   $model   = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
-  $name    = $model !== '' ? $model : get_the_title( $pid );
+  if ( $forced !== '' ) { $name = $forced; $brand = ''; }
+  else { $name = $model !== '' ? $model : get_the_title( $pid ); }
   $tagline = trim( (string) get_field( 'mltv5_sous_titre', $pid ) );
   $summary = trim( (string) get_field( 'mltv5_resume_produit', $pid ) );
 
