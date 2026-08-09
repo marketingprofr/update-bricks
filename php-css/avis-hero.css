@@ -51,6 +51,8 @@
 /* Score panel */
 .fp-scorepanel { border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--at-white); margin-bottom: 16px; }
 .fp-scorepanel-top { display: grid; grid-template-columns: 1fr 1fr; }
+.fp-score-cell:only-child { flex-direction: row; align-items: center; justify-content: center; gap: 14px; }
+.fp-scorepanel-top:has(.fp-score-cell:only-child) { grid-template-columns: 1fr; }
 .fp-score-cell { display: flex; flex-direction: column; gap: 8px; padding: 16px 20px; }
 .fp-score-cell + .fp-score-cell { border-left: 1px solid var(--line); }
 .fp-score-cell .sc-label { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
@@ -65,8 +67,8 @@
 
 /* Criteria bars */
 .fp-criteria { display: grid; grid-template-columns: 1fr 1fr; gap: 11px 36px; padding: 16px 20px; border-top: 1px solid var(--line); background: var(--bg-2); }
-.fp-ci { display: grid; grid-template-columns: 92px 1fr 30px; align-items: center; gap: 12px; }
-.fp-ci .ci-lbl { font-size: 12.5px; color: var(--ink-2); }
+.fp-ci { display: grid; grid-template-columns: 2fr 3fr 30px; align-items: center; gap: 12px; }
+.fp-ci .ci-lbl { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .fp-ci .ci-bar { height: 5px; background: var(--line); border-radius: 99px; overflow: hidden; }
 .fp-ci .ci-bar span { display: block; height: 100%; border-radius: 99px; }
 .fp-ci .ci-bar .excellent { background: var(--accent); }
