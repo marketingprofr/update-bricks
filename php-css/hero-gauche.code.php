@@ -83,11 +83,11 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       '%1$s domine notre classement',
       '%1$s reste notre recommandation numéro un',
       '%1$s arrive en tête de notre sélection',
-      '%1$s décroche la première place de nos tests',
+      '%1$s décroche la première place de notre comparatif',
       '%1$s est notre valeur sûre %2$s',
       '%1$s remporte notre préférence cette année',
       '%1$s signe le meilleur bilan de notre comparatif',
-      '%1$s sort vainqueur de nos essais',
+      '%1$s ressort grand vainqueur de ce guide d\'achat',
     );
 
     /* 3a) Second produit, version « meilleur pas cher » */
@@ -113,7 +113,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       'Autre option remarquée : %s, très proche au classement.',
       'Dans son sillage, %s s\'illustre également.',
       'Pour varier, %s représente un second choix pertinent.',
-      'À considérer aussi : %s, qui a marqué des points lors de nos tests.',
+      'À considérer aussi : %s, qui a marqué des points dans notre classement.',
       'En challenger, %s ne démérite pas.',
       'Notre second favori ? %s, tout simplement.',
     );
