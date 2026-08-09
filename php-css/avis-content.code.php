@@ -140,6 +140,7 @@ if ( ! function_exists( 'fp_merchant_name' ) ) {
 if ( ! function_exists( 'fp_product_data' ) ) {
   function fp_product_data( $id, $score_field, $price_field, $brand_field, $model_field, $img_ext_field ) {
     $raw   = get_field( $score_field, $id );
+    if ( empty( $raw ) ) $raw = get_field( 'mltv5_score_total', $id );
     $score = function_exists( 'mt5_num' ) ? mt5_num( $raw ) / 10 : ( is_numeric( $raw ) ? round( $raw / 10, 1 ) : 0 );
     $price = get_field( $price_field, $id );
     $price = function_exists( 'mt5_num' ) ? mt5_num( $price ) : (float) $price;
@@ -197,12 +198,9 @@ $verdict   = get_field( $FP_VERDICT, $pid ) ?: '';
 $audience  = get_field( $FP_AUDIENCE, $pid ) ?: '';
 
 $score_raw = get_field( $FP_SCORE, $pid );
-$score     = function_exists( 'get_acf_score_divided_by_10' )
-  ? get_acf_score_divided_by_10( $pid )
-  : ( function_exists( 'mt5_num' ) ? mt5_num( $score_raw ) / 10 : ( is_numeric( $score_raw ) ? round( $score_raw / 10, 1 ) : '' ) );
-$score_lbl = function_exists( 'get_acf_score_label' )
-  ? get_acf_score_label( $pid )
-  : ( is_numeric( $score ) ? fp_score_label( $score ) : '' );
+if ( empty( $score_raw ) ) $score_raw = get_field( 'mltv5_score_total', $pid );
+$score = function_exists( 'mt5_num' ) ? mt5_num( $score_raw ) / 10 : ( is_numeric( $score_raw ) ? round( $score_raw / 10, 1 ) : '' );
+$score_lbl = ( is_numeric( $score ) && $score > 0 ) ? fp_score_label( $score ) : '';
 
 $score_avis = get_field( $FP_SCORE_AVIS, $pid ) ?: '';
 $nb_avis    = get_field( $FP_NB_AVIS, $pid ) ?: '';
