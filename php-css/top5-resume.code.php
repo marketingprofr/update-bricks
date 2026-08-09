@@ -261,6 +261,8 @@ foreach ( $ids as $pid ) {
     'price_num'   => mt5_num( $prix ),
     'rating_num'  => mt5_num( $cust_rating ),
     'modified'    => (int) get_post_modified_time( 'U', true, $pid ),
+    'tag_oos'     => has_tag( 'OOS', $pid ),
+    'tag_disco'   => has_tag( 'DISCO', $pid ),
   );
 }
 $post = $mt5_saved_post;
@@ -335,7 +337,7 @@ $top5_set      = array_flip( $ids );
   <ol class="t5-list" data-t5-list>
 <?php foreach ( $products as $it ) : ?>
     <li class="t5-item<?php echo ( trim( (string) $it['cust_rating'] ) === '' ? ' t5-no-cust' : '' ); ?>" data-rank="<?php echo esc_attr( $it['pos'] ); ?>" data-price="<?php echo esc_attr( $it['price_num'] ); ?>" data-rating="<?php echo esc_attr( $it['rating_num'] ); ?>" data-modified="<?php echo esc_attr( $it['modified'] ); ?>">
-      <article class="t5-card">
+      <article class="t5-card<?php if ( current_user_can( 'edit_posts' ) ) { if ( $it['tag_disco'] ) { echo ' t5-admin-disco'; } elseif ( $it['tag_oos'] ) { echo ' t5-admin-oos'; } } ?>"><?php if ( current_user_can( 'edit_posts' ) && ( $it['tag_oos'] || $it['tag_disco'] ) ) : ?><span class="t5-admin-tag"><?php echo $it['tag_disco'] ? 'DISCO' : 'OOS'; ?></span><?php endif; ?>
         <p class="t5-banner"><span class="b-num">N&deg;<?php echo $it['pos']; ?></span> <span class="b-label">Le choix de la r&eacute;daction</span></p>
         <span class="t5-rnum" aria-hidden="true"><?php echo $it['pos']; ?></span>
         <div class="t5-media">
