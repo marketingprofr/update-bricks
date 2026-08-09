@@ -67,8 +67,8 @@
 
 /* Criteria bars */
 .fp-criteria { display: grid; grid-template-columns: 1fr 1fr; gap: 11px 36px; padding: 16px 20px; border-top: 1px solid var(--line); background: var(--bg-2); }
-.fp-ci { display: grid; grid-template-columns: 2fr 3fr 30px; align-items: center; gap: 12px; }
-.fp-ci .ci-lbl { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fp-ci { display: grid; grid-template-columns: 1fr 1fr 30px; align-items: center; gap: 12px; }
+.fp-ci .ci-lbl { font-size: 12.5px; color: var(--ink-2); }
 .fp-ci .ci-bar { height: 5px; background: var(--line); border-radius: 99px; overflow: hidden; }
 .fp-ci .ci-bar span { display: block; height: 100%; border-radius: 99px; }
 .fp-ci .ci-bar .excellent { background: var(--accent); }
