@@ -64,7 +64,7 @@ $FP_PRICE_HIST  = 'mltv5_prix_historiques';  // format : 210¤190¤230¤210¤205
 /* ═════════════════════════════════════════════════════════════════════
    3) LIMITES & CONFIG
    ═════════════════════════════════════════════════════════════════════ */
-$FP_TEST_ID        = 258978;   // ID de test — mettre à 0 pour utiliser le post courant
+$FP_TEST_ID        = 0;        // ID de test — mettre un ID pour forcer, 0 = post courant
 $FP_RANK_MAX       = 20;
 $FP_RANK_VISIBLE   = 8;
 $FP_CAROUSEL_MAX   = 5;

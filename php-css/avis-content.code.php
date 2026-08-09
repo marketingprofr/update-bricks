@@ -65,7 +65,7 @@ $FP_PRICE_HIST  = 'mltv5_prix_historiques';
 /* ═════════════════════════════════════════════════════════════════════
    3) LIMITES & CONFIG
    ═════════════════════════════════════════════════════════════════════ */
-$FP_TEST_ID        = 258978;
+$FP_TEST_ID        = 0;
 $FP_RANK_MAX       = 20;
 $FP_RANK_VISIBLE   = 8;
 $FP_CAROUSEL_MAX   = 5;
