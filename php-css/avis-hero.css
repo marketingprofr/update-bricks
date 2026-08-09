@@ -33,7 +33,8 @@
    HERO — 1/3 image + 2/3 info
    ============================================================ */
 .fp-hero { display: grid; grid-template-columns: 1fr 2fr; gap: clamp(24px,3vw,44px); padding: 24px clamp(18px,4vw,40px) 0; align-items: start; }
-.fp-media { position: relative; aspect-ratio: 4/5; background: #eee; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); }
+.fp-media { position: relative; aspect-ratio: 1/1; background: #eee; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--line); padding: 16px; display: flex; align-items: center; justify-content: center; }
+.fp-media img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
 .fp-media .badge-rank { position: absolute; top: 12px; left: 12px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--at-success-d-2); color: var(--at-white); border-radius: 999px; font-size: 11px; font-weight: 700; }
 .fp-media .badge-rank svg { width: 12px; height: 12px; }
 .fp-media::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 11px, rgba(0,0,0,0.025) 11px 12px); pointer-events: none; }
@@ -75,7 +76,9 @@
 /* Buy CTA */
 .fp-buy { display: flex; align-items: center; gap: 18px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .fp-buy-opt { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.fp-buy-opt:only-child { flex: 0 1 auto; }
 .fp-avis a.fp-buy-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 22px; background: var(--accent); color: var(--at-white); border: 1.5px solid var(--accent); border-radius: var(--radius); font-size: 14px; font-weight: 600; text-align: center; transition: background .15s, color .15s; }
+.fp-buy-opt:only-child .fp-buy-btn { width: auto; }
 .fp-avis a.fp-buy-btn:hover { background: var(--accent-dark); border-color: var(--accent-dark); color: var(--at-white); }
 .fp-avis a.fp-buy-btn.secondary { background: var(--at-white); color: var(--accent); }
 .fp-avis a.fp-buy-btn.secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }

@@ -631,7 +631,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         <span class="badge-rank"><?php echo $FP_SVG_STAR; ?> <?php echo esc_html( $fp_badge_label ); ?></span>
       <?php endif; ?>
       <?php if ( ! empty( $hero_img ) ) : ?>
-        <img src="<?php echo esc_url( $hero_img ); ?>" alt="<?php echo esc_attr( $product_name ); ?>" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply">
+        <img src="<?php echo esc_url( $hero_img ); ?>" alt="<?php echo esc_attr( $product_name ); ?>">
       <?php endif; ?>
     </div>
     <div class="fp-info">
