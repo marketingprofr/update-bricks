@@ -98,6 +98,20 @@ add_action( 'shutdown', function () {
   $mem_lim  = ini_get( 'memory_limit' );
   $time     = round( timer_stop( 0, 4 ) * 1000 );
 
+  // OPcache — lu depuis un vrai contexte web (FPM), pas CLI (opcache.enable_cli
+  // est à Off par défaut : `wp eval` renvoie toujours opcache_get_status() = false).
+  $oc_enabled   = function_exists( 'opcache_get_status' );
+  $oc_status    = $oc_enabled ? opcache_get_status( false ) : false;
+  $oc_mem_used  = $oc_status ? round( $oc_status['memory_usage']['used_memory'] / 1024 / 1024, 1 ) : 0;
+  $oc_mem_free  = $oc_status ? round( $oc_status['memory_usage']['free_memory'] / 1024 / 1024, 1 ) : 0;
+  $oc_mem_waste = $oc_status ? round( $oc_status['memory_usage']['wasted_memory'] / 1024 / 1024, 1 ) : 0;
+  $oc_mem_total = $oc_mem_used + $oc_mem_free + $oc_mem_waste;
+  $oc_hit_rate  = $oc_status ? round( $oc_status['opcache_statistics']['opcache_hit_rate'], 1 ) : 0;
+  $oc_cached    = $oc_status ? (int) $oc_status['opcache_statistics']['num_cached_scripts'] : 0;
+  $oc_max_files = (int) ini_get( 'opcache.max_accelerated_files' );
+  $oc_restarts  = $oc_status ? (int) $oc_status['opcache_statistics']['oom_restarts'] : 0;
+  $oc_full_pct  = $oc_mem_total > 0 ? round( ( $oc_mem_used + $oc_mem_waste ) / $oc_mem_total * 100, 1 ) : 0;
+
   // Requêtes SQL
   $queries      = isset( $wpdb->queries ) ? $wpdb->queries : array();
   $total_q      = count( $queries );
@@ -269,6 +283,15 @@ add_action( 'shutdown', function () {
       </div>
     </div>
     <div class="card">
+      <div class="card-label">OPcache (contexte web)</div>
+      <div class="card-val <?php echo ! $oc_status ? 'bad' : ( ( $oc_hit_rate < 95 || $oc_restarts > 0 || $oc_cached >= $oc_max_files * 0.9 ) ? 'warn' : 'ok' ); ?>">
+        <?php echo $oc_status ? esc_html( $oc_hit_rate ) . '% hit' : 'INDISPONIBLE'; ?>
+      </div>
+      <?php if ( $oc_status ) : ?>
+      <div class="card-note"><?php echo (int) $oc_cached; ?> / <?php echo (int) $oc_max_files; ?> scripts · <?php echo esc_html( $oc_full_pct ); ?>% mémoire</div>
+      <?php endif; ?>
+    </div>
+    <div class="card">
       <div class="card-label">Autoload total</div>
       <div class="card-val <?php echo $auto_total_kb > 2000 ? 'bad' : ( $auto_total_kb > 800 ? 'warn' : 'ok' ); ?>">
         <?php echo number_format( $auto_total_kb ); ?> KB
@@ -297,6 +320,47 @@ add_action( 'shutdown', function () {
     Les transients et le cache WP passent par la base de données. <b>Installer Redis</b> via Cloudways
     (Applications → votre app → Redis) puis activer le plugin <b>Redis Object Cache</b>.
     Gain attendu : <b>-30 à -60% de requêtes SQL</b> sur chaque page admin.
+  </div>
+  <?php endif; ?>
+
+  <?php if ( ! $oc_status ) : ?>
+  <div class="reco">
+    <div class="reco-title"><span class="pill pill-crit">CRITIQUE</span> OPcache illisible ou désactivé (contexte web)</div>
+    <code>opcache_get_status()</code> renvoie <code>false</code> ici (dans une vraie requête admin, pas en CLI).
+    Si <code>opcache.enable</code> est bien à <code>On</code> dans le php.ini mais que ce diagnostic échoue quand même,
+    contacter le support Cloudways — un souci de configuration ou de restriction (<code>opcache.restrict_api</code>)
+    empêche de lire l'état réel. Sans OPcache actif, PHP recompile TOUT (WordPress + 24 plugins + Bricks) à
+    chaque requête, ce qui peut expliquer plusieurs secondes de temps CPU invisibles dans les requêtes SQL.
+  </div>
+  <?php elseif ( $oc_restarts > 0 ) : ?>
+  <div class="reco">
+    <div class="reco-title"><span class="pill pill-crit">CRITIQUE</span> OPcache a redémarré <?php echo (int) $oc_restarts; ?> fois (OOM)</div>
+    La mémoire allouée (<code>opcache.memory_consumption = 256M</code>) est trop petite pour la taille du site
+    (24 plugins actifs). Chaque redémarrage vide tout le cache compilé d'un coup → pic de recompilation massif
+    pour toutes les requêtes suivantes jusqu'à ce que le cache se re-remplisse. <b>Augmenter à 512M minimum</b>
+    dans le php.ini (Cloudways → Settings & Packages → PHP → Advanced), puis surveiller si ça se reproduit.
+  </div>
+  <?php elseif ( $oc_cached >= $oc_max_files * 0.9 ) : ?>
+  <div class="reco">
+    <div class="reco-title"><span class="pill pill-warn">MOYEN</span> <?php echo (int) $oc_cached; ?> / <?php echo (int) $oc_max_files; ?> scripts en cache — proche de la limite</div>
+    <code>opcache.max_accelerated_files</code> est fixé à <?php echo (int) $oc_max_files; ?>. Une fois cette limite
+    atteinte, OPcache arrête de mettre en cache de nouveaux fichiers → ils sont recompilés à chaque appel.
+    Avec 24 plugins actifs (ACF Pro, Rank Math, Duplicator Pro, etc.), le nombre réel de fichiers PHP peut
+    dépasser ce plafond. <b>Augmenter à 20000</b> dans le php.ini.
+  </div>
+  <?php elseif ( $oc_hit_rate < 95 ) : ?>
+  <div class="reco">
+    <div class="reco-title"><span class="pill pill-warn">MOYEN</span> Taux de hit OPcache bas (<?php echo esc_html( $oc_hit_rate ); ?>%)</div>
+    En temps normal, le hit rate devrait être >99% après quelques minutes de trafic. Un taux bas indique un
+    cache qui se vide/remplit en continu — souvent lié à <code>opcache.memory_consumption</code> ou
+    <code>opcache.max_accelerated_files</code> trop petits pour la taille réelle du site.
+  </div>
+  <?php else : ?>
+  <div class="reco">
+    <div class="reco-title"><span class="pill pill-info">OK</span> OPcache sain</div>
+    Hit rate <?php echo esc_html( $oc_hit_rate ); ?>%, <?php echo (int) $oc_cached; ?> / <?php echo (int) $oc_max_files; ?> scripts,
+    <?php echo (int) $oc_restarts; ?> redémarrage(s) OOM, <?php echo esc_html( $oc_full_pct ); ?>% de la mémoire allouée utilisée.
+    Ce n'est probablement pas la cause de la lenteur.
   </div>
   <?php endif; ?>
 
