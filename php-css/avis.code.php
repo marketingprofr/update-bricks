@@ -465,28 +465,41 @@ if ( $need_type_q && ! empty( $type_terms ) ) {
 }
 
 if ( in_array( 'carousel_brand', $FP_BLOCKS, true ) && $brand !== '' ) {
-  $bq = new WP_Query( array(
-    'post_type'      => $post_type,
-    'post_status'    => 'publish',
-    'posts_per_page' => $FP_CAROUSEL_MAX + 1,
-    'meta_query'     => array( array( 'key' => $FP_BRAND, 'value' => $brand, 'compare' => '=' ) ),
-    'meta_key'       => $FP_SCORE,
-    'orderby'        => 'meta_value_num',
-    'order'          => 'DESC',
+  /* Perf : PAS de meta_query+orderby combinés (double jointure wp_postmeta
+     + tri sur cast numérique + SQL_CALC_FOUND_ROWS implicite -> 20s+ mesurés
+     en prod sur ~25k avis). On récupère juste les IDs de la marque, puis on
+     trie en PHP via fp_product_data() (déjà utilisé pour l'affichage).
+     Doit rester IDENTIQUE à avis-content.code.php / avis-hero.code.php. */
+  $brand_ids = get_posts( array(
+    'post_type'              => $post_type,
+    'post_status'            => 'publish',
+    'posts_per_page'         => -1,
+    'fields'                 => 'ids',
+    'no_found_rows'          => true,
+    'update_post_meta_cache' => true,
+    'update_post_term_cache' => false,
+    'meta_query'             => array( array( 'key' => $FP_BRAND, 'value' => $brand, 'compare' => '=' ) ),
   ) );
-  $brank = 0;
-  while ( $bq->have_posts() ) {
-    $bq->the_post();
-    $brank++;
-    $sid = get_the_ID();
+
+  $fp_brand_candidates = array();
+  foreach ( $brand_ids as $sid ) {
+    $sid = (int) $sid;
     $d = fp_product_data( $sid, $FP_SCORE, $FP_PRICE, $FP_BRAND, $FP_MODEL, $FP_IMG_EXT );
-    $d['id']      = $sid;
+    $d['id'] = $sid;
+    $fp_brand_candidates[] = $d;
+  }
+  usort( $fp_brand_candidates, function ( $a, $b ) { return $b['score'] <=> $a['score']; } );
+  $fp_brand_candidates = array_slice( $fp_brand_candidates, 0, $FP_CAROUSEL_MAX + 1 );
+
+  $brank = 0;
+  foreach ( $fp_brand_candidates as $d ) {
+    $brank++;
+    $sid = $d['id'];
     $d['url']     = get_permalink( $sid );
     $d['rank']    = $brank;
     $d['current'] = ( $sid == $pid );
     $fp_brand_top[] = $d;
   }
-  wp_reset_postdata();
 }
 
 /* Ranking sidebar */
