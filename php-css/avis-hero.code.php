@@ -143,10 +143,17 @@ if ( ! function_exists( 'fp_product_data' ) ) {
     $score = function_exists( 'mt5_num' ) ? mt5_num( $raw ) / 10 : ( is_numeric( $raw ) ? round( $raw / 10, 1 ) : 0 );
     $price = get_field( $price_field, $id );
     $price = function_exists( 'mt5_num' ) ? mt5_num( $price ) : (float) $price;
+    $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $id ) );
     $brand = get_field( $brand_field, $id ) ?: '';
     $model = get_field( $model_field, $id ) ?: '';
-    $name  = trim( $brand . ' ' . $model );
-    if ( $name === '' ) $name = get_the_title( $id );
+    if ( $forced !== '' ) {
+      $name  = $forced;
+      $brand = '';
+      $model = '';
+    } else {
+      $name = trim( $brand . ' ' . $model );
+      if ( $name === '' ) $name = get_the_title( $id );
+    }
     $img = get_the_post_thumbnail_url( $id, 'medium' );
     if ( empty( $img ) ) {
       $ext = get_field( $img_ext_field, $id );
@@ -186,10 +193,17 @@ if ( ! empty( $FP_TEST_ID ) && $pid == $FP_TEST_ID ) {
   setup_postdata( $post );
 }
 $post_type = get_post_type( $pid );
+/* $brand reste peuplé même si le titre est forcé : utilisé par le carrousel
+   "Nos produits {marque} préférés" (requête + intitulé), pas seulement le titre. */
+$forced_title = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $pid ) );
 $brand     = get_field( $FP_BRAND, $pid ) ?: '';
 $model     = get_field( $FP_MODEL, $pid ) ?: '';
-$product_name = trim( $brand . ' ' . $model );
-if ( $product_name === '' ) $product_name = get_the_title( $pid );
+if ( $forced_title !== '' ) {
+  $product_name = $forced_title;
+} else {
+  $product_name = trim( $brand . ' ' . $model );
+  if ( $product_name === '' ) $product_name = get_the_title( $pid );
+}
 
 $subtitle  = get_field( $FP_SUBTITLE, $pid ) ?: '';
 $summary   = get_field( $FP_SUMMARY, $pid ) ?: '';
