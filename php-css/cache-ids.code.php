@@ -34,7 +34,7 @@
 // ========================================
 // CONFIGURATION
 // ========================================
-$debug         = true;
+$debug         = false;
 $TAX_PRODUCT   = 'post-type-produit';
 $TAX_ATTR      = 'post-type-attribut';
 $RECHECK_TTL   = 12 * HOUR_IN_SECONDS;  // recalcul max 1×/12h par comparatif (0 = à chaque visite)

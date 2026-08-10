@@ -26,13 +26,13 @@ if ( is_array( $mt_prod_terms ) && ! empty( $mt_prod_terms ) ) {
     'post_type'      => 'avis',
     'post_status'    => 'publish',
     'tax_query'      => $mt_tax_q,
-    'posts_per_page' => -1,
+    'posts_per_page' => 1,
     'fields'         => 'ids',
-    'no_found_rows'  => true,
+    'no_found_rows'  => false,
     'update_post_meta_cache' => false,
     'update_post_term_cache' => false,
   ) );
-  $mt_real_count = count( $mt_cq->posts );
+  $mt_real_count = (int) $mt_cq->found_posts;
 }
 $mt_display_count = ( $mt_real_count < 10 ) ? $mt_real_count + 5 : $mt_real_count;
 
