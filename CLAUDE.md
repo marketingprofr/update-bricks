@@ -7,7 +7,7 @@ bloc de code statique).
 ## Stack du site
 
 - **WordPress + Bricks Builder `2.0.2`**, hébergé sur **Cloudways** (cache
-  **Varnish + Breeze** → à purger pour voir les changements en front-end).
+  **FlyingPress** → à purger pour voir les changements en front-end).
 - Framework **Advanced Themer** : design tokens `--at-*`
   (ex. `var(--at-space--s/m)`, `var(--at-text--s)`, `var(--at-white)`…).
   ⚠️ Ces tokens (spacing/typo) sont des `clamp()` parfois **gros** → pour coller
@@ -693,7 +693,7 @@ capture client). Générateur versionné : **`build-footer.py`** → produit
   — la colonne gauche garde description + réseaux. Structure finale du container :
   `[rangée-confiance, container-top, divider, container-bot]`.
 - **⚠️ Après collage** : approuver l'élément `code` de la rangée dans la **Code
-  review** Bricks (`executeCode` → signature), puis **purger Varnish + Breeze**.
+  review** Bricks (`executeCode` → signature), puis **purger FlyingPress**.
   Les URLs des SVG sont référencées telles quelles (badges déjà dans la médiathèque).
 
 ## Mode sombre (mode nuit) — 100 % variables Advanced Themer
