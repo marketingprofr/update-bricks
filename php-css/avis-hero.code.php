@@ -1,5 +1,6 @@
 <?php
 $__fp_diag_hero_start = microtime( true ); // TEMP DIAGNOSTIC — à retirer après mesure
+echo '<!-- FP_HERO_ENTRY_ELAPSED: ' . round( $__fp_diag_hero_start - $_SERVER['REQUEST_TIME_FLOAT'], 3 ) . 's -->';
 /* =====================================================================
    FICHE PRODUIT / AVIS — HERO — avis-hero.code.php
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).

@@ -1,5 +1,6 @@
 <?php
 $__fp_diag_content_start = microtime( true ); // TEMP DIAGNOSTIC — à retirer après mesure
+echo '<!-- FP_CONTENT_ENTRY_ELAPSED: ' . round( $__fp_diag_content_start - $_SERVER['REQUEST_TIME_FLOAT'], 3 ) . 's -->';
 /* =====================================================================
    FICHE PRODUIT / AVIS — CONTENU — avis-content.code.php
    Bloc AUTONOME : charge ses propres données (ne dépend pas du hero).
