@@ -1,4 +1,5 @@
 <?php
+$__fp_diag_hero_start = microtime( true ); // TEMP DIAGNOSTIC — à retirer après mesure
 /* =====================================================================
    FICHE PRODUIT / AVIS — HERO — avis-hero.code.php
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
@@ -737,4 +738,5 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
     </div>
   </section>
   <?php endif; /* /HERO */ ?>
+<!-- FP_HERO_TIME: <?php echo round( microtime( true ) - $__fp_diag_hero_start, 3 ); ?>s -->
 </div><?php /* /fp-avis (hero) */ ?>

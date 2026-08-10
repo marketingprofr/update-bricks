@@ -1,4 +1,5 @@
 <?php
+$__fp_diag_content_start = microtime( true ); // TEMP DIAGNOSTIC — à retirer après mesure
 /* =====================================================================
    FICHE PRODUIT / AVIS — CONTENU — avis-content.code.php
    Bloc AUTONOME : charge ses propres données (ne dépend pas du hero).
@@ -1076,3 +1077,4 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
   });
 })();
 </script>
+<!-- FP_CONTENT_TIME: <?php echo round( microtime( true ) - $__fp_diag_content_start, 3 ); ?>s -->
