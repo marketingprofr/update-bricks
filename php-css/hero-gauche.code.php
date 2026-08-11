@@ -1,5 +1,7 @@
 <?php
 $MT_SHOW_QUICK_PICKS = false;
+$MT_SHOW_BOLD_INTRO  = true;
+$MT_SHOW_INTRO_RECO  = true;
 
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));
@@ -344,13 +346,18 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     </span>
   </div>
 
-  <div class="mt-lede"><?php echo mt_bold_intro( $introduction ?? '', array(
-    'sing' => $type_de_produit_au_singulier ?? '',
-    'plur' => $type_de_produit_au_pluriel ?? '',
-    'llm'  => $lalalesmeilleur ?? '',
-    'mf'   => $masculinsfeminins ?? '',
-  ) );
-  if ( $post_type === 'comparatif' ) {
+  <div class="mt-lede"><?php
+  $mt_intro_html = $introduction ?? '';
+  if ( $MT_SHOW_BOLD_INTRO ) {
+      $mt_intro_html = mt_bold_intro( $mt_intro_html, array(
+        'sing' => $type_de_produit_au_singulier ?? '',
+        'plur' => $type_de_produit_au_pluriel ?? '',
+        'llm'  => $lalalesmeilleur ?? '',
+        'mf'   => $masculinsfeminins ?? '',
+      ) );
+  }
+  echo $mt_intro_html;
+  if ( $MT_SHOW_INTRO_RECO && $post_type === 'comparatif' ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
