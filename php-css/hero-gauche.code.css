@@ -29,6 +29,7 @@
 .mt-lede a:hover { color: var(--at-primary-d-1); }
 .mt-lede-reco { margin: 14px 0 0; }
 
+.mt-picks-intro { font-size: clamp(14px, 1.3vw, 15.5px); color: var(--at-black-l-1); margin: 0 0 4px; }
 .mt-picks { margin: 0 0 26px; padding-left: 22px; }
 .mt-picks li { font-size: clamp(14px, 1.3vw, 15.5px); line-height: 1.55; color: var(--at-black-l-1); }
 .mt-picks li a { color: var(--at-primary); text-decoration: underline; }

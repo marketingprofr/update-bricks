@@ -160,7 +160,8 @@ if ( ! function_exists( 'mt_quick_picks' ) ) {
       $items[] = array( 'rank' => $i + 1, 'name' => $name, 'url' => $url );
     }
     if ( empty( $items ) ) { return ''; }
-    $out = '<ol class="mt-picks">';
+    $out = '<p class="mt-picks-intro"><strong>Notre s&eacute;lection&nbsp;:</strong></p>';
+    $out .= '<ol class="mt-picks">';
     foreach ( $items as $it ) {
       $out .= '<li>';
       if ( $it['url'] !== '' ) {
