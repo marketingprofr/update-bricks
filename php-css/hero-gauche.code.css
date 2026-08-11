@@ -29,11 +29,11 @@
 .mt-lede a:hover { color: var(--at-primary-d-1); }
 .mt-lede-reco { margin: 14px 0 0; }
 
-.mt-picks { margin: 14px 0 0; padding-left: 22px; }
+.mt-picks { margin: 0 0 26px; padding-left: 22px; }
 .mt-picks li { font-size: clamp(14px, 1.3vw, 15.5px); line-height: 1.55; color: var(--at-black-l-1); }
-.mt-picks li a { color: var(--at-primary); font-weight: 600; text-decoration: underline; }
+.mt-picks li a { color: var(--at-primary); text-decoration: underline; }
 .mt-picks li a:hover { color: var(--at-primary-d-1); }
-.mt-picks .mt-pick-r { font-weight: 400; font-size: 0.85em; color: var(--at-grey-l-1); text-decoration: none; }
+.mt-picks .mt-pick-r { font-size: 0.85em; color: var(--at-grey-l-1); text-decoration: none; }
 .mt-picks .mt-pick-r:hover { color: var(--at-primary); }
 
 .mt-photo { position: relative; border-radius: 12px; overflow: hidden; }
