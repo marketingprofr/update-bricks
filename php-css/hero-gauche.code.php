@@ -1,4 +1,6 @@
 <?php
+$MT_SHOW_QUICK_PICKS = false;
+
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));
 $post_type = get_post_type($this_id);
@@ -318,7 +320,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
-  <?php if ( $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
+  <?php if ( $MT_SHOW_QUICK_PICKS && $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
     echo mt_quick_picks( $top_avis_ids );
   } ?>
 
