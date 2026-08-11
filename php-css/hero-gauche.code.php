@@ -134,6 +134,48 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
   }
 }
 
+if ( ! function_exists( 'mt_quick_picks' ) ) {
+  function mt_quick_picks( $ids, $max = 5 ) {
+    $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
+    if ( empty( $ids ) ) { return ''; }
+    $tag  = 'mlt00-21';
+    $items = array();
+    foreach ( array_slice( $ids, 0, $max ) as $i => $pid ) {
+      if ( get_post_status( $pid ) !== 'publish' ) { continue; }
+      $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $pid ) );
+      $brand  = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
+      $model  = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
+      if ( $forced !== '' ) { $name = $forced; }
+      else { $name = $model !== '' ? trim( $brand . ' ' . $model ) : get_the_title( $pid ); }
+      $asin = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
+      $url  = '';
+      if ( $asin !== '' ) {
+        $url = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=' . $tag;
+      } else {
+        for ( $j = 1; $j <= 3; $j++ ) {
+          $u = trim( (string) get_field( 'mltv5_lien_du_produit_' . $j, $pid ) );
+          if ( $u !== '' && strpos( $u, 'http' ) === 0 ) { $url = $u; break; }
+        }
+      }
+      $items[] = array( 'rank' => $i + 1, 'name' => $name, 'url' => $url );
+    }
+    if ( empty( $items ) ) { return ''; }
+    $out = '<ol class="mt-picks">';
+    foreach ( $items as $it ) {
+      $out .= '<li>';
+      if ( $it['url'] !== '' ) {
+        $out .= '<a class="mt-pick-link" href="' . esc_url( $it['url'] ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $it['name'] ) . '</a>';
+      } else {
+        $out .= '<span class="mt-pick-name">' . esc_html( $it['name'] ) . '</span>';
+      }
+      $out .= '<a class="mt-pick-review" href="#produit-n-' . (int) $it['rank'] . '" title="Lire notre avis">avis</a>';
+      $out .= '</li>';
+    }
+    $out .= '</ol>';
+    return $out;
+  }
+}
+
 if ( ! function_exists( 'mt_bold_intro' ) ) {
   function mt_bold_intro( $html, $vars ) {
     $ts  = mb_strtolower( trim( isset( $vars['sing'] ) ? $vars['sing'] : '' ), 'UTF-8' );
@@ -274,6 +316,10 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   if ( $post_type === 'comparatif' ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
+
+  <?php if ( $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
+    echo mt_quick_picks( $top_avis_ids );
+  } ?>
 
   <div class="mt-photo">
     <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img')); ?>
