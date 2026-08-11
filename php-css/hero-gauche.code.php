@@ -136,14 +136,14 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     );
 
     $alts = array(
-      'Si vous hésitez encore, ' . $p2 . ' ' . $v( 'constitue', 'constituent' ) . ' une alternative solide.',
+      'Si vous hésitez encore, ' . $p2 . ' ' . $v( 'constitue', 'constituent' ) . ' une bonne alternative.',
       'Juste derrière, ' . $p2 . ' ' . $v( 'mérite', 'méritent' ) . ' aussi votre attention.',
-      $p2 . ' ' . $v( 'tient', 'tiennent' ) . ' la deuxième place de notre classement.',
+      $p2 . ' ' . $v( 'obtient', 'obtiennent' ) . ' la deuxième place de notre classement.',
       'En deuxième position, ' . $p2 . ' nous ' . $v( 'a', 'ont' ) . ' également convaincus.',
-      'Autre valeur sûre, ' . $p2 . ' ' . $v( 'arrive', 'arrivent' ) . ' tout juste derrière.',
-      $p2 . ' ' . $v( 'complète', 'complètent' ) . ' le haut de notre classement.',
+      $p2 . ' ' . $v( 'est', 'sont' ) . ' également un choix envisageable.',
+      $p2 . ' ' . $v( 'est', 'sont' ) . ' tout juste derrière.',
       'Autre option sérieuse, ' . $p2 . ' ' . $v( 'occupe', 'occupent' ) . ' la deuxième place.',
-      'Si notre numéro un ne vous convainc pas, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' une alternative crédible.',
+      $p2 . ' ' . $v( 'est', 'sont' ) . ' également un excellent choix.',
       $p2 . ' ' . $v( 'vaut', 'valent' ) . ' aussi le détour.',
       'Nous recommandons aussi ' . $p2 . '.',
     );
