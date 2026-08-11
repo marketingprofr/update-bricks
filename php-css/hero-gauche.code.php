@@ -47,15 +47,6 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     $second = $is_budget ? $budget : $prods[1];
     if ( $second['name'] === '' ) { $second = null; }
 
-    $p1 = '<a href="#produit-n-1">' . esc_html( $prods[0]['name'] ) . '</a>';
-    $p2 = '';
-    if ( $second ) {
-      $p2 = '<a href="#produit-n-' . (int) $second['rank'] . '">' . esc_html( $second['name'] ) . '</a>';
-      if ( $is_budget && $second['price'] > 0 ) {
-        $p2 .= ' (environ ' . number_format( $second['price'], 0, ',', "\xc2\xa0" ) . "\xc2\xa0€)";
-      }
-    }
-
     $type  = trim( (string) $type_plur );
     $type_lc = $type !== '' ? esc_html( mb_strtolower( $type, 'UTF-8' ) ) : '';
 
@@ -64,6 +55,23 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     $pl    = ( mb_strpos( $llm_t, 'les ' ) === 0 );
     $fem   = ( mb_strpos( $llm_t, 'meilleure' ) !== false );
     $v     = function ( $sing, $plur ) use ( $pl ) { return $pl ? $plur : $sing; };
+
+    /* Article défini devant le nom de produit (le/la/l'/les) */
+    $mt_art = function ( $name ) use ( $pl, $fem ) {
+      if ( $pl ) { return 'les '; }
+      $fc = mb_strtolower( mb_substr( $name, 0, 1, 'UTF-8' ), 'UTF-8' );
+      if ( in_array( $fc, array( 'a', 'à', 'â', 'e', 'é', 'è', 'ê', 'i', 'î', 'o', 'ô', 'u', 'û' ), true ) ) { return 'l\''; }
+      return $fem ? 'la ' : 'le ';
+    };
+
+    $p1 = $mt_art( $prods[0]['name'] ) . '<a href="#produit-n-1">' . esc_html( $prods[0]['name'] ) . '</a>';
+    $p2 = '';
+    if ( $second ) {
+      $p2 = $mt_art( $second['name'] ) . '<a href="#produit-n-' . (int) $second['rank'] . '">' . esc_html( $second['name'] ) . '</a>';
+      if ( $is_budget && $second['price'] > 0 ) {
+        $p2 .= ' (environ ' . number_format( $second['price'], 0, ',', "\xc2\xa0" ) . "\xc2\xa0€)";
+      }
+    }
 
     /* Terminaison conditionnelle : prix+ASIN → "à acheter", prix seul → "sur le marché", sinon "du moment"/"à choisir" */
     if ( $n_price >= 1 && $has_asin ) {
@@ -127,7 +135,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       'Si vous cherchez un peu moins cher, nous recommandons ' . $p2 . '.',
       'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' une excellente alternative.',
       'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'offre', 'offrent' ) . ' le meilleur rapport qualité-prix.',
-      'Si vous cherchez un peu moins cher, regardez du côté de ' . $p2 . '.',
+      'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'mérite', 'méritent' ) . ' votre attention.',
       'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'constitue', 'constituent' ) . ' le meilleur compromis.',
       'Pour un budget plus contenu, nous recommandons ' . $p2 . '.',
       'En alternative plus abordable, nous recommandons ' . $p2 . '.',
