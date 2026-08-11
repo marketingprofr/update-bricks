@@ -260,6 +260,7 @@ foreach ( $ids as $pid ) {
     }
     $angles = get_field( 'mltv5_utilisations_du_produit', $pid );
     $admin_meta = array(
+      'pid'    => $pid,
       'pub'    => $pub_lbl,
       'recent' => (bool) $recent,
       'edit'   => $edit,
@@ -354,6 +355,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
       <?php if ( $it['tagline'] !== '' ) : ?><p class="ed-a-deck"><?php echo esc_html( $it['tagline'] ); ?></p><?php endif; ?>
       <?php if ( ! empty( $it['admin'] ) ) : $am = $it['admin']; ?>
       <div class="ed-a-adminbar" role="note" aria-label="Infos administrateur (avis)">
+        <span class="am-tag am-pid" title="ID du post avis">ID <?php echo (int) $am['pid']; ?></span>
         <span class="am-tag am-date<?php echo $am['recent'] ? ' is-recent' : ''; ?>" title="Publication (année/mois) — vert si &lt; 6 mois"><?php echo esc_html( $am['pub'] ); ?></span>
         <?php if ( $am['status'] !== 'publish' ) : ?><span class="am-tag am-status" title="Statut du post">&#9888; <?php echo esc_html( $am['status'] ); ?></span><?php endif; ?>
         <span class="am-tag am-src" title="Source du contenu affiché"><?php echo esc_html( $am['src'] ); ?></span>
