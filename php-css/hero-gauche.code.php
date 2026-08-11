@@ -152,7 +152,8 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     $main = $mains[ $d2 ];
     $out = mb_strtoupper( mb_substr( $main, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $main, 1, null, 'UTF-8' ) . '.';
     if ( $p2 !== '' ) {
-      $out .= ' ' . ( $is_budget ? $budgets[ $d3 ] : $alts[ $d3 ] );
+      $s2 = $is_budget ? $budgets[ $d3 ] : $alts[ $d3 ];
+      $out .= ' ' . mb_strtoupper( mb_substr( $s2, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $s2, 1, null, 'UTF-8' );
     }
     return '<p class="mt-lede-reco">' . $out . '</p>';
   }
