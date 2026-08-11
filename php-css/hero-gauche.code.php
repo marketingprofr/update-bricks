@@ -163,13 +163,12 @@ if ( ! function_exists( 'mt_quick_picks' ) ) {
     $out = '<ol class="mt-picks">';
     foreach ( $items as $it ) {
       $out .= '<li>';
-      $out .= '<span class="mt-pick-num">' . (int) $it['rank'] . '.</span>';
       if ( $it['url'] !== '' ) {
-        $out .= '<a class="mt-pick-link" href="' . esc_url( $it['url'] ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $it['name'] ) . '</a>';
+        $out .= '<a href="' . esc_url( $it['url'] ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $it['name'] ) . '</a>';
       } else {
-        $out .= '<span class="mt-pick-name">' . esc_html( $it['name'] ) . '</span>';
+        $out .= esc_html( $it['name'] );
       }
-      $out .= '<a class="mt-pick-review" href="#produit-n-' . (int) $it['rank'] . '" title="Lire notre avis">avis</a>';
+      $out .= ' <a class="mt-pick-r" href="#produit-n-' . (int) $it['rank'] . '">(avis)</a>';
       $out .= '</li>';
     }
     $out .= '</ol>';
