@@ -15,9 +15,10 @@ if (!file_exists($csv_path)) {
 
 $handle = fopen($csv_path, 'r');
 $header = fgetcsv($handle, 0, ';', '"');
-$updated = 0;
-$skipped = 0;
-$errors  = 0;
+$updated   = 0;
+$unchanged = 0;
+$skipped   = 0;
+$errors    = 0;
 
 while (($row = fgetcsv($handle, 0, ';', '"')) !== false) {
     $post_id   = (int) $row[0];
@@ -35,8 +36,14 @@ while (($row = fgetcsv($handle, 0, ';', '"')) !== false) {
         continue;
     }
 
+    $old = get_post_meta($post_id, 'mltv5_introduction', true);
+
+    if ($old === $new_intro) {
+        $unchanged++;
+        continue;
+    }
+
     if ($dry_run) {
-        $old = get_post_meta($post_id, 'mltv5_introduction', true);
         $preview = mb_substr(strip_tags($new_intro), 0, 80) . '...';
         WP_CLI::log("DRY-RUN $post_id : $preview");
         $updated++;
@@ -55,4 +62,4 @@ while (($row = fgetcsv($handle, 0, ';', '"')) !== false) {
 fclose($handle);
 
 $mode = $dry_run ? '[DRY-RUN] ' : '';
-WP_CLI::success("{$mode}Terminé. Mis à jour : $updated | Ignorés : $skipped | Erreurs : $errors");
+WP_CLI::success("{$mode}Terminé. Mis à jour : $updated | Déjà en place : $unchanged | Ignorés : $skipped | Erreurs : $errors");
