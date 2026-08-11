@@ -160,20 +160,10 @@ if ( ! function_exists( 'mt_quick_picks' ) ) {
       $items[] = array( 'rank' => $i + 1, 'name' => $name, 'url' => $url );
     }
     if ( empty( $items ) ) { return ''; }
-    $out  = '<style>';
-    $out .= '.mt-picks{list-style:none;margin:0 0 26px;padding:0;counter-reset:pick}';
-    $out .= '.mt-picks li{counter-increment:pick;display:flex;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px solid var(--at-grey-l-4);font-size:14.5px;line-height:1.4}';
-    $out .= '.mt-picks li:last-child{border-bottom:none}';
-    $out .= '.mt-picks li::before{content:counter(pick) ".";flex-shrink:0;min-width:18px;font-weight:700;font-size:13px;color:var(--at-primary);font-variant-numeric:tabular-nums}';
-    $out .= '.mt-picks .mt-pick-link{flex:1;min-width:0;font-weight:600;color:var(--at-black-l-1);text-decoration:none}';
-    $out .= '.mt-picks .mt-pick-link:hover{color:var(--at-primary)}';
-    $out .= '.mt-picks .mt-pick-name{flex:1;min-width:0;font-weight:600;color:var(--at-black-l-1)}';
-    $out .= '.mt-picks .mt-pick-review{flex-shrink:0;font-size:11px;color:var(--at-grey-l-1);text-decoration:none;text-transform:uppercase;letter-spacing:.04em;font-weight:500}';
-    $out .= '.mt-picks .mt-pick-review:hover{color:var(--at-primary)}';
-    $out .= '</style>';
-    $out .= '<ol class="mt-picks">';
+    $out = '<ol class="mt-picks">';
     foreach ( $items as $it ) {
       $out .= '<li>';
+      $out .= '<span class="mt-pick-num">' . (int) $it['rank'] . '.</span>';
       if ( $it['url'] !== '' ) {
         $out .= '<a class="mt-pick-link" href="' . esc_url( $it['url'] ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $it['name'] ) . '</a>';
       } else {
