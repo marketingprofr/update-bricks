@@ -237,6 +237,11 @@ foreach ( $ids as $pid ) {
   }
   $offer_urls = array_values( array_unique( $offer_urls ) );
 
+  $primary_merchant = '';
+  if ( ! empty( $offer_urls ) ) {
+    $primary_merchant = $asin !== '' ? 'Amazon' : mt5_merchant_name( $offer_urls[0] );
+  }
+
   $has_rating = ( trim( (string) $cust_rating ) !== '' && mt5_num( $cust_rating ) > 0 );
   if ( $has_price )  { $count_price++; }
   if ( $has_rating ) { $count_rating++; }
@@ -257,7 +262,8 @@ foreach ( $ids as $pid ) {
     'cons'        => $cons,
     'offer_urls'  => $offer_urls,
     'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
-    'cta_text'    => $has_price ? 'Voir le prix' : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" ),
+    'cta_text'    => $has_price && $primary_merchant !== '' ? 'Voir sur ' . $primary_merchant : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" ),
+    'has_price'   => $has_price,
     'price_num'   => mt5_num( $prix ),
     'rating_num'  => mt5_num( $cust_rating ),
     'modified'    => (int) get_post_modified_time( 'U', true, $pid ),
@@ -387,14 +393,15 @@ $top5_set      = array_flip( $ids );
             <?php endif; ?>
             <?php
             $links = array();
-            foreach ( $it['offer_urls'] as $u ) {
+            foreach ( $it['offer_urls'] as $idx => $u ) {
+              if ( $it['has_price'] && $idx === 0 ) { continue; }
               $mn = mt5_merchant_name( $u );
               if ( $mn !== '' ) {
                 $links[] = '<a href="' . esc_url( $u ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $mn ) . '</a>';
               }
             }
             if ( ! empty( $links ) ) : ?>
-            <div class="t5-merchants">chez <?php echo mt5_join_et( $links ); ?></div>
+            <div class="t5-merchants"><?php echo $it['has_price'] ? 'ou sur ' : 'chez '; ?><?php echo mt5_join_et( $links ); ?></div>
             <?php endif; ?>
           </div>
         </div>
