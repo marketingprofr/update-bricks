@@ -144,8 +144,8 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       $p2 . ' ' . $v( 'complète', 'complètent' ) . ' le haut de notre classement.',
       'Autre option sérieuse, ' . $p2 . ' ' . $v( 'occupe', 'occupent' ) . ' la deuxième place.',
       'Si notre numéro un ne vous convainc pas, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' une alternative crédible.',
-      $p2 . ' ' . $v( 'se défend', 'se défendent' ) . ' très bien face à notre numéro un.',
-      'Notre deuxième choix se porte sur ' . $p2 . '.',
+      $p2 . ' ' . $v( 'vaut', 'valent' ) . ' aussi le détour.',
+      'Nous recommandons aussi ' . $p2 . '.',
     );
 
     $main = $mains[ $d2 ];
