@@ -263,6 +263,7 @@ foreach ( $ids as $pid ) {
     'offer_urls'  => $offer_urls,
     'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
     'cta_text'    => $primary_merchant !== '' ? 'Voir sur ' . $primary_merchant : ( $btn_fallback !== '' ? $btn_fallback : "Voir l'offre" ),
+    'has_price'   => $has_price,
     'price_num'   => mt5_num( $prix ),
     'rating_num'  => mt5_num( $cust_rating ),
     'modified'    => (int) get_post_modified_time( 'U', true, $pid ),

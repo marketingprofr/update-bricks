@@ -314,6 +314,7 @@ foreach ( $ids as $pid ) {
     'offer_urls'  => $offer_urls,
     'primary_url' => ! empty( $offer_urls ) ? $offer_urls[0] : '',
     'cta_text'    => $primary_merchant !== '' ? 'Voir sur ' . $primary_merchant : ( $btn_first !== '' ? $btn_first : "Voir l'offre" ),
+    'has_price'   => $has_price,
     'prix'        => $has_price ? mt5_num( $prix ) : 0,
     'admin'       => $admin_meta,
   );
