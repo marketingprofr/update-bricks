@@ -33,7 +33,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
         'name'   => $name,
         'price'  => is_numeric( $c ) ? (float) $c : 0.0,
         'asin'   => $asin,
-        'no_art' => ( $forced !== '' && $model === '' && $brand !== '' && mb_stripos( $forced, $brand ) === 0 ),
+        'no_art' => ( $model === '' && $brand !== '' && ( strcasecmp( $name, $brand ) === 0 || mb_stripos( $name, $brand . ' (' ) === 0 ) ),
       );
     }
     if ( $prods[0]['name'] === '' ) { return ''; }
@@ -93,11 +93,12 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     $d3 = strlen( $s ) >= 3 ? (int) substr( $s, -3, 1 ) : 0;
 
     $fin = $fins[ $d1 % count( $fins ) ];
+    $fin_court = $n_price >= 1 ? 'en ' . $year : 'du moment';
 
-    /* P0 — « notre [type_sing] préféré(e) [fin] est… » / « nos [type_plur] préféré(e)s [fin] sont… » */
+    /* P0 — « notre [type_sing] préféré(e) en 2026 est… » */
     $m0 = $type_s !== '' ? ( $pl
-      ? 'nos ' . $type_lc . ' ' . $pref . ' ' . $fin . ' sont ' . $p1
-      : 'notre ' . $type_s . ' ' . $pref . ' ' . $fin . ' est ' . $p1
+      ? 'nos ' . $type_lc . ' ' . $pref . ' ' . $fin_court . ' sont ' . $p1
+      : 'notre ' . $type_s . ' ' . $pref . ' ' . $fin_court . ' est ' . $p1
     ) : '';
     /* P1 — « est le meilleur [type_sing] [fin] » */
     $m1 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
