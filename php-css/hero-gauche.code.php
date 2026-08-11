@@ -1,6 +1,6 @@
 <?php
 $MT_SHOW_QUICK_PICKS = false;
-$MT_SHOW_BOLD_INTRO  = true;
+$MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
 
 $this_id   = get_the_ID();
