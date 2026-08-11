@@ -29,10 +29,11 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       $c    = str_replace( ',', '.', $c );
       $asin = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
       $prods[] = array(
-        'rank'  => $i + 1,
-        'name'  => $name,
-        'price' => is_numeric( $c ) ? (float) $c : 0.0,
-        'asin'  => $asin,
+        'rank'   => $i + 1,
+        'name'   => $name,
+        'price'  => is_numeric( $c ) ? (float) $c : 0.0,
+        'asin'   => $asin,
+        'no_art' => ( $forced !== '' && $model === '' && $brand !== '' && mb_stripos( $forced, $brand ) === 0 ),
       );
     }
     if ( $prods[0]['name'] === '' ) { return ''; }
@@ -45,7 +46,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       }
     }
     $is_budget = ( $n_price >= 2 && $budget !== null && $budget['name'] !== ''
-      && ( $prods[0]['price'] <= 0 || $budget['price'] < $prods[0]['price'] ) );
+      && $prods[0]['price'] >= 20 && $budget['price'] < $prods[0]['price'] );
     $second = $is_budget ? $budget : $prods[1];
     if ( $second['name'] === '' ) { $second = null; }
 
@@ -68,10 +69,10 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       return $fem ? 'la ' : 'le ';
     };
 
-    $p1 = $mt_art( $prods[0]['name'] ) . '<a href="#produit-n-1">' . esc_html( $prods[0]['name'] ) . '</a>';
+    $p1 = ( $prods[0]['no_art'] ? '' : $mt_art( $prods[0]['name'] ) ) . '<a href="#produit-n-1">' . esc_html( $prods[0]['name'] ) . '</a>';
     $p2 = '';
     if ( $second ) {
-      $p2 = $mt_art( $second['name'] ) . '<a href="#produit-n-' . (int) $second['rank'] . '">' . esc_html( $second['name'] ) . '</a>';
+      $p2 = ( $second['no_art'] ? '' : $mt_art( $second['name'] ) ) . '<a href="#produit-n-' . (int) $second['rank'] . '">' . esc_html( $second['name'] ) . '</a>';
     }
 
     /* Terminaison conditionnelle : prix+ASIN → "à acheter", prix seul → "sur le marché", sinon "du moment"/"à choisir" */
@@ -93,15 +94,15 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
 
     $fin = $fins[ $d1 % count( $fins ) ];
 
-    /* P0 — « notre [type_sing] préféré(e) est… » / « nos [type_plur] préféré(e)s sont… » */
+    /* P0 — « notre [type_sing] préféré(e) [fin] est… » / « nos [type_plur] préféré(e)s [fin] sont… » */
     $m0 = $type_s !== '' ? ( $pl
-      ? 'nos ' . $type_lc . ' ' . $pref . ' sont ' . $p1 . ' ' . $fin
-      : 'notre ' . $type_s . ' ' . $pref . ' est ' . $p1 . ' ' . $fin
+      ? 'nos ' . $type_lc . ' ' . $pref . ' ' . $fin . ' sont ' . $p1
+      : 'notre ' . $type_s . ' ' . $pref . ' ' . $fin . ' est ' . $p1
     ) : '';
     /* P1 — « est le meilleur [type_sing] [fin] » */
     $m1 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
-    /* P2 — « notre [type] préféré(e) [fin] » */
-    $m2 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . $v( 'notre', 'nos' ) . ' ' . ( $type_s !== '' ? $v( $type_s, $type_lc ) . ' ' : '' ) . $pref . ' ' . $fin;
+    /* P2 — « [P1] est notre [type] préféré(e) » */
+    $m2 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . $v( 'notre', 'nos' ) . ' ' . ( $type_s !== '' ? $v( $type_s, $type_lc ) . ' ' : '' ) . $pref;
     /* P3 — « notre coup de cœur parmi les [type] » */
     $m3 = $p1 . ' ' . $v( 'est', 'sont' ) . ' notre coup de cœur parmi ' . ( $type_lc !== '' ? 'les ' . $type_lc : 'ce comparatif' );
     /* P4 — « répond à tous nos critères de sélection » */
@@ -129,7 +130,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'offre', 'offrent' ) . ' un bon compromis.',
       'Si vous voulez faire des économies, nous recommandons ' . $p2 . '.',
       'En alternative plus abordable, nous recommandons ' . $p2 . '.',
-      'Si le prix pèse dans la balance, ' . $p2 . ' ' . $v( 'propose', 'proposent' ) . ' l\'essentiel pour moins cher.',
+      'Si le prix est un critère important pour vous, ' . $p2 . ' ' . $v( 'propose', 'proposent' ) . ' l\'essentiel pour moins cher.',
       'À budget plus serré, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'option la plus abordable de notre sélection.',
       'Si votre priorité est le prix, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'alternative la plus accessible du classement.',
     );
@@ -143,7 +144,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       $p2 . ' ' . $v( 'complète', 'complètent' ) . ' le haut de notre classement.',
       'Autre option sérieuse, ' . $p2 . ' ' . $v( 'occupe', 'occupent' ) . ' la deuxième place.',
       'Si notre numéro un ne vous convainc pas, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' une alternative crédible.',
-      'En deuxième position, ' . $p2 . ' ne ' . $v( 'démérite', 'déméritent' ) . ' pas.',
+      $p2 . ' ' . $v( 'se défend', 'se défendent' ) . ' très bien face à notre numéro un.',
       'Notre deuxième choix se porte sur ' . $p2 . '.',
     );
 
