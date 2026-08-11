@@ -354,7 +354,7 @@ $top5_set      = array_flip( $ids );
           <?php if ( $it['brand'] !== '' ) : ?><p class="t5-eyebrow"><?php echo esc_html( $it['brand'] ); ?></p><?php endif; ?>
           <h3 class="t5-name"><a href="#produit-n-<?php echo esc_attr( $it['pos'] ); ?>"><?php if ( $it['brand'] !== '' ) : ?><span class="t5-brand-inline"><?php echo esc_html( $it['brand'] ); ?> </span><?php endif; ?><?php echo esc_html( $it['name'] ); ?></a></h3>
           <?php if ( $it['label'] !== '' ) : ?><p class="t5-label"><?php echo esc_html( $it['label'] ); ?></p><?php endif; ?>
-          <?php if ( $it['summary'] !== '' ) : ?><p class="t5-summary"><?php echo esc_html( $it['summary'] ); ?></p><?php endif; ?>
+          <?php if ( $it['summary'] !== '' ) : ?><p class="t5-summary"><?php echo wp_kses_post( $it['summary'] ); ?></p><?php endif; ?>
           <?php if ( $it['pros'] || $it['cons'] ) : ?>
           <ul class="t5-pc">
             <?php foreach ( $it['pros'] as $p ) : ?>
