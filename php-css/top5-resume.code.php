@@ -394,14 +394,14 @@ $top5_set      = array_flip( $ids );
             <?php
             $links = array();
             foreach ( $it['offer_urls'] as $idx => $u ) {
-              if ( $it['has_price'] && $idx === 0 ) { continue; }
+              if ( $idx === 0 ) { continue; }
               $mn = mt5_merchant_name( $u );
               if ( $mn !== '' ) {
                 $links[] = '<a href="' . esc_url( $u ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $mn ) . '</a>';
               }
             }
             if ( ! empty( $links ) ) : ?>
-            <div class="t5-merchants"><?php echo $it['has_price'] ? 'ou sur ' : 'chez '; ?><?php echo mt5_join_et( $links ); ?></div>
+            <div class="t5-merchants">ou sur <?php echo mt5_join_et( $links ); ?></div>
             <?php endif; ?>
           </div>
         </div>
