@@ -33,7 +33,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
         'name'   => $name,
         'price'  => is_numeric( $c ) ? (float) $c : 0.0,
         'asin'   => $asin,
-        'no_art' => ( $forced !== '' && $brand !== '' && ( strcasecmp( $forced, $brand ) === 0 || mb_stripos( $forced, $brand . ' (' ) === 0 ) ),
+        'no_art' => ( $forced !== '' && $brand !== '' && mb_stripos( $forced, $brand ) === 0 ),
       );
     }
     if ( $prods[0]['name'] === '' ) { return ''; }
