@@ -1,57 +1,59 @@
 # Mission : affinage des scores produits via les avis Amazon (WordPress / Bricks)
 
-> Prompt de passation à donner à une nouvelle instance. Il est autonome : il contient
-> le contexte, le code complet, et les étapes à faire suivre à l'utilisateur.
+> Prompt de passation. **Architecture « base figée »** : le calcul du score est une
+> fonction pure, **idempotente et rejouable** (aucune dérive, même après un refresh des avis).
 
 ## Contexte
 - Site **meilleurtest.fr** : WordPress + Bricks Builder, hébergé sur **Cloudways**.
-  Chemin de l'app WP : `/home/master/applications/meilleurtestbricks/public_html`.
-- Les produits sont un **CPT `avis`** (~13 400 ont un ASIN Amazon dans l'ACF `mltv5_asin_amazon`).
-- **Déjà réalisé en amont** : le **nombre d'avis** et la **note Amazon** ont été récupérés via
-  l'API **Keepa** et stockés dans les ACF `mltv5_nombre_avis_clients` et
-  `mltv5_score_avis_clients` (note /5). *C'est le prérequis de cette tâche — ne pas y toucher.*
-- Tout le code est dans le repo GitHub **`marketingprofr/update-bricks`**, branche
-  **`claude/amazon-product-data-scraper-k4goq3`**, cloné sur le serveur dans **`~/update-bricks`**.
+  App WP : `/home/master/applications/meilleurtestbricks/public_html`.
+- Produits = **CPT `avis`** (~13 700 ont un ASIN dans l'ACF `mltv5_asin_amazon`).
+- **En amont** : le **nombre d'avis** (`mltv5_nombre_avis_clients`) et la **note /5**
+  (`mltv5_score_avis_clients`) sont récupérés via l'API **Keepa**.
+- Repo : **`marketingprofr/update-bricks`**, branche
+  **`claude/amazon-product-data-scraper-k4goq3`**, cloné dans **`~/update-bricks`**.
+- Cache : **FlyingPress + Varnish** (PAS Breeze), à purger **une seule fois à la fin**.
 
-## Ce qui a été fait pour l'affinage du score
-On calcule un **score global /100** stocké dans l'ACF **`mltv5_score_total`**, à partir des
-avis Amazon. Formule `ecom_score` (source d'origine : `factory/scripts/ecom_score.py`, portée
-en PHP avec **parité exacte vérifiée**) :
+## Architecture du score (le point clé : base figée)
+Le score global /100 (`mltv5_score_total`) est une **fonction pure** de :
+- **`mltv5_score_initial`** = le score **éditorial d'origine, FIGÉ** (ne bouge jamais).
+  C'est ce qui rend le calcul idempotent.
+- + les avis Amazon (note + nombre).
 
-- **Score Amazon /100** = `s10(note, nb_avis) × 10`, où `s10` (échelle /10) :
-  - `nb ≤ 100` : `2 × (3 + (note − 3) × log10(nb) / 2)`
-  - `nb > 100` : `2 × (note + (5 − note) × log10(nb/100) / (2 + log10(nb/100)))`
-- **Pondération** par le nombre d'avis : `w = min(nb, 100) / 100` ;
-  `mélange = ancien × (1 − w) + amazon × w`.
-- **Asymétrie** : si le mélange **baisse** le score → appliqué en entier ; s'il le **monte**
-  → on ne garde que **50 % de l'écart** : `ancien + 0.5 × (mélange − ancien)`.
-  Puis arrondi à l'entier le plus proche.
-- **Idempotence par marqueur** : après calcul, on pose une meta cachée
-  `mltv5_score_calcule = 1`. Les produits déjà marqués sont **sautés** → jamais recalculés.
-  *Indispensable : sinon la hausse à 50 % se cumulerait à chaque passage.*
-- **Éligibilité** (les 3) : ASIN rempli **+** note & nb d'avis remplis **+** pas déjà marqué.
-- Si `mltv5_score_total` est vide → on pose directement le score Amazon.
-- Le script **ne modifie QUE** `mltv5_score_total` et `mltv5_score_calcule`. Rien d'autre.
+```
+base    = mltv5_score_initial
+          (si absent → CAPTURÉ depuis mltv5_score_total actuel ; 'none' si vide = pas de base)
+amazon  = s10(note, nb) * 10                         (score /100)
+w       = min(nb, 100) / 100
+mélange = base * (1 - w) + amazon * w
+baisse (mélange <= base) : score = mélange                       (complet)
+hausse (mélange >  base) : score = base + 0.5*(mélange - base)   (50% de l'écart)
+score_total = round(score)          ; si base = 'none' → score = round(amazon)
+```
+Formule `s10` (ecom_score, échelle /10) :
+- `nb ≤ 100` : `2 * (3 + (note - 3) * log10(nb) / 2)`
+- `nb > 100` : `2 * (note + (5 - note) * log10(nb/100) / (2 + log10(nb/100)))`
+
+**Pourquoi idempotent ET refresh-safe :** la base ne bouge jamais → relancer donne
+toujours le même score (avis inchangés) ou le bon score (avis rafraîchis), **sans cumul**.
+On peut relancer autant qu'on veut. (L'ancien design mélangeait `score_total` avec lui-même
+et dérivait à chaque passage — d'où l'ancien marqueur `mltv5_score_calcule`, désormais **supprimé**.)
 
 ## Le code — `~/update-bricks/wp-score-total.php`
 ```php
 <?php
 /**
- * Score global (mltv5_score_total) à partir des avis Amazon — pondéré, idempotent par MARQUEUR meta.
- * Usage : wp eval-file wp-score-total.php dry|live  (dry = simulation, live = écriture)
+ * Score global (mltv5_score_total) — pondéré, IDEMPOTENT par base figée mltv5_score_initial.
+ * Usage : wp eval-file wp-score-total.php dry|live
  */
 $MODE = strtolower($args[0] ?? 'dry');
 $LIVE = ($MODE === 'live');
-
-$POPULATE_EMPTY = true;   // score_total vide → poser le score Amazon direct (round(amazon))
 
 $POST_TYPE = 'avis';
 $F_SCORE   = 'mltv5_score_avis_clients';   // note /5  (r)
 $F_COUNT   = 'mltv5_nombre_avis_clients';  // nb avis  (n)
 $F_TOTAL   = 'mltv5_score_total';          // cible /100
+$F_INITIAL = 'mltv5_score_initial';        // base figée (num | 'none' | absent)
 $F_ASIN    = 'mltv5_asin_amazon';
-$FLAG_META  = 'mltv5_score_calcule';       // marqueur "déjà calculé"
-$FLAG_VALUE = '1';
 $BATCH = 500;
 
 if (!function_exists('ecom_s10')) {
@@ -73,33 +75,28 @@ if (!function_exists('mt_parse_num')) {
 $ids = get_posts([
     'post_type' => $POST_TYPE, 'post_status' => 'publish', 'posts_per_page' => -1, 'fields' => 'ids',
     'meta_query' => ['relation' => 'AND',
-        [ 'key' => $F_ASIN, 'compare' => 'EXISTS' ],
+        [ 'key' => $F_ASIN,  'compare' => 'EXISTS' ],
         [ 'key' => $F_SCORE, 'compare' => 'EXISTS' ],
         [ 'key' => $F_COUNT, 'compare' => 'EXISTS' ],
     ],
 ]);
-$done = get_posts([
-    'post_type' => $POST_TYPE, 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids',
-    'meta_query' => [[ 'key' => $FLAG_META, 'compare' => 'EXISTS' ]],
-]);
-$done_set = array_flip($done);
-WP_CLI::log(sprintf("%d posts avec ASIN+note+avis | déjà calculés : %d | Mode : %s",
-    count($ids), count($done), $LIVE ? '*** ÉCRITURE RÉELLE ***' : 'SIMULATION'));
+WP_CLI::log(sprintf("%d posts avec ASIN+note+avis | Mode : %s",
+    count($ids), $LIVE ? '*** ÉCRITURE RÉELLE ***' : 'SIMULATION'));
 
 $bh = null;
 if ($LIVE) {
     $backup = 'score-total-backup-' . date('Ymd-His') . '.csv';
     $bh = fopen($backup, 'w');
-    fputcsv($bh, ['post_id', 'asin', 'score_total_avant', 'score_total_apres']);
+    fputcsv($bh, ['post_id', 'asin', 'score_initial', 'score_total_avant', 'score_total_apres']);
     WP_CLI::log("Sauvegarde → {$backup}");
 }
 
 wp_suspend_cache_addition(true);
-$st = ['seen'=>0,'already'=>0,'ineligible'=>0,'lowered'=>0,'raised'=>0,'populated'=>0,'kept'=>0];
+$st = ['seen'=>0,'ineligible'=>0,'captured'=>0,'lowered'=>0,'raised'=>0,'unchanged'=>0,'set'=>0];
 $ex = 0;
+
 foreach ($ids as $i => $pid) {
     $st['seen']++;
-    if (isset($done_set[$pid])) { $st['already']++; continue; }
     $meta  = get_post_meta($pid);
     $asin  = strtoupper(trim((string) ($meta[$F_ASIN][0] ?? '')));
     $r     = mt_parse_num($meta[$F_SCORE][0] ?? '');
@@ -107,78 +104,74 @@ foreach ($ids as $i => $pid) {
     $n     = ($n_raw === '') ? null : (int) preg_replace('/[^0-9]/', '', (string) $n_raw);
     if ($asin === '' || $r === null || $n === null || $n < 1) { $st['ineligible']++; continue; }
 
-    $amazon  = max(0.0, min(100.0, ecom_s10($r, $n) * 10.0));
-    $cur_raw = $meta[$F_TOTAL][0] ?? '';
-    $cur     = mt_parse_num($cur_raw);
-    $kind = null; $final = null;
-    if ($cur === null) {
-        if ($POPULATE_EMPTY) { $final = (int) round($amazon); $kind = 'populated'; }
-        else { continue; }
+    $cur_total_raw = $meta[$F_TOTAL][0] ?? '';
+    $cur_total     = mt_parse_num($cur_total_raw);
+
+    // Base figée : mltv5_score_initial (capture si absent)
+    $initial_raw = $meta[$F_INITIAL][0] ?? '';
+    if ($initial_raw === '') {
+        if ($cur_total === null) { $base = null; $init_store = 'none'; }
+        else                     { $base = $cur_total; $init_store = (string) $cur_total; }
+        if ($LIVE) update_post_meta($pid, $F_INITIAL, $init_store);
+        $st['captured']++;
+    } elseif ($initial_raw === 'none') {
+        $base = null;
+    } else {
+        $base = mt_parse_num($initial_raw);
+    }
+
+    $amazon = max(0.0, min(100.0, ecom_s10($r, $n) * 10.0));
+    if ($base === null) {
+        $final = (int) round($amazon);
     } else {
         $w = min($n, 100) / 100.0;
-        $blended = $cur * (1.0 - $w) + $amazon * $w;
-        if ($blended > $cur) {
-            $final = (int) round($cur + 0.5 * ($blended - $cur));
-            $kind  = ($final > $cur) ? 'raised' : 'kept';
-        } else {
-            $final = (int) round($blended);
-            $kind  = ($final < $cur) ? 'lowered' : 'kept';
-        }
+        $blended = $base * (1.0 - $w) + $amazon * $w;
+        if ($blended > $base) $final = (int) round($base + 0.5 * ($blended - $base));
+        else                  $final = (int) round($blended);
     }
-    if ($LIVE) {
-        if ($kind !== 'kept') update_post_meta($pid, $F_TOTAL, $final);
-        update_post_meta($pid, $FLAG_META, $FLAG_VALUE);
-        if ($bh) fputcsv($bh, [$pid, $asin, $cur_raw, $final]);
-    }
+
+    if ($cur_total === null)                   $kind = 'set';
+    elseif ($final < (int) round($cur_total))  $kind = 'lowered';
+    elseif ($final > (int) round($cur_total))  $kind = 'raised';
+    else                                       $kind = 'unchanged';
+
+    if ($LIVE && $kind !== 'unchanged') update_post_meta($pid, $F_TOTAL, $final);
+    if ($LIVE && $bh) fputcsv($bh, [$pid, $asin, ($base === null ? 'none' : $base), $cur_total_raw, $final]);
     $st[$kind]++;
-    if (!$LIVE && $ex < 12 && $kind !== 'kept') {
-        WP_CLI::log(sprintf("  ex. #%d (%s) : note %.1f, %d avis, w=%.2f, amazon %.1f | total %s → %d (%s)",
-            $pid, $asin, $r, $n, min($n,100)/100.0, $amazon, ($cur_raw===''?'(vide)':$cur_raw), $final, $kind));
-        $ex++;
-    }
-    if (($i + 1) % $BATCH === 0) WP_CLI::log(sprintf("… %d/%d parcourus", $i + 1, count($ids)));
+
+    if (($i + 1) % $BATCH === 0) WP_CLI::log(sprintf("… %d/%d", $i + 1, count($ids)));
 }
 if ($bh) fclose($bh);
 wp_suspend_cache_addition(false);
 
-WP_CLI::log(str_repeat('=', 56));
-WP_CLI::log(sprintf("Éligibles parcourus : %d", $st['seen']));
-WP_CLI::log(sprintf("  déjà tagués (sautés)        : %d", $st['already']));
-WP_CLI::log(sprintf("  inéligibles (ASIN/avis vide): %d", $st['ineligible']));
-WP_CLI::log(sprintf("  abaissés                    : %d", $st['lowered']));
-WP_CLI::log(sprintf("  montés (50%% de l'écart)     : %d", $st['raised']));
-WP_CLI::log(sprintf("  posés (score_total vide)    : %d", $st['populated']));
-WP_CLI::log(sprintf("  inchangés (calculés, tagués): %d", $st['kept']));
-WP_CLI::log(str_repeat('=', 56));
-if ($LIVE) WP_CLI::success("Fait. Marqueur posé. Purge Varnish + Breeze.");
-else       WP_CLI::success("SIMULATION — rien écrit. Vérifie l'échelle des « total », puis « live ».");
+WP_CLI::log(sprintf("Parcourus %d | inéligibles %d | capturés %d | abaissés %d | montés %d | posés %d | inchangés %d",
+    $st['seen'], $st['ineligible'], $st['captured'], $st['lowered'], $st['raised'], $st['set'], $st['unchanged']));
+WP_CLI::success($LIVE ? "Score recalculé. Purge FlyingPress + Varnish." : "SIMULATION — rien écrit.");
 ```
 
-## Étapes que l'utilisateur doit suivre (à lui rappeler)
-1. **Se connecter au serveur** (dans PowerShell/Terminal, PAS en local) :
-   `ssh master_cpxwgynxgt@64.226.121.229` → mot de passe Cloudways (rien ne s'affiche à la
-   saisie, c'est normal).
-2. **Récupérer le code** : `cd ~/update-bricks && git pull`
-3. **Simulation** (n'écrit rien) :
-   `wp eval-file wp-score-total.php dry --path=/home/master/applications/meilleurtestbricks/public_html`
-   → vérifier que la colonne `total` existante est bien sur **/100** (ex. `85`, `92`) et
-   regarder le récap (abaissés / montés / posés / inchangés).
-4. **Écriture réelle** (après validation de la simulation) :
-   `wp eval-file wp-score-total.php live --path=/home/master/applications/meilleurtestbricks/public_html`
-   → écrit `mltv5_score_total`, pose le marqueur, crée `score-total-backup-AAAAMMJJ-HHMMSS.csv`.
-5. **Purger le cache** :
-   `wp breeze purge --cache=all --path=/home/master/applications/meilleurtestbricks/public_html`
-   **+** bouton *Purge Varnish* dans le dashboard Cloudways.
-6. **Vérifier** 2-3 fiches produit en front.
+## Comment (re)calculer les scores
+La base `mltv5_score_initial` est **déjà établie** → il suffit de relancer le script :
+1. `ssh master_cpxwgynxgt@64.226.121.229` (mot de passe Cloudways).
+2. `cd ~/update-bricks && git pull`
+3. **Simulation** : `wp eval-file wp-score-total.php dry --path=/home/master/applications/meilleurtestbricks/public_html`
+   → vérifier que les **`inchangés` dominent** (preuve d'idempotence) ; les changements = produits
+   dont les avis ont été rafraîchis, ou nouveaux produits jamais scorés (`base capturée`).
+4. **Écriture** : `wp eval-file wp-score-total.php live --path=…` (crée une sauvegarde CSV).
+5. **Purger FlyingPress + Varnish** une seule fois à la fin.
 
-## Points importants / pièges
-- **Ré-exécutable sans risque** : le marqueur `mltv5_score_calcule` garantit qu'un produit
-  n'est calculé qu'une seule fois. Relancer `live` ne traite que les produits
-  **nouveaux / non marqués**.
-- **Rollback** : la sauvegarde CSV contient `post_id, asin, score_total_avant,
-  score_total_apres`. Pour ré-autoriser un recalcul, supprimer la meta `mltv5_score_calcule`
-  des produits concernés.
-- **Ne jamais toucher** d'autres champs que `mltv5_score_total` + `mltv5_score_calcule`.
-- Toujours **simuler (`dry`) avant `live`**, et **purger le cache** après.
-- Prérequis : les ACF `mltv5_score_avis_clients` et `mltv5_nombre_avis_clients` doivent être
-  remplis (fait via Keepa en amont).
+## Rafraîchir puis re-scorer (cas typique)
+Après avoir mis à jour `mltv5_nombre_avis_clients` / `mltv5_score_avis_clients` (via le pipeline
+Amazon/Keepa), **relancer simplement** `wp-score-total.php dry` puis `live` : seuls les produits
+concernés changent, la base figée garantit un recalcul correct sans cumul.
+
+## Mise en place initiale (déjà faite — pour référence)
+`mltv5_score_initial` a été peuplé une fois via **`wp-migrate-score-initial.php`** depuis les
+sauvegardes du 1er score (colonne `score_total_avant` = valeur éditoriale d'origine). Pour un
+produit jamais scoré, le script principal capture l'initial depuis `score_total` au 1er passage.
+**Aucune ré-migration nécessaire.**
+
+## Pièges / points importants
+- Le script ne modifie **QUE** `mltv5_score_total` (+ capture `mltv5_score_initial` la 1re fois).
+- **Idempotent** : relancer ne dérive jamais (base figée).
+- **`mltv5_score_recent` n'est JAMAIS touché.**
+- Toujours **`dry` avant `live`**, purge **FlyingPress + Varnish** (pas Breeze) une fois à la fin.
