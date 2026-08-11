@@ -32,6 +32,12 @@ $F_COUNT   = 'mltv5_nombre_avis_clients';  // nb avis  (n)
 $F_TOTAL   = 'mltv5_score_total';          // cible /100
 $F_INITIAL = 'mltv5_score_initial';        // base figée (num | 'none' | absent)
 $F_ASIN    = 'mltv5_asin_amazon';
+
+// Pénalité : -X pts si le produit porte le tag DISCO (définitivement parti)
+$DISCO_PENALTY = 10;
+$DISCO_TAG     = 'DISCO';
+$DISCO_TAX     = 'post_tag';
+
 $BATCH = 500;
 
 if (!function_exists('ecom_s10')) {
@@ -61,6 +67,13 @@ $ids = get_posts([
 WP_CLI::log(sprintf("%d posts avec ASIN+note+avis | Mode : %s",
     count($ids), $LIVE ? '*** ÉCRITURE RÉELLE ***' : 'SIMULATION (rien écrit)'));
 
+// Produits tagués DISCO (pour la pénalité) — 1 requête
+$disco_set = array_flip(get_posts([
+    'post_type' => $POST_TYPE, 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids',
+    'tax_query' => [[ 'taxonomy' => $DISCO_TAX, 'field' => 'name', 'terms' => $DISCO_TAG ]],
+]));
+WP_CLI::log(sprintf("Produits tagués %s : %d (pénalité -%d au score)", $DISCO_TAG, count($disco_set), $DISCO_PENALTY));
+
 $bh = null;
 if ($LIVE) {
     $backup = 'score-total-backup-' . date('Ymd-His') . '.csv';
@@ -70,7 +83,7 @@ if ($LIVE) {
 }
 
 wp_suspend_cache_addition(true);
-$st = ['seen'=>0,'ineligible'=>0,'captured'=>0,'lowered'=>0,'raised'=>0,'unchanged'=>0,'set'=>0];
+$st = ['seen'=>0,'ineligible'=>0,'captured'=>0,'lowered'=>0,'raised'=>0,'unchanged'=>0,'set'=>0,'disco'=>0];
 $ex = 0;
 
 foreach ($ids as $i => $pid) {
@@ -110,6 +123,12 @@ foreach ($ids as $i => $pid) {
         else                  $final = (int) round($blended);                        // baisse pleine
     }
 
+    // Pénalité DISCO (produit définitivement parti) : -X pts, plancher 0.
+    // Appliquée au score FINAL (pas à la base) → reste idempotent, et se corrige
+    // tout seul si le tag DISCO disparaît (produit revenu en stock).
+    $disco = isset($disco_set[$pid]);
+    if ($disco) { $final = max(0, $final - $DISCO_PENALTY); $st['disco']++; }
+
     // --- Net vs score_total actuel ---
     if ($cur_total === null)          $kind = 'set';
     elseif ($final < (int) round($cur_total)) $kind = 'lowered';
@@ -121,9 +140,10 @@ foreach ($ids as $i => $pid) {
     $st[$kind]++;
 
     if (!$LIVE && $ex < 12 && $kind !== 'unchanged') {
-        WP_CLI::log(sprintf("  ex. #%d (%s) : base %s, note %.1f, %d avis (w=%.2f), amazon %.1f | total %s → %d (%s)",
+        WP_CLI::log(sprintf("  ex. #%d (%s) : base %s, note %.1f, %d avis (w=%.2f), amazon %.1f | total %s → %d (%s)%s",
             $pid, $asin, ($base === null ? 'none' : (string) $base), $r, $n, min($n, 100) / 100.0, $amazon,
-            ($cur_total_raw === '' ? '(vide)' : $cur_total_raw), $final, $kind));
+            ($cur_total_raw === '' ? '(vide)' : $cur_total_raw), $final, $kind,
+            $disco ? " [DISCO -{$DISCO_PENALTY}]" : ''));
         $ex++;
     }
     if (($i + 1) % $BATCH === 0) WP_CLI::log(sprintf("… %d/%d parcourus", $i + 1, count($ids)));
@@ -139,6 +159,7 @@ WP_CLI::log(sprintf("  %sabaissés                 : %d", $v, $st['lowered']));
 WP_CLI::log(sprintf("  %smontés (50%% de l'écart)  : %d", $v, $st['raised']));
 WP_CLI::log(sprintf("  %sposés (score_total vide)  : %d", $v, $st['set']));
 WP_CLI::log(sprintf("  %sinchangés                 : %d", $v, $st['unchanged']));
+WP_CLI::log(sprintf("  %sdont pénalité DISCO (-%d)  : %d", $v, $DISCO_PENALTY, $st['disco']));
 WP_CLI::log(str_repeat('=', 56));
 
 if ($LIVE) WP_CLI::success("Score global recalculé (base figée mltv5_score_initial). Purge cache.");
