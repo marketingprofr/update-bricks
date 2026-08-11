@@ -81,6 +81,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     $d1 = (int) substr( $s, -1 );
     $d2 = strlen( $s ) >= 2 ? (int) substr( $s, -2, 1 ) : 0;
     $d3 = strlen( $s ) >= 3 ? (int) substr( $s, -3, 1 ) : 0;
+    $d4 = strlen( $s ) >= 4 ? (int) substr( $s, -4, 1 ) : 0;
 
     $hooks = array(
       'Pour faire simple, ',
@@ -148,7 +149,12 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       'Notre deuxième choix se porte sur ' . $p2 . '.',
     );
 
-    $out = $hooks[ $d1 ] . $mains[ $d2 ] . '.';
+    $main = $mains[ $d2 ];
+    if ( $d4 < 5 ) {
+      $out = $hooks[ $d1 ] . $main . '.';
+    } else {
+      $out = mb_strtoupper( mb_substr( $main, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $main, 1, null, 'UTF-8' ) . '.';
+    }
     if ( $p2 !== '' ) {
       $out .= ' ' . ( $is_budget ? $budgets[ $d3 ] : $alts[ $d3 ] );
     }
