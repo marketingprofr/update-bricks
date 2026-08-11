@@ -81,7 +81,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     } elseif ( $n_price >= 1 ) {
       $fins = array( 'sur le marché en ' . $year, 'disponible' . ( $pl ? 's' : '' ) . ' en ' . $year );
     } else {
-      $fins = array( 'du moment', 'à choisir en ' . $year, 'en ' . $year );
+      $fins = array( 'du moment', 'en ' . $year );
     }
 
     /* "nos/les [type] préférés/préférées" — accord complet */
