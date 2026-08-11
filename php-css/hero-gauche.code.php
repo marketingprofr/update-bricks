@@ -10,7 +10,7 @@ $total_avis = !empty($top_avis_ids) ? count($top_avis_ids) : 0;
 $mod = date_i18n('j F Y', get_the_modified_time('U'));
 
 if ( ! function_exists( 'mt_intro_reco' ) ) {
-  function mt_intro_reco( $page_id, $ids, $type_plur, $llm = '' ) {
+  function mt_intro_reco( $page_id, $ids, $type_plur, $type_sing = '', $llm = '' ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
     if ( count( $ids ) < 2 ) { return ''; }
 
@@ -51,6 +51,8 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
 
     $type  = trim( (string) $type_plur );
     $type_lc = $type !== '' ? esc_html( mb_strtolower( $type, 'UTF-8' ) ) : '';
+    $ts      = trim( (string) $type_sing );
+    $type_s  = $ts !== '' ? esc_html( mb_strtolower( $ts, 'UTF-8' ) ) : $type_lc;
 
     /* Accord genre+nombre depuis $llm ("le meilleur"/"la meilleure"/"les meilleurs"/"les meilleures") */
     $llm_t = mb_strtolower( trim( (string) $llm ), 'UTF-8' );
@@ -110,8 +112,8 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
 
     /* P1 — « nos [type] préférés sont… » (accord llm) */
     $m0 = $type_lc !== '' ? 'nos ' . $type_lc . ' ' . $pref . ' ' . $v( 'est', 'sont' ) . ' ' . $p1 : '';
-    /* P2 — « le meilleur [type] qui répondra aux besoins du plus grand nombre » */
-    $m1 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_lc !== '' ? ' ' . $type_lc : '' ) . ' qui ' . $v( 'répondra', 'répondront' ) . ' aux besoins du plus grand nombre';
+    /* P2 — « le meilleur [type singulier] qui conviendra au plus grand nombre » */
+    $m1 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' qui ' . $v( 'conviendra', 'conviendront' ) . ' au plus grand nombre';
     /* P3a — « notre préféré » */
     $m2 = $p1 . ' est notre ' . $pref;
     /* P3b — « notre coup de cœur » */
@@ -119,10 +121,10 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     /* P14 — « répond avec brio à tous nos critères de sélection » */
     $m4 = $p1 . ' ' . $v( 'répond', 'répondent' ) . ' avec brio à tous nos critères de sélection';
     /* P6 — « Nous avons trouvé que… » */
-    $m5 = 'nous avons trouvé que ' . $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_lc !== '' ? ' ' . $type_lc : '' ) . ' ' . $fin;
+    $m5 = 'nous avons trouvé que ' . $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
     /* P7 — « Après avoir analysé N [type]… le meilleur du moment » */
     $nb = count( $ids );
-    $m6 = 'après avoir analysé ' . $nb . ( $type_lc !== '' ? ' ' . $type_lc : ' produits' ) . ', ' . $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ' ' . $fin;
+    $m6 = 'après avoir analysé ' . $nb . ( $type_lc !== '' ? ' ' . $type_lc : ' produits' ) . ', ' . $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
     /* P8 — « s'impose en tête de notre sélection » */
     $m7 = $p1 . ' ' . $v( 's\'impose', 's\'imposent' ) . ' en tête de notre sélection';
     /* P11 — « décroche la première place » */
@@ -358,7 +360,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   }
   echo $mt_intro_html;
   if ( $MT_SHOW_INTRO_RECO && $post_type === 'comparatif' ) {
-      echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
+      echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
   <?php if ( $MT_SHOW_QUICK_PICKS && $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
