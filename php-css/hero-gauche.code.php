@@ -130,7 +130,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     /* P8 — « décroche la première place » */
     $m8 = $p1 . ' ' . $v( 'décroche', 'décrochent' ) . ' la première place de notre classement';
     /* P9 — « est, selon nous, le meilleur choix de tous les [type] [fin] » */
-    $m9 = $p1 . ' ' . $v( 'est', 'sont' ) . ', selon nous, le meilleur choix de ' . ( $fem ? 'toutes les' : 'tous les' ) . ' ' . ( $type_lc !== '' ? $type_lc : 'produits' ) . ' ' . $fin;
+    $m9 = $p1 . ' ' . $v( 'est', 'sont' ) . ', selon nous, le meilleur choix parmi ' . ( $fem ? 'toutes les' : 'tous les' ) . ' ' . ( $type_lc !== '' ? $type_lc : 'produits' ) . ' ' . $fin_court;
 
     $mains = array( $m0, $m1, $m2, $m3, $m4, $m5, $m6, $m7, $m8, $m9 );
     if ( $m0 === '' ) { $mains[0] = $m3; }
