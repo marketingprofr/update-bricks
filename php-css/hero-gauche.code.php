@@ -28,11 +28,21 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       $c    = str_replace( array( ' ', "\xc2\xa0", '€' ), '', (string) $raw );
       $c    = str_replace( ',', '.', $c );
       $asin = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
+      $url  = '';
+      if ( $asin !== '' ) {
+        $url = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=mlt00-21';
+      } else {
+        for ( $li = 1; $li <= 3; $li++ ) {
+          $lu = trim( (string) get_field( 'mltv5_lien_du_produit_' . $li, $pid ) );
+          if ( $lu !== '' && strpos( $lu, 'http' ) === 0 ) { $url = $lu; break; }
+        }
+      }
       $prods[] = array(
         'rank'   => $i + 1,
         'name'   => $name,
         'price'  => is_numeric( $c ) ? (float) $c : 0.0,
         'asin'   => $asin,
+        'url'    => $url,
         'no_art' => ( $forced !== '' && $brand !== '' && ( mb_stripos( $forced, $brand ) === 0 || mb_stripos( $forced, $model . ' (' . $brand ) === 0 ) ),
       );
     }
@@ -69,10 +79,12 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       return $fem ? 'la ' : 'le ';
     };
 
-    $p1 = ( $prods[0]['no_art'] ? '' : $mt_art( $prods[0]['name'] ) ) . '<a href="#produit-n-1">' . esc_html( $prods[0]['name'] ) . '</a>';
+    $p1_url = $prods[0]['url'] !== '' ? $prods[0]['url'] : '#produit-n-1';
+    $p1 = ( $prods[0]['no_art'] ? '' : $mt_art( $prods[0]['name'] ) ) . '<a href="' . esc_url( $p1_url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>';
     $p2 = '';
     if ( $second ) {
-      $p2 = ( $second['no_art'] ? '' : $mt_art( $second['name'] ) ) . '<a href="#produit-n-' . (int) $second['rank'] . '">' . esc_html( $second['name'] ) . '</a>';
+      $p2_url = $second['url'] !== '' ? $second['url'] : '#produit-n-' . (int) $second['rank'];
+      $p2 = ( $second['no_art'] ? '' : $mt_art( $second['name'] ) ) . '<a href="' . esc_url( $p2_url ) . '">' . esc_html( $second['name'] ) . '</a>';
     }
 
     /* Terminaison conditionnelle : prix+ASIN → "à acheter", prix seul → "sur le marché", sinon "du moment"/"à choisir" */
