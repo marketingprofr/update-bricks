@@ -1,0 +1,4 @@
+# Intermediate per-batch correction files produced during the intro review run.
+# The authoritative output is content/intros-corrections.csv.
+corrections-*.json
+.batch-work/
