@@ -107,9 +107,9 @@
 .mt-top5 .t5-cust .stars { color: var(--gold); letter-spacing: .5px; }
 .mt-top5 .t5-cust .cust-count { color: var(--muted-2); }
 
-.mt-top5 .t5-buy { width: 168px; text-align: center; }
+.mt-top5 .t5-buy { min-width: 200px; text-align: center; }
 .mt-top5 .t5-cta {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
+  display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
   width: 100%; padding: 10px 18px; border-radius: 9px; font-size: 13px; font-weight: 600;
   background: var(--accent); color: var(--at-white); border: 1px solid var(--accent); transition: all .15s;
 }
