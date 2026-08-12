@@ -69,11 +69,11 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     $llm_t = mb_strtolower( trim( (string) $llm ), 'UTF-8' );
     $pl    = ( mb_strpos( $llm_t, 'les ' ) === 0 );
     $fem   = ( mb_strpos( $llm_t, 'meilleure' ) !== false );
-    $v     = function ( $sing, $plur ) use ( $pl ) { return $pl ? $plur : $sing; };
+    /* $llm_s = forme singulière (un produit = une entité, toujours singulier) */
+    $llm_s = $fem ? 'la meilleure' : 'le meilleur';
 
-    /* Article défini devant le nom de produit (le/la/l'/les) */
-    $mt_art = function ( $name ) use ( $pl, $fem ) {
-      if ( $pl ) { return 'les '; }
+    /* Article défini devant le nom de produit — toujours singulier */
+    $mt_art = function ( $name ) use ( $fem ) {
       $fc = mb_strtolower( mb_substr( $name, 0, 1, 'UTF-8' ), 'UTF-8' );
       if ( in_array( $fc, array( 'a', 'à', 'â', 'e', 'é', 'è', 'ê', 'i', 'î', 'o', 'ô', 'u', 'û' ), true ) ) { return 'l\''; }
       return $fem ? 'la ' : 'le ';
@@ -91,7 +91,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
     if ( $n_price >= 1 && $has_asin ) {
       $fins = array( 'que vous pouvez acheter en ' . $year, 'à acheter en ' . $year );
     } elseif ( $n_price >= 1 ) {
-      $fins = array( 'sur le marché en ' . $year, 'disponible' . ( $pl ? 's' : '' ) . ' en ' . $year );
+      $fins = array( 'sur le marché en ' . $year, 'disponible en ' . $year );
     } else {
       $fins = array( 'du moment', 'en ' . $year );
     }
@@ -112,52 +112,55 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       ? 'nos ' . $type_lc . ' ' . $pref . ' ' . $fin_court . ' sont ' . $p1
       : 'notre ' . $type_s . ' ' . $pref . ' ' . $fin_court . ' est ' . $p1
     ) : '';
-    /* P1 — « est le meilleur [type_sing] [fin] » */
-    $m1 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
-    /* P2 — « [P1] est notre [type] préféré(e) » */
-    $m2 = $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . $v( 'notre', 'nos' ) . ' ' . ( $type_s !== '' ? $v( $type_s, $type_lc ) . ' ' : '' ) . $pref;
-    /* P3 — « notre coup de cœur parmi les [type] » */
-    $m3 = $p1 . ' ' . $v( 'est', 'sont' ) . ' notre coup de cœur parmi ' . ( $type_lc !== '' ? 'les ' . $type_lc : 'ce comparatif' );
+    /* Accord singulier du préféré pour les patterns produit */
+    $pref_s = $fem ? 'préférée' : 'préféré';
+
+    /* P1 — « est la meilleure [type_sing] [fin] » */
+    $m1 = $p1 . ' est ' . $llm_s . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
+    /* P2 — « est notre [type_sing] préféré(e) » */
+    $m2 = $p1 . ' est notre ' . ( $type_s !== '' ? $type_s . ' ' : '' ) . $pref_s;
+    /* P3 — « est notre coup de cœur parmi les [type] » */
+    $m3 = $p1 . ' est notre coup de cœur parmi ' . ( $type_lc !== '' ? 'les ' . $type_lc : 'ce comparatif' );
     /* P4 — « répond à tous nos critères de sélection » */
-    $m4 = $p1 . ' ' . $v( 'répond', 'répondent' ) . ' à tous nos critères de sélection';
-    /* P5 — « nous avons trouvé que… est le meilleur [type_sing] [fin] » */
-    $m5 = 'nous avons trouvé que ' . $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
-    /* P6 — « après avoir analysé N [type]… le meilleur [fin] » */
+    $m4 = $p1 . ' répond à tous nos critères de sélection';
+    /* P5 — « nous avons trouvé que… est la meilleure [type_sing] [fin] » */
+    $m5 = 'nous avons trouvé que ' . $p1 . ' est ' . $llm_s . ( $type_s !== '' ? ' ' . $type_s : '' ) . ' ' . $fin;
+    /* P6 — « après avoir analysé N [type]… la meilleure [fin] » */
     $nb = count( $ids );
-    $m6 = 'après avoir analysé ' . $nb . ( $type_lc !== '' ? ' ' . $type_lc : ' produits' ) . ', ' . $p1 . ' ' . $v( 'est', 'sont' ) . ' ' . ( $llm_t !== '' ? $llm_t : ( $fem ? 'la meilleure' : 'le meilleur' ) ) . ' ' . $fin;
+    $m6 = 'après avoir analysé ' . $nb . ( $type_lc !== '' ? ' ' . $type_lc : ' produits' ) . ', ' . $p1 . ' est ' . $llm_s . ' ' . $fin;
     /* P7 — « s'impose en tête de notre sélection » */
-    $m7 = $p1 . ' ' . $v( 's\'impose', 's\'imposent' ) . ' en tête de notre sélection';
+    $m7 = $p1 . ' s\'impose en tête de notre sélection';
     /* P8 — « décroche la première place » */
-    $m8 = $p1 . ' ' . $v( 'décroche', 'décrochent' ) . ' la première place de notre classement';
-    /* P9 — « est, selon nous, le meilleur choix de tous les [type] [fin] » */
-    $m9 = $p1 . ' ' . $v( 'est', 'sont' ) . ', selon nous, le meilleur choix parmi ' . ( $fem ? 'toutes les' : 'tous les' ) . ' ' . ( $type_lc !== '' ? $type_lc : 'produits' ) . ' ' . $fin_court;
+    $m8 = $p1 . ' décroche la première place de notre classement';
+    /* P9 — « est, selon nous, le meilleur choix parmi tous les [type] [fin] » */
+    $m9 = $p1 . ' est, selon nous, le meilleur choix parmi ' . ( $fem ? 'toutes les' : 'tous les' ) . ' ' . ( $type_lc !== '' ? $type_lc : 'produits' ) . ' ' . $fin_court;
 
     $mains = array( $m0, $m1, $m2, $m3, $m4, $m5, $m6, $m7, $m8, $m9 );
     if ( $m0 === '' ) { $mains[0] = $m3; }
 
     $budgets = array(
       'Si vous cherchez un peu moins cher, nous recommandons ' . $p2 . '.',
-      'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' une excellente alternative.',
-      'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'offre', 'offrent' ) . ' le meilleur rapport qualité-prix.',
-      'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'mérite', 'méritent' ) . ' votre attention.',
-      'Si vous cherchez un peu moins cher, ' . $p2 . ' ' . $v( 'offre', 'offrent' ) . ' un bon compromis.',
+      'Si vous cherchez un peu moins cher, ' . $p2 . ' est une excellente alternative.',
+      'Si vous cherchez un peu moins cher, ' . $p2 . ' offre le meilleur rapport qualité-prix.',
+      'Si vous cherchez un peu moins cher, ' . $p2 . ' mérite votre attention.',
+      'Si vous cherchez un peu moins cher, ' . $p2 . ' offre un bon compromis.',
       'Si vous voulez faire des économies, nous recommandons ' . $p2 . '.',
       'En alternative plus abordable, nous recommandons ' . $p2 . '.',
-      'Si le prix est un critère important pour vous, ' . $p2 . ' ' . $v( 'propose', 'proposent' ) . ' l\'essentiel pour moins cher.',
-      'Si vous avez un budget plus serré, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'option la plus abordable de notre sélection.',
-      'Si votre priorité est le prix, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'alternative la plus accessible de notre classement.',
+      'Si le prix est un critère important pour vous, ' . $p2 . ' propose l\'essentiel pour moins cher.',
+      'Si vous avez un budget plus serré, ' . $p2 . ' est l\'option la plus abordable de notre sélection.',
+      'Si votre priorité est le prix, ' . $p2 . ' est l\'alternative la plus accessible de notre classement.',
     );
 
     $alts = array(
-      'Si vous hésitez encore, ' . $p2 . ' ' . $v( 'constitue', 'constituent' ) . ' une bonne alternative.',
-      'Juste derrière, ' . $p2 . ' ' . $v( 'mérite', 'méritent' ) . ' aussi votre attention.',
-      $p2 . ' ' . $v( 'obtient', 'obtiennent' ) . ' la deuxième place de notre classement.',
-      'En deuxième position, ' . $p2 . ' nous ' . $v( 'a', 'ont' ) . ' également convaincus.',
-      $p2 . ' ' . $v( 'est', 'sont' ) . ' également un choix envisageable.',
-      $p2 . ' ' . $v( 'est', 'sont' ) . ' tout juste derrière.',
-      'Autre option sérieuse, ' . $p2 . ' ' . $v( 'occupe', 'occupent' ) . ' la deuxième place.',
-      $p2 . ' ' . $v( 'est', 'sont' ) . ' également un excellent choix.',
-      $p2 . ' ' . $v( 'vaut', 'valent' ) . ' aussi le détour.',
+      'Si vous hésitez encore, ' . $p2 . ' constitue une bonne alternative.',
+      'Juste derrière, ' . $p2 . ' mérite aussi votre attention.',
+      $p2 . ' obtient la deuxième place de notre classement.',
+      'En deuxième position, ' . $p2 . ' nous a également convaincus.',
+      $p2 . ' est également un choix envisageable.',
+      $p2 . ' est tout juste derrière.',
+      'Autre option sérieuse, ' . $p2 . ' occupe la deuxième place.',
+      $p2 . ' est également un excellent choix.',
+      $p2 . ' vaut aussi le détour.',
       'Nous recommandons aussi ' . $p2 . '.',
     );
 
