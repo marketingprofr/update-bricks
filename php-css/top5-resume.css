@@ -127,7 +127,7 @@
     "banner banner banner"
     "media  body   aside";
   align-items: stretch; gap: 0;
-  padding: 0; overflow: hidden; border-radius: 18px;
+  padding: 0 20px; overflow: hidden; border-radius: 18px;
   border: 4px solid var(--at-primary);
   box-shadow: 0 0 10px 0 var(--at-grey-l-2);
 }
