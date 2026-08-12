@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """Append des corrections au CSV avant/apres.
-Usage: python3 append_corrections.py
+Usage: python3 append_corrections.py <numero_batch>
 
-Lit corrections.json et ajoute les corrections a content/intros-corrections.csv.
+Lit corrections-<batch>.json et ajoute les corrections a content/intros-corrections.csv.
 
-corrections.json contient une liste :
+corrections-<batch>.json contient une liste :
 [
   {"id": "12345", "titre": "Les meilleurs ...", "avant": "<html avant>", "apres": "<html apres>"},
   ...
 ]
 """
-import csv, json
+import csv, json, sys
 
-SOURCE = 'corrections.json'
+batch = sys.argv[1]
+SOURCE = f'corrections-{batch}.json'
 DEST = 'content/intros-corrections.csv'
 
 with open(SOURCE, encoding='utf-8') as f:
