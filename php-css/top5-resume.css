@@ -331,7 +331,7 @@
   .mt-top5 .t5-howto { margin-left: 0; }
 }
 /* ===== Plage de scores (sous le titre) ===== */
-.mt-top5 .t5-range { font-size: 14px; color: var(--muted); margin: 6px 0 0; line-height: 1.6; }
+.mt-top5 .t5-range { font-family: 'Inter', sans-serif; font-size: 16px; color: var(--muted); margin: 6px 0 0; line-height: 1.6; }
 .mt-top5 .t5-range b { color: var(--ink); font-weight: 600; }
 
 
