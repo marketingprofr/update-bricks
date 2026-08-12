@@ -133,7 +133,7 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
       'En alternative plus abordable, nous recommandons ' . $p2 . '.',
       'Si le prix est un critère important pour vous, ' . $p2 . ' ' . $v( 'propose', 'proposent' ) . ' l\'essentiel pour moins cher.',
       'Si vous avez un budget plus serré, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'option la plus abordable de notre sélection.',
-      'Si votre priorité est le prix, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'alternative la plus accessible du classement.',
+      'Si votre priorité est le prix, ' . $p2 . ' ' . $v( 'est', 'sont' ) . ' l\'alternative la plus accessible de notre classement.',
     );
 
     $alts = array(
