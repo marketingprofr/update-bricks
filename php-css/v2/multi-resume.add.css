@@ -1,0 +1,32 @@
+/* =====================================================================
+   MULTI-COMPARATIF (V2) — AJOUT au CSS de top5-resume.css
+   À coller À LA FIN de l'onglet CSS de l'élément Code « multi-resume »
+   (qui garde tout le CSS de top5-resume.css au-dessus).
+   ===================================================================== */
+
+/* Encarts des sous-comparatifs */
+.mt-top5.mtv2-sub { margin-top: 56px; }
+
+/* Intro d'un sous-comparatif : 1re phrase + « Lire la suite » (details natif) */
+.mt-top5 .mtv2-intro { max-width: 740px; margin: 10px 0 0; font-size: 16px; line-height: 1.65; color: var(--ink-2); }
+.mt-top5 .mtv2-intro p { margin: 0 0 8px; }
+.mt-top5 .mtv2-intro-more summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; font-size: 14px; font-weight: 600; color: var(--accent); }
+.mt-top5 .mtv2-intro-more summary::-webkit-details-marker { display: none; }
+.mt-top5 .mtv2-intro-more summary::after { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+.mt-top5 .mtv2-intro-more[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+.mt-top5 .mtv2-intro-more .mtv2-more-off { display: none; }
+.mt-top5 .mtv2-intro-more[open] .mtv2-more-on { display: none; }
+.mt-top5 .mtv2-intro-more[open] .mtv2-more-off { display: inline; }
+.mt-top5 .mtv2-intro-rest { margin-top: 8px; }
+
+/* Panneau de contrôle (visible uniquement par les éditeurs connectés) */
+.mt-top5 .mtv2-admin { margin: 0 0 16px; padding: 10px 14px; border: 1px dashed var(--at-warning); border-radius: 8px; background: var(--at-warning-l-6); font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+.mt-top5 .mtv2-admin p { margin: 0 0 4px; }
+.mt-top5 .mtv2-admin p:last-child { margin-bottom: 0; }
+.mt-top5 .mtv2-admin a { color: var(--accent); text-decoration: underline; }
+.mt-top5 .mtv2-admin .mtv2-admin-warn { color: var(--warn); font-weight: 600; }
+
+@media (max-width: 767px) {
+  .mt-top5.mtv2-sub { margin-top: 40px; }
+  .mt-top5 .mtv2-intro { font-size: 15px; }
+}

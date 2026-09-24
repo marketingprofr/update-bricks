@@ -742,3 +742,62 @@ met `data-theme="dark"` sur `<html>`). Bricks core n'a « Toggle – Mode » que
   `header-dark.css` par override a été **abandonné/supprimé**). Le **logo
   `merrilowgo.png`** (image claire) reste peu lisible sur fond sombre (header +
   footer) → prévoir une **version claire du logo**.
+
+## Multi-comparatif (V2) — fusion des guides variantes (pilote : climatiseur mobile)
+
+But SEO : regrouper un guide parent et ses variantes (`…-9000-btu`, `…-12000-btu`)
+sur **une seule URL** (le parent), avec une section par variante. Le template V1 et
+ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/`**.
+
+- **Principe (décision client)** : un sous-comparatif est un **vrai `comparatif`**,
+  qui doit rester **PUBLIÉ** (le cache `top_avis_ids` n'est calculé — surtout par
+  batch — que sur les publiés ; brouillon = ignoré + risque de suppression ; privé =
+  pas de cache non plus). On en lit tout via `get_all_template_variables($id)` :
+  `top_avis_ids`, titre forcé, type, `introduction`. **Aucune logique de sélection
+  recopiée.** Cible (hors périmètre pour l'instant) : variantes redirigées en 301
+  vers `parent/#ancre` + retirées des listes internes / sitemap.
+- **Champs ACF** (enregistrés en local par `mtv2-core.php`, rien à créer) :
+  `mltv5_sous_comparatifs` (Relation → `comparatif`, sur le PARENT, ordre = ordre
+  des blocs ; **vide = page identique au V1**, pas de case « actif ») et
+  `mltv5_intro_sous_comparatif` (texte, sur le SOUS-comparatif, facultatif).
+- **Snippet WPCodeBox `mtv2-core.php`** (Run everywhere) : `mtv2_plan($id)` =
+  liste principale + sous-comparatifs + **liste des tests sans doublon** (ordre de
+  1re apparition : principal puis sous-comparatifs, coupée à `MTV2_MAX_TESTS = 30`)
+  + `origin`/`seen_in` (rang de chaque produit dans chaque encart) + avertissements
+  (non publié, type de produit différent, liste vide, aucun attribut propre).
+  Précharge posts/métas/termes (`_prime_post_caches`). Pas de transient : les
+  listes viennent déjà du cache du site. Aperçu admin **`?preview_v2=1`** via le
+  filtre `bricks/active_templates` (constante **`MTV2_TEMPLATE_ID`** = ID du
+  template Bricks « multi-comparatif » à renseigner) + lien barre d'admin.
+- **Titre H2 d'un sous-comparatif** : titre forcé du sous-comparatif, sinon « Les
+  {meilleurs} {type pluriel du parent} ({attributs propres au sous-comparatif}) »
+  (attributs du sous-comparatif MOINS ceux du parent), **sans nombre**.
+- **Intro** : champ dédié → affiché en entier ; sinon `introduction` du
+  sous-comparatif → **1re phrase visible**, le reste dans un `<details>` « Lire la
+  suite » (natif, sans JS).
+- **Ancre** : slug du sous-comparatif moins celui du parent (`#9000-btu`), unique ;
+  replis attributs propres / slug. Tests : **`#test-{slug de l'avis}`** ; les
+  produits de l'encart principal gardent aussi un `<span id="produit-n-{rang}">`
+  (liens V1 de la FAQ, etc.).
+- **Blocs Code (remplacent les blocs V1 dans le template dupliqué)** — sans
+  sous-comparatif, rendu identique au V1 (vérifié par diff sur un faux site) :
+  - `multi-resume.code.php` : encart principal V1 + 1 `<section class="mt-top5
+    mtv2-sub" id="{ancre}">` par sous-comparatif (H2 + intro + mêmes cartes, tri
+    compris ; pas de fourchette de scores ni de classement complet AJAX) ; mention
+    « liens commerciaux » une seule fois à la fin ; panneau de contrôle admin.
+  - `multi-tests.code.php` : tests sans doublon ; eyebrow « N°01 · 9000 BTU · Aussi
+    n°2 du classement général » ; **angle d'utilisation = celui de l'encart
+    d'origine** ; JSON-LD **`@graph`** : 1 `Product` par produit (`@id` =
+    `{URL de l'avis}#product`) + 1 `ItemList` par encart (réfs par `@id`, `url`
+    au-delà de la limite) ; règles V1 Offer/AggregateOffer + brand conservées.
+    `content-visibility:auto` à partir du 4e test.
+  - `multi-tableau.code.php` : colonnes = liste des tests ; **specs de référence
+    choisies sur les produits du guide principal seulement** (≥ 3) ; banderoles sur
+    le principal ; médaille grise + pastille « Sélection 9000 BTU » pour les autres.
+  - `multi-sommaire.code.php` : + une entrée « Sélection {attribut} » par
+    sous-comparatif après « Notre sélection » ; +1 min de lecture par sous-comparatif.
+  - CSS : chaque élément garde le CSS V1 dans son onglet + **ajout** des fichiers
+    `multi-*.add.css` à la fin (sommaire : rien à ajouter).
+- **Hors périmètre / à faire plus tard** : outil de remplissage (proposer les
+  variantes candidates), redirections 301, dépublication/exclusion des listes,
+  bascule du template multi-comparatif sur tous les comparatifs (conditions Bricks).
