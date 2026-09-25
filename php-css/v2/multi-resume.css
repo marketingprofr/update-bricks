@@ -395,6 +395,8 @@
    ===================================================================== */
 /* Encarts des sous-comparatifs */
 .mt-top5.mtv2-sub { margin-top: 56px; }
+/* Titre cliquable vers l'édition (éditeurs connectés uniquement) */
+.mt-top5 .mtv2-edit-link:hover { text-decoration: underline dotted; text-underline-offset: 4px; }
 
 /* Intro d'un sous-comparatif : 1re phrase + « Lire la suite » (details natif) */
 .mt-top5 .mtv2-intro { max-width: 740px; margin: 10px 0 0; font-size: 16px; line-height: 1.65; color: var(--ink-2); }

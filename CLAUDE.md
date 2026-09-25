@@ -777,9 +777,13 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   connectés). Précharge posts/métas/termes (`_prime_post_caches`). Pas de
   transient, pas d'aperçu `?preview_v2`.
   ⏳ Question ouverte : exiger aussi l'étiquette `multi-comparatif` dans le code ?
-- **Titre H2 d'un sous-comparatif** : titre forcé du sous-comparatif, sinon « Les
-  {meilleurs} {type pluriel du parent} ({attributs propres au sous-comparatif}) »
-  (attributs du sous-comparatif MOINS ceux du parent), **sans nombre**.
+- **Titre H2 d'un sous-comparatif** (décision client) : son **titre forcé** s'il
+  existe, sinon son **titre d'article** (`post_title`). Rien de reconstruit.
+  **Éditeurs connectés** : le H2 est un lien vers l'écran d'édition du
+  sous-comparatif (nouvel onglet, `.mtv2-edit-link`) ; jamais rendu au public.
+- **Libellé court** (sommaire, pastille « Sélection … » du tableau, eyebrow des
+  tests) = attributs propres du sous-comparatif (ses attributs MOINS ceux du
+  parent), ex. « Réversible », « 7000 BTU » ; repli = titre.
 - **Intro** : `introduction` normale du sous-comparatif → **1re phrase visible**,
   le reste dans un `<details>` « Lire la suite » (natif, sans JS).
 - **Ancre** : slug du sous-comparatif moins celui du parent (`#9000-btu`), unique ;
@@ -801,8 +805,9 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   - `multi-tableau.code.php` : colonnes = liste des tests ; **specs de référence
     choisies sur les produits du guide principal seulement** (≥ 3) ; banderoles sur
     le principal ; médaille grise + pastille « Sélection 9000 BTU » pour les autres.
-  - `multi-sommaire.code.php` : + une entrée « Sélection {attribut} » par
-    sous-comparatif après « Notre sélection » ; +1 min de lecture par sous-comparatif.
+  - `multi-sommaire.code.php` : après « Notre sélection », une entrée courte par
+    sous-comparatif = son libellé court, 1re lettre en capitale (« Réversible »,
+    « Sans évacuation », « 7000 BTU ») ; +1 min de lecture par sous-comparatif.
   - CSS : **fichiers COMPLETS** `v2/multi-*.css` (= CSS V1 + ajouts V2 en fin de
     fichier, sommaire = copie de `sommaire.css`), un par élément Code. ⚠️ Toujours
     livrer des CSS complets (jamais un simple diff à ajouter) — demande client.

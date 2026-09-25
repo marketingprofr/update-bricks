@@ -378,19 +378,16 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
       $sub_attr  = mtv2_terms( $sid, 'post-type-attribut' );
       $extra     = array_values( array_diff_key( $sub_attr, $parent_attr ) );
       if ( empty( $extra ) ) {
-        $plan['warnings'][] = '« ' . $title . ' » n\'a aucun attribut en plus de ceux de cette page : titre et ancre de repli utilisés.';
+        $plan['warnings'][] = '« ' . $title . ' » n\'a aucun attribut en plus de ceux de cette page : libellé court et ancre de repli utilisés.';
       }
 
-      /* Titre H2 : titre forcé, sinon « Les meilleurs {type du principal} ({attributs propres}) » */
+      /* Titre H2 : titre forcé du sous-comparatif s'il existe, sinon son titre d'article */
       $forced = isset( $stv['forcer_affichage_du_titre'] ) ? trim( (string) $stv['forcer_affichage_du_titre'] ) : '';
-      if ( $forced !== '' ) {
-        $h2 = $forced;
-      } elseif ( ! empty( $extra ) && $type_plur !== '' ) {
-        $h2 = 'Les ' . lcfirst( $mf ) . ' ' . $type_plur . ' (' . implode( ', ', $extra ) . ')';
-      } else {
-        $stype = isset( $stv['type_de_produit_au_pluriel'] ) ? trim( (string) $stv['type_de_produit_au_pluriel'] ) : '';
-        $h2    = $stype !== '' ? 'Les ' . lcfirst( $mf ) . ' ' . $stype : $title;
+      if ( $forced === '' && function_exists( 'get_field' ) ) {
+        $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $sid ) );
       }
+      $h2 = $forced !== '' ? $forced : $title;
+      /* Libellé court (sommaire, pastilles) : ses attributs propres, ex. « Réversible » */
       $label = ! empty( $extra ) ? implode( ', ', $extra ) : $h2;
 
       /* Ancre unique */

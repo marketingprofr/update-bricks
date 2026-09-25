@@ -394,19 +394,16 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
       $sub_attr  = mtv2_terms( $sid, 'post-type-attribut' );
       $extra     = array_values( array_diff_key( $sub_attr, $parent_attr ) );
       if ( empty( $extra ) ) {
-        $plan['warnings'][] = '« ' . $title . ' » n\'a aucun attribut en plus de ceux de cette page : titre et ancre de repli utilisés.';
+        $plan['warnings'][] = '« ' . $title . ' » n\'a aucun attribut en plus de ceux de cette page : libellé court et ancre de repli utilisés.';
       }
 
-      /* Titre H2 : titre forcé, sinon « Les meilleurs {type du principal} ({attributs propres}) » */
+      /* Titre H2 : titre forcé du sous-comparatif s'il existe, sinon son titre d'article */
       $forced = isset( $stv['forcer_affichage_du_titre'] ) ? trim( (string) $stv['forcer_affichage_du_titre'] ) : '';
-      if ( $forced !== '' ) {
-        $h2 = $forced;
-      } elseif ( ! empty( $extra ) && $type_plur !== '' ) {
-        $h2 = 'Les ' . lcfirst( $mf ) . ' ' . $type_plur . ' (' . implode( ', ', $extra ) . ')';
-      } else {
-        $stype = isset( $stv['type_de_produit_au_pluriel'] ) ? trim( (string) $stv['type_de_produit_au_pluriel'] ) : '';
-        $h2    = $stype !== '' ? 'Les ' . lcfirst( $mf ) . ' ' . $stype : $title;
+      if ( $forced === '' && function_exists( 'get_field' ) ) {
+        $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $sid ) );
       }
+      $h2 = $forced !== '' ? $forced : $title;
+      /* Libellé court (sommaire, pastilles) : ses attributs propres, ex. « Réversible » */
       $label = ! empty( $extra ) ? implode( ', ', $extra ) : $h2;
 
       /* Ancre unique */
@@ -824,7 +821,12 @@ if ( $is_multi ) :
 <section class="mt-top5 mtv2-sub" id="<?php echo esc_attr( $aid ); ?>" aria-labelledby="<?php echo esc_attr( $aid ); ?>-title">
   <header class="t5-head">
     <div>
-      <h2 class="t5-h2" id="<?php echo esc_attr( $aid ); ?>-title"><?php echo esc_html( $sub['title'] ); ?></h2>
+<?php
+    /* Éditeurs connectés : titre cliquable -> écran d'édition du sous-comparatif
+       (nouvel onglet). Jamais rendu pour les visiteurs. */
+    $sub_edit = current_user_can( 'edit_post', $sub['id'] ) ? (string) get_edit_post_link( $sub['id'], 'raw' ) : '';
+?>
+      <h2 class="t5-h2" id="<?php echo esc_attr( $aid ); ?>-title"><?php if ( $sub_edit !== '' ) : ?><a class="mtv2-edit-link" href="<?php echo esc_url( $sub_edit ); ?>" target="_blank" rel="noopener" title="Modifier ce sous-comparatif"><?php echo esc_html( $sub['title'] ); ?></a><?php else : ?><?php echo esc_html( $sub['title'] ); ?><?php endif; ?></h2>
       <?php echo $sub['intro']; // HTML assaini dans mtv2_intro_html() ?>
 <?php if ( current_user_can( 'edit_posts' ) ) : ?>
       <p class="t5-admin-debug" style="margin:6px 0 0;font-size:11px;color:#888;font-style:italic"><?php echo $names_line( $sub_data['products'] ); ?></p>
