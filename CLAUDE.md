@@ -749,26 +749,32 @@ But SEO : regrouper un guide parent et ses variantes (`…-9000-btu`, `…-12000
 sur **une seule URL** (le parent), avec une section par variante. Le template V1 et
 ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/`**.
 
-- **Principe (décision client)** : un sous-comparatif est un **vrai `comparatif`**,
-  qui doit rester **PUBLIÉ** (le cache `top_avis_ids` n'est calculé — surtout par
-  batch — que sur les publiés ; brouillon = ignoré + risque de suppression ; privé =
-  pas de cache non plus). On en lit tout via `get_all_template_variables($id)` :
-  `top_avis_ids`, titre forcé, type, `introduction`. **Aucune logique de sélection
-  recopiée.** Cible (hors périmètre pour l'instant) : variantes redirigées en 301
-  vers `parent/#ancre` + retirées des listes internes / sitemap.
-- **Champs ACF** (enregistrés en local par `mtv2-core.php`, rien à créer) :
-  `mltv5_sous_comparatifs` (Relation → `comparatif`, sur le PARENT, ordre = ordre
-  des blocs ; **vide = page identique au V1**, pas de case « actif ») et
-  `mltv5_intro_sous_comparatif` (texte, sur le SOUS-comparatif, facultatif).
+- **Principe (décision client)** : un sous-comparatif est un **vrai `comparatif`**
+  en statut **PRIVÉ** (publié accepté aussi) → pas de contenu dupliqué visible des
+  moteurs. Brouillon = ignoré (risque de suppression). ⚠️ Le client adapte SON code
+  de cache pour que `top_avis_ids` soit aussi calculé sur les comparatifs privés
+  (sinon le sous-comparatif est ignoré, avec avertissement). On en lit tout via
+  `get_all_template_variables($id)` : `top_avis_ids`, titre forcé, type,
+  `introduction`. **Aucune logique de sélection recopiée.** Titre lu via
+  `post_title` (jamais `get_the_title()`, qui préfixe « Privé : »).
+- **Champs ACF — créés À LA MAIN dans ACF par le client** (le code ne déclare
+  aucun champ) :
+  - groupe **« Multi-comparatif »**, emplacement **type = `comparatif` ET
+    étiquette `multi-comparatif`** → `mltv5_sous_comparatifs` (Relation →
+    `comparatif`, **aucun filtre de statut**, format ID, sur le PARENT ; ordre =
+    ordre des blocs ; **vide = page identique au V1**) ;
+  - **groupe normal des comparatifs** → `mltv5_intro_sous_comparatif` (zone de
+    texte, facultatif, rempli sur le SOUS-comparatif).
 - **Snippet WPCodeBox `mtv2-core.php`** (Run everywhere) : `mtv2_plan($id)` =
   liste principale + sous-comparatifs + **liste des tests sans doublon** (ordre de
   1re apparition : principal puis sous-comparatifs, coupée à `MTV2_MAX_TESTS = 30`)
   + `origin`/`seen_in` (rang de chaque produit dans chaque encart) + avertissements
   (non publié, type de produit différent, liste vide, aucun attribut propre).
   Précharge posts/métas/termes (`_prime_post_caches`). Pas de transient : les
-  listes viennent déjà du cache du site. Aperçu admin **`?preview_v2=1`** via le
-  filtre `bricks/active_templates` (constante **`MTV2_TEMPLATE_ID`** = ID du
-  template Bricks « multi-comparatif » à renseigner) + lien barre d'admin.
+  listes viennent déjà du cache du site. **Pas d'aperçu** (`?preview_v2` supprimé :
+  le client affiche directement le template multi-comparatif dans Bricks).
+  ⏳ Décision en attente : garder ce snippet ou intégrer le calcul (gardé
+  `function_exists`) en copie identique dans les 4 blocs.
 - **Titre H2 d'un sous-comparatif** : titre forcé du sous-comparatif, sinon « Les
   {meilleurs} {type pluriel du parent} ({attributs propres au sous-comparatif}) »
   (attributs du sous-comparatif MOINS ceux du parent), **sans nombre**.

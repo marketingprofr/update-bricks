@@ -4,28 +4,28 @@
    Snippet WPCodeBox (PHP, « Run everywhere »). PAS un bloc Bricks.
 
    Contient :
-   1. Les 2 champs ACF (enregistrés en local, rien à créer à la main) :
-      - mltv5_sous_comparatifs      (Relation, sur le comparatif PRINCIPAL)
-      - mltv5_intro_sous_comparatif (Texte, sur le comparatif SOUS-comparatif)
-   2. Le « plan » de la page : liste principale + sous-comparatifs + liste
+   1. Le « plan » de la page : liste principale + sous-comparatifs + liste
       des tests complets dédoublonnée (ordre de première apparition).
-   3. L'aperçu admin ?preview_v2=1 (sert le template Bricks multi-comparatif
-      à la place du template V1, pour les admins uniquement).
-   4. Les avertissements admin (écran d'édition + panneau sur la page).
+   2. Les avertissements admin (écran d'édition + panneau sur la page).
 
-   Principe : un sous-comparatif est un VRAI comparatif (publié, pour que le
-   cache top_avis_ids soit calculé par le batch). On en lit :
+   Champs ACF : créés À LA MAIN dans ACF (ce snippet ne les déclare pas) :
+   - mltv5_sous_comparatifs      (Relation) : groupe « Multi-comparatif »,
+     sur le comparatif PRINCIPAL ;
+   - mltv5_intro_sous_comparatif (Zone de texte) : groupe normal des
+     comparatifs (il se remplit sur le SOUS-comparatif).
+
+   Principe : un sous-comparatif est un VRAI comparatif, en statut PRIVÉ
+   (pas de contenu dupliqué visible des moteurs) ou publié. On en lit :
    titre forcé / type / attributs / intro / top_avis_ids, via
    get_all_template_variables() — aucune logique de sélection recopiée.
+   ⚠️ Le cache top_avis_ids doit aussi être calculé pour les comparatifs
+   privés (côté code du site), sinon le sous-comparatif est ignoré.
    Le champ Relation vide = page identique au V1.
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
    CONFIG
    --------------------------------------------------------------------- */
-if ( ! defined( 'MTV2_TEMPLATE_ID' ) ) {
-  define( 'MTV2_TEMPLATE_ID', 0 );   // 👉 ID du template Bricks « multi-comparatif » (aperçu ?preview_v2=1)
-}
 if ( ! defined( 'MTV2_MAX_TESTS' ) ) {
   define( 'MTV2_MAX_TESTS', 30 );    // nb max de tests complets (et de colonnes du tableau)
 }
@@ -40,54 +40,7 @@ if ( ! defined( 'MTV2_POST_TYPE' ) ) {
 }
 
 /* ---------------------------------------------------------------------
-   1. CHAMPS ACF (local : visibles dans l'éditeur, pas dans la liste ACF)
-   --------------------------------------------------------------------- */
-if ( ! function_exists( 'mtv2_register_fields' ) ) {
-function mtv2_register_fields() {
-  if ( ! function_exists( 'acf_add_local_field_group' ) ) { return; }
-  acf_add_local_field_group( array(
-    'key'      => 'group_mtv2_multi_comparatif',
-    'title'    => 'Multi-comparatif',
-    'fields'   => array(
-      array(
-        'key'           => 'field_mtv2_sous_comparatifs',
-        'label'         => 'Sous-comparatifs',
-        'name'          => MTV2_FIELD_SUBS,
-        'type'          => 'relationship',
-        'instructions'  => 'Comparatifs à afficher comme sous-comparatifs de cette page, dans cet ordre. Vide = page classique (V1). Chaque sous-comparatif doit rester PUBLIÉ (sinon son cache de produits n\'est pas calculé).',
-        'post_type'     => array( MTV2_POST_TYPE ),
-        'post_status'   => array( 'publish' ),
-        'filters'       => array( 'search', 'taxonomy' ),
-        'return_format' => 'id',
-        'min'           => 0,
-        'max'           => 0,
-      ),
-      array(
-        'key'          => 'field_mtv2_intro_sous_comparatif',
-        'label'        => 'Intro quand ce comparatif est affiché comme sous-comparatif',
-        'name'         => MTV2_FIELD_INTRO,
-        'type'         => 'textarea',
-        'instructions' => 'Facultatif (2-3 phrases). Vide = 1re phrase de l\'intro normale, le reste replié derrière « Lire la suite ».',
-        'rows'         => 3,
-        'new_lines'    => '',
-      ),
-    ),
-    'location' => array(
-      array( array( 'param' => 'post_type', 'operator' => '==', 'value' => MTV2_POST_TYPE ) ),
-    ),
-    'menu_order' => 90,
-    'position'   => 'normal',
-    'style'      => 'default',
-    'active'     => true,
-  ) );
-}
-}
-/* WPCodeBox peut exécuter le snippet avant OU après acf/init */
-if ( did_action( 'acf/init' ) ) { mtv2_register_fields(); }
-else { add_action( 'acf/init', 'mtv2_register_fields' ); }
-
-/* ---------------------------------------------------------------------
-   2. HELPERS
+   HELPERS
    --------------------------------------------------------------------- */
 if ( ! function_exists( 'mtv2_tv' ) ) {
   /* Variables de template d'un comparatif (cache statique par ID). */
@@ -222,7 +175,7 @@ if ( ! function_exists( 'mtv2_intro_html' ) ) {
 }
 
 /* ---------------------------------------------------------------------
-   3. LE PLAN DE LA PAGE
+   1. LE PLAN DE LA PAGE
    ---------------------------------------------------------------------
    Retourne :
    - is_multi   : au moins 1 sous-comparatif valide
@@ -271,13 +224,13 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
 
     foreach ( mtv2_sub_ids_raw( $page_id ) as $sid ) {
       $sp    = get_post( $sid );
-      $title = $sp ? get_the_title( $sp ) : '#' . $sid;
+      $title = $sp ? $sp->post_title : '#' . $sid; // pas get_the_title() : il préfixe « Privé : »
       if ( ! $sp || $sid === $page_id || $sp->post_type !== MTV2_POST_TYPE ) {
         $plan['warnings'][] = 'Sous-comparatif ignoré (introuvable, pas un comparatif, ou la page elle-même) : ' . $title;
         continue;
       }
-      if ( $sp->post_status !== 'publish' ) {
-        $plan['warnings'][] = '« ' . $title . ' » n\'est pas publié (' . $sp->post_status . ') : ignoré. Il doit rester publié pour que son cache de produits soit calculé.';
+      if ( ! in_array( $sp->post_status, array( 'private', 'publish' ), true ) ) {
+        $plan['warnings'][] = '« ' . $title . ' » est en statut « ' . $sp->post_status . ' » : ignoré. Un sous-comparatif doit être privé (ou publié).';
         continue;
       }
 
@@ -294,7 +247,7 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
         /* En admin, get_all_template_variables() peut ne pas être chargée :
            pas d'alerte dans ce cas (faux positif). */
         if ( $can_check_cache ) {
-          $plan['warnings'][] = '« ' . $title . ' » n\'a aucun produit (cache top_avis_ids pas encore calculé ? lancer le batch) : ignoré.';
+          $plan['warnings'][] = '« ' . $title . ' » n\'a aucun produit (cache top_avis_ids pas encore calculé pour ce comparatif ? s\'il est privé, vérifier que le batch traite les privés) : ignoré.';
         }
         continue;
       }
@@ -404,40 +357,7 @@ if ( ! function_exists( 'mtv2_admin_panel' ) ) {
 }
 
 /* ---------------------------------------------------------------------
-   4. APERÇU ADMIN : ?preview_v2=1 -> template Bricks multi-comparatif
-   --------------------------------------------------------------------- */
-if ( ! function_exists( 'mtv2_is_preview' ) ) {
-  function mtv2_is_preview() {
-    return isset( $_GET['preview_v2'] ) && (string) $_GET['preview_v2'] === '1'
-      && function_exists( 'current_user_can' ) && current_user_can( 'edit_posts' );
-  }
-}
-
-add_filter( 'bricks/active_templates', function ( $active, $post_id, $content_type ) {
-  if ( ! MTV2_TEMPLATE_ID || is_admin() || ! mtv2_is_preview() ) { return $active; }
-  if ( ! is_singular( MTV2_POST_TYPE ) ) { return $active; }
-  if ( is_array( $active ) ) { $active['content'] = (int) MTV2_TEMPLATE_ID; }
-  return $active;
-}, 20, 3 );
-
-/* Pas de cache de page pendant l'aperçu */
-add_action( 'template_redirect', function () {
-  if ( mtv2_is_preview() && ! defined( 'DONOTCACHEPAGE' ) ) { define( 'DONOTCACHEPAGE', true ); }
-}, 1 );
-
-/* Lien d'aperçu dans la barre d'admin */
-add_action( 'admin_bar_menu', function ( $bar ) {
-  if ( ! MTV2_TEMPLATE_ID || is_admin() || ! is_singular( MTV2_POST_TYPE ) || ! current_user_can( 'edit_posts' ) ) { return; }
-  $on = mtv2_is_preview();
-  $bar->add_node( array(
-    'id'    => 'mtv2-preview',
-    'title' => $on ? '&#10005; Quitter l\'aperçu multi-comparatif' : '&#9673; Aperçu multi-comparatif',
-    'href'  => $on ? remove_query_arg( 'preview_v2' ) : add_query_arg( 'preview_v2', '1' ),
-  ) );
-}, 90 );
-
-/* ---------------------------------------------------------------------
-   5. AVERTISSEMENTS sur l'écran d'édition du comparatif
+   2. AVERTISSEMENTS sur l'écran d'édition du comparatif
    --------------------------------------------------------------------- */
 add_action( 'admin_notices', function () {
   if ( ! function_exists( 'get_current_screen' ) ) { return; }
