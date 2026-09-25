@@ -3,8 +3,8 @@
    MEILLEURTEST — MULTI-COMPARATIF (V2) : tableau comparatif
    Remplace tableau-comparatif.code.php dans le template Bricks
    multi-comparatif. À coller dans UN SEUL élément CODE Bricks.
-   CSS : garder celui de tableau-comparatif.css dans l'onglet CSS de
-   l'élément et AJOUTER à la fin le contenu de v2/multi-tableau.add.css.
+   CSS : v2/multi-tableau.css (fichier COMPLET = tableau-comparatif.css +
+   ajouts V2) à coller dans l'onglet CSS du même élément.
 
    - Sans sous-comparatif : rendu identique au V1 (top 5 du guide).
    - Avec sous-comparatifs : TOUS les produits (principal puis

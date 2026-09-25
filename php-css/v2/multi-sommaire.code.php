@@ -3,7 +3,8 @@
    MEILLEURTEST — MULTI-COMPARATIF (V2) : sommaire « Sur cette page »
    Remplace sommaire.code.php dans le template Bricks multi-comparatif.
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
-   CSS : celui de sommaire.css, inchangé (rien à ajouter).
+   CSS : v2/multi-sommaire.css (copie complète de sommaire.css, inchangée)
+   à coller dans l'onglet CSS du même élément.
 
    Identique au V1, plus une entrée par sous-comparatif (ancre stable
    #9000-btu), insérée juste après « Notre sélection ». Chaque

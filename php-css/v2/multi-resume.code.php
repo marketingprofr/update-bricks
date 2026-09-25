@@ -3,8 +3,8 @@
    MEILLEURTEST — MULTI-COMPARATIF (V2) : encarts « résumé »
    Remplace top5-resume.code.php dans le template Bricks multi-comparatif.
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
-   CSS : garder celui de top5-resume.css dans l'onglet CSS de l'élément
-   et AJOUTER à la fin le contenu de v2/multi-resume.add.css.
+   CSS : v2/multi-resume.css (fichier COMPLET = top5-resume.css + ajouts V2)
+   à coller dans l'onglet CSS du même élément.
 
    - Sans sous-comparatif (champ Relation vide) : rendu identique au V1.
    - Avec sous-comparatifs : encart principal, puis 1 encart par

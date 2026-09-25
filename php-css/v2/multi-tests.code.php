@@ -3,8 +3,8 @@
    MEILLEURTEST — MULTI-COMPARATIF (V2) : « tests complets »
    Remplace top5-tests.code.php dans le template Bricks multi-comparatif.
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
-   CSS : garder celui de top5-tests.css dans l'onglet CSS de l'élément
-   et AJOUTER à la fin le contenu de v2/multi-tests.add.css.
+   CSS : v2/multi-tests.css (fichier COMPLET = top5-tests.css + ajouts V2)
+   à coller dans l'onglet CSS du même élément.
 
    - UN test par produit, même s'il figure dans plusieurs encarts : liste
      sans doublon, dans l'ordre de 1re apparition (principal, puis

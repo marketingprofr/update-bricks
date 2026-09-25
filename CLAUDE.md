@@ -796,8 +796,9 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     le principal ; médaille grise + pastille « Sélection 9000 BTU » pour les autres.
   - `multi-sommaire.code.php` : + une entrée « Sélection {attribut} » par
     sous-comparatif après « Notre sélection » ; +1 min de lecture par sous-comparatif.
-  - CSS : chaque élément garde le CSS V1 dans son onglet + **ajout** des fichiers
-    `multi-*.add.css` à la fin (sommaire : rien à ajouter).
+  - CSS : **fichiers COMPLETS** `v2/multi-*.css` (= CSS V1 + ajouts V2 en fin de
+    fichier, sommaire = copie de `sommaire.css`), un par élément Code. ⚠️ Toujours
+    livrer des CSS complets (jamais un simple diff à ajouter) — demande client.
 - **Hors périmètre / à faire plus tard** : outil de remplissage (proposer les
   variantes candidates), redirections 301, dépublication/exclusion des listes,
   bascule du template multi-comparatif sur tous les comparatifs (conditions Bricks).

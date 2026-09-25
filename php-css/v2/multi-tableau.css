@@ -1,0 +1,226 @@
+/* =====================================================================
+   MEILLEURTEST — Tableau comparatif (onglet CSS de l'élément Code)
+   Scope : .mt-cmp-root  (cf. tableau-comparatif.code.php)
+   Palette alignée hero/resume/tests : accent -> tokens Advanced Themer.
+   ===================================================================== */
+
+.mt-cmp-root {
+  --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
+  --line: var(--at-grey-l-3); --line-2: var(--at-grey-l-4);
+  --bg: var(--at-white); --bg-2: var(--at-grey-l-6); --bg-3: var(--at-grey-l-5);
+  --tile: #f5f6f8;   /* tuile image produit : INVARIABLE clair/sombre (multiply) */
+  --track: var(--at-grey-l-2);                          /* gris des jauges (assombri pour la visibilité) */
+  --accent: var(--at-primary); --accent-dark: var(--at-primary-d-2); --accent-soft: var(--at-primary-l-6);
+  /* Notes monochromes */
+  --sc-p: var(--at-primary-d-1); --sc-g: var(--at-success); --sc-y: var(--at-warning-d-1); --sc-o: var(--at-warning); --sc-r: var(--at-danger);
+  /* Points + / - */
+  --pos-ink: var(--at-success-d-3); --pos-ic: var(--at-success); --neg-ink: var(--at-danger-d-3); --neg-ic: var(--at-danger);
+  --radius: 10px; --radius-lg: 16px;
+  font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
+  color: var(--ink);
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+.mt-cmp-root * { box-sizing: border-box; }
+.mt-cmp-root a { color: inherit; text-decoration: none; }
+
+/* === En-tête de section === */
+.mt-cmp-head { margin: 0 0 22px; }
+.mt-cmp-h2 {
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 32px; line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.025em; color: var(--ink); margin: 0 0 12px;
+}
+.mt-cmp-sub { font-size: 16px; color: var(--ink-2); line-height: 1.6; max-width: 740px; margin: 0; }
+
+/* Indice de scroll (mobile uniquement) */
+.mt-cmp-hint { display: none; }
+
+/* === Conteneur scrollable (scroll horizontal sur mobile) === */
+.mt-cmp-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--at-white);
+}
+.mt-cmp-wrap::-webkit-scrollbar { height: 9px; }
+.mt-cmp-wrap::-webkit-scrollbar-track { background: var(--bg-3); }
+.mt-cmp-wrap::-webkit-scrollbar-thumb { background: var(--muted-2); border-radius: 99px; border: 2px solid var(--bg-3); }
+
+/* === Table : 1re colonne fixe (160px), colonnes produits >= 190px et égales.
+   La largeur mini totale (160 + nb*190) est posée en inline sur la table -> les
+   colonnes produits ne descendent jamais sous 190px et le tableau scrolle. === */
+.mt-cmp { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px; background: var(--at-white); }
+.mt-cmp th, .mt-cmp td {
+  padding: 14px; text-align: left; vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+.mt-cmp tbody tr:last-child td { border-bottom: 0; }
+
+/* Colonne label (gauche) — STICKY : reste visible pendant le scroll horizontal */
+.mt-cmp .row-label {
+  width: 160px;
+  position: sticky; left: 0; z-index: 3;
+  background: var(--bg-2);
+  font-size: 11px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.02em;
+  border-right: 1px solid var(--line);
+  padding: 12px 12px;
+}
+.mt-cmp .row-label.section-head { position: static; }
+
+/* Pastille « engagement » (laurier recoloré en primary) + mention */
+.mt-cmp .brand-cell { vertical-align: top; text-transform: none; }
+.mt-cmp-brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+.mt-cmp .t5-laurel { display: grid; place-items: center; width: 56px; height: 56px; background: var(--at-white); border: 1px solid var(--accent-soft); border-radius: 50%; box-shadow: 0 1px 4px rgba(20,24,29,.1); }
+.mt-cmp .t5-laurel-ic {
+  width: 40px; height: 40px; display: block; background-color: var(--accent);
+  -webkit-mask: url("https://meilleurtest.fr/wp-content/uploads/2026/06/badge-laurel.svg") center / contain no-repeat;
+          mask: url("https://meilleurtest.fr/wp-content/uploads/2026/06/badge-laurel.svg") center / contain no-repeat;
+}
+.mt-cmp-brand-note { font-size: 11px; font-weight: 500; color: var(--accent); line-height: 1.4; text-transform: none; letter-spacing: 0; margin: 0; }
+
+/* === Rang : banderole collée en haut (+ flèche) puis médaille alignée === */
+.mt-cmp .pos-cell { padding: 0 0 16px; text-align: center; vertical-align: top; }
+/* Réserve la hauteur de la banderole dans TOUTES les colonnes -> rangs alignés */
+.mt-cmp .banner-slot { position: relative; height: 26px; margin-bottom: 20px; }
+.mt-cmp .col-banner {
+  position: absolute; top: 0; left: 0; right: 0; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em;
+  color: var(--at-white); line-height: 1.1; padding: 0 6px; background: var(--bn);
+}
+.mt-cmp .col-banner.b-best  { --bn: var(--at-primary); }
+.mt-cmp .col-banner.b-price { --bn: var(--at-primary-d-1); }
+.mt-cmp .col-banner.b-alt   { --bn: var(--at-primary-d-1); }
+/* Petite flèche vers le bas, centrée sous la banderole */
+.mt-cmp .col-banner::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent;
+  border-top: 6px solid var(--bn);
+}
+
+/* Médailles : or / argent / bronze (texte blanc) puis gris (texte gris) */
+.mt-cmp .pos-cell .rank {
+  display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+}
+.mt-cmp .pos-cell .rank-n { font-weight: 700; font-size: 13px; color: var(--at-white); }
+.mt-cmp .pos-cell .rank.r1 { background: var(--at-gold); }  /* or */
+.mt-cmp .pos-cell .rank.r2 { background: var(--at-silver); }  /* argent */
+.mt-cmp .pos-cell .rank.r3 { background: var(--at-bronze); }  /* bronze */
+.mt-cmp .pos-cell .rank.r4,
+.mt-cmp .pos-cell .rank.r5 { background: var(--at-white); border: 1px solid var(--at-grey-l-2); }
+.mt-cmp .pos-cell .rank.r4 .rank-n,
+.mt-cmp .pos-cell .rank.r5 .rank-n { color: var(--at-grey); }
+
+/* Image produit (fond gris + multiply + padding pour ne pas coller au bord) */
+.mt-cmp .product-cell { padding: 18px 14px; text-align: center; }
+.mt-cmp .product-thumb { display: block; width: 100%; aspect-ratio: 1; background: var(--tile); border-radius: 8px; margin: 0 auto 12px; padding: 12px; position: relative; overflow: hidden; }
+.mt-cmp .product-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; mix-blend-mode: multiply; }
+.mt-cmp .product-thumb.empty::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(0,0,0,0.03) 8px 9px); }
+
+/* Nom : marque (uppercase, gris, plus gros) au-dessus, modèle en dessous, centré */
+.mt-cmp .product-name { display: block; text-align: center; }
+.mt-cmp .pn-brand { display: block; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 3px; }
+.mt-cmp .pn-model { display: block; font-weight: 600; font-size: 14px; line-height: 1.25; color: var(--ink); }
+.mt-cmp .product-name:hover .pn-model { color: var(--accent); }
+
+/* Verdict : texte « quote » primary, pas de bouton */
+.mt-cmp .verdict-cell { text-align: center; }
+.mt-cmp .verdict-txt { font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-size: 14px; line-height: 1.4; color: var(--accent); font-weight: 600; }
+.mt-cmp .verdict-txt::before { content: "\00AB\00A0"; }
+.mt-cmp .verdict-txt::after  { content: "\00A0\00BB"; }
+
+/* Note globale (monochrome via .sc-*) — score + libellé centrés */
+.mt-cmp .score-cell { padding: 18px 14px; text-align: center; }
+.mt-cmp .score-block { display: flex; align-items: baseline; justify-content: center; gap: 4px; margin-bottom: 8px; }
+.mt-cmp .score-block b { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.mt-cmp .score-block small { font-size: 11px; color: var(--muted); }
+.mt-cmp .score-gauge { height: 6px; background: var(--track); border-radius: 99px; overflow: hidden; margin: 4px 0 6px; }
+.mt-cmp .score-gauge-fill { height: 100%; border-radius: 99px; }
+.mt-cmp .score-tag { font-size: 11px; font-weight: 600; }
+.mt-cmp .sc-p .score-block b, .mt-cmp .sc-p .score-tag { color: var(--sc-p); }
+.mt-cmp .sc-p .score-gauge-fill { background: var(--sc-p); }
+.mt-cmp .sc-g .score-block b, .mt-cmp .sc-g .score-tag { color: var(--sc-g); }
+.mt-cmp .sc-g .score-gauge-fill { background: var(--sc-g); }
+.mt-cmp .sc-y .score-block b, .mt-cmp .sc-y .score-tag { color: var(--sc-y); }
+.mt-cmp .sc-y .score-gauge-fill { background: var(--sc-y); }
+.mt-cmp .sc-o .score-block b, .mt-cmp .sc-o .score-tag { color: var(--sc-o); }
+.mt-cmp .sc-o .score-gauge-fill { background: var(--sc-o); }
+.mt-cmp .sc-r .score-block b, .mt-cmp .sc-r .score-tag { color: var(--sc-r); }
+.mt-cmp .sc-r .score-gauge-fill { background: var(--sc-r); }
+
+/* Avis clients (centré) */
+.mt-cmp .cust-cell { text-align: center; }
+.mt-cmp .cust-line { display: flex; align-items: baseline; justify-content: center; gap: 5px; }
+.mt-cmp .cust-star { color: var(--at-gold); font-size: 14px; }
+.mt-cmp .cust-val { font-size: 16px; font-weight: 700; color: var(--ink); }
+.mt-cmp .cust-val small { font-size: 11px; font-weight: 600; color: var(--muted); }
+.mt-cmp .cust-count { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* Résumé */
+.mt-cmp .pp { font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+
+/* Points + / - : texte coloré + puces de séparation */
+.mt-cmp .pp.pos { color: var(--pos-ink); }
+.mt-cmp .pp.pos .dot { color: var(--pos-ic); margin: 0 4px; }
+.mt-cmp .pp.neg { color: var(--neg-ink); }
+.mt-cmp .pp.neg .dot { color: var(--neg-ic); margin: 0 4px; }
+
+/* Achat : bouton + marchands (comme ailleurs sur la page) */
+.mt-cmp .buy-cell { text-align: center; }
+.mt-cmp .cmp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 10px 16px; background: var(--accent); color: var(--at-white); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; border: none; font-family: inherit; }
+.mt-cmp .cmp-btn:hover { background: var(--accent-dark); }
+.mt-cmp .buy-merchants { font-size: 11.5px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+.mt-cmp .buy-merchants a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
+.mt-cmp .buy-merchants a:hover { color: var(--accent); }
+
+/* Séparateur de section */
+.mt-cmp .mt-cmp-sep .section-head {
+  background: var(--bg-3); color: var(--ink); width: auto;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  border-right: 0;
+}
+
+/* Specs + icônes check/croix colorées (valeurs ACF en Font Awesome) */
+.mt-cmp .spec-cell { font-size: 12.5px; color: var(--ink-2); }
+.mt-cmp .spec-cell .fa-check, .mt-cmp .spec-cell .fa-circle-check { color: var(--pos-ic); }
+.mt-cmp .spec-cell .fa-xmark, .mt-cmp .spec-cell .fa-times, .mt-cmp .spec-cell .fa-circle-xmark { color: var(--neg-ic); }
+
+/* Cellule vide */
+.mt-cmp .mt-cmp-empty { color: var(--muted-2); }
+
+/* Bouton « afficher plus » */
+.mt-cmp-more { text-align: center; padding: 16px 0 0; }
+.mt-cmp-more-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--ink); background: var(--at-white); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: all .2s; font-family: inherit; }
+.mt-cmp-more-btn:hover { background: var(--bg-3); border-color: var(--muted-2); }
+.mt-cmp-more-btn .chevron { transition: transform .3s ease; }
+
+/* === Responsive ===
+   Les colonnes produits gardent leur largeur (≥190px) : on NE rétrécit pas la
+   table, on scrolle. Sous 992px on resserre la 1re colonne (max 120px) pour que
+   le 1er produit soit entièrement visible, et on affiche l'indice de glissement. */
+@media (max-width: 991px) {
+  /* 1re colonne réduite -> la colonne du 1er produit tient à l'écran */
+  .mt-cmp .row-label { width: 120px; padding: 11px 10px; }
+  .mt-cmp-hint {
+    display: inline-block; margin: 0 0 12px;
+    font-size: 12.5px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); padding: 6px 13px; border-radius: 999px;
+  }
+}
+@media (max-width: 767px) {
+  .mt-cmp-h2 { font-size: 26px; }
+  .mt-cmp-sub { font-size: 15px; }
+  .mt-cmp th, .mt-cmp td { padding: 11px; }
+  .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 14px 11px; }
+}
+
+/* =====================================================================
+   MULTI-COMPARATIF (V2) — ajouts au CSS V1 (tableau-comparatif.css)
+   ===================================================================== */
+/* « Sélection 9000 BTU » sous le nom des produits issus d'un sous-comparatif */
+.mt-cmp .pn-origin { display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); font-size: 11px; font-weight: 700; letter-spacing: 0.03em; line-height: 1.5; color: var(--accent); }
