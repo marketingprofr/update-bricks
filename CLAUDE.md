@@ -811,9 +811,13 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     `hero-gauche.code.css`) : copie du hero V1 ; seul le **H1 d'un
     multi-comparatif** change : « Les 5 meilleurs {type} en 2026 : **le guide
     ultime (N {type} comparés)** » (accord « comparées » si `masculinsfeminins` =
-    meilleures ; N = `count($plan['tests'])`, donc ≤ `MTV2_MAX_TESTS`). Titre forcé
-    toujours prioritaire ; sans sous-comparatif = H1 V1. Le title SEO Rank Math
-    n'est PAS modifié.
+    meilleures ; **N = produits différents de TOUS les encarts résumé** =
+    `count($plan['origin'])`, dédoublonné ID + ASIN, NON plafonné — décision
+    client, pas le nombre de tests). **Title SEO Rank Math** d'un multi-comparatif
+    (écrit via `update_post_meta` comme en V1) : « **Meilleur {type} 2026 (guide
+    ultime : N produits comparés)** » (« Meilleur » accordé via `lalalesmeilleur`,
+    comme le sommaire). Titre forcé toujours prioritaire (H1 et title) ; sans
+    sous-comparatif = H1 et title V1.
   - `multi-resume.code.php` : encart principal V1 + 1 `<section class="mt-top5
     mtv2-sub" id="{ancre}">` par sous-comparatif (H2 + intro + mêmes cartes, tri
     compris ; pas de fourchette de scores ni de classement complet AJAX) ; mention

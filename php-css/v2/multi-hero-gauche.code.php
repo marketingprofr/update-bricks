@@ -8,7 +8,10 @@
    Identique au V1, sauf le titre H1 d'un multi-comparatif :
    « Les 5 meilleurs climatiseurs mobiles en 2026 : le guide ultime
    (N climatiseurs mobiles comparés) », N = nombre de produits différents
-   des tests complets. Sans sous-comparatif : titre V1 inchangé.
+   des encarts résumé (principal + sous-comparatifs, sans doublon).
+   Titre SEO Rank Math d'un multi-comparatif : « Meilleur climatiseur mobile
+   2026 (guide ultime : N produits comparés) ».
+   Sans sous-comparatif : H1 et titre SEO V1 inchangés.
    Moteur multi-comparatif inclus dans ce bloc (aucun snippet WPCodeBox).
    ===================================================================== */
 $MT_SHOW_QUICK_PICKS = false;
@@ -712,9 +715,10 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     } elseif ($post_type === 'comparatif') {
         echo 'Les <em>' . $total_avis . ' ' . lcfirst($masculinsfeminins ?? 'meilleures') . ' ' . $type_de_produit_au_pluriel . '</em> en 2026';
         /* Multi-comparatif : « : le guide ultime (N {type} comparés) »,
-           N = nombre de produits différents des tests complets. */
+           N = nombre de produits différents présents dans l'ensemble des
+           encarts résumé (principal + sous-comparatifs, sans doublon). */
         $mtv2_hplan = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
-        $mtv2_hnb   = $mtv2_hplan ? count( $mtv2_hplan['tests'] ) : 0;
+        $mtv2_hnb   = $mtv2_hplan ? count( $mtv2_hplan['origin'] ) : 0;
         if ( $mtv2_hplan && $mtv2_hplan['is_multi'] && $mtv2_hnb > 0 ) {
             $mtv2_fem = ( mb_stripos( (string) ( $masculinsfeminins ?? '' ), 'meilleures' ) !== false );
             echo ' : le guide ultime (' . (int) $mtv2_hnb . ' ' . esc_html( $type_de_produit_au_pluriel ) . ' compar' . ( $mtv2_fem ? '&eacute;es' : '&eacute;s' ) . ')';
@@ -739,6 +743,26 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   if (!empty($forcer_affichage_du_titre ?? '')) { $new_title = $forcer_affichage_du_titre; }
   elseif ($post_type === 'liste') { $new_title = get_the_title($this_id); }
   else { $new_title = "Les ".$total_avis." ".lcfirst($masculinsfeminins ?? 'meilleurs')." ".$type_de_produit_au_pluriel." 2026 | Test par Meilleurtest"; }
+  /* Multi-comparatif : « Meilleur {type} 2026 (guide ultime : N produits comparés) »
+     « Meilleur » accordé via lalalesmeilleur (le meilleur / la meilleure → type au
+     singulier ; les … → pluriel). N = produits différents des encarts résumé.
+     Le titre forcé reste prioritaire. */
+  if ( empty( $forcer_affichage_du_titre ?? '' ) && $post_type === 'comparatif' ) {
+    $mtv2_tplan = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
+    $mtv2_tnb   = $mtv2_tplan ? count( $mtv2_tplan['origin'] ) : 0;
+    if ( $mtv2_tplan && $mtv2_tplan['is_multi'] && $mtv2_tnb > 0 ) {
+      $mtv2_llm  = trim( (string) ( $lalalesmeilleur ?? '' ) );
+      $mtv2_adj  = trim( preg_replace( '/^(le|la|les)\s+/iu', '', $mtv2_llm ) );
+      $mtv2_plu  = (bool) preg_match( '/^les\s/iu', $mtv2_llm );
+      $mtv2_sing = trim( (string) ( $type_de_produit_au_singulier ?? '' ) );
+      $mtv2_type = ( $mtv2_plu || $mtv2_sing === '' ) ? $type_de_produit_au_pluriel : $mtv2_sing;
+      if ( $mtv2_adj === '' ) { $mtv2_adj = lcfirst( $masculinsfeminins ?? 'meilleurs' ); $mtv2_type = $type_de_produit_au_pluriel; }
+      $mtv2_t    = $mtv2_adj . ' ' . $mtv2_type;
+      $new_title = mb_strtoupper( mb_substr( $mtv2_t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mtv2_t, 1, null, 'UTF-8' )
+        . ' 2026 (guide ultime : ' . (int) $mtv2_tnb . ' produits compar&eacute;s)';
+      $new_title = html_entity_decode( $new_title, ENT_QUOTES, 'UTF-8' );
+    }
+  }
   if (($new_title <> $rank_math_title) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_title', $new_title); }
   ?>
 
