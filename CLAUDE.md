@@ -776,6 +776,13 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   propre) affichés **uniquement dans le panneau jaune en haut du résumé** (éditeurs
   connectés). Précharge posts/métas/termes (`_prime_post_caches`). Pas de
   transient, pas d'aperçu `?preview_v2`.
+  ⚠️ **Piège vécu** : une ANCIENNE copie du moteur chargée avant (ancien snippet
+  WPCodeBox `mtv2-core` encore actif, ou un bloc multi-* pas recollé) **gagne**
+  (garde `function_exists`) → ancien comportement silencieux (ex. vieux titres
+  « … (réversible) »). Parade : `mtv2_engine_version()` (date) ; si une copie
+  d'une autre version est déjà chargée → **message rouge** en haut des 4 blocs
+  (éditeurs connectés seulement). **Changer la date de version à chaque modif du
+  moteur.**
   ⏳ Question ouverte : exiger aussi l'étiquette `multi-comparatif` dans le code ?
 - **Titre H2 d'un sous-comparatif** (décision client) : son **titre forcé** s'il
   existe, sinon son **titre d'article** (`post_title`). Rien de reconstruit.

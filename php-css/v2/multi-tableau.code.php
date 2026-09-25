@@ -121,6 +121,17 @@ if ( ! function_exists( 'mtc_score_level' ) ) {
    Puis construit la liste des tests complets SANS DOUBLON (ordre de 1re
    apparition : principal puis sous-comparatifs, limitée à 30).
    ===================================================================== */
+/* Version du moteur. Si une ANCIENNE copie (ancien snippet WPCodeBox
+   mtv2-core, ou un bloc multi-* pas recollé) a déjà été chargée, ses
+   fonctions gagnent (function_exists) : on le détecte ici pour prévenir
+   l'éditeur (message rouge en haut des blocs, éditeurs connectés seulement). */
+if ( function_exists( 'mtv2_plan' ) && ( ! function_exists( 'mtv2_engine_version' ) || mtv2_engine_version() !== '2026-09-25' ) ) {
+  $GLOBALS['mtv2_stale_engine'] = true;
+}
+if ( ! function_exists( 'mtv2_engine_version' ) ) {
+  function mtv2_engine_version() { return '2026-09-25'; }
+}
+
 /* ---------------------------------------------------------------------
    Réglages
    --------------------------------------------------------------------- */
@@ -672,6 +683,9 @@ $colspan = $nb + 1;
 $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
 ?>
 <section class="mt-cmp-root" id="partie-tableau-comparatif" aria-labelledby="<?php echo esc_attr( $uid ); ?>-title">
+<?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>
+<p class="mtv2-stale" style="margin:0 0 12px;padding:10px 14px;border:2px solid #c0392b;border-radius:8px;background:#fdecea;color:#c0392b;font:600 14px/1.5 Inter,sans-serif">&#9888; Multi-comparatif : une ANCIENNE version du code tourne encore sur cette page. Supprimez le snippet WPCodeBox « mtv2-core » s'il existe, recollez les 4 blocs multi-* (résumé, tests, tableau, sommaire), puis videz le cache. (Message visible des éditeurs uniquement.)</p>
+<?php endif; ?>
   <header class="mt-cmp-head">
     <h2 class="mt-cmp-h2" id="<?php echo esc_attr( $uid ); ?>-title"><?php echo $head_title; ?></h2>
     <p class="mt-cmp-sub"><?php echo $sub; ?></p>
