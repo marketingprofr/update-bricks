@@ -15,6 +15,7 @@
 
 .mt-toc {
   --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
+  --title: var(--at-grey);                  /* gris sombre du titre d'origine */
   --line: var(--at-grey-l-3);
   --accent: var(--at-primary);
 }
@@ -44,13 +45,13 @@
 .mt-toc .mt-toc-title {
   margin: 0 !important;
   padding: 0 0 10px !important;
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 2px solid var(--title);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ink);
+  color: var(--title);
 }
 
 /* ===== Liste =====
@@ -70,6 +71,7 @@
   border: 0 !important;
   border-bottom: 1px solid var(--line) !important;   /* séparation entre les entrées */
 }
+.mt-toc ul.mt-toc-list li:last-child { border-bottom: 0 !important; }
 
 .mt-toc .mt-toc-link {
   display: block;
@@ -103,6 +105,7 @@
 }
 .mt-toc .mt-toc-pill {
   padding: 8px 0 8px 12px;
+  border-radius: 8px;
   font-weight: 600;
 }
 .mt-toc .mt-toc-pill.is-tests {

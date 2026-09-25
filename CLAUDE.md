@@ -828,13 +828,15 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     comparatif. **Plus d'entrées guide d'achat** (il sera séparé) ni de jauge de
     temps de lecture. **Mise en forme DICTÉE par le client (après 3 ratés — ne
     rien réinventer)** : titre « SOMMAIRE : MEILLEUR {TYPE} » (majuscules, gras
-    12px, gris sombre `--ink`) souligné d'une **bordure 2px de la même couleur** ;
+    12px, **gris sombre `--at-grey`**, PAS noir) souligné d'une **bordure 2px de la
+    même couleur** ;
     **pas de fond gris, pas d'encadré** ; liste sur fond blanc, typo d'origine
     (13px, `ink-2`, padding 7px 0 7px 12px), **barre bleue verticale 2px à gauche
     de l'entrée active** (progression au scroll), **bordure 1px gris clair
-    (`grey-l-3`) entre chaque entrée** ; « Tests complets » (fond `primary-l-5`)
+    (`grey-l-3`) entre chaque entrée, AUCUNE sous la dernière** ; « Tests complets » (fond `primary-l-5`)
     et « Tableau comparatif » (fond `success-l-2`) **collés à la liste**, **2px
-    d'écart blanc entre eux**, même alignement que la liste, sans icône ni flèche.
+    d'écart blanc entre eux**, **coins arrondis 8px**, même alignement que la
+    liste, sans icône ni flèche.
     ⚠️ Ne rien ajouter qui n'a pas été demandé (icônes, flèches, sur-titres).
     ⚠️ Le thème ajoute retrait/marges/puces aux `ul/li` → remise à zéro `!important`.
     Scrollspy : classe `is-active` posée sur le lien `a.mt-toc-link`.
