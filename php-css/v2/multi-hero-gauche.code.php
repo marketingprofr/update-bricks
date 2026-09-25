@@ -6,8 +6,8 @@
    hero-gauche.code.css, inchangée).
 
    Identique au V1, sauf le titre H1 d'un multi-comparatif :
-   « Les 5 meilleurs climatiseurs mobiles en 2026 : le guide ultime
-   (N climatiseurs mobiles comparés) », N = nombre de produits différents
+   « Les 5 meilleurs climatiseurs mobiles en 2026 : Guide ultime
+   (N produits comparés) », N = nombre de produits différents
    des encarts résumé (principal + sous-comparatifs, sans doublon).
    Titre SEO Rank Math d'un multi-comparatif : « Meilleur climatiseur mobile
    2026 (N produits comparés) ».
@@ -714,14 +714,13 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
         echo esc_html($forcer_affichage_du_titre);
     } elseif ($post_type === 'comparatif') {
         echo 'Les <em>' . $total_avis . ' ' . lcfirst($masculinsfeminins ?? 'meilleures') . ' ' . $type_de_produit_au_pluriel . '</em> en 2026';
-        /* Multi-comparatif : « : le guide ultime (N {type} comparés) »,
+        /* Multi-comparatif : « : Guide ultime (N produits comparés) »,
            N = nombre de produits différents présents dans l'ensemble des
            encarts résumé (principal + sous-comparatifs, sans doublon). */
         $mtv2_hplan = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
         $mtv2_hnb   = $mtv2_hplan ? count( $mtv2_hplan['origin'] ) : 0;
         if ( $mtv2_hplan && $mtv2_hplan['is_multi'] && $mtv2_hnb > 0 ) {
-            $mtv2_fem = ( mb_stripos( (string) ( $masculinsfeminins ?? '' ), 'meilleures' ) !== false );
-            echo ' : le guide ultime (' . (int) $mtv2_hnb . ' ' . esc_html( $type_de_produit_au_pluriel ) . ' compar' . ( $mtv2_fem ? '&eacute;es' : '&eacute;s' ) . ')';
+            echo ' : Guide ultime (' . (int) $mtv2_hnb . ' produits compar&eacute;s)';
         } else {
             echo !empty($sous_titre ?? '') ? ' : ' . $sous_titre : ' : comparatif et guide d\'achat';
         }

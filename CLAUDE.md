@@ -809,9 +809,9 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   sous-comparatif, rendu identique au V1 (vérifié par diff sur un faux site) :
   - `multi-hero-gauche.code.php` (+ `multi-hero-gauche.css` = copie de
     `hero-gauche.code.css`) : copie du hero V1 ; seul le **H1 d'un
-    multi-comparatif** change : « Les 5 meilleurs {type} en 2026 : **le guide
-    ultime (N {type} comparés)** » (accord « comparées » si `masculinsfeminins` =
-    meilleures ; **N = produits différents de TOUS les encarts résumé** =
+    multi-comparatif** change : « Les 5 meilleurs {type} en 2026 : **Guide
+    ultime (N produits comparés)** » (G majuscule, « produits » plutôt que le type
+    répété : H1 moins lourd, pas d'accord genré, cohérent avec le title ; **N = produits différents de TOUS les encarts résumé** =
     `count($plan['origin'])`, dédoublonné ID + ASIN, NON plafonné — décision
     client, pas le nombre de tests). **Title SEO Rank Math** d'un multi-comparatif
     (écrit via `update_post_meta` comme en V1) : « **Meilleur {type} 2026 (N
