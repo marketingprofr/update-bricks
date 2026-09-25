@@ -826,12 +826,13 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     {année} » (encart principal) → une entrée par sous-comparatif (libellé court, 1re lettre en
     capitale : « Réversible », « 7000 BTU ») → Tests complets → Tableau
     comparatif. **Plus d'entrées guide d'achat** (il sera séparé) ni de jauge de
-    temps de lecture. **Mise en forme (validée après un raté)** : encadré gris
-    clair (`grey-l-5`, radius 12, padding 16) ; titre seul (PAS de sur-titre
-    « Sommaire ») ; entrées = simples lignes (padding 6px 10px, active = fond
-    blanc + texte accent) ; **« Tests complets » (bleu `primary-l-5`) et
-    « Tableau comparatif » (vert `success-l-3`) en pastilles de couleurs
-    DIFFÉRENTES, SANS icône ni flèche** ; titre/entrées/pastilles alignés à 10px.
+    temps de lecture. **Mise en forme (décision client, après 2 ratés)** :
+    **AUCUN encadré autour du sommaire** ; titre « MEILLEUR {TYPE} » en
+    majuscules gras 12px ; **la liste seule sur fond gris clair** (`grey-l-4`),
+    entrées séparées par un **filet blanc de 2px** (gap), coins arrondis en haut
+    et en bas de la liste ; entrée active = fond `primary-l-6` + texte accent ;
+    « Tests complets » (bleu `primary-l-5`) et « Tableau comparatif » (vert
+    `success-l-3`) en pastilles de couleurs différentes, sans icône ni flèche.
     ⚠️ Ne rien ajouter qui n'a pas été demandé (icônes, flèches, sur-titres).
     ⚠️ Le thème ajoute retrait/marges/puces aux `ul/li` → remise à zéro `!important`.
     Scrollspy : classe `is-active` posée sur le lien `a.mt-toc-link`.

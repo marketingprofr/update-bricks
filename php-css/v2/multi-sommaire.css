@@ -3,17 +3,21 @@
    Onglet CSS de l'élément Code Bricks (markup + JS : multi-sommaire.code.php).
    Couleurs = variables Advanced Themer (bascule sombre automatique).
 
-   Mise en forme : un encadré gris clair ; titre « Meilleur {type} » ;
-   entrées en simples lignes (l'entrée active est surlignée) ; « Tests
-   complets » et « Tableau comparatif » en pastilles de couleurs différentes.
+   Mise en forme (décision client) :
+   - AUCUN encadré autour du sommaire ;
+   - titre « MEILLEUR {TYPE} » en majuscules, gras ;
+   - la LISTE seule sur fond gris clair, entrées séparées par un filet blanc
+     de 2px (espace entre les entrées), coins arrondis en haut et en bas ;
+   - « Tests complets » / « Tableau comparatif » en pastilles de couleurs
+     différentes, sans icône ni flèche.
    ===================================================================== */
 
 .mt-toc {
   --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
-  --muted: var(--at-grey);
-  --line: var(--at-grey-l-3);
-  --card: var(--at-grey-l-5);
+  --item: var(--at-grey-l-4);
+  --item-hover: var(--at-grey-l-3);
   --accent: var(--at-primary);
+  --accent-soft: var(--at-primary-l-6);
 }
 
 .mt-toc,
@@ -28,31 +32,28 @@
   top: 24px;
   align-self: start;
 }
-
-/* ===== Encadré ===== */
 .mt-toc {
   position: sticky;
   top: 24px;
   align-self: start;
   margin: 0;
-  padding: 16px;
-  background: var(--card);
-  border-radius: 12px;
+  padding: 0;
+  background: none;
 }
 
 /* ===== Titre ===== */
 .mt-toc .mt-toc-title {
   margin: 0 0 10px !important;
-  padding: 0 10px !important;
-  font-size: 15px;
+  padding: 0 !important;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: normal;
-  text-transform: none;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--ink);
 }
 
-/* ===== Entrées =====
+/* ===== Liste (fond gris, filet blanc de 2px entre les entrées) =====
    Remise à zéro : le thème ajoute retrait, marges et puces aux listes. */
 .mt-toc ul.mt-toc-list,
 .mt-toc ul.mt-toc-list li {
@@ -68,13 +69,13 @@
 .mt-toc ul.mt-toc-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 2px;                        /* = filet blanc entre les entrées */
 }
 .mt-toc .mt-toc-list .mt-toc-link {
   display: block;
   margin: 0;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 9px 12px;
+  background: var(--item);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.35;
@@ -82,12 +83,15 @@
   text-decoration: none;
   transition: background-color .15s, color .15s;
 }
+.mt-toc .mt-toc-list li:first-child .mt-toc-link { border-radius: 8px 8px 0 0; }
+.mt-toc .mt-toc-list li:last-child .mt-toc-link  { border-radius: 0 0 8px 8px; }
+.mt-toc .mt-toc-list li:only-child .mt-toc-link  { border-radius: 8px; }
 .mt-toc .mt-toc-list .mt-toc-link:hover {
-  background: var(--at-white);
+  background: var(--item-hover);
   color: var(--ink);
 }
 .mt-toc .mt-toc-list .mt-toc-link.is-active {
-  background: var(--at-white);
+  background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
 }
@@ -98,20 +102,20 @@
   flex-direction: column;
   gap: 6px;
   margin: 12px 0 0;
-  padding: 12px 0 0;
-  border-top: 1px solid var(--line);
+  padding: 0;
+  border: 0;
 }
 .mt-toc .mt-toc-pill {
   display: block;
   margin: 0;
-  padding: 8px 9px;
+  padding: 9px 12px;
   border: 1px solid transparent;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.35;
   text-decoration: none;
-  transition: border-color .15s, background-color .15s;
+  transition: border-color .15s;
 }
 /* Tests complets : bleu */
 .mt-toc .mt-toc-pill.is-tests {
