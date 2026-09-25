@@ -394,7 +394,7 @@
    MULTI-COMPARATIF (V2) — ajouts au CSS V1 (top5-resume.css)
    ===================================================================== */
 /* Encarts des sous-comparatifs */
-.mt-top5.mtv2-sub { margin-top: 56px; }
+.mt-top5.mtv2-sub { margin-top: 25px; }
 /* Titre cliquable vers l'édition (éditeurs connectés uniquement) */
 .mt-top5 .mtv2-edit-link:hover { text-decoration: underline dotted; text-underline-offset: 4px; }
 
@@ -427,6 +427,5 @@
 .mt-top5 .mtv2-admin .mtv2-admin-warn { color: var(--warn); font-weight: 600; }
 
 @media (max-width: 767px) {
-  .mt-top5.mtv2-sub { margin-top: 40px; }
   .mt-top5 .mtv2-intro { font-size: 15px; }
 }

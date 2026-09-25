@@ -841,7 +841,11 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     ⚠️ Le thème ajoute retrait/marges/puces aux `ul/li` → remise à zéro `!important`.
     Scrollspy : classe `is-active` posée sur le lien `a.mt-toc-link`.
   - Barre de tri (résumé) **compacte** : `.t5-bar` padding 8px 14px, onglets
-    6px 13px, marges réduites (V2 seulement, V1 intact).
+    6px 13px, marges réduites (V2 seulement, V1 intact). Espace au-dessus de
+    chaque sous-comparatif : `.mt-top5.mtv2-sub { margin-top: 25px }` (valeur
+    client, mobile compris). Lien « Comment nous évaluons » = lien direct
+    **`https://meilleurtest.fr/notre-methode/`**, `target="_blank"`
+    `rel="nofollow noopener"` (plus d'ancre interne `#methodologie`).
   - CSS : **fichiers COMPLETS** `v2/multi-*.css` (= CSS V1 + ajouts V2 en fin de
     fichier, sommaire = copie de `sommaire.css`), un par élément Code. ⚠️ Toujours
     livrer des CSS complets (jamais un simple diff à ajouter) — demande client.

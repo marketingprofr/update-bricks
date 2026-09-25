@@ -689,7 +689,7 @@ if ( ! function_exists( 'mtv2_resume_list' ) ) {
       <button type="button" class="t5-tab" aria-pressed="false" data-sort="recent"><span class="ico" aria-hidden="true">&#8635;</span> Le plus r&eacute;cent</button>
       <?php endif; ?>
     </div>
-    <a class="t5-howto" href="#methodologie">Comment nous &eacute;valuons <span class="arr" aria-hidden="true">&rarr;</span></a>
+    <a class="t5-howto" href="https://meilleurtest.fr/notre-methode/" target="_blank" rel="nofollow noopener">Comment nous &eacute;valuons <span class="arr" aria-hidden="true">&rarr;</span></a>
   </div>
   <p class="sr-only" role="status" data-t5-status></p>
 
