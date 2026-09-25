@@ -757,30 +757,31 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   `get_all_template_variables($id)` : `top_avis_ids`, titre forcé, type,
   `introduction`. **Aucune logique de sélection recopiée.** Titre lu via
   `post_title` (jamais `get_the_title()`, qui préfixe « Privé : »).
-- **Champs ACF — créés À LA MAIN dans ACF par le client** (le code ne déclare
-  aucun champ) :
-  - groupe **« Multi-comparatif »**, emplacement **type = `comparatif` ET
-    étiquette `multi-comparatif`** → `mltv5_sous_comparatifs` (Relation →
-    `comparatif`, **aucun filtre de statut**, format ID, sur le PARENT ; ordre =
-    ordre des blocs ; **vide = page identique au V1**) ;
-  - **groupe normal des comparatifs** → `mltv5_intro_sous_comparatif` (zone de
-    texte, facultatif, rempli sur le SOUS-comparatif).
-- **Snippet WPCodeBox `mtv2-core.php`** (Run everywhere) : `mtv2_plan($id)` =
-  liste principale + sous-comparatifs + **liste des tests sans doublon** (ordre de
-  1re apparition : principal puis sous-comparatifs, coupée à `MTV2_MAX_TESTS = 30`)
-  + `origin`/`seen_in` (rang de chaque produit dans chaque encart) + avertissements
-  (non publié, type de produit différent, liste vide, aucun attribut propre).
-  Précharge posts/métas/termes (`_prime_post_caches`). Pas de transient : les
-  listes viennent déjà du cache du site. **Pas d'aperçu** (`?preview_v2` supprimé :
-  le client affiche directement le template multi-comparatif dans Bricks).
-  ⏳ Décision en attente : garder ce snippet ou intégrer le calcul (gardé
-  `function_exists`) en copie identique dans les 4 blocs.
+- **UN SEUL champ ACF, créé À LA MAIN par le client** (le code ne déclare aucun
+  champ) : groupe **« Multi-comparatif »**, emplacement **type = `comparatif` ET
+  étiquette `multi-comparatif`** → `mltv5_sous_comparatifs` (Relation →
+  `comparatif`, aucun filtre de statut, format ID, sur le PARENT ; ordre = ordre
+  des blocs ; **vide = page identique au V1**). **Pas de champ d'intro dédié**
+  (décision client) : on affiche l'intro NORMALE du sous-comparatif (les intros
+  seront réécrites plus tard pour ce contexte).
+- **AUCUN snippet WPCodeBox** (décision client, `mtv2-core.php` supprimé) : le
+  **moteur** (`mtv2_plan()` + utilitaires `mtv2_*`, tous gardés `function_exists`,
+  constantes gardées `defined`) est inclus **à l'identique (vérifié)** dans les 4
+  blocs `multi-*.code.php` → le 1er bloc exécuté le définit. ⚠️ Toute modif du
+  moteur = la recopier dans les 4 blocs. `mtv2_plan($id)` = liste principale +
+  sous-comparatifs + **liste des tests sans doublon** (ordre de 1re apparition :
+  principal puis sous-comparatifs, coupée à `MTV2_MAX_TESTS = 30`) +
+  `origin`/`seen_in` (rang de chaque produit dans chaque encart) + avertissements
+  (statut ni privé ni publié, type de produit différent, liste vide, aucun attribut
+  propre) affichés **uniquement dans le panneau jaune en haut du résumé** (éditeurs
+  connectés). Précharge posts/métas/termes (`_prime_post_caches`). Pas de
+  transient, pas d'aperçu `?preview_v2`.
+  ⏳ Question ouverte : exiger aussi l'étiquette `multi-comparatif` dans le code ?
 - **Titre H2 d'un sous-comparatif** : titre forcé du sous-comparatif, sinon « Les
   {meilleurs} {type pluriel du parent} ({attributs propres au sous-comparatif}) »
   (attributs du sous-comparatif MOINS ceux du parent), **sans nombre**.
-- **Intro** : champ dédié → affiché en entier ; sinon `introduction` du
-  sous-comparatif → **1re phrase visible**, le reste dans un `<details>` « Lire la
-  suite » (natif, sans JS).
+- **Intro** : `introduction` normale du sous-comparatif → **1re phrase visible**,
+  le reste dans un `<details>` « Lire la suite » (natif, sans JS).
 - **Ancre** : slug du sous-comparatif moins celui du parent (`#9000-btu`), unique ;
   replis attributs propres / slug. Tests : **`#test-{slug de l'avis}`** ; les
   produits de l'encart principal gardent aussi un `<span id="produit-n-{rang}">`
