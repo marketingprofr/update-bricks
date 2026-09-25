@@ -626,6 +626,7 @@ foreach ( $ids as $pid ) {
     'pid'         => (int) $pid,
     'is_main'     => $is_main,
     'rank_n'      => $rank_n,
+    'disp_n'      => $is_multi ? $pos : $rank_n, // V2 : numéros dans l'ordre des colonnes (1, 2, 3…)
     'rank_cls'    => $is_main ? 'r' . min( 5, $rank_n ) : 'r5',
     'origin'      => $origin_l,
     'href'        => $plan ? mtv2_product_href( $pid, $plan ) : '#produit-n-' . $pos,
@@ -707,13 +708,11 @@ $sub = ( $type_plur !== '' )
   ? 'Nos ' . $nb . ' ' . esc_html( lcfirst( $type_plur ) ) . ', en face &agrave; face sur les crit&egrave;res qui comptent vraiment.'
   : 'Nos ' . $nb . ' laur&eacute;ats, en face &agrave; face sur les crit&egrave;res qui comptent vraiment.';
 if ( $is_multi ) {
-  /* V2 : « Tableau comparatif : 14 climatiseurs mobiles » + rappel des sélections */
-  $labels = array();
-  foreach ( $plan['subs'] as $sb ) { $labels[] = esc_html( $sb['label'] ); }
-  $n_main     = count( $main_rank );
-  $head_title = 'Tableau comparatif' . ( $type_plur !== '' ? ' : ' . $nb . ' ' . esc_html( lcfirst( $type_plur ) ) : '' );
-  $sub        = 'Notre top ' . $n_main . ' et nos meilleurs choix ' . mt5_join_et( $labels )
-    . ', en face &agrave; face sur les crit&egrave;res qui comptent vraiment.';
+  /* V2 : « Tableau comparatif : les meilleurs climatiseurs mobiles », sans sous-titre */
+  $mf_adj     = isset( $page_tv['masculinsfeminins'] ) ? trim( (string) $page_tv['masculinsfeminins'] ) : '';
+  $mf_adj     = ( mb_stripos( $mf_adj, 'meilleures' ) !== false ) ? 'meilleures' : 'meilleurs';
+  $head_title = 'Tableau comparatif' . ( $type_plur !== '' ? ' : les ' . $mf_adj . ' ' . esc_html( lcfirst( $type_plur ) ) : '' );
+  $sub        = '';
 }
 
 $colspan = $nb + 1;
@@ -725,7 +724,7 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
 <?php endif; ?>
   <header class="mt-cmp-head">
     <h2 class="mt-cmp-h2" id="<?php echo esc_attr( $uid ); ?>-title"><?php echo $head_title; ?></h2>
-    <p class="mt-cmp-sub"><?php echo $sub; ?></p>
+    <?php if ( $sub !== '' ) : ?><p class="mt-cmp-sub"><?php echo $sub; ?></p><?php endif; ?>
   </header>
 
   <p class="mt-cmp-hint" aria-hidden="true">Faites glisser le tableau pour comparer &rarr;</p>
@@ -756,7 +755,7 @@ $uid     = 'tc-' . substr( md5( (string) $page_id . '-' . $nb ), 0, 8 );
               <?php elseif ( $banner === 'alt' ) : ?><span class="col-banner b-alt">&#9829; Meilleure alternative</span>
               <?php endif; ?>
             </div>
-            <span class="rank <?php echo esc_attr( $it['rank_cls'] ); ?>"><span class="rank-n"><?php echo (int) $it['rank_n']; ?></span></span>
+            <span class="rank <?php echo esc_attr( $it['rank_cls'] ); ?>"><span class="rank-n"><?php echo (int) $it['disp_n']; ?></span></span>
           </td>
           <?php endforeach; ?>
         </tr>

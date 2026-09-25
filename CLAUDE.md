@@ -831,6 +831,9 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   - `multi-tableau.code.php` : colonnes = liste des tests ; **specs de référence
     choisies sur les produits du guide principal seulement** (≥ 3) ; banderoles sur
     le principal ; médaille grise + pastille « Sélection 9000 BTU » pour les autres.
+    **Numéros des médailles = ordre des colonnes** (1, 2, 3… 13, décision client :
+    plus de rang d'origine, on s'y perdait). **Titre** = « Tableau comparatif : les
+    meilleurs {type} » (meilleures si `masculinsfeminins`), **sans sous-titre**.
   - `multi-sommaire.code.php` : **titre** = « Meilleur » + type de produit,
     accordé via `lalalesmeilleur` (singulier → type au singulier : « Meilleur
     climatiseur mobile » ; « les … » → pluriel), replis `masculinsfeminins` + type
