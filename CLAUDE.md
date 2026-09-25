@@ -819,8 +819,11 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   - `multi-tableau.code.php` : colonnes = liste des tests ; **specs de référence
     choisies sur les produits du guide principal seulement** (≥ 3) ; banderoles sur
     le principal ; médaille grise + pastille « Sélection 9000 BTU » pour les autres.
-  - `multi-sommaire.code.php` : **liste courte** (décision client) = Notre
-    sélection → une entrée par sous-comparatif (libellé court, 1re lettre en
+  - `multi-sommaire.code.php` : **titre** = « Meilleur » + type de produit,
+    accordé via `lalalesmeilleur` (singulier → type au singulier : « Meilleur
+    climatiseur mobile » ; « les … » → pluriel), replis `masculinsfeminins` + type
+    pluriel puis « Sur cette page ». **Liste courte** (décision client) = « En
+    {année} » (encart principal) → une entrée par sous-comparatif (libellé court, 1re lettre en
     capitale : « Réversible », « 7000 BTU ») → Tests complets → Tableau
     comparatif. **Plus d'entrées guide d'achat** (il sera séparé) ni de jauge de
     temps de lecture. Lignes resserrées (padding 5px). Scrollspy conservé.

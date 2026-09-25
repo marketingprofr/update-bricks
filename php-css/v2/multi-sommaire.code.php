@@ -5,7 +5,8 @@
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
    CSS : v2/multi-sommaire.css à coller dans l'onglet CSS du même élément.
 
-   Liste courte (décision client) : Notre sélection, puis une entrée par
+   Titre = « Meilleur » + type de produit (ex. « Meilleur climatiseur
+   mobile »). Liste courte (décision client) : « En 2026 », puis une entrée par
    sous-comparatif (libellé court : « Réversible », « 7000 BTU »…), Tests
    complets, Tableau comparatif. Plus d'entrées du guide d'achat (il sera
    séparé) ni de jauge de temps de lecture. Scrollspy + défilement doux.
@@ -399,8 +400,30 @@ if ( ! function_exists( 'mtv2_admin_panel' ) ) {
 $page_id = get_the_ID();
 $plan    = mtv2_plan( $page_id );
 
-/* Entrées : Notre sélection, sous-comparatifs, Tests complets, Tableau */
-$sections = array( array( 'label' => 'Notre s&eacute;lection', 'anchor' => 'mt-top5-title' ) );
+/* Titre du sommaire : « Meilleur » + type de produit, accordé via
+   lalalesmeilleur (« le meilleur » -> « Meilleur climatiseur mobile »,
+   « les meilleures » -> « Meilleures … » au pluriel). Replis :
+   masculinsfeminins + type pluriel, puis « Sur cette page ». */
+$tv        = mtv2_tv( $page_id );
+$llm       = isset( $tv['lalalesmeilleur'] ) ? trim( (string) $tv['lalalesmeilleur'] ) : '';
+$type_sing = isset( $tv['type_de_produit_au_singulier'] ) ? trim( (string) $tv['type_de_produit_au_singulier'] ) : '';
+$type_plur = isset( $tv['type_de_produit_au_pluriel'] ) ? trim( (string) $tv['type_de_produit_au_pluriel'] ) : '';
+$toc_title = '';
+if ( $llm !== '' ) {
+  $adj    = trim( preg_replace( '/^(le|la|les)\s+/iu', '', $llm ) );        // meilleur / meilleure / meilleurs / meilleures
+  $plural = (bool) preg_match( '/^les\s/iu', $llm );
+  $type   = $plural ? $type_plur : ( $type_sing !== '' ? $type_sing : $type_plur );
+  if ( $adj !== '' && $type !== '' ) { $toc_title = $adj . ' ' . $type; }
+}
+if ( $toc_title === '' && $type_plur !== '' ) {
+  $mf        = isset( $tv['masculinsfeminins'] ) ? trim( (string) $tv['masculinsfeminins'] ) : '';
+  $toc_title = ( $mf !== '' ? $mf : 'meilleurs' ) . ' ' . $type_plur;
+}
+if ( $toc_title === '' ) { $toc_title = 'Sur cette page'; }
+$toc_title = mb_strtoupper( mb_substr( $toc_title, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $toc_title, 1, null, 'UTF-8' );
+
+/* Entrées : En {année} (encart principal), sous-comparatifs, Tests complets, Tableau */
+$sections = array( array( 'label' => 'En ' . esc_html( date_i18n( 'Y' ) ), 'anchor' => 'mt-top5-title' ) );
 if ( $plan['is_multi'] ) {
   foreach ( $plan['subs'] as $sb ) {
     /* Libellé court : attributs propres, 1re lettre en capitale (« Réversible ») */
@@ -416,7 +439,7 @@ $sections[] = array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tablea
 <?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>
 <p class="mtv2-stale" style="margin:0 0 12px;padding:10px 14px;border:2px solid #c0392b;border-radius:8px;background:#fdecea;color:#c0392b;font:600 14px/1.5 Inter,sans-serif">&#9888; Multi-comparatif : une ANCIENNE version du code tourne encore sur cette page. Supprimez le snippet WPCodeBox « mtv2-core » s'il existe, recollez les 4 blocs multi-* (résumé, tests, tableau, sommaire), puis videz le cache. (Message visible des éditeurs uniquement.)</p>
 <?php endif; ?>
-  <h4>Sur cette page</h4>
+  <h4><?php echo esc_html( $toc_title ); ?></h4>
   <ul>
 <?php foreach ( $sections as $s ) : ?>
     <li><a href="#<?php echo esc_attr( $s['anchor'] ); ?>"><?php echo $s['label']; ?></a></li>
