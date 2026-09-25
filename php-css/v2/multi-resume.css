@@ -24,18 +24,18 @@
 .mt-top5 .sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 /* ===== En-tête ===== */
-.mt-top5 .t5-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.mt-top5 .t5-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
 .mt-top5 .t5-h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--at-black-l-1); margin: 0; }
 .mt-top5 .t5-meta { font-size: 16px; color: var(--ink-2); line-height: 1.65; max-width: 740px; margin: 8px 0 0; }
-.mt-top5 .t5-howto { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent); padding: 8px 2px; border-bottom: 1px solid transparent; transition: border-color .15s; }
+.mt-top5 .t5-howto { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent); padding: 4px 2px; border-bottom: 1px solid transparent; transition: border-color .15s; }
 .mt-top5 .t5-howto:hover { border-color: var(--accent); }
 .mt-top5 .t5-howto .arr { transition: transform .15s; }
 .mt-top5 .t5-howto:hover .arr { transform: translateX(3px); }
 
 /* ===== Barre de tri ===== */
 .mt-top5 .t5-bar {
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-  padding: 14px 18px; margin-bottom: 22px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 8px 14px; margin-bottom: 16px;
   background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px;
   box-shadow: 0 1px 2px rgba(20,24,29,.03);
 }
@@ -43,7 +43,7 @@
 .mt-top5 .t5-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .mt-top5 .t5-tab {
   display: inline-flex; align-items: center; gap: 7px;
-  padding: 9px 16px; border-radius: 999px; cursor: pointer;
+  padding: 6px 13px; border-radius: 999px; cursor: pointer;
   font-size: 13.5px; font-weight: 600; color: var(--ink-2);
   background: var(--at-white); border: 1px solid var(--line); transition: all .15s;
 }
@@ -317,7 +317,7 @@
 }
 @media (max-width: 600px) {
   .mt-top5 .t5-h2 { font-size: 21px; }
-  .mt-top5 .t5-bar { padding: 12px 13px; gap: 10px; }
+  .mt-top5 .t5-bar { padding: 8px 12px; gap: 8px; }
   .mt-top5 .t5-bar .lbl { width: 100%; }
   .mt-top5 .t5-aside { flex-wrap: wrap; gap: 10px; }
   .mt-top5 .t5-buy { width: 100%; }
@@ -327,7 +327,7 @@
 @media (max-width: 478px) {
   /* Barre de tri : "Trier par" / vignettes de tri / "Comment nous évaluons"
      sur 3 lignes distinctes, alignées à gauche. */
-  .mt-top5 .t5-bar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .mt-top5 .t5-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
   .mt-top5 .t5-howto { margin-left: 0; }
 }
 /* ===== Plage de scores (sous le titre) ===== */
@@ -398,16 +398,22 @@
 /* Titre cliquable vers l'édition (éditeurs connectés uniquement) */
 .mt-top5 .mtv2-edit-link:hover { text-decoration: underline dotted; text-underline-offset: 4px; }
 
-/* Intro d'un sous-comparatif : 1re phrase + « Lire la suite » (details natif) */
+/* Intro d'un sous-comparatif : 2 premières phrases visibles, dernière ligne
+   en fondu, « Lire la suite » juste dessous (details natif, sans JS). */
 .mt-top5 .mtv2-intro { max-width: 740px; margin: 10px 0 0; font-size: 16px; line-height: 1.65; color: var(--ink-2); }
 .mt-top5 .mtv2-intro p { margin: 0 0 8px; }
-.mt-top5 .mtv2-intro-more summary { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; list-style: none; font-size: 14px; font-weight: 600; color: var(--accent); }
+.mt-top5 .mtv2-intro .mtv2-intro-lead { margin: 0; }
+.mt-top5 .mtv2-intro.has-more .mtv2-intro-lead {
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 1.65em), rgba(0, 0, 0, .2) 100%);
+          mask-image: linear-gradient(to bottom, #000 calc(100% - 1.65em), rgba(0, 0, 0, .2) 100%);
+}
+.mt-top5 .mtv2-intro.has-more:has(.mtv2-intro-more[open]) .mtv2-intro-lead { -webkit-mask-image: none; mask-image: none; }
+.mt-top5 .mtv2-intro-more summary { display: inline-flex; align-items: center; gap: 6px; margin-top: 2px; cursor: pointer; list-style: none; font-size: 14px; font-weight: 600; color: var(--accent); }
 .mt-top5 .mtv2-intro-more summary::-webkit-details-marker { display: none; }
-.mt-top5 .mtv2-intro-more summary::after { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
-.mt-top5 .mtv2-intro-more[open] summary::after { transform: translateY(2px) rotate(-135deg); }
-.mt-top5 .mtv2-intro-more .mtv2-more-off { display: none; }
-.mt-top5 .mtv2-intro-more[open] .mtv2-more-on { display: none; }
-.mt-top5 .mtv2-intro-more[open] .mtv2-more-off { display: inline; }
+.mt-top5 .mtv2-intro-more summary::after { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.mt-top5 .mtv2-intro-more summary:hover { text-decoration: underline; text-underline-offset: 3px; }
+/* Une fois ouvert : le lien disparaît, le texte continue normalement */
+.mt-top5 .mtv2-intro-more[open] summary { display: none; }
 .mt-top5 .mtv2-intro-rest { margin-top: 8px; }
 
 /* Panneau de contrôle (visible uniquement par les éditeurs connectés) */

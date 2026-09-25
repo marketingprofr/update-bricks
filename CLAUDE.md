@@ -782,7 +782,7 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   « … (réversible) »). Parade : `mtv2_engine_version()` (date) ; si une copie
   d'une autre version est déjà chargée → **message rouge** en haut des 4 blocs
   (éditeurs connectés seulement). **Changer la date de version à chaque modif du
-  moteur.**
+  moteur** (actuelle : `2026-09-25b`).
   ⏳ Question ouverte : exiger aussi l'étiquette `multi-comparatif` dans le code ?
 - **Titre H2 d'un sous-comparatif** (décision client) : son **titre forcé** s'il
   existe, sinon son **titre d'article** (`post_title`). Rien de reconstruit.
@@ -791,8 +791,15 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
 - **Libellé court** (sommaire, pastille « Sélection … » du tableau, eyebrow des
   tests) = attributs propres du sous-comparatif (ses attributs MOINS ceux du
   parent), ex. « Réversible », « 7000 BTU » ; repli = titre.
-- **Intro** : `introduction` normale du sous-comparatif → **1re phrase visible**,
-  le reste dans un `<details>` « Lire la suite » (natif, sans JS).
+- **Intro** : `introduction` normale du sous-comparatif → **2 premières phrases
+  visibles** (découpe qui ignore les abréviations « env. », « M. », « cf. »…),
+  **dernière ligne en fondu** (`mask-image`) et « Lire la suite » collé dessous ;
+  le reste dans un `<details>` natif (sans JS) ; une fois ouvert, le lien
+  disparaît et le fondu est retiré (`:has(details[open])`).
+- **Anti-doublon** : liste des tests dédoublonnée par ID **et par ASIN** (deux
+  fiches avis au même ASIN = un seul produit ; l'autre ID devient un alias
+  `plan['alias']` qui pointe vers le même test) + garde au rendu dans
+  `multi-tests` (jamais deux fois le même ID/ASIN).
 - **Ancre** : slug du sous-comparatif moins celui du parent (`#9000-btu`), unique ;
   replis attributs propres / slug. Tests : **`#test-{slug de l'avis}`** ; les
   produits de l'encart principal gardent aussi un `<span id="produit-n-{rang}">`
@@ -812,9 +819,13 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   - `multi-tableau.code.php` : colonnes = liste des tests ; **specs de référence
     choisies sur les produits du guide principal seulement** (≥ 3) ; banderoles sur
     le principal ; médaille grise + pastille « Sélection 9000 BTU » pour les autres.
-  - `multi-sommaire.code.php` : après « Notre sélection », une entrée courte par
-    sous-comparatif = son libellé court, 1re lettre en capitale (« Réversible »,
-    « Sans évacuation », « 7000 BTU ») ; +1 min de lecture par sous-comparatif.
+  - `multi-sommaire.code.php` : **liste courte** (décision client) = Notre
+    sélection → une entrée par sous-comparatif (libellé court, 1re lettre en
+    capitale : « Réversible », « 7000 BTU ») → Tests complets → Tableau
+    comparatif. **Plus d'entrées guide d'achat** (il sera séparé) ni de jauge de
+    temps de lecture. Lignes resserrées (padding 5px). Scrollspy conservé.
+  - Barre de tri (résumé) **compacte** : `.t5-bar` padding 8px 14px, onglets
+    6px 13px, marges réduites (V2 seulement, V1 intact).
   - CSS : **fichiers COMPLETS** `v2/multi-*.css` (= CSS V1 + ajouts V2 en fin de
     fichier, sommaire = copie de `sommaire.css`), un par élément Code. ⚠️ Toujours
     livrer des CSS complets (jamais un simple diff à ajouter) — demande client.

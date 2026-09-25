@@ -3,35 +3,14 @@
    MEILLEURTEST — MULTI-COMPARATIF (V2) : sommaire « Sur cette page »
    Remplace sommaire.code.php dans le template Bricks multi-comparatif.
    À coller dans UN SEUL élément CODE Bricks (Execute code = ON).
-   CSS : v2/multi-sommaire.css (copie complète de sommaire.css, inchangée)
-   à coller dans l'onglet CSS du même élément.
+   CSS : v2/multi-sommaire.css à coller dans l'onglet CSS du même élément.
 
-   Identique au V1, plus une entrée par sous-comparatif (ancre stable
-   #9000-btu), insérée juste après « Notre sélection ». Chaque
-   sous-comparatif ajoute 1 min au temps de lecture de la partie produit.
+   Liste courte (décision client) : Notre sélection, puis une entrée par
+   sous-comparatif (libellé court : « Réversible », « 7000 BTU »…), Tests
+   complets, Tableau comparatif. Plus d'entrées du guide d'achat (il sera
+   séparé) ni de jauge de temps de lecture. Scrollspy + défilement doux.
    Moteur multi-comparatif inclus dans ce bloc (aucun snippet WPCodeBox).
    ===================================================================== */
-
-if ( ! function_exists( 'mt_guide_cache_id' ) ) {
-  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
-     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
-  function mt_guide_cache_id( $page_id, $suffix ) {
-    $keys = array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix );
-    foreach ( $keys as $f ) {                            /* 1) ACF */
-      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
-      if ( is_array( $v ) ) { $v = reset( $v ); }
-      if ( is_object( $v ) ) { return (int) $v->ID; }
-      if ( $v ) { return (int) $v; }
-    }
-    foreach ( $keys as $f ) {                            /* 2) meta brut (hors ACF) */
-      $v = function_exists( 'get_post_meta' ) ? get_post_meta( $page_id, $f, true ) : '';
-      if ( is_array( $v ) ) { $v = reset( $v ); }
-      if ( is_object( $v ) ) { return (int) $v->ID; }
-      if ( $v ) { return (int) $v; }
-    }
-    return 0;
-  }
-}
 
 /* =====================================================================
    MOTEUR MULTI-COMPARATIF — copie IDENTIQUE dans les 4 blocs multi-*
@@ -51,11 +30,11 @@ if ( ! function_exists( 'mt_guide_cache_id' ) ) {
    mtv2-core, ou un bloc multi-* pas recollé) a déjà été chargée, ses
    fonctions gagnent (function_exists) : on le détecte ici pour prévenir
    l'éditeur (message rouge en haut des blocs, éditeurs connectés seulement). */
-if ( function_exists( 'mtv2_plan' ) && ( ! function_exists( 'mtv2_engine_version' ) || mtv2_engine_version() !== '2026-09-25' ) ) {
+if ( function_exists( 'mtv2_plan' ) && ( ! function_exists( 'mtv2_engine_version' ) || mtv2_engine_version() !== '2026-09-25b' ) ) {
   $GLOBALS['mtv2_stale_engine'] = true;
 }
 if ( ! function_exists( 'mtv2_engine_version' ) ) {
-  function mtv2_engine_version() { return '2026-09-25'; }
+  function mtv2_engine_version() { return '2026-09-25b'; }
 }
 
 /* ---------------------------------------------------------------------
@@ -180,21 +159,35 @@ if ( ! function_exists( 'mtv2_intro_html' ) ) {
     $paras = mtv2_paragraphs( isset( $tv['introduction'] ) ? $tv['introduction'] : '' );
     if ( empty( $paras ) ) { return ''; }
 
-    /* 1re phrase du 1er paragraphe (texte brut), le reste en suite */
-    $first = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $paras[0] ) ) );
-    $lead  = $first;
-    $rest0 = '';
-    if ( preg_match( '/^(.{25,}?[.!?…])\s+(\S.*)$/us', $first, $mm ) ) {
-      $lead  = $mm[1];
-      $rest0 = $mm[2];
-    }
+    /* Les 2 premières phrases restent visibles (texte brut, sur 1 ou 2
+       paragraphes) ; la suite est repliée derrière « Lire la suite ». */
+    $lead = array();
     $rest = array();
-    if ( $rest0 !== '' ) { $rest[] = esc_html( $rest0 ); }
-    foreach ( array_slice( $paras, 1 ) as $p ) { $rest[] = wp_kses_post( $p ); }
+    $need = 2;
+    foreach ( $paras as $p ) {
+      if ( $need <= 0 ) { $rest[] = wp_kses_post( $p ); continue; }
+      $txt   = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $p ) ) );
+      $raw   = preg_split( '/(?<=[.!?…])\s+(?=\S)/u', $txt );
+      /* Recolle à la phrase suivante un fragment coupé après une abréviation
+         (« env. », « M. », « cf. », « n°. »…) : ce n'est pas une fin de phrase. */
+      $parts = array();
+      $buf   = '';
+      foreach ( $raw as $r ) {
+        $buf = $buf === '' ? $r : $buf . ' ' . $r;
+        if ( ! preg_match( '/(?:^|\s)(?:env|M|Mme|Mlle|Dr|cf|ex|p|n°|no|approx|réf|vol|max|min)\.$/iu', $buf ) ) { $parts[] = $buf; $buf = ''; }
+      }
+      if ( $buf !== '' ) { $parts[] = $buf; }
+      $take  = array_slice( $parts, 0, $need );
+      $lead  = array_merge( $lead, $take );
+      $need -= count( $take );
+      $left  = array_slice( $parts, count( $take ) );
+      if ( ! empty( $left ) ) { $rest[] = esc_html( implode( ' ', $left ) ); }
+    }
 
-    $out = '<div class="mtv2-intro"><p class="mtv2-intro-lead">' . esc_html( $lead ) . '</p>';
-    if ( ! empty( $rest ) ) {
-      $out .= '<details class="mtv2-intro-more"><summary><span class="mtv2-more-on">Lire la suite</span><span class="mtv2-more-off">R&eacute;duire</span></summary>'
+    $has_more = ! empty( $rest );
+    $out = '<div class="mtv2-intro' . ( $has_more ? ' has-more' : '' ) . '"><p class="mtv2-intro-lead">' . esc_html( implode( ' ', $lead ) ) . '</p>';
+    if ( $has_more ) {
+      $out .= '<details class="mtv2-intro-more"><summary>Lire la suite</summary>'
         . '<div class="mtv2-intro-rest"><p>' . implode( '</p><p>', $rest ) . '</p></div></details>';
     }
     return $out . '</div>';
@@ -314,8 +307,34 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
     }
     $plan['is_multi'] = ! empty( $plan['subs'] );
 
+    /* Précharge posts + métas + termes de tous les produits en 1 passe */
+    $all = $plan['main']['ids'];
+    foreach ( $plan['subs'] as $sub ) { $all = array_merge( $all, $sub['ids'] ); }
+    $all = array_values( array_unique( $all ) );
+    if ( ! empty( $all ) && function_exists( '_prime_post_caches' ) ) {
+      _prime_post_caches( $all, true, true );
+    }
+
+    /* Sécurité anti-doublon : deux fiches avis différentes avec le MÊME ASIN
+       sont le même produit -> un seul test (celui de la 1re apparition) ;
+       l'autre ID devient un alias qui pointe vers ce test. */
+    $plan['alias'] = array();
+    $asin_owner    = array();
+    $canon = function ( $pid ) use ( &$plan, &$asin_owner ) {
+      if ( isset( $plan['alias'][ $pid ] ) ) { return $plan['alias'][ $pid ]; }
+      $asin = strtoupper( trim( (string) get_post_meta( $pid, 'mltv5_asin_amazon', true ) ) );
+      if ( $asin === '' ) { return $pid; }
+      if ( ! isset( $asin_owner[ $asin ] ) ) { $asin_owner[ $asin ] = $pid; return $pid; }
+      if ( $asin_owner[ $asin ] !== $pid ) { $plan['alias'][ $pid ] = $asin_owner[ $asin ]; }
+      return $asin_owner[ $asin ];
+    };
+
     /* Liste des tests : principal puis sous-comparatifs, sans doublon */
-    $push = function ( $pid, $enc, $rank ) use ( &$plan ) {
+    $push = function ( $pid, $enc, $rank ) use ( &$plan, $canon ) {
+      $pid = $canon( $pid );
+      if ( isset( $plan['seen_in'][ $pid ] ) ) {
+        foreach ( $plan['seen_in'][ $pid ] as $ap ) { if ( $ap['enc'] === $enc ) { return; } }
+      }
       $plan['seen_in'][ $pid ][] = array( 'enc' => $enc, 'rank' => $rank );
       if ( ! isset( $plan['origin'][ $pid ] ) ) {
         $plan['origin'][ $pid ] = $enc;
@@ -326,13 +345,8 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
     foreach ( $plan['subs'] as $si => $sub ) {
       foreach ( $sub['ids'] as $i => $pid ) { $push( $pid, $si, $i + 1 ); }
     }
+    $plan['tests']    = array_values( array_unique( $plan['tests'] ) ); // ceinture + bretelles
     $plan['test_set'] = array_flip( $plan['tests'] );
-
-    /* Précharge posts + métas + termes de tous les produits en 1 passe */
-    $all = array_keys( $plan['origin'] );
-    if ( ! empty( $all ) && function_exists( '_prime_post_caches' ) ) {
-      _prime_post_caches( $all, true, true );
-    }
 
     $cache[ $page_id ] = $plan;
     return $plan;
@@ -343,6 +357,7 @@ if ( ! function_exists( 'mtv2_product_href' ) ) {
   /* Lien d'un produit dans un encart : son test complet sur la page s'il y
      figure (#test-slug), sinon sa page d'avis (au-delà de MTV2_MAX_TESTS). */
   function mtv2_product_href( $pid, $plan ) {
+    if ( isset( $plan['alias'][ $pid ] ) ) { $pid = $plan['alias'][ $pid ]; }
     if ( isset( $plan['test_set'][ $pid ] ) ) { return '#' . mtv2_test_anchor( $pid ); }
     $u = get_permalink( $pid );
     return $u ? $u : '#' . mtv2_test_anchor( $pid );
@@ -367,6 +382,7 @@ if ( ! function_exists( 'mtv2_admin_panel' ) ) {
     $out  = '<div class="mtv2-admin" role="note">';
     $out .= '<p><b>Multi-comparatif</b> &middot; ' . count( $plan['subs'] ) . ' sous-comparatif(s) &middot; '
       . count( $plan['tests'] ) . ' test(s) complet(s) &middot; ' . max( 0, $total - count( $plan['origin'] ) ) . ' doublon(s) &eacute;vit&eacute;(s)'
+      . ( ! empty( $plan['alias'] ) ? ' &middot; ' . count( $plan['alias'] ) . ' fiche(s) avis en double (m&ecirc;me ASIN) regroup&eacute;e(s)' : '' )
       . ( count( $plan['origin'] ) > count( $plan['tests'] ) ? ' &middot; ' . ( count( $plan['origin'] ) - count( $plan['tests'] ) ) . ' produit(s) au-del&agrave; de la limite (' . (int) MTV2_MAX_TESTS . ')' : '' )
       . '</p>';
     if ( ! empty( $plan['subs'] ) ) {
@@ -381,97 +397,20 @@ if ( ! function_exists( 'mtv2_admin_panel' ) ) {
 }
 
 $page_id = get_the_ID();
-$page_tv = function_exists( 'get_all_template_variables' ) ? get_all_template_variables( $page_id ) : array();
+$plan    = mtv2_plan( $page_id );
 
-/* Type de produit (pour le libellé « Guide d'achat … ») */
-$type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
-
-/* ---------------------------------------------------------------------
-   CONFIG — sections du sommaire
-   - label  : libellé affiché
-   - anchor : slug d'ancre = `id` HTML à poser sur la section dans Bricks
-   - show   : true (toujours) OU suffixe de cache (« criteres », « types »… ;
-              présent => affiché, via le post lié `mltv5_cache_id_{suffixe}`).
-   ⚠️ Les slugs d'ancre ci-dessous sont à confirmer / poser dans Bricks.
-   --------------------------------------------------------------------- */
-$guide_label = "Guide d&rsquo;achat" . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : '' );
-
-$sections_cfg = array(
-  array( 'label' => 'Notre s&eacute;lection',     'anchor' => 'mt-top5-title',            'show' => true ),
-  array( 'label' => 'Tests complets',             'anchor' => 'partie-tests-complets',    'show' => true ),
-  array( 'label' => 'Tableau comparatif',         'anchor' => 'partie-tableau-comparatif','show' => true ),
-  array( 'label' => $guide_label,                 'anchor' => 'partie-guide-achat',       'show' => 'criteres' ),
-  array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'partie-types',             'show' => 'choix' ),
-  array( 'label' => 'Quelle marque choisir&nbsp;?','anchor' => 'partie-marques',          'show' => 'marques' ),
-  array( 'label' => 'Astuces et conseils',        'anchor' => 'partie-astuces',           'show' => 'astuces' ),
-  array( 'label' => 'Pourquoi acheter&nbsp;?',    'anchor' => 'partie-raisons',           'show' => 'raisons' ),
-  array( 'label' => 'Questions fr&eacute;quentes','anchor' => 'partie-faq',               'show' => 'faq' ),
-);
-
-/* Résolution des sections présentes (un suffixe => présent si le post lié existe) */
-$sections = array();
-foreach ( $sections_cfg as $s ) {
-  $present = ( $s['show'] === true ) || ( is_string( $s['show'] ) && mt_guide_cache_id( $page_id, $s['show'] ) > 0 );
-  if ( $present ) { $sections[] = $s; }
-}
-if ( empty( $sections ) ) { return; }
-
-/* V2 : une entrée par sous-comparatif, juste après « Notre sélection » */
-$plan        = mtv2_plan( $page_id );
-$sub_anchors = array();
-if ( $plan && $plan['is_multi'] ) {
-  $sub_items = array();
+/* Entrées : Notre sélection, sous-comparatifs, Tests complets, Tableau */
+$sections = array( array( 'label' => 'Notre s&eacute;lection', 'anchor' => 'mt-top5-title' ) );
+if ( $plan['is_multi'] ) {
   foreach ( $plan['subs'] as $sb ) {
     /* Libellé court : attributs propres, 1re lettre en capitale (« Réversible ») */
     $lbl = trim( (string) $sb['label'] );
     $lbl = esc_html( mb_strtoupper( mb_substr( $lbl, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $lbl, 1, null, 'UTF-8' ) );
-    $sub_items[]   = array( 'label' => $lbl, 'anchor' => $sb['anchor'], 'show' => true );
-    $sub_anchors[] = $sb['anchor'];
+    $sections[] = array( 'label' => $lbl, 'anchor' => $sb['anchor'] );
   }
-  $at = 0;
-  foreach ( $sections as $k => $s ) {
-    if ( $s['anchor'] === 'mt-top5-title' ) { $at = $k + 1; break; }
-  }
-  array_splice( $sections, $at, 0, $sub_items );
 }
-
-/* ---------------------------------------------------------------------
-   Temps de lecture estimé
-   10 min pour la partie produit (Notre sélection + Tests complets + Tableau comparatif)
-   + 2 min par section supplémentaire présente.
-   --------------------------------------------------------------------- */
-$T5_READ_BASE = 10 + count( $sub_anchors ); // partie produit (+1 min par sous-comparatif)
-$T5_READ_PER  = 2;  // par section supplémentaire
-$product_anchors = array_merge( array( 'mt-top5-title', 'partie-tests-complets', 'partie-tableau-comparatif' ), $sub_anchors );
-$extra = 0;
-foreach ( $sections as $s ) {
-  if ( ! in_array( $s['anchor'], $product_anchors, true ) ) { $extra++; }
-}
-$reading_total = $T5_READ_BASE + $T5_READ_PER * $extra;
-
-/* ---------------------------------------------------------------------
-   Jalons de minutes cumulées (début de section) pour la jauge de lecture.
-   - Notre sélection (1re section) = 0.
-   - La partie produit s'étale de 0 à BASE (10) : on ne pose donc PAS de
-     jalon sur Tests complets / Tableau comparatif (la rampe 0→10 les couvre
-     au prorata de leur hauteur).
-   - 1re section supplémentaire = BASE (10), puis +PER (2) à chacune.
-   Émis en data-min ; la fin (= total) est gérée en JS via le bas du contenu.
-   --------------------------------------------------------------------- */
-$cum_opt = $T5_READ_BASE;
-$first   = true;
-foreach ( $sections as $k => $s ) {
-  $is_product = in_array( $s['anchor'], $product_anchors, true );
-  if ( $first ) {
-    $sections[ $k ]['min'] = 0;
-  } elseif ( ! $is_product ) {
-    $sections[ $k ]['min'] = $cum_opt;
-    $cum_opt += $T5_READ_PER;
-  } else {
-    $sections[ $k ]['min'] = null; // produit intérieur : pas de jalon
-  }
-  $first = false;
-}
+$sections[] = array( 'label' => 'Tests complets',     'anchor' => 'partie-tests-complets' );
+$sections[] = array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tableau-comparatif' );
 ?>
 <aside class="mt-toc" data-mt-toc>
 <?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>
@@ -480,29 +419,20 @@ foreach ( $sections as $k => $s ) {
   <h4>Sur cette page</h4>
   <ul>
 <?php foreach ( $sections as $s ) : ?>
-    <li><a href="#<?php echo esc_attr( $s['anchor'] ); ?>"<?php if ( isset( $s['min'] ) && $s['min'] !== null ) { echo ' data-min="' . esc_attr( $s['min'] ) . '"'; } ?>><?php echo $s['label']; ?></a></li>
+    <li><a href="#<?php echo esc_attr( $s['anchor'] ); ?>"><?php echo $s['label']; ?></a></li>
 <?php endforeach; ?>
   </ul>
-  <div class="mt-toc-progress">
-    <span>Lecture</span>
-    <div class="mt-toc-progress-bar"><div></div></div>
-    <span><span class="mt-toc-cur">0</span> min sur <span class="mt-toc-total"><?php echo (int) $reading_total; ?></span></span>
-  </div>
 </aside>
 
 <script>
 (function () {
-  /* ----------------------------------------------------------------
-     CONFIG — à adapter au DOM réel de la page Bricks
-     ---------------------------------------------------------------- */
-  var CONTENT_SELECTOR = '.contenu-principal'; // 👉 colonnes du contenu (plusieurs autorisées)
-  var HEADER_OFFSET    = 30;                   // marge au-dessus de l'ancre au scroll (px)
+  var HEADER_OFFSET = 30; // marge au-dessus de l'ancre au scroll (px)
 
   function init(root) {
     if (root.dataset.mtTocInit) return;        // garde anti double-init
     root.dataset.mtTocInit = '1';
 
-    var links = [].slice.call(root.querySelectorAll('.mt-toc ul a, ul a'));
+    var links = [].slice.call(root.querySelectorAll('ul a'));
     if (!links.length) return;
 
     /* Cibles = éléments visés par les ancres du sommaire */
@@ -535,73 +465,6 @@ foreach ( $sections as $k => $s ) {
       }, { rootMargin: '-15% 0px -75% 0px' });
       targets.forEach(function (t) { if (t.el) io.observe(t.el); });
     }
-
-    /* Barre de progression + minutes courantes.
-       Modèle pondéré par section : chaque jalon (data-min) = minutes cumulées
-       au DÉBUT de sa section ; on interpole linéairement entre deux jalons
-       selon la position de scroll. Ainsi « 10 min » tombe pile au début de la
-       1re section supplémentaire, quelle que soit la hauteur réelle en pixels. */
-    var content = [].slice.call(document.querySelectorAll(CONTENT_SELECTOR));
-    var bar     = root.querySelector('.mt-toc-progress-bar div');
-    var elCur   = root.querySelector('.mt-toc-cur');
-    var elTotal = root.querySelector('.mt-toc-total');
-    var totalMin = parseInt(elTotal && elTotal.textContent, 10) || 0;
-
-    /* Jalons issus de data-min (résolus en position absolue à chaque update) */
-    var milestones = targets
-      .filter(function (t) { return t.el && t.a.hasAttribute('data-min'); })
-      .map(function (t) { return { el: t.el, min: parseFloat(t.a.getAttribute('data-min')) || 0 }; });
-
-    function absTop(el) { return window.scrollY + el.getBoundingClientRect().top; }
-
-    function buildBps() {
-      var bps = milestones.map(function (m) { return { y: absTop(m.el), min: m.min }; });
-      if (content.length) {
-        var lastRect = content[content.length - 1].getBoundingClientRect();
-        bps.push({ y: window.scrollY + lastRect.bottom - window.innerHeight, min: totalMin });
-      }
-      bps.sort(function (a, b) { return a.y - b.y; });
-      return bps;
-    }
-
-    function minutesAt(y, bps) {
-      if (y <= bps[0].y) { return bps[0].min; }
-      for (var i = 1; i < bps.length; i++) {
-        if (y <= bps[i].y) {
-          var seg = bps[i].y - bps[i - 1].y;
-          if (seg <= 0) { return bps[i].min; }
-          var f = (y - bps[i - 1].y) / seg;
-          return bps[i - 1].min + f * (bps[i].min - bps[i - 1].min);
-        }
-      }
-      return bps[bps.length - 1].min;
-    }
-
-    var ticking = false;
-    function update() {
-      ticking = false;
-      var bps = buildBps();
-      var cur, p;
-      if (bps.length >= 2) {
-        cur = minutesAt(window.scrollY, bps);          // jalons pondérés
-        p   = totalMin ? cur / totalMin : 0;
-      } else {                                          // repli : scroll plein page
-        var docDist = document.documentElement.scrollHeight - window.innerHeight;
-        p   = docDist > 0 ? window.scrollY / docDist : 0;
-        cur = p * totalMin;
-      }
-      p = Math.min(1, Math.max(0, p));
-      if (bar)   bar.style.width = (p * 100).toFixed(1) + '%';
-      if (elCur) elCur.textContent = Math.min(totalMin, Math.max(0, Math.round(cur)));
-    }
-    function onScroll() {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(update);
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    update();
   }
 
   function boot() {

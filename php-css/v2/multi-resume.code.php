@@ -173,11 +173,11 @@ if ( ! function_exists( 'mt_all_scored_avis' ) ) {
    mtv2-core, ou un bloc multi-* pas recollé) a déjà été chargée, ses
    fonctions gagnent (function_exists) : on le détecte ici pour prévenir
    l'éditeur (message rouge en haut des blocs, éditeurs connectés seulement). */
-if ( function_exists( 'mtv2_plan' ) && ( ! function_exists( 'mtv2_engine_version' ) || mtv2_engine_version() !== '2026-09-25' ) ) {
+if ( function_exists( 'mtv2_plan' ) && ( ! function_exists( 'mtv2_engine_version' ) || mtv2_engine_version() !== '2026-09-25b' ) ) {
   $GLOBALS['mtv2_stale_engine'] = true;
 }
 if ( ! function_exists( 'mtv2_engine_version' ) ) {
-  function mtv2_engine_version() { return '2026-09-25'; }
+  function mtv2_engine_version() { return '2026-09-25b'; }
 }
 
 /* ---------------------------------------------------------------------
@@ -302,21 +302,35 @@ if ( ! function_exists( 'mtv2_intro_html' ) ) {
     $paras = mtv2_paragraphs( isset( $tv['introduction'] ) ? $tv['introduction'] : '' );
     if ( empty( $paras ) ) { return ''; }
 
-    /* 1re phrase du 1er paragraphe (texte brut), le reste en suite */
-    $first = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $paras[0] ) ) );
-    $lead  = $first;
-    $rest0 = '';
-    if ( preg_match( '/^(.{25,}?[.!?…])\s+(\S.*)$/us', $first, $mm ) ) {
-      $lead  = $mm[1];
-      $rest0 = $mm[2];
-    }
+    /* Les 2 premières phrases restent visibles (texte brut, sur 1 ou 2
+       paragraphes) ; la suite est repliée derrière « Lire la suite ». */
+    $lead = array();
     $rest = array();
-    if ( $rest0 !== '' ) { $rest[] = esc_html( $rest0 ); }
-    foreach ( array_slice( $paras, 1 ) as $p ) { $rest[] = wp_kses_post( $p ); }
+    $need = 2;
+    foreach ( $paras as $p ) {
+      if ( $need <= 0 ) { $rest[] = wp_kses_post( $p ); continue; }
+      $txt   = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $p ) ) );
+      $raw   = preg_split( '/(?<=[.!?…])\s+(?=\S)/u', $txt );
+      /* Recolle à la phrase suivante un fragment coupé après une abréviation
+         (« env. », « M. », « cf. », « n°. »…) : ce n'est pas une fin de phrase. */
+      $parts = array();
+      $buf   = '';
+      foreach ( $raw as $r ) {
+        $buf = $buf === '' ? $r : $buf . ' ' . $r;
+        if ( ! preg_match( '/(?:^|\s)(?:env|M|Mme|Mlle|Dr|cf|ex|p|n°|no|approx|réf|vol|max|min)\.$/iu', $buf ) ) { $parts[] = $buf; $buf = ''; }
+      }
+      if ( $buf !== '' ) { $parts[] = $buf; }
+      $take  = array_slice( $parts, 0, $need );
+      $lead  = array_merge( $lead, $take );
+      $need -= count( $take );
+      $left  = array_slice( $parts, count( $take ) );
+      if ( ! empty( $left ) ) { $rest[] = esc_html( implode( ' ', $left ) ); }
+    }
 
-    $out = '<div class="mtv2-intro"><p class="mtv2-intro-lead">' . esc_html( $lead ) . '</p>';
-    if ( ! empty( $rest ) ) {
-      $out .= '<details class="mtv2-intro-more"><summary><span class="mtv2-more-on">Lire la suite</span><span class="mtv2-more-off">R&eacute;duire</span></summary>'
+    $has_more = ! empty( $rest );
+    $out = '<div class="mtv2-intro' . ( $has_more ? ' has-more' : '' ) . '"><p class="mtv2-intro-lead">' . esc_html( implode( ' ', $lead ) ) . '</p>';
+    if ( $has_more ) {
+      $out .= '<details class="mtv2-intro-more"><summary>Lire la suite</summary>'
         . '<div class="mtv2-intro-rest"><p>' . implode( '</p><p>', $rest ) . '</p></div></details>';
     }
     return $out . '</div>';
@@ -436,8 +450,34 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
     }
     $plan['is_multi'] = ! empty( $plan['subs'] );
 
+    /* Précharge posts + métas + termes de tous les produits en 1 passe */
+    $all = $plan['main']['ids'];
+    foreach ( $plan['subs'] as $sub ) { $all = array_merge( $all, $sub['ids'] ); }
+    $all = array_values( array_unique( $all ) );
+    if ( ! empty( $all ) && function_exists( '_prime_post_caches' ) ) {
+      _prime_post_caches( $all, true, true );
+    }
+
+    /* Sécurité anti-doublon : deux fiches avis différentes avec le MÊME ASIN
+       sont le même produit -> un seul test (celui de la 1re apparition) ;
+       l'autre ID devient un alias qui pointe vers ce test. */
+    $plan['alias'] = array();
+    $asin_owner    = array();
+    $canon = function ( $pid ) use ( &$plan, &$asin_owner ) {
+      if ( isset( $plan['alias'][ $pid ] ) ) { return $plan['alias'][ $pid ]; }
+      $asin = strtoupper( trim( (string) get_post_meta( $pid, 'mltv5_asin_amazon', true ) ) );
+      if ( $asin === '' ) { return $pid; }
+      if ( ! isset( $asin_owner[ $asin ] ) ) { $asin_owner[ $asin ] = $pid; return $pid; }
+      if ( $asin_owner[ $asin ] !== $pid ) { $plan['alias'][ $pid ] = $asin_owner[ $asin ]; }
+      return $asin_owner[ $asin ];
+    };
+
     /* Liste des tests : principal puis sous-comparatifs, sans doublon */
-    $push = function ( $pid, $enc, $rank ) use ( &$plan ) {
+    $push = function ( $pid, $enc, $rank ) use ( &$plan, $canon ) {
+      $pid = $canon( $pid );
+      if ( isset( $plan['seen_in'][ $pid ] ) ) {
+        foreach ( $plan['seen_in'][ $pid ] as $ap ) { if ( $ap['enc'] === $enc ) { return; } }
+      }
       $plan['seen_in'][ $pid ][] = array( 'enc' => $enc, 'rank' => $rank );
       if ( ! isset( $plan['origin'][ $pid ] ) ) {
         $plan['origin'][ $pid ] = $enc;
@@ -448,13 +488,8 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
     foreach ( $plan['subs'] as $si => $sub ) {
       foreach ( $sub['ids'] as $i => $pid ) { $push( $pid, $si, $i + 1 ); }
     }
+    $plan['tests']    = array_values( array_unique( $plan['tests'] ) ); // ceinture + bretelles
     $plan['test_set'] = array_flip( $plan['tests'] );
-
-    /* Précharge posts + métas + termes de tous les produits en 1 passe */
-    $all = array_keys( $plan['origin'] );
-    if ( ! empty( $all ) && function_exists( '_prime_post_caches' ) ) {
-      _prime_post_caches( $all, true, true );
-    }
 
     $cache[ $page_id ] = $plan;
     return $plan;
@@ -465,6 +500,7 @@ if ( ! function_exists( 'mtv2_product_href' ) ) {
   /* Lien d'un produit dans un encart : son test complet sur la page s'il y
      figure (#test-slug), sinon sa page d'avis (au-delà de MTV2_MAX_TESTS). */
   function mtv2_product_href( $pid, $plan ) {
+    if ( isset( $plan['alias'][ $pid ] ) ) { $pid = $plan['alias'][ $pid ]; }
     if ( isset( $plan['test_set'][ $pid ] ) ) { return '#' . mtv2_test_anchor( $pid ); }
     $u = get_permalink( $pid );
     return $u ? $u : '#' . mtv2_test_anchor( $pid );
@@ -489,6 +525,7 @@ if ( ! function_exists( 'mtv2_admin_panel' ) ) {
     $out  = '<div class="mtv2-admin" role="note">';
     $out .= '<p><b>Multi-comparatif</b> &middot; ' . count( $plan['subs'] ) . ' sous-comparatif(s) &middot; '
       . count( $plan['tests'] ) . ' test(s) complet(s) &middot; ' . max( 0, $total - count( $plan['origin'] ) ) . ' doublon(s) &eacute;vit&eacute;(s)'
+      . ( ! empty( $plan['alias'] ) ? ' &middot; ' . count( $plan['alias'] ) . ' fiche(s) avis en double (m&ecirc;me ASIN) regroup&eacute;e(s)' : '' )
       . ( count( $plan['origin'] ) > count( $plan['tests'] ) ? ' &middot; ' . ( count( $plan['origin'] ) - count( $plan['tests'] ) ) . ' produit(s) au-del&agrave; de la limite (' . (int) MTV2_MAX_TESTS . ')' : '' )
       . '</p>';
     if ( ! empty( $plan['subs'] ) ) {
