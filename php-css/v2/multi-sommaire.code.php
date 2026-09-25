@@ -432,19 +432,28 @@ if ( $plan['is_multi'] ) {
     $sections[] = array( 'label' => $lbl, 'anchor' => $sb['anchor'] );
   }
 }
-$sections[] = array( 'label' => 'Tests complets',     'anchor' => 'partie-tests-complets' );
-$sections[] = array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tableau-comparatif' );
+/* Raccourcis mis en avant (pastilles) */
+$pills = array(
+  array( 'label' => 'Tests complets',     'anchor' => 'partie-tests-complets',     'icon' => 'fas fa-clipboard-check' ),
+  array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tableau-comparatif', 'icon' => 'fas fa-table' ),
+);
 ?>
 <aside class="mt-toc" data-mt-toc>
 <?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>
 <p class="mtv2-stale" style="margin:0 0 12px;padding:10px 14px;border:2px solid #c0392b;border-radius:8px;background:#fdecea;color:#c0392b;font:600 14px/1.5 Inter,sans-serif">&#9888; Multi-comparatif : une ANCIENNE version du code tourne encore sur cette page. Supprimez le snippet WPCodeBox « mtv2-core » s'il existe, recollez les 4 blocs multi-* (résumé, tests, tableau, sommaire), puis videz le cache. (Message visible des éditeurs uniquement.)</p>
 <?php endif; ?>
-  <h4><?php echo esc_html( $toc_title ); ?></h4>
-  <ul>
+  <p class="mt-toc-kicker">Sommaire</p>
+  <h4 class="mt-toc-title"><?php echo esc_html( $toc_title ); ?></h4>
+  <ul class="mt-toc-list">
 <?php foreach ( $sections as $s ) : ?>
-    <li><a href="#<?php echo esc_attr( $s['anchor'] ); ?>"><?php echo $s['label']; ?></a></li>
+    <li><a class="mt-toc-link" href="#<?php echo esc_attr( $s['anchor'] ); ?>"><?php echo $s['label']; ?></a></li>
 <?php endforeach; ?>
   </ul>
+  <div class="mt-toc-pills">
+<?php foreach ( $pills as $s ) : ?>
+    <a class="mt-toc-link mt-toc-pill" href="#<?php echo esc_attr( $s['anchor'] ); ?>"><i class="<?php echo esc_attr( $s['icon'] ); ?>" aria-hidden="true"></i><span><?php echo esc_html( $s['label'] ); ?></span><span class="mt-toc-arr" aria-hidden="true">&rarr;</span></a>
+<?php endforeach; ?>
+  </div>
 </aside>
 
 <script>
@@ -455,7 +464,7 @@ $sections[] = array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tablea
     if (root.dataset.mtTocInit) return;        // garde anti double-init
     root.dataset.mtTocInit = '1';
 
-    var links = [].slice.call(root.querySelectorAll('ul a'));
+    var links = [].slice.call(root.querySelectorAll('a.mt-toc-link'));
     if (!links.length) return;
 
     /* Cibles = éléments visés par les ancres du sommaire */
@@ -463,7 +472,7 @@ $sections[] = array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tablea
       var id = (a.getAttribute('href') || '').replace(/^#/, '');
       var el = id ? document.getElementById(id) : null;
       if (el) el.style.scrollMarginTop = HEADER_OFFSET + 'px';
-      return { id: id, el: el, li: a.parentNode, a: a };
+      return { id: id, el: el, a: a };
     });
 
     /* Défilement doux au clic */
@@ -482,7 +491,7 @@ $sections[] = array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tablea
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           targets.forEach(function (t) {
-            t.li.classList.toggle('active', t.el === e.target);
+            t.a.classList.toggle('is-active', t.el === e.target);
           });
         });
       }, { rootMargin: '-15% 0px -75% 0px' });

@@ -826,7 +826,12 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     {année} » (encart principal) → une entrée par sous-comparatif (libellé court, 1re lettre en
     capitale : « Réversible », « 7000 BTU ») → Tests complets → Tableau
     comparatif. **Plus d'entrées guide d'achat** (il sera séparé) ni de jauge de
-    temps de lecture. Lignes resserrées (padding 5px). Scrollspy conservé.
+    temps de lecture. **Mise en forme** : sur-titre « Sommaire » + titre ;
+    sélections sur un **rail vertical** (entrée active = rail accent + fond
+    `accent-soft`) ; **« Tests complets » / « Tableau comparatif » en pastilles**
+    colorées (fond `primary-l-6`, icône FA `fa-clipboard-check`/`fa-table`, flèche).
+    ⚠️ Le thème ajoutait retrait/marge aux `ul/li` → remise à zéro `!important`.
+    Scrollspy : classe `is-active` posée sur le lien `a.mt-toc-link`.
   - Barre de tri (résumé) **compacte** : `.t5-bar` padding 8px 14px, onglets
     6px 13px, marges réduites (V2 seulement, V1 intact).
   - CSS : **fichiers COMPLETS** `v2/multi-*.css` (= CSS V1 + ajouts V2 en fin de
