@@ -3,21 +3,20 @@
    Onglet CSS de l'élément Code Bricks (markup + JS : multi-sommaire.code.php).
    Couleurs = variables Advanced Themer (bascule sombre automatique).
 
-   Mise en forme (décision client) :
-   - AUCUN encadré autour du sommaire ;
-   - titre « MEILLEUR {TYPE} » en majuscules, gras ;
-   - la LISTE seule sur fond gris clair, entrées séparées par un filet blanc
-     de 2px (espace entre les entrées), coins arrondis en haut et en bas ;
-   - « Tests complets » / « Tableau comparatif » en pastilles de couleurs
-     différentes, sans icône ni flèche.
+   Mise en forme (dictée par le client) :
+   - titre « SOMMAIRE : MEILLEUR {TYPE} » en majuscules gras, gris sombre,
+     souligné d'une bordure de 2px de la même couleur ;
+   - pas de fond gris : liste sur fond blanc, typo d'origine, barre bleue
+     verticale à gauche de l'entrée en cours (progression au scroll),
+     bordure de 1px gris clair entre chaque entrée ;
+   - « Tests complets » (fond primary-l-5) et « Tableau comparatif » (fond
+     success-l-2) collés à la suite de la liste, 2px d'écart entre eux.
    ===================================================================== */
 
 .mt-toc {
   --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
-  --item: var(--at-grey-l-4);
-  --item-hover: var(--at-grey-l-3);
+  --line: var(--at-grey-l-3);
   --accent: var(--at-primary);
-  --accent-soft: var(--at-primary-l-6);
 }
 
 .mt-toc,
@@ -43,8 +42,9 @@
 
 /* ===== Titre ===== */
 .mt-toc .mt-toc-title {
-  margin: 0 0 10px !important;
-  padding: 0 !important;
+  margin: 0 !important;
+  padding: 0 0 10px !important;
+  border-bottom: 2px solid var(--ink);
   font-size: 12px;
   font-weight: 700;
   line-height: 1.4;
@@ -53,84 +53,68 @@
   color: var(--ink);
 }
 
-/* ===== Liste (fond gris, filet blanc de 2px entre les entrées) =====
+/* ===== Liste =====
    Remise à zéro : le thème ajoute retrait, marges et puces aux listes. */
 .mt-toc ul.mt-toc-list,
 .mt-toc ul.mt-toc-list li {
   list-style: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  border: 0 !important;
   text-indent: 0 !important;
 }
 .mt-toc ul.mt-toc-list li::before,
 .mt-toc ul.mt-toc-list li::marker { content: none !important; display: none !important; }
 
-.mt-toc ul.mt-toc-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;                        /* = filet blanc entre les entrées */
+.mt-toc ul.mt-toc-list { border: 0 !important; }
+.mt-toc ul.mt-toc-list li {
+  border: 0 !important;
+  border-bottom: 1px solid var(--line) !important;   /* séparation entre les entrées */
 }
-.mt-toc .mt-toc-list .mt-toc-link {
+
+.mt-toc .mt-toc-link {
   display: block;
   margin: 0;
-  padding: 9px 12px;
-  background: var(--item);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.35;
+  padding: 7px 0 7px 12px;
+  border-left: 2px solid transparent;                 /* barre de progression */
+  background: var(--at-white);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
   color: var(--ink-2);
   text-decoration: none;
-  transition: background-color .15s, color .15s;
+  transition: color .15s, border-color .15s;
 }
-.mt-toc .mt-toc-list li:first-child .mt-toc-link { border-radius: 8px 8px 0 0; }
-.mt-toc .mt-toc-list li:last-child .mt-toc-link  { border-radius: 0 0 8px 8px; }
-.mt-toc .mt-toc-list li:only-child .mt-toc-link  { border-radius: 8px; }
-.mt-toc .mt-toc-list .mt-toc-link:hover {
-  background: var(--item-hover);
-  color: var(--ink);
-}
+.mt-toc .mt-toc-list .mt-toc-link:hover { color: var(--ink); }
 .mt-toc .mt-toc-list .mt-toc-link.is-active {
-  background: var(--accent-soft);
+  border-left-color: var(--accent);
   color: var(--accent);
   font-weight: 600;
 }
 
-/* ===== Pastilles « Tests complets » / « Tableau comparatif » ===== */
+/* ===== « Tests complets » / « Tableau comparatif » =====
+   Collés à la liste ; 2px d'écart blanc entre les deux. */
 .mt-toc .mt-toc-pills {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin: 12px 0 0;
+  gap: 2px;
+  margin: 0;
   padding: 0;
   border: 0;
 }
 .mt-toc .mt-toc-pill {
-  display: block;
-  margin: 0;
-  padding: 9px 12px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  font-size: 14px;
+  padding: 8px 0 8px 12px;
   font-weight: 600;
-  line-height: 1.35;
-  text-decoration: none;
-  transition: border-color .15s;
 }
-/* Tests complets : bleu */
 .mt-toc .mt-toc-pill.is-tests {
   background: var(--at-primary-l-5);
   color: var(--at-primary-d-2);
 }
-.mt-toc .mt-toc-pill.is-tests:hover,
-.mt-toc .mt-toc-pill.is-tests.is-active { border-color: var(--at-primary); }
-/* Tableau comparatif : vert */
 .mt-toc .mt-toc-pill.is-table {
-  background: var(--at-success-l-3);
+  background: var(--at-success-l-2);
   color: var(--at-success-d-3);
 }
-.mt-toc .mt-toc-pill.is-table:hover,
-.mt-toc .mt-toc-pill.is-table.is-active { border-color: var(--at-success); }
+.mt-toc .mt-toc-pill.is-tests.is-active { border-left-color: var(--at-primary); }
+.mt-toc .mt-toc-pill.is-table.is-active { border-left-color: var(--at-success-d-1); }
 
 .mt-toc a:focus-visible {
   outline: 2px solid var(--accent);
