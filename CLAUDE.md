@@ -834,8 +834,8 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     (13px, `ink-2`, padding 7px 0 7px 12px), **barre bleue verticale 2px à gauche
     de l'entrée active** (progression au scroll), **bordure 1px gris clair
     (`grey-l-3`) entre chaque entrée, AUCUNE sous la dernière** ; « Tests complets » (fond `primary-l-5`)
-    et « Tableau comparatif » (fond `success-l-2`) **collés à la liste**, **2px
-    d'écart blanc entre eux**, **coins arrondis 8px**, même alignement que la
+    et « Tableau comparatif » (fond `success-l-2`) **collés à la liste**, **7px
+    d'écart entre eux**, **coins arrondis 8px**, même alignement que la
     liste, sans icône ni flèche.
     ⚠️ Ne rien ajouter qui n'a pas été demandé (icônes, flèches, sur-titres).
     ⚠️ Le thème ajoute retrait/marges/puces aux `ul/li` → remise à zéro `!important`.
@@ -845,7 +845,8 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     chaque sous-comparatif : `.mt-top5.mtv2-sub { margin-top: 25px }` (valeur
     client, mobile compris). Lien « Comment nous évaluons » = lien direct
     **`https://meilleurtest.fr/notre-methode/`**, `target="_blank"`
-    `rel="nofollow noopener"` (plus d'ancre interne `#methodologie`).
+    `rel="nofollow noopener"` (plus d'ancre interne `#methodologie`) — corrigé
+    aussi dans le V1 `top5-resume.code.php` (demande client).
   - CSS : **fichiers COMPLETS** `v2/multi-*.css` (= CSS V1 + ajouts V2 en fin de
     fichier, sommaire = copie de `sommaire.css`), un par élément Code. ⚠️ Toujours
     livrer des CSS complets (jamais un simple diff à ajouter) — demande client.

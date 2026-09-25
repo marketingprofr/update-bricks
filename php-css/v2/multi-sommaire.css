@@ -10,7 +10,7 @@
      verticale à gauche de l'entrée en cours (progression au scroll),
      bordure de 1px gris clair entre chaque entrée ;
    - « Tests complets » (fond primary-l-5) et « Tableau comparatif » (fond
-     success-l-2) collés à la suite de la liste, 2px d'écart entre eux.
+     success-l-2) collés à la suite de la liste, 7px d'écart entre eux.
    ===================================================================== */
 
 .mt-toc {
@@ -94,11 +94,11 @@
 }
 
 /* ===== « Tests complets » / « Tableau comparatif » =====
-   Collés à la liste ; 2px d'écart blanc entre les deux. */
+   Collés à la liste ; 7px d'écart entre les deux. */
 .mt-toc .mt-toc-pills {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 7px;                        /* écart entre Tests complets et Tableau comparatif */
   margin: 0;
   padding: 0;
   border: 0;
