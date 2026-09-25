@@ -766,9 +766,10 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   seront réécrites plus tard pour ce contexte).
 - **AUCUN snippet WPCodeBox** (décision client, `mtv2-core.php` supprimé) : le
   **moteur** (`mtv2_plan()` + utilitaires `mtv2_*`, tous gardés `function_exists`,
-  constantes gardées `defined`) est inclus **à l'identique (vérifié)** dans les 4
-  blocs `multi-*.code.php` → le 1er bloc exécuté le définit. ⚠️ Toute modif du
-  moteur = la recopier dans les 4 blocs. `mtv2_plan($id)` = liste principale +
+  constantes gardées `defined`) est inclus **à l'identique (vérifié)** dans les 5
+  blocs `multi-*.code.php` (hero-gauche, resume, tests, tableau, sommaire) → le
+  1er bloc exécuté le définit. ⚠️ Toute modif du moteur = la recopier dans les 5
+  blocs. `mtv2_plan($id)` = liste principale +
   sous-comparatifs + **liste des tests sans doublon** (ordre de 1re apparition :
   principal puis sous-comparatifs, coupée à `MTV2_MAX_TESTS = 30`) +
   `origin`/`seen_in` (rang de chaque produit dans chaque encart) + avertissements
@@ -806,6 +807,13 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   (liens V1 de la FAQ, etc.).
 - **Blocs Code (remplacent les blocs V1 dans le template dupliqué)** — sans
   sous-comparatif, rendu identique au V1 (vérifié par diff sur un faux site) :
+  - `multi-hero-gauche.code.php` (+ `multi-hero-gauche.css` = copie de
+    `hero-gauche.code.css`) : copie du hero V1 ; seul le **H1 d'un
+    multi-comparatif** change : « Les 5 meilleurs {type} en 2026 : **le guide
+    ultime (N {type} comparés)** » (accord « comparées » si `masculinsfeminins` =
+    meilleures ; N = `count($plan['tests'])`, donc ≤ `MTV2_MAX_TESTS`). Titre forcé
+    toujours prioritaire ; sans sous-comparatif = H1 V1. Le title SEO Rank Math
+    n'est PAS modifié.
   - `multi-resume.code.php` : encart principal V1 + 1 `<section class="mt-top5
     mtv2-sub" id="{ancre}">` par sous-comparatif (H2 + intro + mêmes cartes, tri
     compris ; pas de fourchette de scores ni de classement complet AJAX) ; mention
