@@ -400,7 +400,10 @@
 
 /* Intro d'un sous-comparatif : 2 premières phrases visibles, dernière ligne
    en fondu, « Lire la suite » juste dessous (details natif, sans JS). */
-.mt-top5 .mtv2-intro { max-width: 740px; margin: 10px 0 0; font-size: 16px; line-height: 1.65; color: var(--ink-2); }
+.mt-top5 .mtv2-intro { max-width: none; margin: 10px 0 0; font-size: 16px; line-height: 1.65; color: var(--ink-2); }
+/* L'en-tête d'un sous-comparatif (titre + intro) prend toute la largeur :
+   sans ça, son conteneur (enfant d'un .t5-head en flex) épouse son contenu. */
+.mt-top5.mtv2-sub .t5-head > div { flex: 1 1 100%; min-width: 0; }
 .mt-top5 .mtv2-intro p { margin: 0 0 8px; }
 .mt-top5 .mtv2-intro .mtv2-intro-lead { margin: 0; }
 .mt-top5 .mtv2-intro.has-more .mtv2-intro-lead {
