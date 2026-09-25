@@ -10,7 +10,7 @@
    (N climatiseurs mobiles comparés) », N = nombre de produits différents
    des encarts résumé (principal + sous-comparatifs, sans doublon).
    Titre SEO Rank Math d'un multi-comparatif : « Meilleur climatiseur mobile
-   2026 (guide ultime : N produits comparés) ».
+   2026 (Guide ultime : N produits comparés) ».
    Sans sous-comparatif : H1 et titre SEO V1 inchangés.
    Moteur multi-comparatif inclus dans ce bloc (aucun snippet WPCodeBox).
    ===================================================================== */
@@ -743,7 +743,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   if (!empty($forcer_affichage_du_titre ?? '')) { $new_title = $forcer_affichage_du_titre; }
   elseif ($post_type === 'liste') { $new_title = get_the_title($this_id); }
   else { $new_title = "Les ".$total_avis." ".lcfirst($masculinsfeminins ?? 'meilleurs')." ".$type_de_produit_au_pluriel." 2026 | Test par Meilleurtest"; }
-  /* Multi-comparatif : « Meilleur {type} 2026 (guide ultime : N produits comparés) »
+  /* Multi-comparatif : « Meilleur {type} 2026 (Guide ultime : N produits comparés) »
      « Meilleur » accordé via lalalesmeilleur (le meilleur / la meilleure → type au
      singulier ; les … → pluriel). N = produits différents des encarts résumé.
      Le titre forcé reste prioritaire. */
@@ -759,7 +759,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       if ( $mtv2_adj === '' ) { $mtv2_adj = lcfirst( $masculinsfeminins ?? 'meilleurs' ); $mtv2_type = $type_de_produit_au_pluriel; }
       $mtv2_t    = $mtv2_adj . ' ' . $mtv2_type;
       $new_title = mb_strtoupper( mb_substr( $mtv2_t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mtv2_t, 1, null, 'UTF-8' )
-        . ' 2026 (guide ultime : ' . (int) $mtv2_tnb . ' produits compar&eacute;s)';
+        . ' 2026 (Guide ultime : ' . (int) $mtv2_tnb . ' produits compar&eacute;s)';
       $new_title = html_entity_decode( $new_title, ENT_QUOTES, 'UTF-8' );
     }
   }

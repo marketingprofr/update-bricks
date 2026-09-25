@@ -814,8 +814,8 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     meilleures ; **N = produits différents de TOUS les encarts résumé** =
     `count($plan['origin'])`, dédoublonné ID + ASIN, NON plafonné — décision
     client, pas le nombre de tests). **Title SEO Rank Math** d'un multi-comparatif
-    (écrit via `update_post_meta` comme en V1) : « **Meilleur {type} 2026 (guide
-    ultime : N produits comparés)** » (« Meilleur » accordé via `lalalesmeilleur`,
+    (écrit via `update_post_meta` comme en V1) : « **Meilleur {type} 2026 (Guide
+    ultime : N produits comparés)** » (G majuscule) (« Meilleur » accordé via `lalalesmeilleur`,
     comme le sommaire). Titre forcé toujours prioritaire (H1 et title) ; sans
     sous-comparatif = H1 et title V1.
   - `multi-resume.code.php` : encart principal V1 + 1 `<section class="mt-top5
