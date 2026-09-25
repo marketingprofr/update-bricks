@@ -434,15 +434,14 @@ if ( $plan['is_multi'] ) {
 }
 /* Raccourcis mis en avant (pastilles) */
 $pills = array(
-  array( 'label' => 'Tests complets',     'anchor' => 'partie-tests-complets',     'icon' => 'fas fa-clipboard-check' ),
-  array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tableau-comparatif', 'icon' => 'fas fa-table' ),
+  array( 'label' => 'Tests complets',     'anchor' => 'partie-tests-complets',     'cls' => 'is-tests' ),
+  array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tableau-comparatif', 'cls' => 'is-table' ),
 );
 ?>
 <aside class="mt-toc" data-mt-toc>
 <?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>
 <p class="mtv2-stale" style="margin:0 0 12px;padding:10px 14px;border:2px solid #c0392b;border-radius:8px;background:#fdecea;color:#c0392b;font:600 14px/1.5 Inter,sans-serif">&#9888; Multi-comparatif : une ANCIENNE version du code tourne encore sur cette page. Supprimez le snippet WPCodeBox « mtv2-core » s'il existe, recollez les 4 blocs multi-* (résumé, tests, tableau, sommaire), puis videz le cache. (Message visible des éditeurs uniquement.)</p>
 <?php endif; ?>
-  <p class="mt-toc-kicker">Sommaire</p>
   <h4 class="mt-toc-title"><?php echo esc_html( $toc_title ); ?></h4>
   <ul class="mt-toc-list">
 <?php foreach ( $sections as $s ) : ?>
@@ -451,7 +450,7 @@ $pills = array(
   </ul>
   <div class="mt-toc-pills">
 <?php foreach ( $pills as $s ) : ?>
-    <a class="mt-toc-link mt-toc-pill" href="#<?php echo esc_attr( $s['anchor'] ); ?>"><i class="<?php echo esc_attr( $s['icon'] ); ?>" aria-hidden="true"></i><span><?php echo esc_html( $s['label'] ); ?></span><span class="mt-toc-arr" aria-hidden="true">&rarr;</span></a>
+    <a class="mt-toc-link mt-toc-pill <?php echo esc_attr( $s['cls'] ); ?>" href="#<?php echo esc_attr( $s['anchor'] ); ?>"><?php echo esc_html( $s['label'] ); ?></a>
 <?php endforeach; ?>
   </div>
 </aside>
