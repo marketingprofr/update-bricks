@@ -870,6 +870,21 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   - CSS : **fichiers COMPLETS** `v2/multi-*.css` (= CSS V1 + ajouts V2 en fin de
     fichier, sommaire = copie de `sommaire.css`), un par élément Code. ⚠️ Toujours
     livrer des CSS complets (jamais un simple diff à ajouter) — demande client.
+- **Outil d'inventaire** `php-css/outils/inventaire-multi.code.php` (admin
+  seulement, LECTURE SEULE, à coller dans un élément Code d'une page privée) :
+  le site bloque les IP hors pays francophones (403 sur `wp-json` et sitemap
+  depuis le conteneur) → on ne peut pas scanner le site nous-mêmes ; l'outil le
+  fait sur place. Comparatifs publiés + privés → rôle : **Principal** (aucun
+  attribut `post-type-attribut`), **Sous-comparatif possible** (≥ 1 attribut +
+  un principal au MÊME ensemble de termes `post-type-produit` → proposé dessous),
+  **Orphelin** (pas de principal), **Sans type de produit**. Plusieurs principaux
+  pour un même type → retenu : étiqueté `multi-comparatif` > publié > plus de
+  produits > plus petit ID (doublon signalé). Remarques : liste `top_avis_ids`
+  vide (privé non calculé ?), déjà rattaché à un autre parent, variante à
+  plusieurs attributs, étiquette manquante. 2 CSV téléchargeables (« ; », UTF-8
+  BOM, Excel) : **inventaire** (1 ligne/comparatif, avec ID + titre du
+  multi-comparatif proposé) et **synthèse** (1 ligne/multi-comparatif, IDs à
+  saisir dans `mltv5_sous_comparatifs`). `$CX_WITH_TV = false` si trop lent.
 - **Hors périmètre / à faire plus tard** : outil de remplissage (proposer les
   variantes candidates), redirections 301, dépublication/exclusion des listes,
   bascule du template multi-comparatif sur tous les comparatifs (conditions Bricks).
