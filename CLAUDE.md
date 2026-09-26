@@ -811,9 +811,14 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     `hero-gauche.code.css`) : copie du hero V1 ; seul le **H1 d'un
     multi-comparatif** change : « Les 5 meilleurs {type} en 2026 : **Guide
     ultime (N produits comparés)** » (G majuscule, « produits » plutôt que le type
-    répété : H1 moins lourd, pas d'accord genré, cohérent avec le title ; **N = produits différents de TOUS les encarts résumé** =
-    `count($plan['origin'])`, dédoublonné ID + ASIN, NON plafonné — décision
-    client, pas le nombre de tests). **Title SEO Rank Math** d'un multi-comparatif
+    répété : H1 moins lourd, pas d'accord genré, cohérent avec le title ; **N =
+    `mtv2_hero_count()` = MÊME compteur que l'encart « Pourquoi nous faire
+    confiance »** (`hero-encart.code.php` : avis publiés du même type + TOUS les
+    attributs du parent, +5 si < 10 ; = aussi le « sur N produits » de la
+    fourchette du résumé et le classement complet) — **cohérence des chiffres sur
+    toute la page** (décision client, l'ancien N = produits affichés dans les
+    encarts donnait 45 vs 55 ailleurs). Plancher = nb de produits affichés
+    (`count($plan['origin'])`). Helper hors moteur (pas de changement de version)). **Title SEO Rank Math** d'un multi-comparatif
     (écrit via `update_post_meta` comme en V1) : « **Meilleur {type} 2026 (N
     produits comparés)** » (« Guide ultime » retiré du title, décision client) (« Meilleur » accordé via `lalalesmeilleur`,
     comme le sommaire). Titre forcé toujours prioritaire (H1 et title) ; sans

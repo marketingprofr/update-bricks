@@ -7,8 +7,8 @@
 
    Identique au V1, sauf le titre H1 d'un multi-comparatif :
    « Les 5 meilleurs climatiseurs mobiles en 2026 : Guide ultime
-   (N produits comparés) », N = nombre de produits différents
-   des encarts résumé (principal + sous-comparatifs, sans doublon).
+   (N produits comparés) », N = même compteur que l'encart « Pourquoi nous
+   faire confiance » (avis publiés du type + attributs, +5 si < 10).
    Titre SEO Rank Math d'un multi-comparatif : « Meilleur climatiseur mobile
    2026 (N produits comparés) ».
    Sans sous-comparatif : H1 et titre SEO V1 inchangés.
@@ -708,6 +708,42 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     <span>le <?php echo $mod; ?></span>
   </div>
 
+  <?php
+  /* Multi-comparatif : nombre de produits comparés = MÊME compteur que l'encart
+     « Pourquoi nous faire confiance » (hero-encart) : avis publiés du même type
+     + attributs du parent (+5 si < 10). Jamais inférieur au nombre de produits
+     affichés dans les encarts résumé. */
+  if ( ! function_exists( 'mtv2_hero_count' ) ) {
+    function mtv2_hero_count( $id, $plan ) {
+      static $memo = array();
+      if ( isset( $memo[ $id ] ) ) { return $memo[ $id ]; }
+      $n = 0;
+      $prod = get_the_terms( $id, 'post-type-produit' );
+      if ( is_array( $prod ) && ! empty( $prod ) ) {
+        $tq = array( array( 'taxonomy' => 'post-type-produit', 'terms' => wp_list_pluck( $prod, 'term_id' ) ) );
+        $attr = get_the_terms( $id, 'post-type-attribut' );
+        if ( is_array( $attr ) && ! empty( $attr ) ) {
+          $tq['relation'] = 'AND';
+          $tq[] = array( 'taxonomy' => 'post-type-attribut', 'terms' => wp_list_pluck( $attr, 'term_id' ), 'operator' => 'AND' );
+        }
+        $q = new WP_Query( array(
+          'post_type'              => 'avis',
+          'post_status'            => 'publish',
+          'tax_query'              => $tq,
+          'posts_per_page'         => -1,
+          'fields'                 => 'ids',
+          'no_found_rows'          => true,
+          'update_post_meta_cache' => false,
+          'update_post_term_cache' => false,
+        ) );
+        $n = count( $q->posts );
+        if ( $n < 10 ) { $n += 5; }
+      }
+      $shown = $plan ? count( $plan['origin'] ) : 0;
+      return $memo[ $id ] = max( $n, $shown );
+    }
+  }
+  ?>
   <h1 class="mt-h1">
   <?php
     if (!empty($forcer_affichage_du_titre ?? '')) {
@@ -715,10 +751,9 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     } elseif ($post_type === 'comparatif') {
         echo 'Les <em>' . $total_avis . ' ' . lcfirst($masculinsfeminins ?? 'meilleures') . ' ' . $type_de_produit_au_pluriel . '</em> en 2026';
         /* Multi-comparatif : « : Guide ultime (N produits comparés) »,
-           N = nombre de produits différents présents dans l'ensemble des
-           encarts résumé (principal + sous-comparatifs, sans doublon). */
+           N = mtv2_hero_count() (même chiffre que l'encart de confiance). */
         $mtv2_hplan = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
-        $mtv2_hnb   = $mtv2_hplan ? count( $mtv2_hplan['origin'] ) : 0;
+        $mtv2_hnb   = ( $mtv2_hplan && $mtv2_hplan['is_multi'] ) ? mtv2_hero_count( $this_id, $mtv2_hplan ) : 0;
         if ( $mtv2_hplan && $mtv2_hplan['is_multi'] && $mtv2_hnb > 0 ) {
             echo ' : Guide ultime (' . (int) $mtv2_hnb . ' produits compar&eacute;s)';
         } else {
@@ -744,11 +779,11 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   else { $new_title = "Les ".$total_avis." ".lcfirst($masculinsfeminins ?? 'meilleurs')." ".$type_de_produit_au_pluriel." 2026 | Test par Meilleurtest"; }
   /* Multi-comparatif : « Meilleur {type} 2026 (N produits comparés) »
      « Meilleur » accordé via lalalesmeilleur (le meilleur / la meilleure → type au
-     singulier ; les … → pluriel). N = produits différents des encarts résumé.
+     singulier ; les … → pluriel). N = mtv2_hero_count() (même chiffre que le H1).
      Le titre forcé reste prioritaire. */
   if ( empty( $forcer_affichage_du_titre ?? '' ) && $post_type === 'comparatif' ) {
     $mtv2_tplan = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
-    $mtv2_tnb   = $mtv2_tplan ? count( $mtv2_tplan['origin'] ) : 0;
+    $mtv2_tnb   = ( $mtv2_tplan && $mtv2_tplan['is_multi'] ) ? mtv2_hero_count( $this_id, $mtv2_tplan ) : 0;
     if ( $mtv2_tplan && $mtv2_tplan['is_multi'] && $mtv2_tnb > 0 ) {
       $mtv2_llm  = trim( (string) ( $lalalesmeilleur ?? '' ) );
       $mtv2_adj  = trim( preg_replace( '/^(le|la|les)\s+/iu', '', $mtv2_llm ) );
