@@ -885,6 +885,12 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   BOM, Excel) : **inventaire** (1 ligne/comparatif, avec ID + titre du
   multi-comparatif proposé) et **synthèse** (1 ligne/multi-comparatif, IDs à
   saisir dans `mltv5_sous_comparatifs`). `$CX_WITH_TV = false` si trop lent.
+  Variante « instance locale » : **`php-css/outils/prompt-inventaire-multi.md`**
+  (prompt complet API REST, lecture seule, + avis éditorial : « Multi-comparatif ? »
+  Oui/Non/À discuter par principal, Recommandé/À discuter/Déconseillé par variante).
+  ⚠️ Étiquette `multi-comparatif` + champ `mltv5_sous_comparatifs` n'existent
+  aujourd'hui **que sur le pilote climatiseurs mobiles** : leur absence ailleurs
+  est normale ; le but est de DÉCIDER quels principaux transformer.
 - **Hors périmètre / à faire plus tard** : outil de remplissage (proposer les
   variantes candidates), redirections 301, dépublication/exclusion des listes,
   bascule du template multi-comparatif sur tous les comparatifs (conditions Bricks).

@@ -1,6 +1,11 @@
 # Mission : inventaire des comparatifs de meilleurtest.fr + propositions de multi-comparatifs
 
-Tu travailles pour meilleurtest.fr (WordPress + ACF, site en français). Ta mission est **en lecture seule** : tu extrais la liste de tous les comparatifs, tu les classes par type de produit et tu proposes, pour chaque comparatif « principal », les comparatifs qui pourraient devenir ses **sous-comparatifs** dans une page « multi-comparatif ». Tu produis deux fichiers CSV et un court rapport.
+Tu travailles pour meilleurtest.fr (WordPress + ACF, site en français). Ta mission est **en lecture seule** :
+1. tu extrais la liste de tous les comparatifs et tu les classes par type de produit ;
+2. pour **chaque comparatif sans attribut** (« principal »), tu évalues s'il est **légitime de le transformer en multi-comparatif** ;
+3. si oui, tu dis **quels comparatifs inclure comme sous-comparatifs**.
+
+Tu produis deux fichiers CSV et un court rapport.
 
 **⚠️ INTERDIT : toute écriture sur le site** (aucune requête POST / PUT / PATCH / DELETE, aucune modification de post, de terme ou de champ). Uniquement des GET.
 
@@ -13,9 +18,11 @@ Tu travailles pour meilleurtest.fr (WordPress + ACF, site en français). Ta miss
 - Un comparatif **sans aucun attribut** est un comparatif **principal** (ex. « Les meilleurs climatiseurs mobiles » : type = climatiseur mobile, aucun attribut).
 - Un comparatif **avec au moins un attribut** est une **variante** (ex. post **ID 38292** « Les meilleurs climatiseurs mobiles réversibles » : type = climatiseur mobile, attribut = réversible).
 - Un **multi-comparatif** = un comparatif principal qui affiche aussi, sur la même URL, une section par variante (ses sous-comparatifs). Les sous-comparatifs sont ensuite passés en statut **privé** (c'est pour ça qu'il faut aussi lister les comparatifs privés).
-- Déjà en place sur le site :
-  - l'étiquette WordPress (post_tag) `multi-comparatif`, posée sur les principaux transformés en multi-comparatif ;
-  - le champ ACF **`mltv5_sous_comparatifs`** (Relation → comparatif, format ID), rempli sur le principal avec la liste de ses sous-comparatifs.
+- Outillage qui **existe** sur le site, mais qui n'est utilisé **que sur le pilote** (le guide « climatiseurs mobiles ») :
+  - l'étiquette WordPress (post_tag) `multi-comparatif` ;
+  - le champ ACF **`mltv5_sous_comparatifs`** (Relation → comparatif, format ID), à remplir sur le principal avec la liste de ses sous-comparatifs.
+
+  Tous les autres comparatifs n'ont **ni l'étiquette ni le champ rempli** : c'est normal, c'est justement ce que ta mission doit permettre de décider. Ne considère pas leur absence comme une anomalie. Relève simplement l'état actuel du pilote (colonnes « Étiquette » et « Déjà configurés »).
 
 **Vérifie d'abord ce modèle sur les exemples** avant de tout lancer :
 - le post 38292 doit avoir type « climatiseur mobile » + attribut « réversible » ;
@@ -52,7 +59,7 @@ Pour chaque comparatif, calcule la **clé de type** = ensemble trié des IDs de 
 - **Orphelin** : au moins un attribut mais **aucun** principal avec la même clé de type.
 
 **Plusieurs principaux pour la même clé de type** (doublons) : un seul est retenu comme parent, par ordre de priorité :
-1. celui qui porte déjà l'étiquette `multi-comparatif` ;
+1. celui qui porte déjà l'étiquette `multi-comparatif` (seulement le pilote aujourd'hui) ;
 2. sinon le publié plutôt que le privé ;
 3. sinon le plus récemment modifié ;
 4. sinon le plus petit ID.
@@ -61,13 +68,24 @@ Signale le doublon sur toutes les lignes concernées.
 
 **Remarques à produire automatiquement** (colonne « Remarques », séparées par « ; ») :
 - variante à plusieurs attributs (« 2 attributs : variante combinée ») ;
-- déjà présent dans le `mltv5_sous_comparatifs` d'un AUTRE principal que celui proposé ;
-- présent dans le champ de plusieurs principaux ;
-- principal qui a des sous-comparatifs configurés mais pas l'étiquette `multi-comparatif` ;
+- (pilote uniquement) déjà présent dans le `mltv5_sous_comparatifs` d'un AUTRE principal que celui proposé ;
 - doublon de principal (IDs concernés, retenu / non retenu) ;
 - attribut dont le terme a un parent dans la taxonomie (indique le parent, utile pour regrouper).
 
 ## 4. Relecture éditoriale (ton avis, en plus de la mécanique)
+
+### 4.1 Le principal doit-il devenir un multi-comparatif ?
+
+Pour chaque **Principal**, ajoute une colonne **« Multi-comparatif ? »** (Oui / Non / À discuter) et une justification courte (« Justification multi ») :
+
+- **Oui** : au moins **un** sous-comparatif « Recommandé » (voir 4.2). Les variantes répondent au même besoin que le guide principal, et les regrouper sur une seule URL renforce la page principale au lieu de disperser des guides voisins.
+- **Non** :
+  - aucune variante ;
+  - ou uniquement des variantes « Déconseillé » ;
+  - ou le principal lui-même est trop faible (liste de produits vide, titre incohérent avec son type).
+- **À discuter** : les variantes existent mais sont surtout « À discuter », ou elles sont très nombreuses (plus de 8) et il faut choisir lesquelles garder.
+
+### 4.2 Chaque variante doit-elle être incluse ?
 
 Pour chaque « Sous-comparatif possible », ajoute une colonne **« Avis »** avec l'une de ces valeurs et une justification courte (« Justification ») :
 
@@ -84,7 +102,7 @@ Ne modifie jamais la proposition mécanique : l'avis est une colonne en plus.
 ### 5.1 `comparatifs-inventaire-AAAA-MM-JJ.csv` (une ligne par comparatif)
 
 Colonnes, dans cet ordre :
-`Type de produit` ; `ID type` ; `Rôle` ; `ID comparatif` ; `Titre` ; `Statut` ; `Attributs` (noms séparés par « | ») ; `Nb attributs` ; `ID multi-comparatif proposé` ; `Titre multi-comparatif proposé` ; `Nb sous-comparatifs proposés` (sur les lignes Principal) ; `Sous-comparatifs déjà configurés` (IDs du champ ACF) ; `Déjà rattaché à` (IDs des principaux qui le listent déjà) ; `Étiquette multi-comparatif` (oui/non) ; `Avis` ; `Justification` ; `URL` ; `Édition` (`https://meilleurtest.fr/wp-admin/post.php?post={ID}&action=edit`) ; `Dernière modification` ; `Remarques`
+`Type de produit` ; `ID type` ; `Rôle` ; `ID comparatif` ; `Titre` ; `Statut` ; `Attributs` (noms séparés par « | ») ; `Nb attributs` ; `ID multi-comparatif proposé` ; `Titre multi-comparatif proposé` ; `Nb sous-comparatifs proposés` (sur les lignes Principal) ; `Sous-comparatifs déjà configurés` (IDs du champ ACF) ; `Déjà rattaché à` (IDs des principaux qui le listent déjà) ; `Étiquette multi-comparatif` (oui/non) ; `Multi-comparatif ?` (lignes Principal) ; `Justification multi` ; `Avis` (lignes Sous-comparatif) ; `Justification` ; `URL` ; `Édition` (`https://meilleurtest.fr/wp-admin/post.php?post={ID}&action=edit`) ; `Dernière modification` ; `Remarques`
 
 Tri :
 1. par type de produit (ordre alphabétique naturel) ;
@@ -93,22 +111,22 @@ Tri :
 
 Exemple de lignes attendues :
 ```
-Climatiseur mobile;12;Principal;38000;Les meilleurs climatiseurs mobiles;publish;;0;;;3;38292;;oui;;;https://…;https://…;2026-09-20;
-Climatiseur mobile;12;Sous-comparatif possible;38292;Les meilleurs climatiseurs mobiles réversibles;private;Réversible;1;38000;Les meilleurs climatiseurs mobiles;;;38000;non;Recommandé;Sous-segment fonctionnel du même besoin;https://…;https://…;2026-09-18;
+Climatiseur mobile;12;Principal;38000;Les meilleurs climatiseurs mobiles;publish;;0;;;3;38292;;oui;Oui;3 variantes du même besoin (réversible, silencieux, 9000 BTU);;;https://…;https://…;2026-09-20;
+Climatiseur mobile;12;Sous-comparatif possible;38292;Les meilleurs climatiseurs mobiles réversibles;private;Réversible;1;38000;Les meilleurs climatiseurs mobiles;;;38000;non;;;Recommandé;Sous-segment fonctionnel du même besoin;https://…;https://…;2026-09-18;
 ```
 
 ### 5.2 `multi-comparatifs-synthese-AAAA-MM-JJ.csv` (une ligne par principal ayant ≥ 1 sous-comparatif proposé)
 
 Colonnes :
-`ID multi-comparatif` ; `Titre` ; `Type de produit` ; `Statut` ; `Nb sous-comparatifs proposés` ; `Dont recommandés` ; `Sous-comparatifs proposés (ID : titre [attributs] {avis})` (séparés par « ; ») ; `IDs à saisir dans mltv5_sous_comparatifs` (**uniquement les « Recommandé »**, séparés par des virgules, dans l'ordre conseillé d'affichage) ; `Déjà configurés` ; `Étiquette multi-comparatif`
+`ID multi-comparatif` ; `Titre` ; `Type de produit` ; `Statut` ; `Multi-comparatif ?` ; `Justification multi` ; `Nb sous-comparatifs proposés` ; `Dont recommandés` ; `Sous-comparatifs proposés (ID : titre [attributs] {avis})` (séparés par « ; ») ; `IDs à saisir dans mltv5_sous_comparatifs` (**uniquement les « Recommandé »**, séparés par des virgules, dans l'ordre conseillé d'affichage ; vide si « Multi-comparatif ? » = Non) ; `Déjà configurés` (pilote) ; `Étiquette multi-comparatif` (pilote)
 
-Tri : par nombre de sous-comparatifs recommandés décroissant.
+Tri : Oui → À discuter → Non, puis par nombre de sous-comparatifs recommandés décroissant.
 
 ### 5.3 `rapport-inventaire.md` (court)
 
 - La méthode d'accès utilisée (REST authentifié ou non, WP-CLI…) et les limites (privés absents ? champ ACF non exposé ?).
-- Les compteurs : total ; principaux ; sous-comparatifs possibles (dont recommandés / à discuter / déconseillés) ; orphelins ; sans type ; doublons.
-- Les **20 meilleurs candidats** multi-comparatif (le plus de sous-comparatifs recommandés).
+- Les compteurs : total ; principaux (dont à transformer en multi-comparatif : Oui / À discuter / Non) ; sous-comparatifs possibles (dont recommandés / à discuter / déconseillés) ; orphelins ; sans type ; doublons.
+- Les **20 meilleurs candidats** à transformer en multi-comparatif (« Oui », le plus de sous-comparatifs recommandés), avec pour chacun la liste des sous-comparatifs à inclure.
 - Les anomalies à corriger à la main :
   - orphelins (proposer un parent plausible ou la création d'un principal) ;
   - comparatifs sans type ;
