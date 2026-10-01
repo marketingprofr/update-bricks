@@ -6,7 +6,9 @@ Tu es l'instance qui gère la structure multi-comparatifs de meilleurtest.fr. Tu
 
 - **Décisions :** `C:\Webdev\wp-avis\sections-a-discuter-2026-10-01-decisions.csv`. Même format que ton fichier d'origine : séparateur `;`, UTF-8 avec BOM.
 - **Récapitulatif :** `C:\Webdev\wp-avis\recap-arbitrage-seo-2026-10-01.md`. Il contient la méthode, les limites et la liste des cas à trancher par Samuel.
-- **S'ils ne sont pas dans ce dossier :** dépôt GitHub `marketingprofr/update-bricks`, branche `claude/verify-seo-skill-install-u596xu`, dossier `data/2026-10-01/`.
+- **S'ils ne sont pas dans ce dossier, ou si tu n'as pas accès au disque local**, télécharge-les ici (dépôt public, sans authentification) :
+  - https://raw.githubusercontent.com/marketingprofr/update-bricks/claude/verify-seo-skill-install-u596xu/data/2026-10-01/sections-a-discuter-2026-10-01-decisions.csv
+  - https://raw.githubusercontent.com/marketingprofr/update-bricks/claude/verify-seo-skill-install-u596xu/data/2026-10-01/recap-arbitrage-seo-2026-10-01.md
 
 ## Les quatre valeurs de décision
 
