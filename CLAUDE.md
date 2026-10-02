@@ -950,10 +950,14 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     similaires, catégories, accueil, listes, pages d'avis).
   - Banc : `outils/tests/run-seo.php` (accords, titre forcé, repli, description manuelle).
   - **Verdict sous le H1** (`mt_verdict_ouverture()`, identique V1/V2 ; variante O5 de
-    l'Architecture, ouverture 0,92) : « La meilleure X en 2026 est A (9,0/10), devant B et C.
-    Nous avons analysé N X et retenu les T meilleur(e)s. Chaque fiche est notée sur 10 ; le
-    classement a été mis à jour le {date} et le guide détaille k critères de choix. » (seul le
-    n°1 est un lien ; k = répéteur `mltv5_criteres_de_choix`, page puis annexe en cache). Le
+    l'Architecture, O5 = 0,92 remplacée par **S2 = 0,95**, confirmée sur deux tours) :
+    « Réponse courte : A (9,0/10) est la meilleure X en 2026, devant B (8,9/10) et C (8,8/10).
+    Nous avons analysé N X et retenu les T meilleur(e)s : cette page détaille notre top T[, les
+    classe aussi par profil (p1, p2, p3)] et vous aide à choisir. Chaque fiche est notée sur 10[ et
+    le guide détaille k critères de choix] ; classement mis à jour le {date}. » (seul le n°1 est
+    un lien ; profils = libellés courts des 3 premières sections d'un multi, +0,03 d'utilité ;
+    k = répéteur `mltv5_criteres_de_choix`, page puis annexe en cache, mention si k >= 3 ; à ne
+    pas faire : « En bref : », notes en liste, phrase très courte seule). Le
     chapô ne reprend plus l'ancienne phrase `mt_intro_reco` (gardée si `$MT_VERDICT_SOUS_H1 = false`).
     Le bloc SEO passe AVANT le H1 (calcule `$mt_n` et le title). CSS : `.mt-verdict` (fichiers
     complets hero-gauche.code.css = v2/multi-hero-gauche.css).

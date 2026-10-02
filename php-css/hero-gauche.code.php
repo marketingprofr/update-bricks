@@ -223,13 +223,16 @@ if ( ! function_exists( 'mt_meta_auto' ) ) {
   }
 }
 if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
-  /* Ouverture juste sous le H1 (tests Jev du 2026-10-02, variante O5 : ouverture 0,92) :
-     « La meilleure X en 2026 est A (9,0/10), devant B (8,9/10) et C (8,8/10). Nous avons analysé
-     N X et retenu les T meilleur(e)s. Chaque fiche est notée sur 10 ; le classement a été mis à
-     jour le {date} et le guide détaille k critères de choix. »
+  /* Ouverture juste sous le H1 (tests Jev du 2026-10-02, variante S2 de l'Architecture : ouverture
+     0,95, confirmée sur deux tours) : « Réponse courte : A (9,0/10) est la meilleure X en 2026,
+     devant B (8,9/10) et C (8,8/10). Nous avons analysé N X et retenu les T meilleur(e)s : cette
+     page détaille notre top T[, les classe aussi par profil (p1, p2, p3)] et vous aide à choisir.
+     Chaque fiche est notée sur 10[ et le guide détaille k critères de choix] ; classement mis à
+     jour le {date}. » Profils (multi-comparatif) : libellés courts des 3 premières sections.
+     Critères : mention seulement si k >= 3.
      Nom du produit et lien du n°1 : même logique que mt_intro_reco. Notes : même calcul que les
      cartes du résumé (get_acf_score_divided_by_10). */
-  function mt_verdict_ouverture( $ids, $type_plur, $type_sing, $llm, $n, $date, $k ) {
+  function mt_verdict_ouverture( $ids, $type_plur, $type_sing, $llm, $n, $date, $k, $profils = array() ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
     $t   = count( $ids );
     if ( $t === 0 ) { return ''; }
@@ -258,9 +261,9 @@ if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
     $an    = date_i18n( 'Y' );
     $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
 
-    if ( ! $pl && $sing !== '' ) { $out = ( $fem ? 'La meilleure ' : 'Le meilleur ' ) . esc_html( $sing ) . ' en ' . $an . ' est '; }
-    else { $out = 'Notre n°1 parmi les ' . esc_html( $plur !== '' ? $plur : 'produits' ) . ' en ' . $an . ' est '; }
-    $out .= '<a href="' . esc_url( $url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>' . $note( $prods[0] );
+    $lien = '<a href="' . esc_url( $url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>' . $note( $prods[0] );
+    if ( ! $pl && $sing !== '' ) { $out = 'Réponse courte : ' . $lien . ' est ' . ( $fem ? 'la meilleure ' : 'le meilleur ' ) . esc_html( $sing ) . ' en ' . $an; }
+    else { $out = 'Réponse courte : ' . $lien . ' est notre n°1 parmi les ' . esc_html( $plur !== '' ? $plur : 'produits' ) . ' en ' . $an; }
     $autres = array();
     foreach ( array_slice( $prods, 1 ) as $p ) { if ( $p['name'] !== '' ) { $autres[] = esc_html( $p['name'] ) . $note( $p ); } }
     if ( count( $autres ) === 2 ) { $out .= ', devant ' . $autres[0] . ' et ' . $autres[1]; }
@@ -269,11 +272,16 @@ if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
 
     $typ = esc_html( $plur !== '' ? $plur : 'produits' );
     $e   = ( $fem && $plur !== '' ) ? 'e' : '';
-    if ( $n > $t ) { $out .= ' Nous avons analysé ' . (int) $n . ' ' . $typ . ' et retenu les ' . $t . ' meilleur' . $e . 's.'; }
-    else { $out .= ' Nous avons analysé et classé ' . max( (int) $n, $t ) . ' ' . $typ . '.'; }
+    $profils = array_slice( array_values( array_filter( array_map( 'trim', (array) $profils ) ) ), 0, 3 );
+    $suite = ' : cette page détaille notre top ' . $t
+      . ( $profils ? ', les classe aussi par profil (' . esc_html( implode( ', ', $profils ) ) . ')' : '' )
+      . ' et vous aide à choisir.';
+    if ( $n > $t ) { $out .= ' Nous avons analysé ' . (int) $n . ' ' . $typ . ' et retenu les ' . $t . ' meilleur' . $e . 's' . $suite; }
+    else { $out .= ' Nous avons analysé et classé ' . max( (int) $n, $t ) . ' ' . $typ . $suite; }
 
-    $out .= ' Chaque fiche est notée sur 10 ; le classement a été mis à jour le ' . esc_html( $date )
-      . ( $k > 0 ? ' et le guide détaille ' . (int) $k . ' critère' . ( $k > 1 ? 's' : '' ) . ' de choix' : '' ) . '.';
+    $out .= ' Chaque fiche est notée sur 10'
+      . ( $k >= 3 ? ' et le guide détaille ' . (int) $k . ' critères de choix' : '' )
+      . ' ; classement mis à jour le ' . esc_html( $date ) . '.';
     return '<p class="mt-verdict">' . $out . '</p>';
   }
 }
@@ -473,6 +481,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
      confiance » : avis publiés du type + attributs, +5 si < 10 (décision de Samuel : la rédaction analyse
      au moins 5 produits de plus que ceux publiés). Multi-comparatif : jamais moins que les produits affichés. */
   $mt_n = 0;
+  $mt_pl = null;
   if ($post_type === 'comparatif') {
       $mt_n = mt_avis_count( $this_id );
       if ( $mt_n < 10 ) { $mt_n += 5; }
@@ -530,7 +539,15 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
           $mt_cid  = (int) get_field( 'mltv5_cached_id_criteres', $this_id );
           $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array();
       }
-      echo mt_verdict_ouverture( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n, $mod, is_array( $mt_crit ) ? count( $mt_crit ) : 0 );
+      /* Profils = libellés courts des sections du multi-comparatif (comme le sommaire), 1re lettre en minuscule */
+      $mt_profils = array();
+      if ( ! empty( $mt_pl['is_multi'] ) ) {
+          foreach ( $mt_pl['subs'] as $mt_sb ) {
+              $mt_l = trim( (string) $mt_sb['label'] );
+              if ( $mt_l !== '' ) { $mt_profils[] = mb_strtolower( mb_substr( $mt_l, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_l, 1, null, 'UTF-8' ); }
+          }
+      }
+      echo mt_verdict_ouverture( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n, $mod, is_array( $mt_crit ) ? count( $mt_crit ) : 0, $mt_profils );
   } ?>
 
   <div class="mt-byline">
