@@ -6,8 +6,14 @@ bloc de code statique).
 
 ## Stack du site
 
-- **WordPress + Bricks Builder `2.0.2`**, hébergé sur **Cloudways** (cache
-  **Varnish + Breeze** → à purger pour voir les changements en front-end).
+- **WordPress + Bricks Builder `2.0.2`**, hébergé sur **Cloudways**. Cache =
+  **FlyingPress + Cloudflare** (pas de Breeze ni de Varnish, info 2026-10 ; les
+  mentions « Varnish + Breeze » plus bas sont anciennes) → purger les deux, puis
+  contrôler avec `?nocache=<horodatage>` (Cloudflare garde le HTML 1 à 5 jours).
+- **Banc d'essai hors site** : `outils/tests/` (faux WordPress + données fictives,
+  voir son README) → valide la logique PHP/HTML des blocs avant collage, ne remplace
+  pas un contrôle sur page réelle. **Passation session locale** :
+  `handoff/session-locale-templates.md`.
 - Framework **Advanced Themer** : design tokens `--at-*`
   (ex. `var(--at-space--s/m)`, `var(--at-text--s)`, `var(--at-white)`…).
   ⚠️ Ces tokens (spacing/typo) sont des `clamp()` parfois **gros** → pour coller
