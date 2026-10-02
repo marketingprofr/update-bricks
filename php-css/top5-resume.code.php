@@ -302,8 +302,8 @@ $all_avis      = mt_all_scored_avis( $page_id );
 $real_count    = $all_avis['count'];
 $show_ranking  = ( $real_count >= 10 );
 $show_range    = ( $real_count > $nb && $all_avis['min'] < $all_avis['max'] );
-$display_count = ( $real_count < 10 ) ? $real_count + 5 : $real_count;
-$display_min   = ( $real_count < 10 ) ? max( 0.1, $all_avis['min'] - 0.5 ) : $all_avis['min'];
+$display_count = $real_count;
+$display_min   = $all_avis['min'];
 $display_max   = $all_avis['max'];
 $top5_set      = array_flip( $ids );
 

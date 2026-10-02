@@ -820,15 +820,14 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     répété : H1 moins lourd, pas d'accord genré, cohérent avec le title ; **N =
     `mtv2_hero_count()` = MÊME compteur que l'encart « Pourquoi nous faire
     confiance »** (`hero-encart.code.php` : avis publiés du même type + TOUS les
-    attributs du parent, +5 si < 10 ; = aussi le « sur N produits » de la
+    attributs du parent, SANS majoration depuis 2026-10-02 (avant : +5 si < 10) ; = aussi le « sur N produits » de la
     fourchette du résumé et le classement complet) — **cohérence des chiffres sur
     toute la page** (décision client, l'ancien N = produits affichés dans les
     encarts donnait 45 vs 55 ailleurs). Plancher = nb de produits affichés
     (`count($plan['origin'])`). Helper hors moteur (pas de changement de version)). **Title SEO Rank Math** d'un multi-comparatif
-    (écrit via `update_post_meta` comme en V1) : « **Meilleur {type} 2026 (N
-    produits comparés)** » (« Guide ultime » retiré du title, décision client) (« Meilleur » accordé via `lalalesmeilleur`,
-    comme le sommaire). Titre forcé toujours prioritaire (H1 et title) ; sans
-    sous-comparatif = H1 et title V1.
+    (écrit via `update_post_meta` comme en V1) : remplacé le 2026-10-02 par la règle
+    commune V1/V2 « … N analysé(e)s, T retenu(e)s » (voir « Audit Jev » plus bas).
+    Titre forcé toujours prioritaire (H1 et title).
   - `multi-resume.code.php` : encart principal V1 + 1 `<section class="mt-top5
     mtv2-sub" id="{ancre}">` par sous-comparatif (H2 + intro + mêmes cartes, tri
     compris ; pas de fourchette de scores ni de classement complet AJAX) ; mention
@@ -912,3 +911,38 @@ verdict en tête (T1), encadré de confiance factuel (T2), note lecteurs sans co
 (T3), titres sans saut (T4), méta ≤ 155 (T5). 8 des 10 pages auditées sont en V2 →
 toute modif à faire dans V1 ET V2. Formules jev-seo reconstituées (contenu = 0,7 × moy.
 Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
+
+### Tests Jev des variantes et règles préparées (2026-10-02, session locale)
+
+- **Méthode voulue par Samuel : faire noter des variantes par Jev AVANT de modifier le gabarit.**
+  Lots HTML générés hors site (`C:\Webdev\wp-avis\tests-jev\preparer_variantes.py`,
+  `preparer_lot_confirmation.py`, à partir du HTML frais), jugés par la Coordination
+  (`jev_variantes.py`, mêmes fonctions que l'audit ; ±0,03 de variabilité, écart > 0,05
+  significatif ; 0,0002 USD par jugement). Résultats : `wp-avis/resultats-tests-jev-2026-10-02.md`
+  et `wp-avis/resultats-tests-jev-10-variantes-2026-10-02.md` (990 jugements de l'Architecture).
+- **Mesuré :** title « Meilleur(e) X 2026 : N analysé(e)s, 5 retenu(e)s » = 2,90/3 (+0,14 contre
+  « (N produits comparés) », au-dessus sur 10 pages / 10) ; « | Test par Meilleurtest » et
+  « comparatif indépendant » à proscrire ; verdict + notes /10 + « nous avons comparé N » juste
+  sous le H1 = ouverture +0,18 à +0,63 ; ligne « Mise à jour vérifiée par Samuel Petit,
+  responsable éditorial » = confiance +0,06 à +0,17 (seul levier) ; titres sans saut et retrait
+  de « Pas encore de note ! » = neutres pour Jev ; RETIRER les chiffres par défaut de l'encadré
+  = négatif (il faut de vrais chiffres) ; en-tête après le contenu = non ; H1 = titre forcé ≥
+  ancien H1 « Guide ultime ».
+- **Constats de données :** `mltv5_la_recherche_comparatif` vaut 19 h / 597 avis / 25 produits /
+  10 sources sur TOUS les comparatifs (valeur par défaut) ; `mltv5_info_du_correcteur` vide
+  partout ; aucune page auteur (`/author/…` = 404) ; `template_description` vient de
+  `get_all_template_variables()` et vaut 0 sur le site (en PHP 8, `'' == 0` est faux : le banc
+  doit le fixer à 0). Titres forcés posés par l'Architecture sur les 10 pages auditées
+  (title ET H1).
+- **Règles PRÉPARÉES dans le dépôt, NON déployées (attente de l'accord de Samuel) :**
+  - title (bloc SEO identique dans `hero-gauche.code.php` et `v2/multi-hero-gauche.code.php`) :
+    titre forcé > `mt_title_auto()` « Meilleur(e) X 2026 : N analysé(e)s, T retenu(e)s »
+    (N = `mt_avis_count()`, vrai nombre d'avis publiés type + attributs, multi : au moins les
+    produits affichés ; T = produits du classement) ; si N <= T : « Meilleur(e) X 2026 (N produits
+    comparés) » en attendant un repli choisi par Samuel ;
+  - méta description : n'est plus écrasée si elle diffère de l'extrait (= saisie à la main) ;
+    l'Architecture pose les textes par REST (`rankmath/v1/updateMeta`) une fois la règle en ligne ;
+  - +5 supprimé partout (encart, `mtv2_hero_count`, résumé V1/V2) et -0,5 sur la note minimale
+    de la fourchette du résumé supprimé : vrais chiffres.
+  - Banc : `outils/tests/run-seo.php` (accords, titre forcé, repli, description manuelle).
+

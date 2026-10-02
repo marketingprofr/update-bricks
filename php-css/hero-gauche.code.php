@@ -322,19 +322,83 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   ?>
   </h1>
 
-  <?php // Effets SEO rank math
-  $rank_math_title = get_post_meta($this_id, 'rank_math_title');
-  $rank_math_description = get_post_meta($this_id, 'rank_math_description');
+  <?php // Effets SEO Rank Math
+  /* Title (tests Jev du 2026-10-02, voir CLAUDE.md) : titre forcé s'il est rempli ;
+     sinon « Meilleur(e) X 2026 : N analysé(e)s, T retenu(e)s », N = vrai nombre d'avis
+     publiés du type + attributs (sans majoration), T = produits du classement ; si
+     N <= T, repli sur « Meilleur(e) X 2026 (N produits comparés) ».
+     Méta description : une description saisie à la main (différente de l'extrait) n'est
+     plus écrasée ; seule la description automatique (= extrait) est mise à jour. */
+  if ( ! function_exists( 'mt_avis_count' ) ) {
+    /* Avis publiés du même type de produit et de TOUS les attributs du comparatif. */
+    function mt_avis_count( $id ) {
+      static $memo = array();
+      if ( isset( $memo[ $id ] ) ) { return $memo[ $id ]; }
+      $n = 0;
+      $prod = get_the_terms( $id, 'post-type-produit' );
+      if ( is_array( $prod ) && ! empty( $prod ) ) {
+        $tq = array( array( 'taxonomy' => 'post-type-produit', 'terms' => wp_list_pluck( $prod, 'term_id' ) ) );
+        $attr = get_the_terms( $id, 'post-type-attribut' );
+        if ( is_array( $attr ) && ! empty( $attr ) ) {
+          $tq['relation'] = 'AND';
+          $tq[] = array( 'taxonomy' => 'post-type-attribut', 'terms' => wp_list_pluck( $attr, 'term_id' ), 'operator' => 'AND' );
+        }
+        $q = new WP_Query( array(
+          'post_type'              => 'avis',
+          'post_status'            => 'publish',
+          'tax_query'              => $tq,
+          'posts_per_page'         => -1,
+          'fields'                 => 'ids',
+          'no_found_rows'          => true,
+          'update_post_meta_cache' => false,
+          'update_post_term_cache' => false,
+        ) );
+        $n = count( $q->posts );
+      }
+      return $memo[ $id ] = $n;
+    }
+  }
+  if ( ! function_exists( 'mt_title_auto' ) ) {
+    /* « Meilleur(e) X » accordé via lalalesmeilleur (le meilleur / la meilleure → type au
+       singulier ; les … → pluriel), repli masculinsfeminins + type au pluriel. */
+    function mt_title_auto( $n, $t, $llm, $sing, $plur, $mf ) {
+      $llm  = trim( (string) $llm );
+      $adj  = trim( preg_replace( '/^(le|la|les)\s+/iu', '', $llm ) );
+      $sing = trim( (string) $sing );
+      $plur = trim( (string) $plur );
+      $type = ( preg_match( '/^les\s/iu', $llm ) || $sing === '' ) ? $plur : $sing;
+      if ( $adj === '' ) { $adj = lcfirst( trim( (string) $mf ) !== '' ? trim( (string) $mf ) : 'meilleurs' ); $type = $plur; }
+      $e    = preg_match( '/^meilleures?$/iu', $adj ) ? 'e' : '';
+      $tete = trim( $adj . ' ' . $type );
+      $tete = mb_strtoupper( mb_substr( $tete, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $tete, 1, null, 'UTF-8' );
+      $an   = date_i18n( 'Y' );
+      if ( $t > 0 && $n > $t ) { $titre = $tete . ' ' . $an . ' : ' . $n . ' analysé' . $e . 's, ' . $t . ' retenu' . $e . 's'; }
+      else { $titre = $tete . ' ' . $an . ' (' . max( $n, $t ) . ' produits comparés)'; }
+      return html_entity_decode( $titre, ENT_QUOTES, 'UTF-8' );
+    }
+  }
   if (($template_description ?? '') == 0 || $post_type === 'liste') {
-      $new_desc = intro(50, $this_id);
-      if (($new_desc <> $rank_math_description) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_description', $new_desc); }
+      $rank_math_description = (string) get_post_meta($this_id, 'rank_math_description', true);
       $p = get_post($this_id);
-      if (($p->post_excerpt ?? '') !== $new_desc) { wp_update_post(array('ID'=>$this_id,'post_excerpt'=>$new_desc)); }
+      $excerpt = (string) ($p->post_excerpt ?? '');
+      if ($rank_math_description === '' || $rank_math_description === $excerpt) {
+          $new_desc = intro(50, $this_id);
+          if (($new_desc !== $rank_math_description) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_description', $new_desc); }
+          if ($excerpt !== $new_desc) { wp_update_post(array('ID'=>$this_id,'post_excerpt'=>$new_desc)); }
+      }
   }
   if (!empty($forcer_affichage_du_titre ?? '')) { $new_title = $forcer_affichage_du_titre; }
   elseif ($post_type === 'liste') { $new_title = get_the_title($this_id); }
+  elseif ($post_type === 'comparatif') {
+      /* Multi-comparatif : jamais moins que les produits affichés dans les encarts. */
+      $mt_n = mt_avis_count( $this_id );
+      $mt_pl = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
+      if ( $mt_pl && ! empty( $mt_pl['is_multi'] ) ) { $mt_n = max( $mt_n, count( $mt_pl['origin'] ) ); }
+      $new_title = mt_title_auto( $mt_n, $total_avis, $lalalesmeilleur ?? '', $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $masculinsfeminins ?? '' );
+  }
   else { $new_title = "Les ".$total_avis." ".lcfirst($masculinsfeminins ?? 'meilleurs')." ".$type_de_produit_au_pluriel." 2026 | Test par Meilleurtest"; }
-  if (($new_title <> $rank_math_title) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_title', $new_title); }
+  $rank_math_title = (string) get_post_meta($this_id, 'rank_math_title', true);
+  if (($new_title !== $rank_math_title) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_title', $new_title); }
   ?>
 
   <div class="mt-byline">
