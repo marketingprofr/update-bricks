@@ -11,7 +11,9 @@ if ( ! function_exists( 'get_ancestors' ) ) { function get_ancestors( $id, $tax 
 if ( ! function_exists( 'get_term' ) ) { function get_term( $id, $tax = '' ) { $t = new stdClass; $t->term_id = $id; $t->slug = $id === 30 ? 'services' : ( $id === 31 ? 'banques' : 'maison' ); return $t; } }
 if ( ! function_exists( 'get_the_category' ) ) { function get_the_category( $id ) { $t = new stdClass; $t->term_id = getenv( 'SERVICE' ) ? 31 : 40; return array( $t ); } }
 if ( ! function_exists( 'get_fields' ) ) { function get_fields( $id ) { global $ACF; return $ACF[ $id ] ?? array(); } }
+if ( ! function_exists( 'remove_accents' ) ) { function remove_accents( $t ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $t ); } }
 $GLOBALS['TV'][100]['masculinsfeminins'] = 'Meilleurs';
+$GLOBALS['ACF'][100]['mltv5_criteres_de_choix'] = array_map( function ( $t ) { return array( 'mltv5_critere_de_choix' => $t ); }, array( 'La puissance frigorifique (exprimée en BTU)', 'Le niveau sonore (exprimé en dB)', 'La consommation énergétique', 'Les options de confort', 'Les différents filtres' ) );
 foreach ( range( 1, 14 ) as $i ) { if ( ! isset( $GLOBALS['P'][ $i ] ) ) { continue; }
   $GLOBALS['META'][ $i ]['mltv5_nombre_avis_clients'] = (string) ( getenv( 'AVIS' ) ? intdiv( (int) getenv( 'AVIS' ), 14 ) : 100 );
   $GLOBALS['ACF'][ $i ]['mltv5_lien_du_produit_1'] = 'https://www.marchand' . ( $i % 4 ) . '.fr/p' . $i;
@@ -20,7 +22,6 @@ foreach ( range( 1, 14 ) as $i ) { if ( ! isset( $GLOBALS['P'][ $i ] ) ) { conti
 }
 $GLOBALS['ACF'][100]['mltv5_faq_comparatif'] = array( array( 'mltv5_faq_comparatif_question' => 'Q ?', 'mltv5_faq_comparatif_reponse' => 'R.' ), array( 'mltv5_faq_comparatif_question' => 'Q2 ?', 'mltv5_faq_comparatif_reponse' => '' ) );
 if ( getenv( 'PHRASE' ) ) { $GLOBALS['ACF'][100]['mltv5_phrase_sources'] = getenv( 'PHRASE' ); }
-if ( getenv( 'CRIT' ) ) { $GLOBALS['ACF'][100]['mltv5_criteres_courts'] = getenv( 'CRIT' ); }
 $src = file_get_contents( MT_REPO . '/php-css/hero-encart.code.php' );
 $src = str_replace( '$MT_ENCADRE_REEL = false;', '$MT_ENCADRE_REEL = true;', $src );
 if ( getenv( 'SRC' ) || getenv( 'ETUD' ) ) {

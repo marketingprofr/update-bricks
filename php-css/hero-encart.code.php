@@ -1,7 +1,6 @@
 <?php
 $MT_ENCADRE_REEL = true;  // encadré à valeurs réelles, validé par Samuel le 2026-10-02 (false = ancien encadré)
 $MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Architecture) : « des guides d'achat internationaux (…), … » ; vide = pas de puce
-$MT_CHAMP_CRITERES_COURTS = 'mltv5_criteres_courts'; // champ du comparatif (Architecture) : libellés courts des critères ; vide = pas de puce
 $MT_TXT_AFFILIATION = '';    // puce « Affiliation : … » (formulation en test) ; '' = pas de puce
 $MT_SIGNALEMENT     = false; // true quand le formulaire « Signaler une erreur » existe (le contact actuel exige un compte)
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
@@ -142,8 +141,23 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
     $mt_puces[] = '<b>Nos sources&nbsp;:</b> ' . esc_html( $mt_src_aff ) . ' sources consultées, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
-  $mt_courts = get_field( $MT_CHAMP_CRITERES_COURTS, $this_id );
-  $mt_courts = is_array( $mt_courts ) ? implode( ', ', array_filter( array_map( 'trim', mt_encadre_textes( $mt_courts ) ) ) ) : trim( (string) $mt_courts );
+  /* Libellés courts des critères, tirés automatiquement des critères du guide (page, sinon annexe en cache) :
+     article et parenthèse retirés (« La puissance frigorifique (exprimée en BTU) » → « puissance frigorifique »),
+     doublons fusionnés, 4 au plus ; puce seulement s'il en reste au moins 3. */
+  $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
+  if ( empty( $mt_crit ) ) { $mt_cid = (int) get_field( 'mltv5_cached_id_criteres', $this_id ); $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array(); }
+  $mt_vus = array(); $mt_lib = array();
+  foreach ( (array) $mt_crit as $mt_r ) {
+    $mt_t = html_entity_decode( wp_strip_all_tags( (string) ( $mt_r['mltv5_critere_de_choix'] ?? '' ) ), ENT_QUOTES, 'UTF-8' );
+    $mt_t = trim( preg_replace( '/\s*\([^)]*\)/u', '', str_replace( "\u{2019}", "'", $mt_t ) ) );
+    $mt_t = trim( preg_replace( "/^(les|le|la|l'|vos|votre|son|sa|ses|un|une|des)\s*/iu", '', $mt_t ) );
+    if ( $mt_t === '' || mb_strlen( $mt_t, 'UTF-8' ) > 45 ) { continue; }
+    $mt_t = mb_strtolower( mb_substr( $mt_t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_t, 1, null, 'UTF-8' );
+    $mt_k = remove_accents( mb_strtolower( $mt_t, 'UTF-8' ) );
+    if ( isset( $mt_vus[ $mt_k ] ) ) { continue; }
+    $mt_vus[ $mt_k ] = true; $mt_lib[] = $mt_t;
+  }
+  $mt_courts = count( $mt_lib ) >= 3 ? implode( ', ', array_slice( $mt_lib, 0, 4 ) ) : '';
   if ( $mt_courts !== '' ) {
     $mt_typ = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' );
     $mt_puces[] = '<b>Notre analyse&nbsp;:</b> nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';
