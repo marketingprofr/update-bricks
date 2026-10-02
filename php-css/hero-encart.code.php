@@ -1,8 +1,7 @@
 <?php
 $MT_ENCADRE_REEL = false; // true : 4 cases à valeurs réelles (tests Jev du 2026-10-02) au lieu de heures / années / avis par défaut
-$MT_LBL_SITES_SERVICE = 'sites officiels consultés';          // case 1, comparatif rangé sous la catégorie « Services »
-$MT_LBL_SITES_PRODUIT = 'sites marchands et officiels cités'; // case 1, autres comparatifs ; '' = case retirée
-$MT_CAT_SERVICES      = 'services';                           // slug de la catégorie racine des services
+$MT_CASE1_NUM   = '';                   // case 1 : sources consultées par guide, valeur du site (ex. '~20') ; '' = case retirée
+$MT_CASE1_LBL   = 'sources consultées'; // libellé de la case 1 (en test)
 $this_id = get_the_ID();
 extract(get_all_template_variables($this_id));
 $mod = date_i18n('j F Y', get_the_modified_time('U'));
@@ -76,42 +75,10 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $mt_plan && ! empty( $mt_plan['is_multi'] ) ) { $mt_aff = array_values( array_unique( array_merge( $mt_aff, $mt_plan['tests'] ) ) ); }
   if ( $mt_aff ) { update_meta_cache( 'post', $mt_aff ); }
 
-  /* Case 1 : sites cités = domaines externes des liens de la page (boutons d'achat, liens des tests,
-     introduction), hors réseaux sociaux, images, outils et redirections d'affiliation. */
-  $mt_exclus = array( 'meilleurtest.fr', 'x.com', 'twitter.com', 'facebook.com', 'youtube.com', 'youtu.be', 'linkedin.com',
-    'instagram.com', 'pinterest.', 'tiktok.com', 'media-amazon.com', 'images-amazon.com', 'cookiedatabase.org', 'digidip',
-    'awin1.com', 'tradedoubler.com', 'effiliation.com', 'metaffiliation.com', 'linksynergy.com', 'prf.hn', 'sjv.io', 'pxf.io',
-    'anrdoezrs.net', 'jdoqocy.com', 'tkqlhce.com', 'dpbolvw.net', 'kqzyfj.com', 'publicidees.com', 'viglink.com',
-    'skimresources.com', 'affilae.com', 'kwanko.com', 'lgbtracking', 'gotrackier', 'go2cloud.org' );
-  $mt_liens = array();
-  $mt_html  = (string) ( $introduction ?? '' );
-  foreach ( $mt_aff as $pid ) {
-    if ( trim( (string) get_field( 'mltv5_asin_amazon', $pid ) ) !== '' ) { $mt_liens[] = 'https://www.amazon.fr/'; }
-    for ( $li = 1; $li <= 3; $li++ ) { $mt_liens[] = trim( (string) get_field( 'mltv5_lien_du_produit_' . $li, $pid ) ); }
-    $mt_html .= ' ' . get_post_field( 'post_content', $pid );
-  }
-  if ( preg_match_all( '#href=["\'](https?://[^"\']+)#i', $mt_html, $mt_m ) ) { $mt_liens = array_merge( $mt_liens, $mt_m[1] ); }
-  $mt_dom = array();
-  foreach ( $mt_liens as $u ) {
-    $h = strtolower( (string) wp_parse_url( $u, PHP_URL_HOST ) );
-    $h = preg_replace( '/^www\./', '', $h );
-    if ( $h === '' ) { continue; }
-    foreach ( $mt_exclus as $x ) { if ( strpos( $h, $x ) !== false ) { continue 2; } }
-    $mt_dom[ $h ] = true;
-  }
-  /* Service = comparatif rangé sous la catégorie « Services » (ou une de ses sous-catégories) */
-  $mt_service = false;
-  foreach ( (array) get_the_category( $this_id ) as $mt_cat ) {
-    $mt_chaine = array_merge( array( (int) $mt_cat->term_id ), array_map( 'intval', (array) get_ancestors( $mt_cat->term_id, 'category' ) ) );
-    foreach ( $mt_chaine as $mt_tid ) {
-      $mt_t = get_term( $mt_tid, 'category' );
-      if ( $mt_t && ! is_wp_error( $mt_t ) && $mt_t->slug === $MT_CAT_SERVICES ) { $mt_service = true; break 2; }
-    }
-  }
-  $mt_lbl_sites = $mt_service ? $MT_LBL_SITES_SERVICE : $MT_LBL_SITES_PRODUIT;
-  if ( $mt_lbl_sites !== '' && count( $mt_dom ) > 0 ) {
-    $mt_cases[] = array( $ic_layers, count( $mt_dom ), $mt_lbl_sites );
-  }
+  /* Case 1 : sources consultées. La liste des sources de chaque guide n'existe plus : valeur et libellé au
+     niveau du site, en réglage ($MT_CASE1_NUM, $MT_CASE1_LBL). Pas de comptage de liens (refusé par Samuel :
+     ce seraient des marchands, pas des sources). */
+  if ( $MT_CASE1_NUM !== '' && $MT_CASE1_LBL !== '' ) { $mt_cases[] = array( $ic_layers, $MT_CASE1_NUM, $MT_CASE1_LBL ); }
 
   /* Case 2 : produits analysés = même N que le title (+5 si < 10) */
   $mt_lbl_n = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits analysés' : mb_strtolower( $tp, 'UTF-8' ) . ' analysé' . $mt_e . 's';
