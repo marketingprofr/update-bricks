@@ -1,6 +1,6 @@
 <?php
 /* Encart « Vos questions » (hero gauche, réglage $MT_VOS_QUESTIONS activé dans une copie).
-   Usage : php run-questions.php ; POS=avant_top5 pour l'afficher juste avant le top 5 ; V2=1 pour les blocs multi-* ;
+   Usage : php run-questions.php ; POS=apres_intro (après l'intro) ou POS=avant_top5 (juste avant le top 5) ; V2=1 pour les blocs multi-* ;
    PRIX=0 sans prix ni note clients (question « Pourquoi faire confiance ») ; FAQ=0 sans questions de la rédaction.
    PAGES=<dossier> : applique la règle de la phrase aux FAQ de pages HTML enregistrées (<dossier>/<page>/G0.html)
    et écrit out/vos-questions-pages.txt. */
@@ -43,6 +43,10 @@ $dans_res  = strpos( $r, 'mt-faq-mini' );
 if ( $dans_hero === false && $dans_res === false ) {
   echo "place   : aucune (moins de 3 questions : pas d'encart)\n";
   $bloc = '';
+} elseif ( $pos === 'apres_intro' ) {
+  $ok = $dans_hero !== false && strpos( $h, 'class="mt-lede"' ) < $dans_hero && $dans_hero < strpos( $h, 'mt-photo' ) && $dans_res === false;
+  echo 'place   : ', $ok ? 'intro de la rédaction > Vos questions > photo (absent du top 5)' : 'PLACE INATTENDUE', "\n";
+  $bloc = $h;
 } elseif ( $pos === 'sous_reponse' ) {
   $ok = $dans_hero !== false && strpos( $h, 'mt-verdict' ) < $dans_hero && $dans_hero < strpos( $h, 'mt-byline' ) && $dans_res === false;
   echo 'place   : ', $ok ? 'réponse courte > Vos questions > ligne auteur (absent du top 5)' : 'PLACE INATTENDUE', "\n";

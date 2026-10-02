@@ -6,7 +6,8 @@ $MT_VERDICT_SOUS_H1  = true;   // verdict (top 3 avec notes /10, N analysés, m�
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 $MT_VOS_QUESTIONS    = 'sous_reponse'; // encart « Vos questions » (questions de la FAQ, réponse d'une phrase) : 'sous_reponse' = juste après
-                                // la réponse courte (choix de Samuel, 2026-10-03), 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
+                                // la réponse courte (choix de Samuel, 2026-10-03), 'apres_intro' = juste après l'intro de la rédaction
+                                // (mesure équivalente), 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
 
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));
@@ -760,9 +761,12 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   } ?>
 
   <?php if ( $MT_VOS_QUESTIONS !== '' && $post_type === 'comparatif' ) {
-      /* Encart « Vos questions » : affiché ici, ou confié au bloc du top 5 (résumé V1 / multi-resume V2) qui l'affiche juste avant */
+      /* Encart « Vos questions » : affiché ici, après l'intro de la rédaction (plus bas dans ce bloc), ou confié au bloc
+         du top 5 (résumé V1 / multi-resume V2) qui l'affiche juste avant */
       $mt_vq = mt_vos_questions( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
-      if ( $MT_VOS_QUESTIONS === 'avant_top5' ) { $GLOBALS['mt_vos_questions'] = $mt_vq; } else { echo $mt_vq; }
+      if ( $MT_VOS_QUESTIONS === 'avant_top5' ) { $GLOBALS['mt_vos_questions'] = $mt_vq; }
+      elseif ( $MT_VOS_QUESTIONS === 'apres_intro' ) { $mt_vq_apres_intro = $mt_vq; }
+      else { echo $mt_vq; }
   } ?>
 
   <div class="mt-byline">
@@ -801,6 +805,8 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   if ( $MT_SHOW_INTRO_RECO && ! $MT_VERDICT_SOUS_H1 && $post_type === 'comparatif' ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
+
+  <?php if ( ! empty( $mt_vq_apres_intro ) ) { echo $mt_vq_apres_intro; } /* encart « Vos questions » réglé sur 'apres_intro' */ ?>
 
   <?php if ( $MT_SHOW_QUICK_PICKS && $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
     echo mt_quick_picks( $top_avis_ids );

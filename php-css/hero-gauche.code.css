@@ -68,6 +68,7 @@
   .mt-eyebrow { display: none; }
   .mt-left { display: flex; flex-direction: column; }
   .mt-lede { order: 1; }
+  .mt-lede ~ .mt-faq-mini { order: 1; } /* « Vos questions » réglé sur 'apres_intro' : reste juste après l'intro */
   .mt-photo-img { height: auto; aspect-ratio: 16/9; }
   .mt-photo { margin-bottom: 20px; }
   .mt-lede { margin-bottom: 10px; }
