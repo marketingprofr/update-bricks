@@ -411,7 +411,7 @@ $top5_set      = array_flip( $ids );
 
 <?php if ( $show_ranking ) : ?>
   <div class="t5-allrank" data-page="<?php echo esc_attr( $page_id ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'mt_ranking' ) ); ?>" data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
-    <h3 class="t5-allrank-h" style="display:none">Classement complet<?php echo ( $type_plur !== '' ? ' des ' . esc_html( $type_plur ) : '' ); ?> test&eacute;s</h3>
+    <p class="t5-allrank-h" style="display:none">Classement complet<?php echo ( $type_plur !== '' ? ' des ' . esc_html( $type_plur ) : '' ); ?> test&eacute;s</p>
     <div class="t5-ar-head" style="display:none"><span>#</span><span>Produit</span><span>Note</span></div>
     <div class="t5-ar-body"></div>
     <button type="button" class="t5-ar-toggle" data-label-hide="Masquer le classement">Voir le classement complet : <span class="t5-ar-u">afficher les <?php echo (int) $all_avis['count']; ?> produits test&eacute;s</span></button>

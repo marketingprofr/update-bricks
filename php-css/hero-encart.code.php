@@ -48,7 +48,7 @@ $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
 ?>
 <div class="mt-card">
 
-  <h3 class="mt-card-h"><span class="mt-card-hi"><?php echo $ic_shield; ?></span>Pourquoi nous faire confiance</h3>
+  <p class="mt-card-h"><span class="mt-card-hi"><?php echo $ic_shield; ?></span>Pourquoi nous faire confiance</p>
 
   <div class="mt-sc-grid">
     <div class="mt-sc-cell">
@@ -77,8 +77,11 @@ $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
     <div class="mt-sc-process link-black"><p>Les guides d'achat de Meilleurtest résultent d'un processus de sélection approfondi et d'une vérification méticuleuse. Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
   </div>
   <div class="mt-sc-vote">
-    <h4>Avis des lecteurs sur cette s&eacute;lection</h4>
-    <?php echo do_shortcode('[ratemypost]'); ?>
+    <p class="mt-sc-vote-h">Avis des lecteurs sur cette s&eacute;lection</p>
+    <?php /* Rate My Post envoie toujours « Pas encore de note ! », caché par la classe --hidden quand la
+             page a des votes : son texte est vidé pour que les moteurs ne lisent pas de contradiction
+             (l'élément reste, le JS du plugin s'en sert). */
+    echo preg_replace( '#(<p\b[^>]*rmp-rating-widget__not-rated--hidden[^>]*>).*?(</p>)#s', '$1$2', do_shortcode('[ratemypost]') ); ?>
     <p class="mt-sc-note">Votre note oriente les autres lecteurs et nous aide &agrave; am&eacute;liorer ce contenu. Merci&nbsp;!</p>
   </div>
 

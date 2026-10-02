@@ -8,7 +8,7 @@
 .mt-card { background: var(--at-grey-l-6); border: 1px solid var(--at-grey-l-3); border-radius: 16px; padding: 24px; position: sticky; top: 20px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; color: var(--at-black-l-2); }
 
 /* Titres en Inter (sinon ils heritent de la police de titre du theme) */
-.mt-card-h, .mt-sc-vote h4 { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; }
+.mt-card-h, .mt-sc-vote-h { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; }
 
 .mt-card-h { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--at-primary); margin: 0 0 18px; }
 .mt-card-hi { display: flex; }
@@ -33,7 +33,7 @@
 .mt-ti svg { width: 16px; height: 16px; }
 
 .mt-sc-vote { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--at-grey-l-3); }
-.mt-sc-vote h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 600; color: var(--at-black-l-1); }
+.mt-sc-vote-h { margin: 0 0 10px; font-size: 13.5px; font-weight: 600; color: var(--at-black-l-1); }
 .mt-sc-note { margin: 4px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--at-grey); }
 
 /* ----- Widget [ratemypost] recale sur le template ----- */
@@ -82,7 +82,7 @@
   .mt-sc-process { margin-top: 12px; padding-top: 12px; }
   .mt-sc-vote { margin-top: 12px; padding-top: 16px; }
   .rmp-widgets-container.rmp-wp-plugin.rmp-main-container { margin: 4px 0 0 0; }
-  .mt-sc-vote h4 { font-size: 12.5px; margin-bottom: 8px; }
+  .mt-sc-vote-h { font-size: 12.5px; margin-bottom: 8px; }
   .mt-sc-note { display: none; }
   .mt-sc-date { display: none; }
 }

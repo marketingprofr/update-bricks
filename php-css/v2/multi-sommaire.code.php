@@ -443,7 +443,7 @@ $pills = array(
 <?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>
 <p class="mtv2-stale" style="margin:0 0 12px;padding:10px 14px;border:2px solid #c0392b;border-radius:8px;background:#fdecea;color:#c0392b;font:600 14px/1.5 Inter,sans-serif">&#9888; Multi-comparatif : une ANCIENNE version du code tourne encore sur cette page. Supprimez le snippet WPCodeBox « mtv2-core » s'il existe, recollez les 4 blocs multi-* (résumé, tests, tableau, sommaire), puis videz le cache. (Message visible des éditeurs uniquement.)</p>
 <?php endif; ?>
-  <h4 class="mt-toc-title">Sommaire<?php if ( $toc_title !== '' ) : ?>&nbsp;: <?php echo esc_html( $toc_title ); ?><?php endif; ?></h4>
+  <p class="mt-toc-title">Sommaire<?php if ( $toc_title !== '' ) : ?>&nbsp;: <?php echo esc_html( $toc_title ); ?><?php endif; ?></p>
   <ul class="mt-toc-list">
 <?php foreach ( $sections as $s ) : ?>
     <li><a class="mt-toc-link" href="#<?php echo esc_attr( $s['anchor'] ); ?>"><?php echo $s['label']; ?></a></li>

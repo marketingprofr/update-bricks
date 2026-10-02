@@ -905,7 +905,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
       <div class="ed-a-pc<?php echo ( $it['pros'] && $it['cons'] ) ? '' : ' single'; ?>">
         <?php if ( $it['pros'] ) : ?>
         <div class="col pros">
-          <h5>Points positifs</h5>
+          <h4>Points positifs</h4>
           <ul>
             <?php foreach ( $it['pros'] as $pp ) : ?><li><?php echo esc_html( $pp ); ?></li><?php endforeach; ?>
           </ul>
@@ -913,7 +913,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
         <?php endif; ?>
         <?php if ( $it['cons'] ) : ?>
         <div class="col cons">
-          <h5>Points n&eacute;gatifs</h5>
+          <h4>Points n&eacute;gatifs</h4>
           <ul>
             <?php foreach ( $it['cons'] as $cc ) : ?><li><?php echo esc_html( $cc ); ?></li><?php endforeach; ?>
           </ul>
@@ -927,7 +927,7 @@ $head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
 
         <?php if ( $it['forwho'] !== '' ) : ?>
         <div class="ed-a-forwho">
-          <h5>&Agrave; qui s'adresse ce <?php echo esc_html( $type_sing !== '' ? $type_sing : 'produit' ); ?>&nbsp;?</h5>
+          <h4>&Agrave; qui s'adresse ce <?php echo esc_html( $type_sing !== '' ? $type_sing : 'produit' ); ?>&nbsp;?</h4>
           <p><?php echo esc_html( $it['forwho'] ); ?></p>
         </div>
         <?php endif; ?>

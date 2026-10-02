@@ -106,7 +106,7 @@ foreach ( $sections as $k => $s ) {
 }
 ?>
 <aside class="mt-toc" data-mt-toc>
-  <h4>Sur cette page</h4>
+  <p class="mt-toc-title">Sur cette page</p>
   <ul>
 <?php foreach ( $sections as $s ) : ?>
     <li><a href="#<?php echo esc_attr( $s['anchor'] ); ?>"<?php if ( isset( $s['min'] ) && $s['min'] !== null ) { echo ' data-min="' . esc_attr( $s['min'] ) . '"'; } ?>><?php echo $s['label']; ?></a></li>

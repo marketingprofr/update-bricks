@@ -102,12 +102,12 @@
 .ed-a-pc.single { grid-template-columns: 1fr; }
 .ed-a-pc.single .col.pros { padding-right: 0; }
 .ed-a-pc.single .col.cons { padding-left: 0; border-left: 0; }
-.ed-a-pc h5 { font-family: "Inter", sans-serif !important; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 13px; display: flex; align-items: center; gap: 9px; }
-.ed-a-pc h5::before { content: ""; width: 16px; height: 2px; border-radius: 2px; }
-.ed-a-pc .pros h5 { color: var(--accent); }
-.ed-a-pc .pros h5::before { background: var(--accent); }
-.ed-a-pc .cons h5 { color: var(--warn); }
-.ed-a-pc .cons h5::before { background: var(--warn); }
+.ed-a-pc h4 { font-family: "Inter", sans-serif !important; font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 13px; display: flex; align-items: center; gap: 9px; }
+.ed-a-pc h4::before { content: ""; width: 16px; height: 2px; border-radius: 2px; }
+.ed-a-pc .pros h4 { color: var(--accent); }
+.ed-a-pc .pros h4::before { background: var(--accent); }
+.ed-a-pc .cons h4 { color: var(--warn); }
+.ed-a-pc .cons h4::before { background: var(--warn); }
 .ed-a-pc ul { list-style: none; margin: 0; padding: 0; }
 .ed-a-pc li { position: relative; padding: 6px 0 6px 24px; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
 .ed-a-pc .pros li::before { content: ""; position: absolute; left: 3px; top: 12px; width: 9px; height: 5px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
@@ -144,7 +144,10 @@
 
 /* À qui ça s'adresse */
 .ed-a-forwho { font-family: "Inter", sans-serif; margin: 36px 0 8px; padding: 24px 26px; background: var(--accent-soft); border-radius: 14px; }
-.ed-a-forwho h5 { font-family: "Inter", sans-serif !important; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+.ed-a-forwho h4 { font-family: "Inter", sans-serif !important; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+/* « À qui s'adresse » est un h4 DANS .ed-a-body : on neutralise le style des intertitres du contenu */
+.ed-a-forwho h4 { display: block; }
+.ed-a-forwho h4::after { content: none; }
 .ed-a-forwho p { font-size: 15.5px; line-height: 1.65; color: var(--ink-2); margin: 0; }
 .ed-a-forwho p b { color: var(--ink); font-weight: 600; }
 
