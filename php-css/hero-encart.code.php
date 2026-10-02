@@ -141,7 +141,8 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
     $mt_puces[] = '<b>Nos sources&nbsp;:</b> ' . esc_html( $mt_src_aff ) . ' sources consultées, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
-  /* Libellés courts des critères, tirés automatiquement des critères du guide (page, sinon annexe en cache) :
+  /* Libellés courts des critères : champ mltv5_criteres_courts s'il est rempli, sinon tirés automatiquement
+     des critères du guide (page, sinon annexe en cache) :
      article et parenthèse retirés (« La puissance frigorifique (exprimée en BTU) » → « puissance frigorifique »),
      doublons fusionnés, 4 au plus ; puce seulement s'il en reste au moins 3. */
   $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
@@ -165,6 +166,9 @@ if ( $MT_ENCADRE_REEL ) {
     $mt_vus[ $mt_k ] = true; $mt_lib[] = $mt_t;
   }
   $mt_courts = count( $mt_lib ) >= 3 ? implode( ', ', array_slice( $mt_lib, 0, 4 ) ) : '';
+  /* Priorité au champ rempli à la main (décision de Samuel) ; la règle automatique ci-dessus sert de repli */
+  $mt_champ = trim( wp_strip_all_tags( (string) get_field( 'mltv5_criteres_courts', $this_id ) ) );
+  if ( $mt_champ !== '' ) { $mt_courts = $mt_champ; }
   if ( $mt_courts !== '' ) {
     $mt_typ = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' );
     $mt_puces[] = '<b>Notre analyse&nbsp;:</b> nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';

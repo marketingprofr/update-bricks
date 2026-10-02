@@ -21,6 +21,7 @@ foreach ( range( 1, 14 ) as $i ) { if ( ! isset( $GLOBALS['P'][ $i ] ) ) { conti
   $GLOBALS['P'][ $i ]->post_content = '<p>' . str_repeat( 'mot ', 1700 ) . '<a href="https://source-etude.org/x">étude</a> <img src="https://m.media-amazon.com/i.jpg"></p>';
 }
 $GLOBALS['ACF'][100]['mltv5_faq_comparatif'] = array( array( 'mltv5_faq_comparatif_question' => 'Q ?', 'mltv5_faq_comparatif_reponse' => 'R.' ), array( 'mltv5_faq_comparatif_question' => 'Q2 ?', 'mltv5_faq_comparatif_reponse' => '' ) );
+if ( getenv( 'CRIT' ) ) { $GLOBALS['ACF'][100]['mltv5_criteres_courts'] = getenv( 'CRIT' ); }
 if ( getenv( 'PHRASE' ) ) { $GLOBALS['ACF'][100]['mltv5_phrase_sources'] = getenv( 'PHRASE' ); }
 $src = file_get_contents( MT_REPO . '/php-css/hero-encart.code.php' );
 $src = str_replace( '$MT_ENCADRE_REEL = false;', '$MT_ENCADRE_REEL = true;', $src );
