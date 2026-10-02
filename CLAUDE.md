@@ -820,7 +820,7 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
     répété : H1 moins lourd, pas d'accord genré, cohérent avec le title ; **N =
     `mtv2_hero_count()` = MÊME compteur que l'encart « Pourquoi nous faire
     confiance »** (`hero-encart.code.php` : avis publiés du même type + TOUS les
-    attributs du parent, SANS majoration depuis 2026-10-02 (avant : +5 si < 10) ; = aussi le « sur N produits » de la
+    attributs du parent, +5 si < 10, voulu par Samuel ; = aussi le « sur N produits » de la
     fourchette du résumé et le classement complet) — **cohérence des chiffres sur
     toute la page** (décision client, l'ancien N = produits affichés dans les
     encarts donnait 45 vs 55 ailleurs). Plancher = nb de produits affichés
@@ -934,16 +934,20 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
   `get_all_template_variables()` et vaut 0 sur le site (en PHP 8, `'' == 0` est faux : le banc
   doit le fixer à 0). Titres forcés posés par l'Architecture sur les 10 pages auditées
   (title ET H1).
-- **Règles PRÉPARÉES dans le dépôt, NON déployées (attente de l'accord de Samuel) :**
-  - title (bloc SEO identique dans `hero-gauche.code.php` et `v2/multi-hero-gauche.code.php`) :
-    titre forcé > `mt_title_auto()` « Meilleur(e) X 2026 : N analysé(e)s, T retenu(e)s »
-    (N = `mt_avis_count()`, vrai nombre d'avis publiés type + attributs, multi : au moins les
-    produits affichés ; T = produits du classement) ; si N <= T : « Meilleur(e) X 2026 (N produits
-    comparés) » en attendant un repli choisi par Samuel ;
-  - méta description : n'est plus écrasée si elle diffère de l'extrait (= saisie à la main) ;
-    l'Architecture pose les textes par REST (`rankmath/v1/updateMeta`) une fois la règle en ligne ;
-  - +5 supprimé partout (encart, `mtv2_hero_count`, résumé V1/V2) et -0,5 sur la note minimale
-    de la fourchette du résumé supprimé : vrais chiffres.
+- **Règles des blocs hero V1/V2, validées par Samuel, prêtes à coller** (seuls `hero-gauche` et
+  `v2/multi-hero-gauche`, Code + CSS, changent ; encart et résumés identiques à la version en ligne) :
+  - **un seul N sur toute la page** (title, H1, méta, verdict, encadré) = MÊME compteur que
+    l'encadré : `mt_avis_count()` (avis publiés type + attributs) **+5 si < 10, VOULU par Samuel**
+    (la rédaction analyse au moins 5 produits de plus que ceux publiés ; données perdues à la
+    migration) ; multi : au moins les produits affichés. Le +5 avait été retiré par erreur
+    (cf2519e) puis rétabli le jour même ;
+  - title (bloc SEO identique V1/V2, placé AVANT le H1) : titre forcé > `mt_title_auto()`
+    « Meilleur(e) X 2026 : N analysé(e)s, T retenu(e)s » (T = produits du classement) ; si N <= T :
+    « Meilleur(e) X 2026 (N produits comparés) » ;
+  - méta description : une méta saisie à la main est gardée ; automatique = vide, égale à la
+    dernière méta générée (méta cachée `_mt_meta_auto`) ou égale à l'extrait (ancien mode).
+    L'EXTRAIT reste les 50 premiers mots de l'introduction (affiché dans les cartes : guides
+    similaires, catégories, accueil, listes, pages d'avis).
   - Banc : `outils/tests/run-seo.php` (accords, titre forcé, repli, description manuelle).
   - **Verdict sous le H1** (`mt_verdict_ouverture()`, identique V1/V2 ; variante O5 de
     l'Architecture, ouverture 0,92) : « La meilleure X en 2026 est A (9,0/10), devant B et C.
@@ -956,18 +960,19 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
   - **Réglages en tête des blocs hero** : `$MT_VERDICT_SOUS_H1` (true), `$MT_VERIFIE_PAR`
     ('' ; 'Samuel Petit' = « Par X • Vérifié par Samuel Petit, responsable éditorial • Mis à jour
     le … », ou « Rédigé et vérifié par Samuel Petit, responsable éditorial » quand il est
-    l'auteur : formulation E1F2 du lot éditorial), `$MT_H1_EGAL_TITLE` (false ; true = sans titre
-    forcé, H1 = title automatique). Les deux derniers attendent la décision de Samuel.
-  - Encadré : tout remplacement honnête des chiffres par défaut coûte ~0,05 de spécificité
-    (lot encadré) ; méthode précise et « N mises à jour » sans effet mesurable. Rien codé :
-    décision de Samuel. Méta automatique tirée des données : 2,94-2,99 (Architecture) ;
-    proposée à Samuel, rien codé.
+    l'auteur : formulation E1F2 du lot éditorial ; une forme courte « Vérifié par S. Petit, resp.
+    éditorial » fait aussi bien, en attente de Samuel), `$MT_H1_EGAL_TITLE` (**true**, validé :
+    sans titre forcé, H1 = title automatique).
+  - Encadré : tout remplacement des chiffres par défaut coûte ~0,05 de spécificité (lot encadré) ;
+    méthode précise et « N mises à jour » sans effet. La Coordination explore une case à la fois :
+    « N sources consultées » (domaines externes cités dans la page) = confiance +0,17. Rien codé
+    avant la fin de l'exploration.
   - Banc : `outils/tests/run-verdict.php`.
   - **Méta description automatique** (validée par Samuel) : `mt_meta_auto()` (format M3 de
     l'Architecture, 2,99/3) « A arrive en tête de notre comparatif 2026 (x/10). N X analysé(e)s,
     T retenu(e)s : notes, avantages et inconvénients. » ; > 158 car. : sans la fin « : notes… »
-    (le repli M6 testé est plus long que M3, inutilisable pour raccourcir). Écrite dans
-    `rank_math_description` ET `post_excerpt` (l'égalité des deux = « automatique ») ; une méta
-    saisie à la main reste prioritaire. `mt_top_infos()` (nom + note /10) est partagée par le
+    (forme courte notée 2,96-2,98 ; le repli M6 est plus long que M3). Écrite dans
+    `rank_math_description` et dans la méta cachée `_mt_meta_auto` (marqueur), jamais dans
+    l'extrait ; une méta saisie à la main reste prioritaire. `mt_top_infos()` (nom + note /10) est partagée par le
     verdict et la méta. Banc : `outils/tests/run-meta.php`.
 

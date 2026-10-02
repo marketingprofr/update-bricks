@@ -23,12 +23,14 @@ foreach ( $cas as $lbl => $v ) {
 }
 
 $GLOBALS['TV'][100] = $base;
-$descs = array( 'vide' => '', 'égale à l\'extrait (auto)' => 'Ancienne intro.', 'saisie à la main' => 'Description écrite à la main.' );
+$GLOBALS['META'][100]['_mt_meta_auto'] = 'Dernière méta générée.';
+$descs = array( 'vide' => '', 'égale à l\'extrait (ancien mode)' => 'Ancienne intro.', 'égale à la dernière méta générée' => 'Dernière méta générée.', 'saisie à la main' => 'Description écrite à la main.' );
 foreach ( $descs as $lbl => $d ) {
   $GLOBALS['META'][100]['rank_math_description'] = $d;
   $GLOBALS['P'][100]->post_excerpt = 'Ancienne intro.';
   $GLOBALS['WRITTEN'] = array();
   mt_rendu();
-  echo 'description ' . str_pad( $lbl, 26 ) . ': '
-    . ( array_key_exists( 'rank_math_description', $GLOBALS['WRITTEN'] ) ? 'réécrite (« ' . $GLOBALS['WRITTEN']['rank_math_description'] . ' »)' : 'gardée' ) . "\n";
+  echo 'description ' . str_pad( $lbl, 34 ) . ': '
+    . ( array_key_exists( 'rank_math_description', $GLOBALS['WRITTEN'] ) ? 'réécrite (« ' . $GLOBALS['WRITTEN']['rank_math_description'] . ' »)' : 'gardée' )
+    . ( isset( $GLOBALS['WRITTEN']['_mt_meta_auto'] ) ? ' + marqueur' : '' ) . "\n";
 }

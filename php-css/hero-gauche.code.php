@@ -4,7 +4,7 @@ $MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
 $MT_VERDICT_SOUS_H1  = true;   // verdict (top 3 avec notes /10, N analysés, méthode, date) juste sous le H1 ; false = ancienne phrase dans le chapô
 $MT_VERIFIE_PAR      = '';     // ex. 'Samuel Petit' : ligne auteur « Vérifié par …, responsable éditorial » ; '' = pas de ligne
-$MT_H1_EGAL_TITLE    = false;  // true : sans titre forcé, le H1 reprend le title automatique
+$MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));
@@ -416,11 +416,11 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   <?php // Effets SEO Rank Math
   /* Title (tests Jev du 2026-10-02, voir CLAUDE.md) : titre forcé s'il est rempli ;
      sinon « Meilleur(e) X 2026 : N analysé(e)s, T retenu(e)s », N = vrai nombre d'avis
-     publiés du type + attributs (sans majoration), T = produits du classement ; si
+     publiés du type + attributs, +5 si < 10 comme l'encadré, T = produits du classement ; si
      N <= T, repli sur « Meilleur(e) X 2026 (N produits comparés) ».
      Méta description : une description saisie à la main (différente de l'extrait) n'est
-     plus écrasée ; la description automatique (= extrait) est mt_meta_auto() sur un
-     comparatif (format M3 des tests Jev), les 50 premiers mots de l'introduction sinon. */
+     plus écrasée ; la description automatique est mt_meta_auto() sur un comparatif (format M3
+     des tests Jev), les 50 premiers mots de l'introduction sinon. L'extrait reste l'introduction. */
   if ( ! function_exists( 'mt_avis_count' ) ) {
     /* Avis publiés du même type de produit et de TOUS les attributs du comparatif. */
     function mt_avis_count( $id ) {
@@ -469,24 +469,33 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       return html_entity_decode( $titre, ENT_QUOTES, 'UTF-8' );
     }
   }
-  /* N = produits analysés (title, méta, verdict) ; multi-comparatif : jamais moins que les produits affichés. */
+  /* N = produits analysés (title, méta, verdict) = MÊME compteur que l'encadré « Pourquoi nous faire
+     confiance » : avis publiés du type + attributs, +5 si < 10 (décision de Samuel : la rédaction analyse
+     au moins 5 produits de plus que ceux publiés). Multi-comparatif : jamais moins que les produits affichés. */
   $mt_n = 0;
   if ($post_type === 'comparatif') {
       $mt_n = mt_avis_count( $this_id );
+      if ( $mt_n < 10 ) { $mt_n += 5; }
       $mt_pl = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
       if ( $mt_pl && ! empty( $mt_pl['is_multi'] ) ) { $mt_n = max( $mt_n, count( $mt_pl['origin'] ) ); }
   }
   if (($template_description ?? '') == 0 || $post_type === 'liste') {
       $rank_math_description = (string) get_post_meta($this_id, 'rank_math_description', true);
+      $mt_meta_prec = (string) get_post_meta($this_id, '_mt_meta_auto', true);
       $p = get_post($this_id);
       $excerpt = (string) ($p->post_excerpt ?? '');
-      if ($rank_math_description === '' || $rank_math_description === $excerpt) {
-          /* Comparatif : méta automatique tirée des données (repli : 50 premiers mots de l'introduction). */
+      $intro50 = intro(50, $this_id);
+      /* Méta automatique si elle est vide, égale à la dernière méta générée (_mt_meta_auto, caché) ou à
+         l'extrait (ancien mode : méta = extrait). Toute autre valeur a été saisie à la main : gardée. */
+      if ($rank_math_description === '' || $rank_math_description === $mt_meta_prec || $rank_math_description === $excerpt) {
+          /* Comparatif : méta tirée des données (repli : 50 premiers mots de l'introduction). */
           $new_desc = ($post_type === 'comparatif') ? mt_meta_auto( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '', $mt_n ) : '';
-          if ($new_desc === '') { $new_desc = intro(50, $this_id); }
+          if ($new_desc === '') { $new_desc = $intro50; }
           if (($new_desc !== $rank_math_description) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_description', $new_desc); }
-          if ($excerpt !== $new_desc) { wp_update_post(array('ID'=>$this_id,'post_excerpt'=>$new_desc)); }
+          if ($new_desc !== $mt_meta_prec) { update_post_meta($this_id, '_mt_meta_auto', $new_desc); }
       }
+      /* Extrait : toujours les 50 premiers mots de l'introduction (affiché dans les cartes du site). */
+      if ($excerpt !== $intro50) { wp_update_post(array('ID'=>$this_id,'post_excerpt'=>$intro50)); }
   }
   if (!empty($forcer_affichage_du_titre ?? '')) { $new_title = $forcer_affichage_du_titre; }
   elseif ($post_type === 'liste') { $new_title = get_the_title($this_id); }
