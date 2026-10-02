@@ -169,6 +169,16 @@ if ( $MT_ENCADRE_REEL ) {
   };
   usort( $mt_cases, function ( $a, $b ) use ( $mt_rang ) { return $mt_rang( $a ) <=> $mt_rang( $b ); } );
 
+  /* Mêmes chiffres pour la réponse « Comment avons-nous établi ce classement ? » de la FAQ (bloc faq, plus bas) */
+  $mt_chiffres = array( 'n' => (int) $mt_display_count, 'nom' => preg_replace( '/ analysée?s$/u', '', $mt_lbl_n ), 'sources' => '', 'avis' => '', 'avis_clients' => '', 'mots' => '' );
+  foreach ( $mt_cases as $mt_c ) {
+    if ( $mt_c[2] === 'sources consultées' ) { $mt_chiffres['sources'] = (string) $mt_c[1]; }
+    elseif ( $mt_c[2] === 'avis étudiés' ) { $mt_chiffres['avis'] = (string) $mt_c[1]; }
+    elseif ( $mt_c[2] === 'avis clients recensés' ) { $mt_chiffres['avis_clients'] = (string) $mt_c[1]; }
+    elseif ( $mt_c[2] === 'mots dans ce guide' ) { $mt_chiffres['mots'] = (string) $mt_c[1]; }
+  }
+  $GLOBALS['mt_encadre_chiffres'] = $mt_chiffres;
+
   /* Puces sous les cases (liste SANS intitulés, choix de Samuel du 2026-10-02 ; les intitulés n'ont aucun effet
      mesurable sur Jev), à la place de la phrase générique */
   $mt_puces = array();

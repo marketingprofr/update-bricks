@@ -978,8 +978,11 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     Banc : `outils/tests/run-encadre.php` (`SRC`, `ETUD`, `AVIS`).
   - Titres sans saut (encadré, votes, sommaires en `<p>` ; tests h5 → h4 ; « Classement complet »
     en `<p>`) et texte caché « Pas encore de note ! » vidé : codés (a2eeec5).
-  - À signaler : la réponse automatique « Comment avons-nous établi ce classement ? » de la FAQ cite
-    les valeurs par défaut (10 sources, 597 avis).
+  - Réponse automatique de la FAQ « Comment avons-nous établi ce classement ? » (`$MT_METHODO_ENCADRE`, true) :
+    mêmes chiffres que l'encadré, publiés par hero-encart dans `$GLOBALS['mt_encadre_chiffres']` (N avec le +5,
+    sources ou « environ 20 », avis étudiés ou « plus de 200 », sinon avis clients recensés, mots) ; plus d'heures
+    (chiffre fictif) ; morceau de phrase retiré quand la donnée manque ; sans encadré : phrase générique. Aussi dans
+    le JSON-LD FAQPage. false = anciennes valeurs (10 sources, 597 avis, heures). Banc : `outils/tests/run-methodo.php`.
   - Banc : `outils/tests/run-verdict.php`.
   - **Méta description automatique** (validée par Samuel) : `mt_meta_auto()` (format M3 de
     l'Architecture, 2,99/3) « A arrive en tête de notre comparatif 2026 (x/10). N X analysé(e)s,

@@ -26,6 +26,9 @@
    Section -> `.contenu-principal` (jauge de lecture) + ancre `partie-faq`.
    ===================================================================== */
 
+$MT_METHODO_ENCADRE = true;  // « Comment avons-nous établi ce classement ? » : mêmes chiffres que l'encadré « Pourquoi nous
+                             // faire confiance » (hero-encart), sans heures ; false = anciennes valeurs (10 sources, 597 avis, heures)
+
 if ( ! function_exists( 'mt_guide_cache_id' ) ) {
   /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
      puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
@@ -369,14 +372,30 @@ if ( ! empty( $prods ) ) {
 
   /* --- Slot 3 : méthodologie (stats si dispo, sinon générique) --------- */
   $bits = array();
-  $s_prod = $tv( 'produits_analyses' );
-  $s_avis = $tv( 'avis_etudies' );
-  $s_src  = $tv( 'sources_consultees' );
-  $s_heu  = $tv( 'heures_investies' );
-  if ( $s_prod !== '' ) { $bits[] = 'compar&eacute; ' . esc_html( $s_prod ) . ' ' . esc_html( $type_plur !== '' ? $type_plur : 'produits' ); }
-  if ( $s_avis !== '' ) { $bits[] = '&eacute;tudi&eacute; ' . esc_html( $s_avis ) . ' avis clients'; }
-  if ( $s_src  !== '' ) { $bits[] = 'consult&eacute; ' . esc_html( $s_src ) . ' sources'; }
-  if ( $s_heu  !== '' ) { $bits[] = 'pass&eacute; ' . esc_html( $s_heu ) . ' heures &agrave; les analyser'; }
+  if ( $MT_METHODO_ENCADRE ) {
+    /* Chiffres publiés par l'encadré (même N avec le +5, mêmes sources, mêmes avis ou « plus de 200 », mêmes mots) ;
+       pas d'heures (chiffre fictif) ; un morceau de phrase disparaît quand sa donnée manque */
+    $ec = ( isset( $GLOBALS['mt_encadre_chiffres'] ) && is_array( $GLOBALS['mt_encadre_chiffres'] ) ) ? $GLOBALS['mt_encadre_chiffres'] : array();
+    if ( ! empty( $ec['n'] ) ) { $bits[] = 'analys&eacute; ' . (int) $ec['n'] . ' ' . esc_html( $ec['nom'] ); }
+    if ( ( $ec['sources'] ?? '' ) !== '' ) {
+      $bits[] = 'consult&eacute; ' . ( $ec['sources'][0] === '~' ? 'environ ' . esc_html( substr( $ec['sources'], 1 ) ) : esc_html( $ec['sources'] ) ) . ' sources';
+    }
+    if ( ( $ec['avis'] ?? '' ) !== '' ) {
+      $bits[] = '&eacute;tudi&eacute; ' . ( substr( $ec['avis'], -1 ) === '+' ? 'plus de ' . esc_html( rtrim( $ec['avis'], '+' ) ) : esc_html( $ec['avis'] ) ) . ' avis';
+    } elseif ( ( $ec['avis_clients'] ?? '' ) !== '' ) {
+      $bits[] = 'recens&eacute; ' . esc_html( $ec['avis_clients'] ) . ' avis clients';
+    }
+    if ( ( $ec['mots'] ?? '' ) !== '' ) { $bits[] = 'r&eacute;dig&eacute; un guide de ' . esc_html( $ec['mots'] ) . ' mots'; }
+  } else {
+    $s_prod = $tv( 'produits_analyses' );
+    $s_avis = $tv( 'avis_etudies' );
+    $s_src  = $tv( 'sources_consultees' );
+    $s_heu  = $tv( 'heures_investies' );
+    if ( $s_prod !== '' ) { $bits[] = 'compar&eacute; ' . esc_html( $s_prod ) . ' ' . esc_html( $type_plur !== '' ? $type_plur : 'produits' ); }
+    if ( $s_avis !== '' ) { $bits[] = '&eacute;tudi&eacute; ' . esc_html( $s_avis ) . ' avis clients'; }
+    if ( $s_src  !== '' ) { $bits[] = 'consult&eacute; ' . esc_html( $s_src ) . ' sources'; }
+    if ( $s_heu  !== '' ) { $bits[] = 'pass&eacute; ' . esc_html( $s_heu ) . ' heures &agrave; les analyser'; }
+  }
   if ( ! empty( $bits ) ) {
     $a3 = '<p>Pour &eacute;tablir ce classement, notre &eacute;quipe a ' . mt_faq_join_et( $bits ) . '.</p>';
   } else {
