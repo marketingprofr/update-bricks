@@ -967,10 +967,17 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     l'auteur : formulation E1F2 du lot éditorial ; une forme courte « Vérifié par S. Petit, resp.
     éditorial » fait aussi bien, en attente de Samuel), `$MT_H1_EGAL_TITLE` (**true**, validé :
     sans titre forcé, H1 = title automatique).
-  - Encadré : tout remplacement des chiffres par défaut coûte ~0,05 de spécificité (lot encadré) ;
-    méthode précise et « N mises à jour » sans effet. La Coordination explore une case à la fois :
-    « N sources consultées » (domaines externes cités dans la page) = confiance +0,17. Rien codé
-    avant la fin de l'exploration.
+  - **Encadré à 4 cases réelles, préparé DÉSACTIVÉ** (`hero-encart.code.php`, `$MT_ENCADRE_REEL`) :
+    1) sources consultées = réglage du site (`$MT_CASE1_NUM`, ex. '~20', `$MT_CASE1_LBL`), formulation
+    en test — le comptage des domaines liés a été REFUSÉ par Samuel (ce sont des marchands, pas
+    des sources ; l'ancienne liste de sources par guide n'existe plus) ; 2) N analysé(e)s (même N
+    que le title) ; 3) avis clients recensés si ≥ 50 000 (somme des fiches du type), sinon
+    « N questions fréquentes traitées » (même décompte que la FAQ) ; 4) mots du contenu
+    (introduction, tests, annexes du guide) si ≥ 8 000. Banc : `outils/tests/run-encadre.php`.
+  - Titres sans saut (encadré, votes, sommaires en `<p>` ; tests h5 → h4 ; « Classement complet »
+    en `<p>`) et texte caché « Pas encore de note ! » vidé : codés (a2eeec5).
+  - À signaler : la réponse automatique « Comment avons-nous établi ce classement ? » de la FAQ cite
+    les valeurs par défaut (10 sources, 597 avis).
   - Banc : `outils/tests/run-verdict.php`.
   - **Méta description automatique** (validée par Samuel) : `mt_meta_auto()` (format M3 de
     l'Architecture, 2,99/3) « A arrive en tête de notre comparatif 2026 (x/10). N X analysé(e)s,
