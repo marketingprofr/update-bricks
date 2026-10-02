@@ -24,27 +24,32 @@ $TT_AMAZON_TAG        = 'mlt00-21';                          // tag affilié Ama
    Helpers (partagés avec top5-resume — guards anti-redéclaration)
    --------------------------------------------------------------------- */
 if ( ! function_exists( 'mt_prix_unite' ) ) {
-  /* Unité du prix (2026-10-03, préparé désactivé) : liste de choix ACF « mltv5_unite_du_prix » sur le type de produit
-     (taxonomie post-type-produit) : « unique » (par défaut), « mois », « an ». Tant que le champ n'existe pas ou vaut
-     « unique », rien ne change. « mois » / « an » = prix d'appel d'un abonnement : « à partir de X €/mois » (ou « /an »),
-     minimum seul, jamais de borne haute, au lieu de « environ X € ».
+  /* Unité du prix d'une fiche (2026-10-03, préparé désactivé) : étiquette WordPress (post_tag) « prix-mensuel » →
+     'mois', « prix-annuel » → 'an', sinon '' (prix unique : affichage d'aujourd'hui). 'mois' / 'an' = prix d'appel
+     d'un abonnement : « à partir de X €/mois » (ou « /an »), minimum seul, jamais de borne haute, au lieu de « environ X € ».
      Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
   function mt_prix_unite( $post_id ) {
     static $memo = array();
     $post_id = (int) $post_id;
     if ( ! isset( $memo[ $post_id ] ) ) {
       $memo[ $post_id ] = '';
-      $terms = get_the_terms( $post_id, 'post-type-produit' );
-      foreach ( is_array( $terms ) ? $terms : array() as $t ) {
-        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_unite_du_prix', 'term_' . $t->term_id ) : null;
-        if ( $v === null || $v === false || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_unite_du_prix', true ); }
-        if ( is_array( $v ) ) { $v = isset( $v['value'] ) ? $v['value'] : reset( $v ); }  // format de retour « valeur et libellé »
-        $v = mb_strtolower( trim( (string) $v ), 'UTF-8' );
-        if ( preg_match( '/mois|mensuel/u', $v ) ) { $memo[ $post_id ] = 'mois'; break; }
-        if ( preg_match( '/^an$|par an|annuel|année/u', $v ) ) { $memo[ $post_id ] = 'an'; break; }
+      $tags = get_the_terms( $post_id, 'post_tag' );
+      foreach ( is_array( $tags ) ? $tags : array() as $t ) {
+        if ( $t->slug === 'prix-mensuel' ) { $memo[ $post_id ] = 'mois'; break; }
+        if ( $t->slug === 'prix-annuel' ) { $memo[ $post_id ] = 'an'; break; }
       }
     }
     return $memo[ $post_id ];
+  }
+}
+if ( ! function_exists( 'mt_prix_unite_liste' ) ) {
+  /* Unité commune à des fiches (phrase de prix d'un comparatif) : '' si aucune n'a d'étiquette, 'mois' / 'an' si
+     toutes ont la même, null si elles diffèrent (alors pas de phrase de prix). */
+  function mt_prix_unite_liste( $ids ) {
+    $u = array();
+    foreach ( (array) $ids as $id ) { $u[ mt_prix_unite( $id ) ] = true; }
+    if ( count( $u ) > 1 ) { return null; }
+    return count( $u ) === 1 ? (string) key( $u ) : '';
   }
 }
 if ( ! function_exists( 'mt_prix_par' ) ) {
@@ -326,6 +331,7 @@ foreach ( $ids as $pid ) {
   }
 
   $products[] = array(
+    'pid'         => $pid,  // fiche avis (unité du prix : étiquette prix-mensuel / prix-annuel)
     'pos'         => $pos,
     'name'        => $name,
     'brand'       => $brand,
@@ -582,14 +588,14 @@ foreach ( $products as $it ) {
       'availability'  => 'https://schema.org/InStock',
     );
   }
-  if ( isset( $ld['offers'] ) && mt_prix_unite( get_the_ID() ) !== '' ) {
-    /* Abonnement (unité du prix du type de produit) : prix par mois ou par an, et prix d'appel (pas de borne haute) */
+  if ( isset( $ld['offers'] ) && mt_prix_unite( $it['pid'] ) !== '' ) {
+    /* Abonnement (étiquette prix-mensuel / prix-annuel de la fiche) : prix par mois ou par an, et prix d'appel (pas de borne haute) */
     unset( $ld['offers']['highPrice'] );
     $ld['offers']['priceSpecification'] = array(
       '@type'             => 'UnitPriceSpecification',
       'price'             => number_format( $it['prix'], 2, '.', '' ),
       'priceCurrency'     => 'EUR',
-      'referenceQuantity' => array( '@type' => 'QuantitativeValue', 'value' => 1, 'unitCode' => ( mt_prix_unite( get_the_ID() ) === 'an' ? 'ANN' : 'MON' ) ),
+      'referenceQuantity' => array( '@type' => 'QuantitativeValue', 'value' => 1, 'unitCode' => ( mt_prix_unite( $it['pid'] ) === 'an' ? 'ANN' : 'MON' ) ),
     );
   }
 

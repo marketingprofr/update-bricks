@@ -91,27 +91,32 @@ if ( ! function_exists( 'mt5_points' ) ) {
   }
 }
 if ( ! function_exists( 'mt_prix_unite' ) ) {
-  /* Unité du prix (2026-10-03, préparé désactivé) : liste de choix ACF « mltv5_unite_du_prix » sur le type de produit
-     (taxonomie post-type-produit) : « unique » (par défaut), « mois », « an ». Tant que le champ n'existe pas ou vaut
-     « unique », rien ne change. « mois » / « an » = prix d'appel d'un abonnement : « à partir de X €/mois » (ou « /an »),
-     minimum seul, jamais de borne haute, au lieu de « environ X € ».
+  /* Unité du prix d'une fiche (2026-10-03, préparé désactivé) : étiquette WordPress (post_tag) « prix-mensuel » →
+     'mois', « prix-annuel » → 'an', sinon '' (prix unique : affichage d'aujourd'hui). 'mois' / 'an' = prix d'appel
+     d'un abonnement : « à partir de X €/mois » (ou « /an »), minimum seul, jamais de borne haute, au lieu de « environ X € ».
      Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
   function mt_prix_unite( $post_id ) {
     static $memo = array();
     $post_id = (int) $post_id;
     if ( ! isset( $memo[ $post_id ] ) ) {
       $memo[ $post_id ] = '';
-      $terms = get_the_terms( $post_id, 'post-type-produit' );
-      foreach ( is_array( $terms ) ? $terms : array() as $t ) {
-        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_unite_du_prix', 'term_' . $t->term_id ) : null;
-        if ( $v === null || $v === false || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_unite_du_prix', true ); }
-        if ( is_array( $v ) ) { $v = isset( $v['value'] ) ? $v['value'] : reset( $v ); }  // format de retour « valeur et libellé »
-        $v = mb_strtolower( trim( (string) $v ), 'UTF-8' );
-        if ( preg_match( '/mois|mensuel/u', $v ) ) { $memo[ $post_id ] = 'mois'; break; }
-        if ( preg_match( '/^an$|par an|annuel|année/u', $v ) ) { $memo[ $post_id ] = 'an'; break; }
+      $tags = get_the_terms( $post_id, 'post_tag' );
+      foreach ( is_array( $tags ) ? $tags : array() as $t ) {
+        if ( $t->slug === 'prix-mensuel' ) { $memo[ $post_id ] = 'mois'; break; }
+        if ( $t->slug === 'prix-annuel' ) { $memo[ $post_id ] = 'an'; break; }
       }
     }
     return $memo[ $post_id ];
+  }
+}
+if ( ! function_exists( 'mt_prix_unite_liste' ) ) {
+  /* Unité commune à des fiches (phrase de prix d'un comparatif) : '' si aucune n'a d'étiquette, 'mois' / 'an' si
+     toutes ont la même, null si elles diffèrent (alors pas de phrase de prix). */
+  function mt_prix_unite_liste( $ids ) {
+    $u = array();
+    foreach ( (array) $ids as $id ) { $u[ mt_prix_unite( $id ) ] = true; }
+    if ( count( $u ) > 1 ) { return null; }
+    return count( $u ) === 1 ? (string) key( $u ) : '';
   }
 }
 if ( ! function_exists( 'mt_prix_par' ) ) {
@@ -178,6 +183,7 @@ if ( ! empty( $ids ) ) {
       ? (float) get_acf_score_divided_by_10()
       : ( mt5_num( get_field( 'mltv5_score_recent', $pid ) ) / 10 );
     $prods[] = array(
+      'pid'    => $pid,
       'name'   => $disp,
       'brand'  => $brand,
       'score'  => $score,
@@ -218,8 +224,10 @@ if ( ! empty( $prods ) ) {
   $plural = ( strpos( $low, 'les ' ) === 0 );
   $fem    = $plural ? ( strpos( $low, 'meilleures' ) !== false ) : ( strpos( $low, 'la ' ) === 0 );
   $euro   = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0&euro;"; };
-  $mt_mens = mt_prix_unite( $page_id );  // abonnement : « à partir de X €/mois » (ou « /an ») au lieu de « environ X € »
-  if ( $mt_mens !== '' ) { $euro = function ( $v ) use ( $mt_mens ) { return mt_prix_par( $v, $mt_mens ); }; }
+  /* Unité du prix (étiquettes prix-mensuel / prix-annuel des fiches avec prix) : « à partir de X €/mois » (ou « /an »)
+     au lieu de « environ X € » ; fiches aux unités différentes : pas de phrase de prix */
+  $mt_mens = mt_prix_unite_liste( array_map( function ( $p ) { return $p['pid']; }, array_filter( $prods, function ( $p ) { return $p['price'] > 0; } ) ) );
+  if ( $mt_mens !== null && $mt_mens !== '' ) { $euro = function ( $v ) use ( $mt_mens ) { return mt_prix_par( $v, $mt_mens ); }; }
   $note   = function ( $v ) { return number_format( (float) $v, 1, ',', '' ); };
   /* Élision « de » / « d' » devant voyelle ou h (ex. d'huiles d'olive). */
   $de = function ( $w ) {
@@ -294,6 +302,7 @@ if ( ! empty( $prods ) ) {
 
   /* --- Slot 2 : budget (prix) -> avis clients -> confiance ------------- */
   $priced = array_values( array_filter( $prods, function ( $p ) { return $p['price'] > 0; } ) );
+  if ( $mt_mens === null ) { $priced = array(); }  // fiches aux unités de prix différentes : pas de phrase de prix
   $rated  = array_values( array_filter( $prods, function ( $p ) { return $p['crate'] > 0; } ) );
 
   if ( count( $priced ) >= 2 ) {

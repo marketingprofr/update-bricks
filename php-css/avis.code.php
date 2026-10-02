@@ -121,27 +121,32 @@ if ( ! function_exists( 'fp_score_class' ) ) {
   }
 }
 if ( ! function_exists( 'mt_prix_unite' ) ) {
-  /* Unité du prix (2026-10-03, préparé désactivé) : liste de choix ACF « mltv5_unite_du_prix » sur le type de produit
-     (taxonomie post-type-produit) : « unique » (par défaut), « mois », « an ». Tant que le champ n'existe pas ou vaut
-     « unique », rien ne change. « mois » / « an » = prix d'appel d'un abonnement : « à partir de X €/mois » (ou « /an »),
-     minimum seul, jamais de borne haute, au lieu de « environ X € ».
+  /* Unité du prix d'une fiche (2026-10-03, préparé désactivé) : étiquette WordPress (post_tag) « prix-mensuel » →
+     'mois', « prix-annuel » → 'an', sinon '' (prix unique : affichage d'aujourd'hui). 'mois' / 'an' = prix d'appel
+     d'un abonnement : « à partir de X €/mois » (ou « /an »), minimum seul, jamais de borne haute, au lieu de « environ X € ».
      Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
   function mt_prix_unite( $post_id ) {
     static $memo = array();
     $post_id = (int) $post_id;
     if ( ! isset( $memo[ $post_id ] ) ) {
       $memo[ $post_id ] = '';
-      $terms = get_the_terms( $post_id, 'post-type-produit' );
-      foreach ( is_array( $terms ) ? $terms : array() as $t ) {
-        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_unite_du_prix', 'term_' . $t->term_id ) : null;
-        if ( $v === null || $v === false || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_unite_du_prix', true ); }
-        if ( is_array( $v ) ) { $v = isset( $v['value'] ) ? $v['value'] : reset( $v ); }  // format de retour « valeur et libellé »
-        $v = mb_strtolower( trim( (string) $v ), 'UTF-8' );
-        if ( preg_match( '/mois|mensuel/u', $v ) ) { $memo[ $post_id ] = 'mois'; break; }
-        if ( preg_match( '/^an$|par an|annuel|année/u', $v ) ) { $memo[ $post_id ] = 'an'; break; }
+      $tags = get_the_terms( $post_id, 'post_tag' );
+      foreach ( is_array( $tags ) ? $tags : array() as $t ) {
+        if ( $t->slug === 'prix-mensuel' ) { $memo[ $post_id ] = 'mois'; break; }
+        if ( $t->slug === 'prix-annuel' ) { $memo[ $post_id ] = 'an'; break; }
       }
     }
     return $memo[ $post_id ];
+  }
+}
+if ( ! function_exists( 'mt_prix_unite_liste' ) ) {
+  /* Unité commune à des fiches (phrase de prix d'un comparatif) : '' si aucune n'a d'étiquette, 'mois' / 'an' si
+     toutes ont la même, null si elles diffèrent (alors pas de phrase de prix). */
+  function mt_prix_unite_liste( $ids ) {
+    $u = array();
+    foreach ( (array) $ids as $id ) { $u[ mt_prix_unite( $id ) ] = true; }
+    if ( count( $u ) > 1 ) { return null; }
+    return count( $u ) === 1 ? (string) key( $u ) : '';
   }
 }
 if ( ! function_exists( 'mt_prix_par' ) ) {
@@ -152,9 +157,10 @@ if ( ! function_exists( 'mt_prix_par' ) ) {
   }
 }
 if ( ! function_exists( 'fp_format_price' ) ) {
-  function fp_format_price( $p ) {
+  function fp_format_price( $p, $unite = null ) {
     if ( ! is_numeric( $p ) || $p <= 0 ) return '';
-    if ( ! empty( $GLOBALS['fp_prix_unite'] ) ) { return mt_prix_par( $p, $GLOBALS['fp_prix_unite'] ); }  // abonnement : « X €/mois » ou « X €/an »
+    if ( $unite === null ) { $unite = $GLOBALS['fp_prix_unite'] ?? ''; }  // sans unité donnée : celle de la fiche affichée
+    if ( $unite !== '' ) { return mt_prix_par( $p, $unite ); }  // abonnement : « X €/mois » ou « X €/an »
     return number_format( (float) $p, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€";
   }
 }
@@ -185,7 +191,8 @@ if ( ! function_exists( 'fp_product_data' ) ) {
       if ( is_array( $ext ) && ! empty( $ext['url'] ) ) $img = $ext['url'];
       elseif ( is_string( $ext ) && $ext !== '' ) $img = $ext;
     }
-    return compact( 'score', 'price', 'brand', 'model', 'name', 'img' );
+    $unite = function_exists( 'mt_prix_unite' ) ? mt_prix_unite( $id ) : '';  // étiquette prix-mensuel / prix-annuel de la fiche
+    return compact( 'score', 'price', 'brand', 'model', 'name', 'img', 'unite' );
   }
 }
 
@@ -240,7 +247,7 @@ $nb_avis_fmt = function_exists( 'mt5_reviews_label' ) ? mt5_reviews_label( $nb_a
 
 $price_raw = get_field( $FP_PRICE, $pid );
 $price_num = function_exists( 'mt5_num' ) ? mt5_num( $price_raw ) : (float) $price_raw;
-$GLOBALS['fp_prix_unite'] = mt_prix_unite( $pid );  // unité du prix du type de produit : '' (prix unique), 'mois' ou 'an'
+$GLOBALS['fp_prix_unite'] = mt_prix_unite( $pid );  // étiquette de la fiche : '' (prix unique), 'mois' (prix-mensuel) ou 'an' (prix-annuel)
 $price_fmt = fp_format_price( $price_num );
 
 $asin = get_field( $FP_ASIN, $pid ) ?: '';
@@ -931,7 +938,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
                 if ( $a['score'] > 0 ) echo ' (' . number_format( $a['score'], 1, ',', '' ) . '/10)';
                 echo '.';
                 if ( ! empty( $a['pros'] ) ) echo ' ' . esc_html( implode( ', ', array_map( 'mb_strtolower', $a['pros'] ) ) ) . '.';
-                if ( $a['price'] > 0 ) echo ' ' . ( ! empty( $GLOBALS['fp_prix_unite'] ) ? 'À partir de' : 'Prix moyen constaté :' ) . ' ' . fp_format_price( $a['price'] ) . '.';
+                if ( $a['price'] > 0 ) echo ' ' . ( ! empty( $a['unite'] ) ? 'À partir de' : 'Prix moyen constaté :' ) . ' ' . fp_format_price( $a['price'], $a['unite'] ?? null ) . '.';
               ?></li>
               <?php endforeach; ?>
             </ul>
@@ -969,7 +976,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="fp-vs-row">
                 <div class="fp-vs-side left<?php echo $pw ? ' win' : ''; ?>"><span class="val"><?php echo $price_fmt; ?></span></div>
                 <div class="lbl">Prix</div>
-                <div class="fp-vs-side<?php echo ! $pw ? ' win' : ''; ?>"><span class="val"><?php echo fp_format_price( $vs['price'] ); ?></span></div>
+                <div class="fp-vs-side<?php echo ! $pw ? ' win' : ''; ?>"><span class="val"><?php echo fp_format_price( $vs['price'], $vs['unite'] ?? null ); ?></span></div>
               </div>
               <?php endif; ?>
               <div class="fp-vs-row">
@@ -1034,7 +1041,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
             ?>
             <<?php echo $s_link ? 'a' : 'div'; ?> class="fp-mini-card"<?php if ( $s_link ) echo ' href="' . esc_url( $s['url'] ) . '"'; ?>>
               <div class="mthumb"><?php if ( ! empty( $s['img'] ) ) : ?><img src="<?php echo esc_url( $s['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"><?php endif; ?></div>
-              <div class="minfo"><h4><?php echo esc_html( $s['name'] ); ?></h4><?php if ( $s['price'] > 0 ) : ?><div class="mprice">À partir de <b><?php echo fp_format_price( $s['price'] ); ?></b></div><?php endif; ?></div>
+              <div class="minfo"><h4><?php echo esc_html( $s['name'] ); ?></h4><?php if ( $s['price'] > 0 ) : ?><div class="mprice">À partir de <b><?php echo fp_format_price( $s['price'], $s['unite'] ?? null ); ?></b></div><?php endif; ?></div>
               <?php if ( $s['score'] > 0 ) : ?><div class="fp-mini-score"><span class="n"><?php echo number_format( $s['score'], 1, ',', '' ); ?></span><span class="l">/10</span></div><?php endif; ?>
             </<?php echo $s_link ? 'a' : 'div'; ?>>
             <?php endforeach; ?>
@@ -1063,11 +1070,11 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="minfo">
                 <h4><?php echo esc_html( $s['name'] ); ?></h4>
                 <?php if ( $s['price'] > 0 ) : ?>
-                <div class="mprice"><b><?php echo fp_format_price( $s['price'] ); ?></b><?php
+                <div class="mprice"><b><?php echo fp_format_price( $s['price'], $s['unite'] ?? null ); ?></b><?php
                   if ( isset( $s['delta'] ) && $s['delta'] != 0 ) {
                     $cls = $s['delta'] < 0 ? 'down' : 'up';
                     $sign = $s['delta'] < 0 ? '' : '+';
-                    echo ' · <span class="mdelta ' . $cls . '">' . $sign . fp_format_price( abs( $s['delta'] ) ) . '</span>';
+                    echo ' · <span class="mdelta ' . $cls . '">' . $sign . fp_format_price( abs( $s['delta'] ), $s['unite'] ?? null ) . '</span>';
                   }
                 ?></div>
                 <?php endif; ?>
@@ -1100,7 +1107,7 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
               <div class="mthumb"><?php if ( ! empty( $s['img'] ) ) : ?><img src="<?php echo esc_url( $s['img'] ); ?>" alt="" style="width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply"><?php endif; ?></div>
               <div class="minfo">
                 <h4><?php echo esc_html( $s['name'] ); ?></h4>
-                <?php if ( $s['price'] > 0 ) : ?><div class="mprice"><?php echo $s['current'] ? 'Ce produit · ' : 'À partir de '; ?><b><?php echo fp_format_price( $s['price'] ); ?></b></div><?php endif; ?>
+                <?php if ( $s['price'] > 0 ) : ?><div class="mprice"><?php echo $s['current'] ? 'Ce produit · ' : 'À partir de '; ?><b><?php echo fp_format_price( $s['price'], $s['unite'] ?? null ); ?></b></div><?php endif; ?>
               </div>
               <?php if ( $s['score'] > 0 ) : ?><div class="fp-mini-score"><span class="n"><?php echo number_format( $s['score'], 1, ',', '' ); ?></span><span class="l">/10</span></div><?php endif; ?>
             </<?php echo $s_link ? 'a' : 'div'; ?>>

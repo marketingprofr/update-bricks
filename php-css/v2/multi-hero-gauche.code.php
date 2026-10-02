@@ -755,27 +755,32 @@ if ( ! function_exists( 'mt_faq_read' ) ) {
   }
 }
 if ( ! function_exists( 'mt_prix_unite' ) ) {
-  /* Unité du prix (2026-10-03, préparé désactivé) : liste de choix ACF « mltv5_unite_du_prix » sur le type de produit
-     (taxonomie post-type-produit) : « unique » (par défaut), « mois », « an ». Tant que le champ n'existe pas ou vaut
-     « unique », rien ne change. « mois » / « an » = prix d'appel d'un abonnement : « à partir de X €/mois » (ou « /an »),
-     minimum seul, jamais de borne haute, au lieu de « environ X € ».
+  /* Unité du prix d'une fiche (2026-10-03, préparé désactivé) : étiquette WordPress (post_tag) « prix-mensuel » →
+     'mois', « prix-annuel » → 'an', sinon '' (prix unique : affichage d'aujourd'hui). 'mois' / 'an' = prix d'appel
+     d'un abonnement : « à partir de X €/mois » (ou « /an »), minimum seul, jamais de borne haute, au lieu de « environ X € ».
      Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
   function mt_prix_unite( $post_id ) {
     static $memo = array();
     $post_id = (int) $post_id;
     if ( ! isset( $memo[ $post_id ] ) ) {
       $memo[ $post_id ] = '';
-      $terms = get_the_terms( $post_id, 'post-type-produit' );
-      foreach ( is_array( $terms ) ? $terms : array() as $t ) {
-        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_unite_du_prix', 'term_' . $t->term_id ) : null;
-        if ( $v === null || $v === false || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_unite_du_prix', true ); }
-        if ( is_array( $v ) ) { $v = isset( $v['value'] ) ? $v['value'] : reset( $v ); }  // format de retour « valeur et libellé »
-        $v = mb_strtolower( trim( (string) $v ), 'UTF-8' );
-        if ( preg_match( '/mois|mensuel/u', $v ) ) { $memo[ $post_id ] = 'mois'; break; }
-        if ( preg_match( '/^an$|par an|annuel|année/u', $v ) ) { $memo[ $post_id ] = 'an'; break; }
+      $tags = get_the_terms( $post_id, 'post_tag' );
+      foreach ( is_array( $tags ) ? $tags : array() as $t ) {
+        if ( $t->slug === 'prix-mensuel' ) { $memo[ $post_id ] = 'mois'; break; }
+        if ( $t->slug === 'prix-annuel' ) { $memo[ $post_id ] = 'an'; break; }
       }
     }
     return $memo[ $post_id ];
+  }
+}
+if ( ! function_exists( 'mt_prix_unite_liste' ) ) {
+  /* Unité commune à des fiches (phrase de prix d'un comparatif) : '' si aucune n'a d'étiquette, 'mois' / 'an' si
+     toutes ont la même, null si elles diffèrent (alors pas de phrase de prix). */
+  function mt_prix_unite_liste( $ids ) {
+    $u = array();
+    foreach ( (array) $ids as $id ) { $u[ mt_prix_unite( $id ) ] = true; }
+    if ( count( $u ) > 1 ) { return null; }
+    return count( $u ) === 1 ? (string) key( $u ) : '';
   }
 }
 if ( ! function_exists( 'mt_prix_par' ) ) {
@@ -847,12 +852,14 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       $notes  = 0;
       foreach ( $ids as $pid ) {
         $v = mt5_num( get_field( 'mltv5_prix_indicatif', $pid ) );
-        if ( $v > 0 ) { $prix[] = $v; }
+        if ( $v > 0 ) { $prix[ $pid ] = $v; }
         if ( mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ) > 0 ) { $notes++; }
       }
+      /* Unité du prix (étiquettes prix-mensuel / prix-annuel des fiches avec prix) ; unités différentes : pas de phrase de prix */
+      $mens = mt_prix_unite_liste( array_keys( $prix ) );
+      if ( $mens === null ) { $prix = array(); }
       if ( count( $prix ) >= 2 ) {
         $euro  = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€"; };
-        $mens  = mt_prix_unite( $page_id );  // abonnement : « à partir de X €/mois » (ou « /an »)
         if ( $mens !== '' ) { $euro = function ( $v ) use ( $mens ) { return mt_prix_par( $v, $mens ); }; }
         $indef = $plural
           ? ( 'des ' . ( $type_plur !== '' ? $type_plur : $type_sing ) )
