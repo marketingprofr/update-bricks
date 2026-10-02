@@ -1,0 +1,115 @@
+[
+    {
+        "key": "group_mltv5_point_vigilance",
+        "title": "Point de vigilance (comparatifs du type)",
+        "fields": [
+            {
+                "key": "field_mltv5_vigilance_titre",
+                "label": "Point de vigilance : titre",
+                "name": "mltv5_vigilance_titre",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "Titre affiché juste avant le top 5 de tous les comparatifs de ce type. Exemple : « Point de vigilance : la consommation d'un climatiseur mobile ». Laisser vide = pas de point de vigilance.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": { "width": "", "class": "", "id": "" },
+                "default_value": "",
+                "maxlength": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_mltv5_vigilance_texte",
+                "label": "Point de vigilance : texte",
+                "name": "mltv5_vigilance_texte",
+                "aria-label": "",
+                "type": "textarea",
+                "instructions": "Le paragraphe, qui cite l'autorité publique. Texte simple : il est affiché dans un seul paragraphe.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": { "width": "", "class": "", "id": "" },
+                "default_value": "",
+                "maxlength": "",
+                "rows": 6,
+                "placeholder": "",
+                "new_lines": ""
+            },
+            {
+                "key": "field_mltv5_vigilance_autorite",
+                "label": "Point de vigilance : autorité",
+                "name": "mltv5_vigilance_autorite",
+                "aria-label": "",
+                "type": "text",
+                "instructions": "Nom de l'autorité citée, affiché dans la ligne « Source ». Exemple : ADEME.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": { "width": "50", "class": "", "id": "" },
+                "default_value": "",
+                "maxlength": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": ""
+            },
+            {
+                "key": "field_mltv5_vigilance_url",
+                "label": "Point de vigilance : adresse de la source",
+                "name": "mltv5_vigilance_url",
+                "aria-label": "",
+                "type": "url",
+                "instructions": "Adresse de la page de l'autorité (commence par https://).",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": { "width": "50", "class": "", "id": "" },
+                "default_value": "",
+                "placeholder": ""
+            },
+            {
+                "key": "field_mltv5_vigilance_date_page",
+                "label": "Point de vigilance : date de la page (facultative)",
+                "name": "mltv5_vigilance_date_page",
+                "aria-label": "",
+                "type": "date_picker",
+                "instructions": "Date de publication ou de mise à jour de la page de l'autorité. Vide si la page n'est pas datée : la source affiche alors « page vérifiée le … ».",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": { "width": "50", "class": "", "id": "" },
+                "display_format": "d/m/Y",
+                "return_format": "Ymd",
+                "first_day": 1
+            },
+            {
+                "key": "field_mltv5_vigilance_date_verif",
+                "label": "Point de vigilance : vérifié le",
+                "name": "mltv5_vigilance_date_verif",
+                "aria-label": "",
+                "type": "date_picker",
+                "instructions": "Date à laquelle le passage a été relu sur la page de l'autorité.",
+                "required": 0,
+                "conditional_logic": 0,
+                "wrapper": { "width": "50", "class": "", "id": "" },
+                "display_format": "d/m/Y",
+                "return_format": "Ymd",
+                "first_day": 1
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "taxonomy",
+                    "operator": "==",
+                    "value": "post-type-produit"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": "Passage « point de vigilance » affiché juste avant le top 5 des comparatifs de ce type de produit (gabarit : top5-resume et multi-resume). Il ne s'affiche que si le titre, le texte, l'autorité, l'adresse et la date de vérification sont remplis.",
+        "show_in_rest": 1
+    }
+]

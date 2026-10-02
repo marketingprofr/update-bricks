@@ -196,7 +196,8 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $MT_SIGNALEMENT ) {
     /* La page d'origine est transmise au formulaire (identifiant + adresse), sans donnée personnelle */
     $mt_url_sig = add_query_arg( array( 'page_id' => $this_id, 'url' => rawurlencode( get_permalink( $this_id ) ) ), home_url( $MT_URL_SIGNALEMENT ) );
-    $mt_puces[] = 'Une erreur&nbsp;? Une offre a changé&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Signalez-la-nous</a>.';
+    /* Formulation choisie par Samuel (2026-10-03, confiance +0,01 sur 10 pages) */
+    $mt_puces[] = 'Une erreur, ou un produit remplacé par un nouveau modèle&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Prévenez-nous</a>.';
   }
   $mt_puces[] = 'Aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne. <b>Samuel Petit, responsable éditorial</b>';
 }
