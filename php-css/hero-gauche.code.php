@@ -3,7 +3,7 @@ $MT_SHOW_QUICK_PICKS = false;
 $MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
 $MT_VERDICT_SOUS_H1  = true;   // verdict (top 3 avec notes /10, N analysés, méthode, date) juste sous le H1 ; false = ancienne phrase dans le chapô
-$MT_VERIFIE_PAR      = '';     // ex. 'Samuel Petit' : ligne auteur « Vérifié par …, responsable éditorial » ; '' = pas de ligne
+$MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 
 $this_id   = get_the_ID();
