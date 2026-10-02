@@ -3,6 +3,7 @@ $MT_ENCADRE_REEL = true;  // encadré à valeurs réelles, validé par Samuel le
 $MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Architecture) : « des guides d'achat internationaux (…), … » ; vide = pas de puce
 $MT_TXT_AFFILIATION = '';    // puce « Affiliation : … » (formulation en test) ; '' = pas de puce
 $MT_SIGNALEMENT     = false; // true quand le formulaire « Signaler une erreur » existe (le contact actuel exige un compte)
+$MT_URL_SIGNALEMENT = '/signaler-une-erreur/'; // page du formulaire Fluent Forms (champs cachés : {get.page_id}, {get.url})
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
 $MT_AVIS_REPLI    = '200+'; // case 3 si mltv5_avis_etudies est vide ou par défaut (597) : consigne de la rédaction, lire au moins 200 avis (Samuel) ; '' = avis clients, sinon produits retenus
 $MT_SEUIL_AVIS_CL = 10000; // avis clients recensés affichés à partir de ce total (500 faisait baisser la note, 18 440 aidait)
@@ -174,7 +175,11 @@ if ( $MT_ENCADRE_REEL ) {
     $mt_puces[] = '<b>Notre analyse&nbsp;:</b> nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = '<b>Affiliation&nbsp;:</b> ' . $MT_TXT_AFFILIATION; }
-  if ( $MT_SIGNALEMENT ) { $mt_puces[] = '<b>Une erreur&nbsp;? Une offre a changé&nbsp;?</b> <a href="#mt-signaler" class="mt-signaler">Signalez-la-nous</a>.'; }
+  if ( $MT_SIGNALEMENT ) {
+    /* La page d'origine est transmise au formulaire (identifiant + adresse), sans donnée personnelle */
+    $mt_url_sig = add_query_arg( array( 'page_id' => $this_id, 'url' => rawurlencode( get_permalink( $this_id ) ) ), home_url( $MT_URL_SIGNALEMENT ) );
+    $mt_puces[] = '<b>Une erreur&nbsp;? Une offre a changé&nbsp;?</b> <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Signalez-la-nous</a>.';
+  }
   $mt_puces[] = '<b>Notre indépendance&nbsp;:</b> aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne. <b>Samuel Petit, responsable éditorial</b>';
 }
 ?>
