@@ -753,6 +753,33 @@ if ( ! function_exists( 'mt_faq_read' ) ) {
     return is_array( $rows ) ? $rows : array();
   }
 }
+if ( ! function_exists( 'mt_prix_mensuel' ) ) {
+  /* Prix d'abonnement (2026-10-03, préparé désactivé) : case ACF « mltv5_prix_mensuel » (vrai / faux) sur le type de
+     produit (taxonomie post-type-produit). Tant qu'elle n'existe pas ou n'est pas cochée, rien ne change ; cochée, les
+     prix du type s'affichent « à partir de X €/mois » au lieu de « environ X € ».
+     Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
+  function mt_prix_mensuel( $post_id ) {
+    static $memo = array();
+    $post_id = (int) $post_id;
+    if ( ! isset( $memo[ $post_id ] ) ) {
+      $memo[ $post_id ] = false;
+      $terms = get_the_terms( $post_id, 'post-type-produit' );
+      foreach ( is_array( $terms ) ? $terms : array() as $t ) {
+        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_prix_mensuel', 'term_' . $t->term_id ) : null;
+        if ( $v === null || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_prix_mensuel', true ); }
+        if ( ! empty( $v ) && $v !== '0' ) { $memo[ $post_id ] = true; break; }
+      }
+    }
+    return $memo[ $post_id ];
+  }
+}
+if ( ! function_exists( 'mt_prix_mois' ) ) {
+  /* « 2,49 €/mois », « 20 €/mois » (centimes seulement s'il y en a) */
+  function mt_prix_mois( $v ) {
+    $v = (float) $v;
+    return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/mois";
+  }
+}
 if ( ! function_exists( 'mt_vq_phrase' ) ) {
   /* Encart « Vos questions » : réponse d'une phrase tirée d'une réponse de la FAQ (règle de la Coordination, 2026-10-03).
      1re phrase qui contient un chiffre, un nom propre ou plus de 60 caractères, sinon les deux premières ;
@@ -820,12 +847,14 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       }
       if ( count( $prix ) >= 2 ) {
         $euro  = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€"; };
+        $mens  = mt_prix_mensuel( $page_id );  // abonnement : « de X €/mois à Y €/mois »
+        if ( $mens ) { $euro = function ( $v ) { return mt_prix_mois( $v ); }; }
         $indef = $plural
           ? ( 'des ' . ( $type_plur !== '' ? $type_plur : $type_sing ) )
           : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
         $noun  = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
         $items[] = array( 'Quel budget prévoir pour ' . trim( $indef ) . "\xc2\xa0?",
-          'Les ' . $noun . ' de notre sélection s’échelonnent d’environ ' . $euro( min( $prix ) ) . ' à ' . $euro( max( $prix ) ) . '.' );
+          'Les ' . $noun . ' de notre sélection s’échelonnent ' . ( $mens ? 'de ' : 'd’environ ' ) . $euro( min( $prix ) ) . ' à ' . $euro( max( $prix ) ) . '.' );
       } elseif ( $notes < 2 ) {
         $items[] = array( "Pourquoi faire confiance à ce comparatif\xc2\xa0?",
           "Notre rédaction travaille en toute indépendance\xc2\xa0: aucune marque ne peut acheter sa place dans un classement, et nous n’acceptons ni publicité ni cadeau des marques." );

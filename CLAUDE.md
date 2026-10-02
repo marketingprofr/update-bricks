@@ -1007,4 +1007,14 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     rédigé par l'Architecture) juste avant le top 5 (utilité +0,08) ; ordre visé : réponse courte →
     « Vos questions » → … → point de vigilance → top 5. Biographie de l'auteur juste sous la ligne
     auteur (+0,07), quand l'Architecture aura fait valider les bios (champ à confirmer).
+  - **Prix d'abonnement, préparé désactivé** (`mt_prix_mensuel()` + `mt_prix_mois()`, copie IDENTIQUE dans faq,
+    hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content) : case ACF vrai/faux `mltv5_prix_mensuel` sur le
+    type de produit (taxonomie `post-type-produit`, lue par `get_field( …, 'term_ID' )` puis `get_term_meta`). Tant
+    qu'elle n'existe pas : rien ne change. Cochée : FAQ « s'échelonnent de X €/mois à Y €/mois », « coûte à partir
+    de », « (à partir de X €/mois) » (aussi dans le JSON-LD FAQPage) ; encart « Vos questions » idem ; offres JSON-LD
+    des tests + `priceSpecification` UnitPriceSpecification (1 MON) ; fiches avis « À partir de X €/mois » au lieu de
+    « Prix moyen constaté : X € » (centimes gardés s'il y en a). 23 types listés par l'Architecture
+    (`wp-avis/prix-types-abonnement-2026-10-02.csv`). Prix à 0 = aucune phrase de prix ni offre JSON-LD (vérifié).
+    Corrigés au passage : tri « Prix » du top 5 (un produit sans prix passait n°1 « Le meilleur pas cher ») et
+    carrousel « marque » des fiches avis (« À partir de » sans montant). Banc : `outils/tests/run-prix.php`.
 

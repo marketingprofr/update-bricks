@@ -930,7 +930,7 @@ add_action( 'wp_footer', function () {
     function num(el, key) { return parseFloat(el.getAttribute('data-' + key)) || 0; }
     var comparators = {
       rank:   function (a, b) { return num(a, 'rank') - num(b, 'rank'); },
-      price:  function (a, b) { return num(a, 'price') - num(b, 'price'); },
+      price:  function (a, b) { var x = num(a, 'price') || Infinity, y = num(b, 'price') || Infinity; return x === y ? num(a, 'rank') - num(b, 'rank') : x - y; }, // sans prix : en dernier
       rating: function (a, b) { return num(b, 'rating') - num(a, 'rating'); },
       recent: function (a, b) { return num(b, 'modified') - num(a, 'modified'); }
     };

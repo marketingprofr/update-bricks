@@ -31,6 +31,33 @@ $TT_AMAZON_TAG        = 'mlt00-21';                          // tag affilié Ama
 /* ---------------------------------------------------------------------
    Helpers (partagés avec top5-resume — guards anti-redéclaration)
    --------------------------------------------------------------------- */
+if ( ! function_exists( 'mt_prix_mensuel' ) ) {
+  /* Prix d'abonnement (2026-10-03, préparé désactivé) : case ACF « mltv5_prix_mensuel » (vrai / faux) sur le type de
+     produit (taxonomie post-type-produit). Tant qu'elle n'existe pas ou n'est pas cochée, rien ne change ; cochée, les
+     prix du type s'affichent « à partir de X €/mois » au lieu de « environ X € ».
+     Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
+  function mt_prix_mensuel( $post_id ) {
+    static $memo = array();
+    $post_id = (int) $post_id;
+    if ( ! isset( $memo[ $post_id ] ) ) {
+      $memo[ $post_id ] = false;
+      $terms = get_the_terms( $post_id, 'post-type-produit' );
+      foreach ( is_array( $terms ) ? $terms : array() as $t ) {
+        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_prix_mensuel', 'term_' . $t->term_id ) : null;
+        if ( $v === null || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_prix_mensuel', true ); }
+        if ( ! empty( $v ) && $v !== '0' ) { $memo[ $post_id ] = true; break; }
+      }
+    }
+    return $memo[ $post_id ];
+  }
+}
+if ( ! function_exists( 'mt_prix_mois' ) ) {
+  /* « 2,49 €/mois », « 20 €/mois » (centimes seulement s'il y en a) */
+  function mt_prix_mois( $v ) {
+    $v = (float) $v;
+    return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/mois";
+  }
+}
 if ( ! function_exists( 'mt5_num' ) ) {
   function mt5_num( $v ) {
     $v = str_replace( array( ' ', "\xc2\xa0", '€' ), '', (string) $v );
@@ -1016,6 +1043,15 @@ foreach ( $products as $it ) {
       'priceCurrency' => 'EUR',
       'url'           => $it['primary_url'],
       'availability'  => 'https://schema.org/InStock',
+    );
+  }
+  if ( isset( $ld['offers'] ) && mt_prix_mensuel( get_the_ID() ) ) {
+    /* Abonnement (case du type de produit) : le prix est mensuel */
+    $ld['offers']['priceSpecification'] = array(
+      '@type'             => 'UnitPriceSpecification',
+      'price'             => number_format( $it['prix'], 2, '.', '' ),
+      'priceCurrency'     => 'EUR',
+      'referenceQuantity' => array( '@type' => 'QuantitativeValue', 'value' => 1, 'unitCode' => 'MON' ),
     );
   }
   $ld_products[ $it['pid'] ] = $ld;

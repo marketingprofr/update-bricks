@@ -87,6 +87,33 @@ if ( ! function_exists( 'mt5_points' ) ) {
     return $out;
   }
 }
+if ( ! function_exists( 'mt_prix_mensuel' ) ) {
+  /* Prix d'abonnement (2026-10-03, préparé désactivé) : case ACF « mltv5_prix_mensuel » (vrai / faux) sur le type de
+     produit (taxonomie post-type-produit). Tant qu'elle n'existe pas ou n'est pas cochée, rien ne change ; cochée, les
+     prix du type s'affichent « à partir de X €/mois » au lieu de « environ X € ».
+     Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
+  function mt_prix_mensuel( $post_id ) {
+    static $memo = array();
+    $post_id = (int) $post_id;
+    if ( ! isset( $memo[ $post_id ] ) ) {
+      $memo[ $post_id ] = false;
+      $terms = get_the_terms( $post_id, 'post-type-produit' );
+      foreach ( is_array( $terms ) ? $terms : array() as $t ) {
+        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_prix_mensuel', 'term_' . $t->term_id ) : null;
+        if ( $v === null || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_prix_mensuel', true ); }
+        if ( ! empty( $v ) && $v !== '0' ) { $memo[ $post_id ] = true; break; }
+      }
+    }
+    return $memo[ $post_id ];
+  }
+}
+if ( ! function_exists( 'mt_prix_mois' ) ) {
+  /* « 2,49 €/mois », « 20 €/mois » (centimes seulement s'il y en a) */
+  function mt_prix_mois( $v ) {
+    $v = (float) $v;
+    return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/mois";
+  }
+}
 if ( ! function_exists( 'mt_faq_read' ) ) {
   function mt_faq_read( $pid ) {
     $rows = function_exists( 'get_field' ) ? get_field( 'mltv5_faq_comparatif', $pid ) : null;
@@ -184,6 +211,8 @@ if ( ! empty( $prods ) ) {
   $plural = ( strpos( $low, 'les ' ) === 0 );
   $fem    = $plural ? ( strpos( $low, 'meilleures' ) !== false ) : ( strpos( $low, 'la ' ) === 0 );
   $euro   = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0&euro;"; };
+  $mt_mens = mt_prix_mensuel( $page_id );  // abonnement : « à partir de X €/mois » au lieu de « environ X € »
+  if ( $mt_mens ) { $euro = function ( $v ) { return mt_prix_mois( $v ); }; }
   $note   = function ( $v ) { return number_format( (float) $v, 1, ',', '' ); };
   /* Élision « de » / « d' » devant voyelle ou h (ex. d'huiles d'olive). */
   $de = function ( $w ) {
@@ -270,15 +299,15 @@ if ( ! empty( $prods ) ) {
       : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
     $noun_pl = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
     $q2 = 'Quel budget pr&eacute;voir pour ' . esc_html( trim( $indef ) ) . '&nbsp;?';
-    $a2 = '<p>Les ' . esc_html( $noun_pl ) . ' de notre s&eacute;lection s&rsquo;&eacute;chelonnent d&rsquo;environ ' . $euro( $min ) . ' &agrave; ' . $euro( $max ) . '.';
+    $a2 = '<p>Les ' . esc_html( $noun_pl ) . ' de notre s&eacute;lection s&rsquo;&eacute;chelonnent ' . ( $mt_mens ? 'de ' : 'd&rsquo;environ ' ) . $euro( $min ) . ' &agrave; ' . $euro( $max ) . '.';
     if ( $p1['price'] > 0 && $cheap['name'] !== $p1['name'] ) {
-      $a2 .= ' Notre num&eacute;ro&nbsp;1, <strong>' . esc_html( $p1['name'] ) . '</strong>, se situe autour de ' . $euro( $p1['price'] ) . '.';
+      $a2 .= ' Notre num&eacute;ro&nbsp;1, <strong>' . esc_html( $p1['name'] ) . '</strong>, ' . ( $mt_mens ? 'co&ucirc;te &agrave; partir de ' : 'se situe autour de ' ) . $euro( $p1['price'] ) . '.';
     }
     $a2 .= '</p><p>';
     if ( $cheap['name'] === $p1['name'] ) {
-      $a2 .= 'Bonne nouvelle&nbsp;: l&rsquo;option la plus accessible, <strong>' . esc_html( $cheap['name'] ) . '</strong> (environ ' . $euro( $cheap['price'] ) . '), est aussi la mieux class&eacute;e de notre comparatif.';
+      $a2 .= 'Bonne nouvelle&nbsp;: l&rsquo;option la plus accessible, <strong>' . esc_html( $cheap['name'] ) . '</strong> (' . ( $mt_mens ? '&agrave; partir de ' : 'environ ' ) . $euro( $cheap['price'] ) . '), est aussi la mieux class&eacute;e de notre comparatif.';
     } else {
-      $a2 .= 'L&rsquo;option la plus accessible est <strong>' . esc_html( $cheap['name'] ) . '</strong> (environ ' . $euro( $cheap['price'] ) . ')';
+      $a2 .= 'L&rsquo;option la plus accessible est <strong>' . esc_html( $cheap['name'] ) . '</strong> (' . ( $mt_mens ? '&agrave; partir de ' : 'environ ' ) . $euro( $cheap['price'] ) . ')';
       $a2 .= ( $cheap['score'] > 0 )
         ? ', qui obtient tout de m&ecirc;me la note de ' . $note( $cheap['score'] ) . '/10&nbsp;: il n&rsquo;est donc pas indispensable de viser le plus cher pour faire un bon choix.'
         : '.';

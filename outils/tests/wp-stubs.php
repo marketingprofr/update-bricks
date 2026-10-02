@@ -77,6 +77,7 @@ function get_post_status( $p ) { $p = get_post( $p ); return $p ? $p->post_statu
 function get_the_title( $p = 0 ) { $p = get_post( $p ?: $GLOBALS['CUR'] ); return $p ? $p->post_title : ''; }
 function get_the_terms( $id, $tax ) { global $TERMS; return $TERMS[ $id ][ $tax ] ?? false; }
 function get_post_meta( $id, $k, $single = false ) { global $META; return $META[ $id ][ $k ] ?? ''; }
+function get_term_meta( $id, $k, $single = false ) { global $TERMMETA; return $TERMMETA[ $id ][ $k ] ?? ''; }
 function maybe_unserialize( $v ) { $u = @unserialize( $v ); return $u === false ? $v : $u; }
 function get_all_template_variables( $id ) { global $TV; return $TV[ $id ] ?? array(); }
 function get_field( $k, $id = null ) { global $ACF; $id = $id ?? ( $GLOBALS['post']->ID ?? 0 ); return $ACF[ $id ][ $k ] ?? null; }
