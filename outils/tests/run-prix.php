@@ -38,7 +38,7 @@ if ( preg_match( '#<script type="application/ld\+json">(.*?)</script>#s', $faq, 
 }
 
 /* 2) Encart « Vos questions » (hero V1, réglage activé dans une copie) */
-$src = str_replace( "\$MT_VOS_QUESTIONS    = '';", "\$MT_VOS_QUESTIONS    = 'sous_reponse';", file_get_contents( MT_REPO . '/php-css/hero-gauche.code.php' ) );
+$src = preg_replace( "/\\\$MT_VOS_QUESTIONS\s*=\s*'[^']*';/", "\$MT_VOS_QUESTIONS = 'sous_reponse';", file_get_contents( MT_REPO . '/php-css/hero-gauche.code.php' ), 1 );
 file_put_contents( __DIR__ . '/out/hero-prix.php', $src );
 ob_start(); ( function() { include __DIR__ . '/out/hero-prix.php'; } )(); $h = ob_get_clean();
 echo 'Vos questions, budget : ', preg_match( '#<li><b>Quel budget[^<]*</b> ([^<]*)</li>#u', $h, $m ) ? html_entity_decode( $m[1], ENT_QUOTES, 'UTF-8' ) : 'absent', "\n";

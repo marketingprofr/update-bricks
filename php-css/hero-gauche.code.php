@@ -5,8 +5,8 @@ $MT_SHOW_INTRO_RECO  = true;
 $MT_VERDICT_SOUS_H1  = true;   // verdict (top 3 avec notes /10, N analysés, méthode, date) juste sous le H1 ; false = ancienne phrase dans le chapô
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
-$MT_VOS_QUESTIONS    = '';     // encart « Vos questions » (questions de la FAQ, réponse d'une phrase) : 'sous_reponse' = juste après la réponse courte,
-                                // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart (position en attente du choix de Samuel)
+$MT_VOS_QUESTIONS    = 'sous_reponse'; // encart « Vos questions » (questions de la FAQ, réponse d'une phrase) : 'sous_reponse' = juste après
+                                // la réponse courte (choix de Samuel, 2026-10-03), 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
 
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));

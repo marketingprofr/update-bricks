@@ -31,7 +31,7 @@ if ( getenv( 'FAQ' ) !== '0' ) {
 $hero = MT_REPO . '/php-css/' . ( $v2 ? 'v2/multi-hero-gauche.code.php' : 'hero-gauche.code.php' );
 $res  = MT_REPO . '/php-css/' . ( $v2 ? 'v2/multi-resume.code.php' : 'top5-resume.code.php' );
 $src  = file_get_contents( $hero );
-$src  = str_replace( "\$MT_VOS_QUESTIONS    = '';", "\$MT_VOS_QUESTIONS    = '" . $pos . "';", $src, $nb );
+$src  = preg_replace( "/\\\$MT_VOS_QUESTIONS\s*=\s*'[^']*';/", "\$MT_VOS_QUESTIONS = '" . $pos . "';", $src, 1, $nb );
 if ( $nb !== 1 ) { exit( "réglage \$MT_VOS_QUESTIONS introuvable\n" ); }
 file_put_contents( __DIR__ . '/out/hero-questions.php', $src );
 ob_start(); ( function() { include __DIR__ . '/out/hero-questions.php'; } )(); $h = ob_get_clean();
