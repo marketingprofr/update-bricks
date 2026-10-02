@@ -153,6 +153,13 @@ if ( $MT_ENCADRE_REEL ) {
     $mt_t = trim( preg_replace( "/^(les|le|la|l'|vos|votre|son|sa|ses|un|une|des)\s*/iu", '', $mt_t ) );
     if ( $mt_t === '' || mb_strlen( $mt_t, 'UTF-8' ) > 45 ) { continue; }
     $mt_t = mb_strtolower( mb_substr( $mt_t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_t, 1, null, 'UTF-8' );
+    /* Libellés faibles écartés (règle de l'Architecture, 2026-10-02) : questions, tournures de phrase,
+       consignes, mots vagues seuls ; article retiré après « et » / « ou » */
+    if ( strpos( $mt_t, '?' ) !== false ) { continue; }
+    if ( preg_match( "/^(ne|n'|choisir|choisissez|comment|quel|quelle|pourquoi|optez|privilégiez|vérifiez|faites|pensez|tenez|prenez|à noter|les plus|bon à savoir|attention|facile|bon|bonne|sous|avec|sans|pour|en|à|au|aux|selon|bien|savoir|opter|se|s')(\s|$|')/iu", $mt_t ) ) { continue; }
+    if ( preg_match( '/\b(est|sont|doit|peut|vous|votre|vos|il faut)\b/iu', $mt_t ) ) { continue; }
+    if ( in_array( mb_strtolower( $mt_t, 'UTF-8' ), array( 'type', 'besoins', 'fonctionnalités', 'modèle', 'options', 'marque', 'design', 'utilisation', 'caractéristiques', 'accessoires', 'critères', 'choix' ), true ) ) { continue; }
+    $mt_t = preg_replace( "/\b(et|ou) (le|la|les|l')\s*/iu", '$1 ', $mt_t );
     $mt_k = remove_accents( mb_strtolower( $mt_t, 'UTF-8' ) );
     if ( isset( $mt_vus[ $mt_k ] ) ) { continue; }
     $mt_vus[ $mt_k ] = true; $mt_lib[] = $mt_t;
