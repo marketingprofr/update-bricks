@@ -894,3 +894,15 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
 - **Hors périmètre / à faire plus tard** : outil de remplissage (proposer les
   variantes candidates), redirections 301, dépublication/exclusion des listes,
   bascule du template multi-comparatif sur tous les comparatifs (conditions Bricks).
+
+## Audit Jev (jev-seo) — estimation gabarit (2026-10-02)
+
+Données : branche `claude/verify-seo-skill-install-u596xu`, `data/jev-comparatifs-2026-10-01/`
+(audit.json = notes Jev par page + texte vu). Estimation livrée dans
+**`audits/estimation-gabarit-jev-2026-10-02.md`** (T1-T11, rien modifié sur le site,
+attente feu vert Samuel). Jev ne lit que title/méta/H1, 25 premiers titres, 6 000 premiers
+caractères (menu compris, ~560 car. avant le H1) et les 500 car. après le H1 → priorités :
+verdict en tête (T1), encadré de confiance factuel (T2), note lecteurs sans contradiction
+(T3), titres sans saut (T4), méta ≤ 155 (T5). 8 des 10 pages auditées sont en V2 →
+toute modif à faire dans V1 ET V2. Formules jev-seo reconstituées (contenu = 0,7 × moy.
+Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
