@@ -968,12 +968,14 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     éditorial » fait aussi bien, en attente de Samuel), `$MT_H1_EGAL_TITLE` (**true**, validé :
     sans titre forcé, H1 = title automatique).
   - **Encadré à 4 cases réelles, préparé DÉSACTIVÉ** (`hero-encart.code.php`, `$MT_ENCADRE_REEL`) :
-    1) sources consultées = réglage du site (`$MT_CASE1_NUM`, ex. '~20', `$MT_CASE1_LBL`), formulation
-    en test — le comptage des domaines liés a été REFUSÉ par Samuel (ce sont des marchands, pas
-    des sources ; l'ancienne liste de sources par guide n'existe plus) ; 2) N analysé(e)s (même N
-    que le title) ; 3) avis clients recensés si ≥ 50 000 (somme des fiches du type), sinon
-    « N questions fréquentes traitées » (même décompte que la FAQ) ; 4) mots du contenu
-    (introduction, tests, annexes du guide) si ≥ 8 000. Banc : `outils/tests/run-encadre.php`.
+    1) « S sources consultées » : `mltv5_la_recherche_comparatif` > `mltv5_sources_consultees`
+    (vraies valeurs de l'ancien site, ~30 par guide, à remplir par l'Architecture) ; vide ou 10
+    (défaut) → `$MT_SOURCES_REPLI` ('~20'). Le comptage des domaines liés a été REFUSÉ par Samuel
+    (ce sont des marchands, pas des sources) ; 2) N analysé(e)s (même N que le title) ;
+    3) « A avis étudiés » (même champ, hors défaut 597) → `$MT_AVIS_REPLI` (en attente) → avis
+    clients recensés si ≥ `$MT_SEUIL_AVIS_CL` (10 000) → « T … retenu(e)s » (la FAQ ne servait à
+    rien, test d'ablation) ; 4) mots du contenu (introduction, tests, annexes du guide) si ≥ 8 000.
+    Banc : `outils/tests/run-encadre.php` (`SRC`, `ETUD`, `AVIS`).
   - Titres sans saut (encadré, votes, sommaires en `<p>` ; tests h5 → h4 ; « Classement complet »
     en `<p>`) et texte caché « Pas encore de note ! » vidé : codés (a2eeec5).
   - À signaler : la réponse automatique « Comment avons-nous établi ce classement ? » de la FAQ cite

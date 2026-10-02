@@ -1,7 +1,8 @@
 <?php
 $MT_ENCADRE_REEL = false; // true : 4 cases à valeurs réelles (tests Jev du 2026-10-02) au lieu de heures / années / avis par défaut
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
-$MT_AVIS_REPLI    = '';    // case 3 si mltv5_avis_etudies est vide ou par défaut (597) ; '' = avis clients ≥ 50 000, sinon FAQ
+$MT_AVIS_REPLI    = '';    // case 3 si mltv5_avis_etudies est vide ou par défaut (597) ; '' = avis clients, sinon produits retenus
+$MT_SEUIL_AVIS_CL = 10000; // avis clients recensés affichés à partir de ce total (500 faisait baisser la note, 18 440 aidait)
 $this_id = get_the_ID();
 extract(get_all_template_variables($this_id));
 $mod = date_i18n('j F Y', get_the_modified_time('U'));
@@ -91,7 +92,7 @@ if ( $MT_ENCADRE_REEL ) {
   $mt_cases[] = array( $ic_tablet, $mt_display_count, $mt_lbl_n );
 
   /* Case 3 : avis étudiés (champ de la page, hors valeur par défaut 597), sinon réglage $MT_AVIS_REPLI,
-     sinon avis clients recensés (≥ 50 000), sinon questions fréquentes traitées */
+     sinon avis clients recensés (≥ $MT_SEUIL_AVIS_CL), sinon « T … retenu(e)s » (test d'ablation : mieux que la FAQ) */
   $mt_avis = 0;
   if ( $mt_ids ) {
     update_meta_cache( 'post', $mt_ids );
@@ -104,27 +105,11 @@ if ( $MT_ENCADRE_REEL ) {
   $mt_etud_aff = ( $mt_etud > 0 && $mt_etud !== 597 ) ? number_format( $mt_etud, 0, ',', "\xE2\x80\xAF" ) : $MT_AVIS_REPLI;
   if ( $mt_etud_aff !== '' ) {
     $mt_cases[] = array( $ic_chat, $mt_etud_aff, 'avis étudiés' );
-  } elseif ( $mt_avis >= 50000 ) {
+  } elseif ( $mt_avis >= $MT_SEUIL_AVIS_CL ) {
     $mt_cases[] = array( $ic_chat, number_format( $mt_avis, 0, ',', "\xE2\x80\xAF" ), 'avis clients recensés' );
-  } else {
-    /* Même décompte que la FAQ : questions saisies avec une réponse + questions automatiques
-       (n°1, budget/avis/confiance, méthode ; marques si >= 3 marques ; choix si le guide a des critères) */
-    $mt_faq  = get_field( 'mltv5_faq_comparatif', $this_id );
-    if ( empty( $mt_faq ) ) { $mt_fid = (int) get_field( 'mltv5_cached_id_faq', $this_id ); $mt_faq = $mt_fid ? get_field( 'mltv5_faq_comparatif', $mt_fid ) : array(); }
-    $mt_nq = 0;
-    foreach ( (array) $mt_faq as $r ) {
-      if ( trim( (string) ( $r['mltv5_faq_comparatif_question'] ?? '' ) ) !== '' && trim( wp_strip_all_tags( (string) ( $r['mltv5_faq_comparatif_reponse'] ?? '' ) ) ) !== '' ) { $mt_nq++; }
-    }
-    if ( $mt_top ) {
-      $mt_nq += 3;
-      $mt_marques = array();
-      foreach ( $mt_top as $pid ) { $b = mb_strtolower( trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) ), 'UTF-8' ); if ( $b !== '' ) { $mt_marques[ $b ] = true; } }
-      if ( count( $mt_marques ) >= 3 ) { $mt_nq++; }
-      $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
-      if ( empty( $mt_crit ) ) { $mt_cid = (int) get_field( 'mltv5_cached_id_criteres', $this_id ); $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array(); }
-      if ( ! empty( $mt_crit ) ) { $mt_nq++; }
-    }
-    if ( $mt_nq > 0 ) { $mt_cases[] = array( $ic_chat, $mt_nq, 'questions fréquentes traitées' ); }
+  } elseif ( $mt_top ) {
+    $mt_lbl_t = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits retenus' : mb_strtolower( $tp, 'UTF-8' ) . ' retenu' . $mt_e . 's';
+    $mt_cases[] = array( $ic_chat, count( $mt_top ), $mt_lbl_t );
   }
 
   /* Case 4 : mots du contenu (introduction, guide d'achat, tests complets) ; affichée à partir de 8 000 */
