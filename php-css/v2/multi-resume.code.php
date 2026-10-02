@@ -835,6 +835,8 @@ $names_line = function ( $list ) {
   return esc_html( implode( ' - ', array_map( function( $p ) { return ( $p['brand'] !== '' ? $p['brand'] . ' ' : '' ) . $p['name']; }, $list ) ) );
 };
 
+/* Encart « Vos questions » préparé par le hero gauche quand il est réglé sur 'avant_top5' */
+if ( ! empty( $GLOBALS['mt_vos_questions'] ) ) { echo $GLOBALS['mt_vos_questions']; unset( $GLOBALS['mt_vos_questions'] ); }
 ?>
 <div class="mt-top5" aria-labelledby="mt-top5-title">
 <?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>

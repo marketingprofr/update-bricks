@@ -55,6 +55,39 @@ $ic_refresh = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
 $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-1.6-1.2-4-2-7-2v13c3 0 5.4.8 7 2 1.6-1.2 4-2 7-2V4c-3 0-5.4.8-7 2Z"/><path d="M12 6v13"/></svg>';
 
 /* ---- Encadré à valeurs réelles ($MT_ENCADRE_REEL) : chaque case n'apparaît que si sa valeur est utile ---- */
+if ( ! function_exists( 'mt_criteres_courts' ) ) {
+  /* Libellés courts des critères (encadré « Pourquoi nous faire confiance » et encart « Vos questions »).
+     Copie IDENTIQUE dans hero-encart et hero-gauche (V1 et V2) : le 1er bloc exécuté la définit.
+     Priorité au champ mltv5_criteres_courts rempli à la main (décision de Samuel) ; sinon tirés automatiquement
+     des critères du guide (page, sinon annexe en cache) : article et parenthèse retirés
+     (« La puissance frigorifique (exprimée en BTU) » → « puissance frigorifique »), doublons fusionnés,
+     4 au plus ; '' s'il en reste moins de 3. */
+  function mt_criteres_courts( $page_id ) {
+    $mt_champ = trim( wp_strip_all_tags( (string) get_field( 'mltv5_criteres_courts', $page_id ) ) );
+    if ( $mt_champ !== '' ) { return $mt_champ; }
+    $mt_crit = get_field( 'mltv5_criteres_de_choix', $page_id );
+    if ( empty( $mt_crit ) ) { $mt_cid = (int) get_field( 'mltv5_cached_id_criteres', $page_id ); $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array(); }
+    $mt_vus = array(); $mt_lib = array();
+    foreach ( (array) $mt_crit as $mt_r ) {
+      $mt_t = html_entity_decode( wp_strip_all_tags( (string) ( $mt_r['mltv5_critere_de_choix'] ?? '' ) ), ENT_QUOTES, 'UTF-8' );
+      $mt_t = trim( preg_replace( '/\s*\([^)]*\)/u', '', str_replace( "\u{2019}", "'", $mt_t ) ) );
+      $mt_t = trim( preg_replace( "/^(les|le|la|l'|vos|votre|son|sa|ses|un|une|des)\s*/iu", '', $mt_t ) );
+      if ( $mt_t === '' || mb_strlen( $mt_t, 'UTF-8' ) > 45 ) { continue; }
+      $mt_t = mb_strtolower( mb_substr( $mt_t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_t, 1, null, 'UTF-8' );
+      /* Libellés faibles écartés (règle de l'Architecture, 2026-10-02) : questions, tournures de phrase,
+         consignes, mots vagues seuls ; article retiré après « et » / « ou » */
+      if ( strpos( $mt_t, '?' ) !== false ) { continue; }
+      if ( preg_match( "/^(ne|n'|choisir|choisissez|comment|quel|quelle|pourquoi|optez|privilégiez|vérifiez|faites|pensez|tenez|prenez|à noter|les plus|bon à savoir|attention|facile|bon|bonne|sous|avec|sans|pour|en|à|au|aux|selon|bien|savoir|opter|se|s')(\s|$|')/iu", $mt_t ) ) { continue; }
+      if ( preg_match( '/\b(est|sont|doit|peut|vous|votre|vos|il faut)\b/iu', $mt_t ) ) { continue; }
+      if ( in_array( mb_strtolower( $mt_t, 'UTF-8' ), array( 'type', 'besoins', 'fonctionnalités', 'modèle', 'options', 'marque', 'design', 'utilisation', 'caractéristiques', 'accessoires', 'critères', 'choix' ), true ) ) { continue; }
+      $mt_t = preg_replace( "/\b(et|ou) (le|la|les|l')\s*/iu", '$1 ', $mt_t );
+      $mt_k = remove_accents( mb_strtolower( $mt_t, 'UTF-8' ) );
+      if ( isset( $mt_vus[ $mt_k ] ) ) { continue; }
+      $mt_vus[ $mt_k ] = true; $mt_lib[] = $mt_t;
+    }
+    return count( $mt_lib ) >= 3 ? implode( ', ', array_slice( $mt_lib, 0, 4 ) ) : '';
+  }
+}
 if ( ! function_exists( 'mt_encadre_mots' ) ) {
   function mt_encadre_mots( $html ) {
     $t = trim( html_entity_decode( wp_strip_all_tags( (string) $html ), ENT_QUOTES, 'UTF-8' ) );
@@ -143,34 +176,8 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
     $mt_puces[] = esc_html( $mt_src_aff ) . ' sources consultées, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
-  /* Libellés courts des critères : champ mltv5_criteres_courts s'il est rempli, sinon tirés automatiquement
-     des critères du guide (page, sinon annexe en cache) :
-     article et parenthèse retirés (« La puissance frigorifique (exprimée en BTU) » → « puissance frigorifique »),
-     doublons fusionnés, 4 au plus ; puce seulement s'il en reste au moins 3. */
-  $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
-  if ( empty( $mt_crit ) ) { $mt_cid = (int) get_field( 'mltv5_cached_id_criteres', $this_id ); $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array(); }
-  $mt_vus = array(); $mt_lib = array();
-  foreach ( (array) $mt_crit as $mt_r ) {
-    $mt_t = html_entity_decode( wp_strip_all_tags( (string) ( $mt_r['mltv5_critere_de_choix'] ?? '' ) ), ENT_QUOTES, 'UTF-8' );
-    $mt_t = trim( preg_replace( '/\s*\([^)]*\)/u', '', str_replace( "\u{2019}", "'", $mt_t ) ) );
-    $mt_t = trim( preg_replace( "/^(les|le|la|l'|vos|votre|son|sa|ses|un|une|des)\s*/iu", '', $mt_t ) );
-    if ( $mt_t === '' || mb_strlen( $mt_t, 'UTF-8' ) > 45 ) { continue; }
-    $mt_t = mb_strtolower( mb_substr( $mt_t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_t, 1, null, 'UTF-8' );
-    /* Libellés faibles écartés (règle de l'Architecture, 2026-10-02) : questions, tournures de phrase,
-       consignes, mots vagues seuls ; article retiré après « et » / « ou » */
-    if ( strpos( $mt_t, '?' ) !== false ) { continue; }
-    if ( preg_match( "/^(ne|n'|choisir|choisissez|comment|quel|quelle|pourquoi|optez|privilégiez|vérifiez|faites|pensez|tenez|prenez|à noter|les plus|bon à savoir|attention|facile|bon|bonne|sous|avec|sans|pour|en|à|au|aux|selon|bien|savoir|opter|se|s')(\s|$|')/iu", $mt_t ) ) { continue; }
-    if ( preg_match( '/\b(est|sont|doit|peut|vous|votre|vos|il faut)\b/iu', $mt_t ) ) { continue; }
-    if ( in_array( mb_strtolower( $mt_t, 'UTF-8' ), array( 'type', 'besoins', 'fonctionnalités', 'modèle', 'options', 'marque', 'design', 'utilisation', 'caractéristiques', 'accessoires', 'critères', 'choix' ), true ) ) { continue; }
-    $mt_t = preg_replace( "/\b(et|ou) (le|la|les|l')\s*/iu", '$1 ', $mt_t );
-    $mt_k = remove_accents( mb_strtolower( $mt_t, 'UTF-8' ) );
-    if ( isset( $mt_vus[ $mt_k ] ) ) { continue; }
-    $mt_vus[ $mt_k ] = true; $mt_lib[] = $mt_t;
-  }
-  $mt_courts = count( $mt_lib ) >= 3 ? implode( ', ', array_slice( $mt_lib, 0, 4 ) ) : '';
-  /* Priorité au champ rempli à la main (décision de Samuel) ; la règle automatique ci-dessus sert de repli */
-  $mt_champ = trim( wp_strip_all_tags( (string) get_field( 'mltv5_criteres_courts', $this_id ) ) );
-  if ( $mt_champ !== '' ) { $mt_courts = $mt_champ; }
+  /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
+  $mt_courts = mt_criteres_courts( $this_id );
   if ( $mt_courts !== '' ) {
     $mt_typ = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' );
     $mt_puces[] = 'Nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';

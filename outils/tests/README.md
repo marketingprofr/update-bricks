@@ -49,6 +49,7 @@ Tous se lancent depuis ce dossier : `cd outils/tests`. Les sorties HTML vont dan
 | `NAVIS=16 php run-meta.php` | Méta description automatique (accords, longueur ≤ 158, repli N petit). |
 | `NAVIS=16 php run-verdict-multi.php` | Verdict d'un multi-comparatif : profils des sections, mention des critères retirée sous 3. |
 | `NAVIS=16 php run-encadre.php` | Encadré à valeurs réelles (réglage activé dans une copie) : sites cités, N analysés, avis clients ou FAQ, mots. `SERVICE=1`, `AVIS=800000`. |
+| `php run-questions.php` | Encart « Vos questions » (réglage `$MT_VOS_QUESTIONS` activé dans une copie) : place, HTML, questions et réponses. `POS=avant_top5`, `V2=1`, `PRIX=0`, `FAQ=0` ; `PAGES=<dossier>` applique la règle de la phrase aux FAQ de pages enregistrées (`out/vos-questions-pages.txt`). |
 | `php run-inventaire.php` | Outil d'inventaire `php-css/outils/inventaire-multi.code.php` sur un jeu de comparatifs fictif (principal, variantes, doublon, orphelin, sans type). |
 | `php run-sommaire-apercu.php > out/sommaire.html` | Aperçu visuel du sommaire V2, avec les variables AT simulées et des styles « thème » parasites. |
 | `node shot.js out/sommaire.html out/sommaire.png` | Capture Playwright de l'aperçu (360 px de large). |

@@ -316,6 +316,8 @@ $display_min   = ( $real_count < 10 ) ? max( 0.1, $all_avis['min'] - 0.5 ) : $al
 $display_max   = $all_avis['max'];
 $top5_set      = array_flip( $ids );
 
+/* Encart « Vos questions » préparé par le hero gauche quand il est réglé sur 'avant_top5' */
+if ( ! empty( $GLOBALS['mt_vos_questions'] ) ) { echo $GLOBALS['mt_vos_questions']; unset( $GLOBALS['mt_vos_questions'] ); }
 ?>
 <div class="mt-top5" aria-labelledby="mt-top5-title">
   <header class="t5-head">

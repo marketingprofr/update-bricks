@@ -988,4 +988,23 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     `rank_math_description` et dans la méta cachée `_mt_meta_auto` (marqueur), jamais dans
     l'extrait ; une méta saisie à la main reste prioritaire. `mt_top_infos()` (nom + note /10) est partagée par le
     verdict et la méta. Banc : `outils/tests/run-meta.php`.
+  - **Encart « Vos questions », préparé DÉSACTIVÉ** (`$MT_VOS_QUESTIONS` = '' dans les blocs hero V1/V2 ;
+    'sous_reponse' = juste après la réponse courte, 'avant_top5' = confié au bloc du top 5 via
+    `$GLOBALS['mt_vos_questions']`, affiché par top5-resume / multi-resume juste avant `.mt-top5`).
+    Mesure de la Coordination (2026-10-03, 10 pages, 600 jugements) : utilité +0,07 avant le top 5,
+    +0,09 après la réponse courte ; le gain vient des réponses courtes, pas des liens seuls. Position en
+    attente du choix de Samuel. `mt_vos_questions()` : 4 ou 5 questions dans l'ordre de la FAQ
+    (budget ou « Pourquoi faire confiance », « Comment bien choisir » = critères courts, puis répéteur
+    `mltv5_faq_comparatif`), sans « Quel est le meilleur… », « meilleures marques », « meilleurs avis »,
+    « Comment avons-nous établi… » ; au moins 3 questions sinon rien. Réponse d'une phrase
+    (`mt_vq_phrase()`, règle de la Coordination) : 1re phrase avec un chiffre, un nom propre ou plus de
+    60 caractères, sinon les deux premières ; « Oui… » / « Non ! » court gardé devant ; phrase qui renvoie
+    à la précédente (« C'est pourquoi », « ainsi », « Il »…) précédée de celle-ci si le tout tient ;
+    220 caractères au plus. Aides de faq.code.php copiées à l'identique (`mt_guide_cache_id`, `mt5_num`,
+    `mt_faq_read`). `mt_criteres_courts()` : copie IDENTIQUE dans hero-encart et les blocs hero.
+    CSS `.mt-faq-mini` (fichiers complets du hero). Banc : `outils/tests/run-questions.php`.
+  - **À venir, sur décision de Samuel** : « point de vigilance » (h2 + paragraphe tiré d'un champ,
+    rédigé par l'Architecture) juste avant le top 5 (utilité +0,08) ; ordre visé : réponse courte →
+    « Vos questions » → … → point de vigilance → top 5. Biographie de l'auteur juste sous la ligne
+    auteur (+0,07), quand l'Architecture aura fait valider les bios (champ à confirmer).
 

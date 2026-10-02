@@ -34,6 +34,18 @@
 .mt-verdict a { color: var(--at-primary); text-decoration: underline; }
 .mt-verdict a:hover { color: var(--at-primary-d-1); }
 
+/* Encart « Vos questions » (tests Jev du 2026-10-03) : questions de la FAQ, réponse d'une phrase.
+   Hors .mt-left exprès : il peut aussi être affiché juste avant le top 5. */
+.mt-faq-mini { margin: 0 0 22px; padding: 16px 18px; background: var(--at-white); border: 1px solid var(--at-grey-l-3); border-radius: 12px; }
+.mt-faq-mini h2 { font-size: 17px; line-height: 1.3; font-weight: 600; letter-spacing: 0; margin: 0 0 10px; color: var(--at-black-l-1); }
+.mt-faq-mini ul { list-style: none; margin: 0; padding: 0; }
+.mt-faq-mini li { font-size: 15px; line-height: 1.55; color: var(--at-black-l-2); margin: 0; padding: 9px 0; border-top: 1px solid var(--at-grey-l-3); }
+.mt-faq-mini li:first-child { border-top: 0; padding-top: 0; }
+.mt-faq-mini li b { display: block; color: var(--at-black-l-1); font-weight: 600; margin-bottom: 2px; }
+.mt-faq-mini p { margin: 10px 0 0; font-size: 14px; }
+.mt-faq-mini a { color: var(--at-primary); text-decoration: underline; }
+.mt-faq-mini a:hover { color: var(--at-primary-d-1); }
+
 /* Ligne auteur « Vérifié par … » : forme courte sur mobile (data-court), la forme complète reste dans le texte */
 @media (max-width: 767px) {
   .mt-verif { font-size: 0; }

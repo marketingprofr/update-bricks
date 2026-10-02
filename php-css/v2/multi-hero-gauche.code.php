@@ -20,6 +20,8 @@ $MT_SHOW_INTRO_RECO  = true;
 $MT_VERDICT_SOUS_H1  = true;   // verdict (top 3 avec notes /10, N analysés, méthode, date) juste sous le H1 ; false = ancienne phrase dans le chapô
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
+$MT_VOS_QUESTIONS    = '';     // encart « Vos questions » (questions de la FAQ, réponse d'une phrase) : 'sous_reponse' = juste après la réponse courte,
+                                // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart (position en attente du choix de Samuel)
 
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));
@@ -685,6 +687,178 @@ if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
   }
 }
 
+if ( ! function_exists( 'mt_criteres_courts' ) ) {
+  /* Libellés courts des critères (encadré « Pourquoi nous faire confiance » et encart « Vos questions »).
+     Copie IDENTIQUE dans hero-encart et hero-gauche (V1 et V2) : le 1er bloc exécuté la définit.
+     Priorité au champ mltv5_criteres_courts rempli à la main (décision de Samuel) ; sinon tirés automatiquement
+     des critères du guide (page, sinon annexe en cache) : article et parenthèse retirés
+     (« La puissance frigorifique (exprimée en BTU) » → « puissance frigorifique »), doublons fusionnés,
+     4 au plus ; '' s'il en reste moins de 3. */
+  function mt_criteres_courts( $page_id ) {
+    $mt_champ = trim( wp_strip_all_tags( (string) get_field( 'mltv5_criteres_courts', $page_id ) ) );
+    if ( $mt_champ !== '' ) { return $mt_champ; }
+    $mt_crit = get_field( 'mltv5_criteres_de_choix', $page_id );
+    if ( empty( $mt_crit ) ) { $mt_cid = (int) get_field( 'mltv5_cached_id_criteres', $page_id ); $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array(); }
+    $mt_vus = array(); $mt_lib = array();
+    foreach ( (array) $mt_crit as $mt_r ) {
+      $mt_t = html_entity_decode( wp_strip_all_tags( (string) ( $mt_r['mltv5_critere_de_choix'] ?? '' ) ), ENT_QUOTES, 'UTF-8' );
+      $mt_t = trim( preg_replace( '/\s*\([^)]*\)/u', '', str_replace( "\u{2019}", "'", $mt_t ) ) );
+      $mt_t = trim( preg_replace( "/^(les|le|la|l'|vos|votre|son|sa|ses|un|une|des)\s*/iu", '', $mt_t ) );
+      if ( $mt_t === '' || mb_strlen( $mt_t, 'UTF-8' ) > 45 ) { continue; }
+      $mt_t = mb_strtolower( mb_substr( $mt_t, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_t, 1, null, 'UTF-8' );
+      /* Libellés faibles écartés (règle de l'Architecture, 2026-10-02) : questions, tournures de phrase,
+         consignes, mots vagues seuls ; article retiré après « et » / « ou » */
+      if ( strpos( $mt_t, '?' ) !== false ) { continue; }
+      if ( preg_match( "/^(ne|n'|choisir|choisissez|comment|quel|quelle|pourquoi|optez|privilégiez|vérifiez|faites|pensez|tenez|prenez|à noter|les plus|bon à savoir|attention|facile|bon|bonne|sous|avec|sans|pour|en|à|au|aux|selon|bien|savoir|opter|se|s')(\s|$|')/iu", $mt_t ) ) { continue; }
+      if ( preg_match( '/\b(est|sont|doit|peut|vous|votre|vos|il faut)\b/iu', $mt_t ) ) { continue; }
+      if ( in_array( mb_strtolower( $mt_t, 'UTF-8' ), array( 'type', 'besoins', 'fonctionnalités', 'modèle', 'options', 'marque', 'design', 'utilisation', 'caractéristiques', 'accessoires', 'critères', 'choix' ), true ) ) { continue; }
+      $mt_t = preg_replace( "/\b(et|ou) (le|la|les|l')\s*/iu", '$1 ', $mt_t );
+      $mt_k = remove_accents( mb_strtolower( $mt_t, 'UTF-8' ) );
+      if ( isset( $mt_vus[ $mt_k ] ) ) { continue; }
+      $mt_vus[ $mt_k ] = true; $mt_lib[] = $mt_t;
+    }
+    return count( $mt_lib ) >= 3 ? implode( ', ', array_slice( $mt_lib, 0, 4 ) ) : '';
+  }
+}
+if ( ! function_exists( 'mt_guide_cache_id' ) ) {
+  /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
+     puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
+  function mt_guide_cache_id( $page_id, $suffix ) {
+    $keys = array( 'mltv5_cached_id_' . $suffix, 'mltv5_cache_id_' . $suffix );
+    foreach ( $keys as $f ) {                            /* 1) ACF */
+      $v = function_exists( 'get_field' ) ? get_field( $f, $page_id ) : null;
+      if ( is_array( $v ) ) { $v = reset( $v ); }
+      if ( is_object( $v ) ) { return (int) $v->ID; }
+      if ( $v ) { return (int) $v; }
+    }
+    foreach ( $keys as $f ) {                            /* 2) meta brut (hors ACF) */
+      $v = function_exists( 'get_post_meta' ) ? get_post_meta( $page_id, $f, true ) : '';
+      if ( is_array( $v ) ) { $v = reset( $v ); }
+      if ( is_object( $v ) ) { return (int) $v->ID; }
+      if ( $v ) { return (int) $v; }
+    }
+    return 0;
+  }
+}
+if ( ! function_exists( 'mt5_num' ) ) {
+  function mt5_num( $v ) {
+    $v = str_replace( array( ' ', "\xc2\xa0", '€' ), '', (string) $v );
+    $v = str_replace( ',', '.', $v );
+    return is_numeric( $v ) ? (float) $v : 0.0;
+  }
+}
+if ( ! function_exists( 'mt_faq_read' ) ) {
+  function mt_faq_read( $pid ) {
+    $rows = function_exists( 'get_field' ) ? get_field( 'mltv5_faq_comparatif', $pid ) : null;
+    return is_array( $rows ) ? $rows : array();
+  }
+}
+if ( ! function_exists( 'mt_vq_phrase' ) ) {
+  /* Encart « Vos questions » : réponse d'une phrase tirée d'une réponse de la FAQ (règle de la Coordination, 2026-10-03).
+     1re phrase qui contient un chiffre, un nom propre ou plus de 60 caractères, sinon les deux premières ;
+     un « Oui… » / « Non ! » court en tête reste devant ; questions rhétoriques sautées ; numéros de liste retirés ;
+     phrase choisie qui renvoie à la précédente (« C'est pourquoi… », « Vous pourrez ainsi… », « Il… ») : la précédente
+     est gardée devant si le tout tient ; 220 caractères au plus, coupé sur un mot. */
+  function mt_vq_phrase( $html ) {
+    $t = preg_replace( '#\R\s*\R|</(p|li|h[1-6]|div|tr)>|<br\s*/?>#iu', "\x1e", (string) $html );
+    $t = str_replace( "\xc2\xa0", ' ', html_entity_decode( wp_strip_all_tags( $t ), ENT_QUOTES, 'UTF-8' ) );
+    $t = preg_replace( '/\.\.(?!\.)/u', '.', preg_replace( '/\s+\./u', '.', $t ) ); // « électrique. . » → « électrique. »
+    $ph = array();
+    foreach ( explode( "\x1e", $t ) as $bloc ) {
+      $bloc = preg_replace( '/^\d+\s*[.)]\s+/u', '', trim( preg_replace( '/\s+/u', ' ', $bloc ) ) );
+      if ( $bloc === '' ) { continue; }
+      foreach ( preg_split( '/(?<=[.!?…])\s+(?=[\p{Lu}0-9«])/u', $bloc ) as $p ) {
+        if ( trim( $p ) !== '' ) { $ph[] = trim( $p ); }
+      }
+    }
+    $tete = '';
+    if ( count( $ph ) > 1 && preg_match( '/^(oui|non)\b/iu', $ph[0] ) && mb_strlen( $ph[0], 'UTF-8' ) <= 40 ) { $tete = array_shift( $ph ); }
+    $ph = array_values( array_filter( $ph, function ( $p ) { return substr( $p, -1 ) !== '?'; } ) );
+    $choix = '';
+    foreach ( $ph as $i => $p ) {
+      if ( preg_match( '/\d/u', $p ) || preg_match( "/[\s'’(]\p{Lu}/u", $p ) || mb_strlen( $p, 'UTF-8' ) > 60 ) {
+        $choix = $p;
+        $liaison = "/^(c['’]est|ainsi|donc|alors|cependant|toutefois|en effet|par contre|de plus|aussi|également|pourtant|néanmoins|mais|ensuite|enfin|par ailleurs|la première|le premier|la seconde|le second|la deuxième|le deuxième|cela|ceci|celui-ci|celle-ci|ceux-ci|celles-ci|il|elle|ils|elles)\b|^(\S+\s+){1,2}ainsi\b/iu";
+        if ( $i > 0 && preg_match( $liaison, $p ) && mb_strlen( $tete . ' ' . $ph[ $i - 1 ] . ' ' . $p, 'UTF-8' ) <= 220 ) { $choix = $ph[ $i - 1 ] . ' ' . $p; }
+        break;
+      }
+    }
+    if ( $choix === '' ) { $choix = implode( ' ', array_slice( $ph, 0, 2 ) ); }
+    $r = trim( $tete . ' ' . $choix );
+    if ( mb_strlen( $r, 'UTF-8' ) > 220 ) {
+      $r   = mb_substr( $r, 0, 219, 'UTF-8' );
+      $esp = mb_strrpos( $r, ' ', 0, 'UTF-8' );
+      if ( $esp ) { $r = mb_substr( $r, 0, $esp, 'UTF-8' ); }
+      $r = rtrim( $r, ' ,;:-' ) . '…';
+    } elseif ( $r !== '' && ! preg_match( '/[.!?…]$/u', $r ) ) {
+      $r .= '.';
+    }
+    return $r;
+  }
+}
+
+if ( ! function_exists( 'mt_vos_questions' ) ) {
+  /* Encart « Vos questions » (tests Jev du 2026-10-03 sur 10 pages : utilité +0,07 avant le top 5, +0,09 après
+     la réponse courte) : 4 ou 5 questions de la FAQ de la page, dans le même ordre (questions automatiques puis
+     questions ACF), chacune avec une réponse d'une phrase, et un lien vers la FAQ complète.
+     Sautées, car déjà dites plus haut : « Quel est le meilleur… », « meilleures marques », « meilleurs avis »,
+     « Comment avons-nous établi… ». Au moins 3 questions, sinon rien. */
+  function mt_vos_questions( $page_id, $ids, $type_sing, $type_plur, $llm ) {
+    $items = array();
+    $ids   = array_slice( array_values( array_filter( array_map( 'intval', (array) $ids ) ) ), 0, 5 );
+    if ( ! empty( $ids ) ) {
+      /* Questions automatiques de la FAQ (mêmes conditions et mêmes accords que faq.code.php) */
+      $low    = strtolower( (string) $llm );
+      $plural = ( strpos( $low, 'les ' ) === 0 );
+      $fem    = $plural ? ( strpos( $low, 'meilleures' ) !== false ) : ( strpos( $low, 'la ' ) === 0 );
+      $prix   = array();
+      $notes  = 0;
+      foreach ( $ids as $pid ) {
+        $v = mt5_num( get_field( 'mltv5_prix_indicatif', $pid ) );
+        if ( $v > 0 ) { $prix[] = $v; }
+        if ( mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ) > 0 ) { $notes++; }
+      }
+      if ( count( $prix ) >= 2 ) {
+        $euro  = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€"; };
+        $indef = $plural
+          ? ( 'des ' . ( $type_plur !== '' ? $type_plur : $type_sing ) )
+          : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
+        $noun  = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
+        $items[] = array( 'Quel budget prévoir pour ' . trim( $indef ) . "\xc2\xa0?",
+          'Les ' . $noun . ' de notre sélection s’échelonnent d’environ ' . $euro( min( $prix ) ) . ' à ' . $euro( max( $prix ) ) . '.' );
+      } elseif ( $notes < 2 ) {
+        $items[] = array( "Pourquoi faire confiance à ce comparatif\xc2\xa0?",
+          "Notre rédaction travaille en toute indépendance\xc2\xa0: aucune marque ne peut acheter sa place dans un classement, et nous n’acceptons ni publicité ni cadeau des marques." );
+      }
+      /* « Comment bien choisir… » : les libellés courts des critères, plutôt que la 1re phrase générique de la FAQ */
+      $crit = mt_criteres_courts( $page_id );
+      if ( $crit !== '' ) {
+        $best_noun = $plural ? ( $type_plur !== '' ? $type_plur : $type_sing ) : ( $type_sing !== '' ? $type_sing : $type_plur );
+        $items[] = array( 'Comment bien choisir ' . ( $plural ? 'vos' : 'votre' ) . ' ' . ( $best_noun !== '' ? $best_noun : 'produit' ) . "\xc2\xa0?",
+          "Les critères qui font vraiment la différence\xc2\xa0: " . preg_replace( '/, ([^,]+)$/u', ' et $1', $crit ) . '.' );
+      }
+    }
+    /* Questions de la rédaction (repeater ACF, page puis annexe en cache) */
+    $rows = mt_faq_read( $page_id );
+    if ( empty( $rows ) ) {
+      $c = mt_guide_cache_id( $page_id, 'faq' );
+      if ( $c && $c !== (int) $page_id ) { $rows = mt_faq_read( $c ); }
+    }
+    $saute = '/^(Quel(le)?s? (est|sont) (le|la|les) meilleur|Quelles sont les meilleures marques|Quel produit a les meilleurs avis|Comment avons-nous établi)/u';
+    foreach ( $rows as $r ) {
+      if ( count( $items ) >= 5 ) { break; }
+      $q = trim( html_entity_decode( wp_strip_all_tags( (string) ( $r['mltv5_faq_comparatif_question'] ?? '' ) ), ENT_QUOTES, 'UTF-8' ) );
+      if ( $q === '' || preg_match( $saute, $q ) ) { continue; }
+      $a = mt_vq_phrase( (string) ( $r['mltv5_faq_comparatif_reponse'] ?? '' ) );
+      if ( $a !== '' ) { $items[] = array( $q, $a ); }
+    }
+    if ( count( $items ) < 3 ) { return ''; }
+    $li = '';
+    foreach ( $items as $it ) { $li .= '<li><b>' . esc_html( $it[0] ) . '</b> ' . esc_html( $it[1] ) . '</li>'; }
+    return '<div class="mt-faq-mini"><h2>Vos questions</h2><ul>' . $li . '</ul><p><a href="#partie-faq">Toutes les réponses</a></p></div>';
+  }
+}
+
 if ( ! function_exists( 'mt_quick_picks' ) ) {
   function mt_quick_picks( $ids, $max = 5 ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
@@ -991,6 +1165,12 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
           }
       }
       echo mt_verdict_ouverture( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n, $mod, is_array( $mt_crit ) ? count( $mt_crit ) : 0, $mt_profils );
+  } ?>
+
+  <?php if ( $MT_VOS_QUESTIONS !== '' && $post_type === 'comparatif' ) {
+      /* Encart « Vos questions » : affiché ici, ou confié au bloc du top 5 (résumé V1 / multi-resume V2) qui l'affiche juste avant */
+      $mt_vq = mt_vos_questions( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
+      if ( $MT_VOS_QUESTIONS === 'avant_top5' ) { $GLOBALS['mt_vos_questions'] = $mt_vq; } else { echo $mt_vq; }
   } ?>
 
   <div class="mt-byline">
