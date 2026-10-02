@@ -945,4 +945,22 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
   - +5 supprimé partout (encart, `mtv2_hero_count`, résumé V1/V2) et -0,5 sur la note minimale
     de la fourchette du résumé supprimé : vrais chiffres.
   - Banc : `outils/tests/run-seo.php` (accords, titre forcé, repli, description manuelle).
+  - **Verdict sous le H1** (`mt_verdict_ouverture()`, identique V1/V2 ; variante O5 de
+    l'Architecture, ouverture 0,92) : « La meilleure X en 2026 est A (9,0/10), devant B et C.
+    Nous avons analysé N X et retenu les T meilleur(e)s. Chaque fiche est notée sur 10 ; le
+    classement a été mis à jour le {date} et le guide détaille k critères de choix. » (seul le
+    n°1 est un lien ; k = répéteur `mltv5_criteres_de_choix`, page puis annexe en cache). Le
+    chapô ne reprend plus l'ancienne phrase `mt_intro_reco` (gardée si `$MT_VERDICT_SOUS_H1 = false`).
+    Le bloc SEO passe AVANT le H1 (calcule `$mt_n` et le title). CSS : `.mt-verdict` (fichiers
+    complets hero-gauche.code.css = v2/multi-hero-gauche.css).
+  - **Réglages en tête des blocs hero** : `$MT_VERDICT_SOUS_H1` (true), `$MT_VERIFIE_PAR`
+    ('' ; 'Samuel Petit' = « Par X • Vérifié par Samuel Petit, responsable éditorial • Mis à jour
+    le … », ou « Rédigé et vérifié par Samuel Petit, responsable éditorial » quand il est
+    l'auteur : formulation E1F2 du lot éditorial), `$MT_H1_EGAL_TITLE` (false ; true = sans titre
+    forcé, H1 = title automatique). Les deux derniers attendent la décision de Samuel.
+  - Encadré : tout remplacement honnête des chiffres par défaut coûte ~0,05 de spécificité
+    (lot encadré) ; méthode précise et « N mises à jour » sans effet mesurable. Rien codé :
+    décision de Samuel. Méta automatique tirée des données : 2,94-2,99 (Architecture) ;
+    proposée à Samuel, rien codé.
+  - Banc : `outils/tests/run-verdict.php`.
 

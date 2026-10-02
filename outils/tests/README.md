@@ -45,6 +45,7 @@ Tous se lancent depuis ce dossier : `cd outils/tests`. Les sorties HTML vont dan
 | `php run-h1.php` | H1 et title SEO du hero gauche V2. Variantes : `NAVIS=55 php run-h1.php`, `NOSUB=1 php run-h1.php` (sans sous-comparatif, c'est-à-dire en V1). |
 | `php run-compare.php` | V1 face à V2 **sans** sous-comparatif, bloc par bloc. Les fichiers vont dans `out/cmp-*.html`. |
 | `NAVIS=16 php run-seo.php` | Title et méta description écrits par le hero gauche : accords (masculin, féminin, pluriel), titre forcé, repli quand N <= produits retenus (`NAVIS=4`), description saisie à la main gardée. |
+| `NAVIS=16 php run-verdict.php` | Verdict sous le H1, ligne auteur, H1 et title du hero gauche. `AUTEUR="Samuel Petit"`, `FICHIER=<copie du bloc>` pour tester V2 ou les réglages activés. |
 | `php run-inventaire.php` | Outil d'inventaire `php-css/outils/inventaire-multi.code.php` sur un jeu de comparatifs fictif (principal, variantes, doublon, orphelin, sans type). |
 | `php run-sommaire-apercu.php > out/sommaire.html` | Aperçu visuel du sommaire V2, avec les variables AT simulées et des styles « thème » parasites. |
 | `node shot.js out/sommaire.html out/sommaire.png` | Capture Playwright de l'aperçu (360 px de large). |

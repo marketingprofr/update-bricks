@@ -2,6 +2,9 @@
 $MT_SHOW_QUICK_PICKS = false;
 $MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
+$MT_VERDICT_SOUS_H1  = true;   // verdict (top 3 avec notes /10, N analysés, méthode, date) juste sous le H1 ; false = ancienne phrase dans le chapô
+$MT_VERIFIE_PAR      = '';     // ex. 'Samuel Petit' : ligne auteur « Vérifié par …, responsable éditorial » ; '' = pas de ligne
+$MT_H1_EGAL_TITLE    = false;  // true : sans titre forcé, le H1 reprend le title automatique
 
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));
@@ -174,6 +177,77 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
   }
 }
 
+if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
+  /* Ouverture juste sous le H1 (tests Jev du 2026-10-02, variante O5 : ouverture 0,92) :
+     « La meilleure X en 2026 est A (9,0/10), devant B (8,9/10) et C (8,8/10). Nous avons analysé
+     N X et retenu les T meilleur(e)s. Chaque fiche est notée sur 10 ; le classement a été mis à
+     jour le {date} et le guide détaille k critères de choix. »
+     Nom du produit et lien du n°1 : même logique que mt_intro_reco. Notes : même calcul que les
+     cartes du résumé (get_acf_score_divided_by_10). */
+  function mt_verdict_ouverture( $ids, $type_plur, $type_sing, $llm, $n, $date, $k ) {
+    $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
+    $t   = count( $ids );
+    if ( $t === 0 ) { return ''; }
+    $prods = array();
+    foreach ( array_slice( $ids, 0, 3 ) as $pid ) {
+      $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $pid ) );
+      $brand  = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
+      $model  = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
+      if ( $forced !== '' ) { $name = $forced; }
+      elseif ( $model !== '' ) { $name = trim( $brand . ' ' . $model ); }
+      else { $name = (string) get_the_title( $pid ); }
+      $mt_keep = $GLOBALS['post'] ?? null;
+      $GLOBALS['post'] = get_post( $pid );
+      setup_postdata( $GLOBALS['post'] );
+      $s10 = function_exists( 'get_acf_score_divided_by_10' ) ? (float) get_acf_score_divided_by_10() : round( (float) get_field( 'mltv5_score_recent', $pid ) / 10, 1 );
+      $GLOBALS['post'] = $mt_keep;
+      if ( $mt_keep ) { setup_postdata( $mt_keep ); }
+      $prods[] = array( 'pid' => $pid, 'name' => $name, 'score' => $s10 );
+    }
+    if ( $prods[0]['name'] === '' ) { return ''; }
+
+    /* Lien du n°1 : ASIN Amazon, sinon 1er lien produit, sinon son test complet */
+    $p1   = $prods[0]['pid'];
+    $asin = trim( (string) get_field( 'mltv5_asin_amazon', $p1 ) );
+    $url  = '';
+    if ( $asin !== '' ) {
+      $url = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=mlt00-21';
+    } else {
+      for ( $li = 1; $li <= 3; $li++ ) {
+        $lu = trim( (string) get_field( 'mltv5_lien_du_produit_' . $li, $p1 ) );
+        if ( $lu !== '' && strpos( $lu, 'http' ) === 0 ) { $url = $lu; break; }
+      }
+    }
+    if ( $url === '' ) { $url = '#produit-n-1'; }
+
+    $llm_t = mb_strtolower( trim( (string) $llm ), 'UTF-8' );
+    $fem   = ( mb_strpos( $llm_t, 'meilleure' ) !== false );
+    $pl    = ( mb_strpos( $llm_t, 'les ' ) === 0 );
+    $plur  = mb_strtolower( trim( (string) $type_plur ), 'UTF-8' );
+    $sing  = mb_strtolower( trim( (string) $type_sing ), 'UTF-8' );
+    $an    = date_i18n( 'Y' );
+    $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
+
+    if ( ! $pl && $sing !== '' ) { $out = ( $fem ? 'La meilleure ' : 'Le meilleur ' ) . esc_html( $sing ) . ' en ' . $an . ' est '; }
+    else { $out = 'Notre n°1 parmi les ' . esc_html( $plur !== '' ? $plur : 'produits' ) . ' en ' . $an . ' est '; }
+    $out .= '<a href="' . esc_url( $url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>' . $note( $prods[0] );
+    $autres = array();
+    foreach ( array_slice( $prods, 1 ) as $p ) { if ( $p['name'] !== '' ) { $autres[] = esc_html( $p['name'] ) . $note( $p ); } }
+    if ( count( $autres ) === 2 ) { $out .= ', devant ' . $autres[0] . ' et ' . $autres[1]; }
+    elseif ( count( $autres ) === 1 ) { $out .= ', devant ' . $autres[0]; }
+    $out .= '.';
+
+    $typ = esc_html( $plur !== '' ? $plur : 'produits' );
+    $e   = ( $fem && $plur !== '' ) ? 'e' : '';
+    if ( $n > $t ) { $out .= ' Nous avons analysé ' . (int) $n . ' ' . $typ . ' et retenu les ' . $t . ' meilleur' . $e . 's.'; }
+    else { $out .= ' Nous avons analysé et classé ' . max( (int) $n, $t ) . ' ' . $typ . '.'; }
+
+    $out .= ' Chaque fiche est notée sur 10 ; le classement a été mis à jour le ' . esc_html( $date )
+      . ( $k > 0 ? ' et le guide détaille ' . (int) $k . ' critère' . ( $k > 1 ? 's' : '' ) . ' de choix' : '' ) . '.';
+    return '<p class="mt-verdict">' . $out . '</p>';
+  }
+}
+
 if ( ! function_exists( 'mt_quick_picks' ) ) {
   function mt_quick_picks( $ids, $max = 5 ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
@@ -309,19 +383,6 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     <span>le <?php echo $mod; ?></span>
   </div>
 
-  <h1 class="mt-h1">
-  <?php
-    if (!empty($forcer_affichage_du_titre ?? '')) {
-        echo esc_html($forcer_affichage_du_titre);
-    } elseif ($post_type === 'comparatif') {
-        echo 'Les <em>' . $total_avis . ' ' . lcfirst($masculinsfeminins ?? 'meilleures') . ' ' . $type_de_produit_au_pluriel . '</em> en 2026';
-        echo !empty($sous_titre ?? '') ? ' : ' . $sous_titre : ' : comparatif et guide d\'achat';
-    } else {
-        echo esc_html(get_the_title());
-    }
-  ?>
-  </h1>
-
   <?php // Effets SEO Rank Math
   /* Title (tests Jev du 2026-10-02, voir CLAUDE.md) : titre forcé s'il est rempli ;
      sinon « Meilleur(e) X 2026 : N analysé(e)s, T retenu(e)s », N = vrai nombre d'avis
@@ -387,13 +448,16 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
           if ($excerpt !== $new_desc) { wp_update_post(array('ID'=>$this_id,'post_excerpt'=>$new_desc)); }
       }
   }
-  if (!empty($forcer_affichage_du_titre ?? '')) { $new_title = $forcer_affichage_du_titre; }
-  elseif ($post_type === 'liste') { $new_title = get_the_title($this_id); }
-  elseif ($post_type === 'comparatif') {
-      /* Multi-comparatif : jamais moins que les produits affichés dans les encarts. */
+  /* N = produits analysés (title, verdict) ; multi-comparatif : jamais moins que les produits affichés. */
+  $mt_n = 0;
+  if ($post_type === 'comparatif') {
       $mt_n = mt_avis_count( $this_id );
       $mt_pl = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
       if ( $mt_pl && ! empty( $mt_pl['is_multi'] ) ) { $mt_n = max( $mt_n, count( $mt_pl['origin'] ) ); }
+  }
+  if (!empty($forcer_affichage_du_titre ?? '')) { $new_title = $forcer_affichage_du_titre; }
+  elseif ($post_type === 'liste') { $new_title = get_the_title($this_id); }
+  elseif ($post_type === 'comparatif') {
       $new_title = mt_title_auto( $mt_n, $total_avis, $lalalesmeilleur ?? '', $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $masculinsfeminins ?? '' );
   }
   else { $new_title = "Les ".$total_avis." ".lcfirst($masculinsfeminins ?? 'meilleurs')." ".$type_de_produit_au_pluriel." 2026 | Test par Meilleurtest"; }
@@ -401,12 +465,45 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   if (($new_title !== $rank_math_title) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_title', $new_title); }
   ?>
 
+  <h1 class="mt-h1">
+  <?php
+    if (!empty($forcer_affichage_du_titre ?? '')) {
+        echo esc_html($forcer_affichage_du_titre);
+    } elseif ($MT_H1_EGAL_TITLE && $post_type === 'comparatif') {
+        echo esc_html($new_title);
+    } elseif ($post_type === 'comparatif') {
+        echo 'Les <em>' . $total_avis . ' ' . lcfirst($masculinsfeminins ?? 'meilleures') . ' ' . $type_de_produit_au_pluriel . '</em> en 2026';
+        echo !empty($sous_titre ?? '') ? ' : ' . $sous_titre : ' : comparatif et guide d\'achat';
+    } else {
+        echo esc_html(get_the_title());
+    }
+  ?>
+  </h1>
+
+
+  <?php if ( $MT_SHOW_INTRO_RECO && $MT_VERDICT_SOUS_H1 && $post_type === 'comparatif' ) {
+      /* k = critères de choix du guide (page, sinon annexe en cache) */
+      $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
+      if ( empty( $mt_crit ) ) {
+          $mt_cid  = (int) get_field( 'mltv5_cached_id_criteres', $this_id );
+          $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array();
+      }
+      echo mt_verdict_ouverture( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n, $mod, is_array( $mt_crit ) ? count( $mt_crit ) : 0 );
+  } ?>
+
   <div class="mt-byline">
     <?php if (!empty($author_avatar_id ?? '')) {
         echo '<span class="mt-avatar">' . wp_get_attachment_image($author_avatar_id, array(30,30), '', array('alt'=>$author_avatar_alt ?? '')) . '</span>';
     } ?>
     <span class="mt-byline-text">
+      <?php if ( $MT_VERIFIE_PAR !== '' && trim( (string) ( $author ?? '' ) ) === $MT_VERIFIE_PAR ) { ?>
+      <span>Rédigé et vérifié par <b><?php echo esc_html( $MT_VERIFIE_PAR ); ?></b>, responsable éditorial</span>
+      <?php } else { ?>
       <span>Par <b><?php echo esc_html($author ?? ''); ?></b></span>
+      <?php if ( $MT_VERIFIE_PAR !== '' ) { ?>
+      <span class="mt-dot">&bull;</span>
+      <span>Vérifié par <b><?php echo esc_html( $MT_VERIFIE_PAR ); ?></b>, responsable éditorial</span>
+      <?php } } ?>
       <span class="mt-dot">&bull;</span>
       <span>Mis à jour le <?php echo $mod; ?></span>
     </span>
@@ -423,7 +520,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       ) );
   }
   echo $mt_intro_html;
-  if ( $MT_SHOW_INTRO_RECO && $post_type === 'comparatif' ) {
+  if ( $MT_SHOW_INTRO_RECO && ! $MT_VERDICT_SOUS_H1 && $post_type === 'comparatif' ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
