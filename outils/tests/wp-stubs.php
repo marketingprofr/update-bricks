@@ -92,6 +92,8 @@ function wp_strip_all_tags( $s ) { return trim( strip_tags( (string) $s ) ); }
 function setup_postdata( $p ) { return true; }
 function wp_reset_postdata() {}
 function get_the_post_thumbnail_url( $id, $s ) { return 'https://img/' . $id . '.jpg'; }
+function get_post_thumbnail_id( $id ) { return 1000 + (int) $id; }
+function wp_get_attachment_image_src( $att, $size = 'thumbnail' ) { return array( 'https://img/' . $att . '.jpg', 300, 240, false ); }
 function has_tag( $t, $id ) { return false; }
 function get_post_modified_time( $f, $g, $id ) { return 1700000000 + $id; }
 function current_user_can( $c ) { return $GLOBALS['CAN']; }

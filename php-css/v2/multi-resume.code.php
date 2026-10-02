@@ -572,6 +572,13 @@ if ( ! function_exists( 'mtv2_resume_collect' ) ) {
 
       /* Image : featured en priorite, sinon URL externe ACF (hotlink partenaire) */
       $img = get_the_post_thumbnail_url( $pid, 'medium' );
+      /* Dimensions de la vignette (règle JEV-009) : celles de l'image à la une, sinon carré 300 x 300
+         (images externes ; la tuile .ph est carrée et le CSS garde width/height: auto) */
+      $img_w = 300; $img_h = 300;
+      if ( $img ) {
+        $mt_dim = wp_get_attachment_image_src( get_post_thumbnail_id( $pid ), 'medium' );
+        if ( is_array( $mt_dim ) && ! empty( $mt_dim[1] ) && ! empty( $mt_dim[2] ) ) { $img_w = (int) $mt_dim[1]; $img_h = (int) $mt_dim[2]; }
+      }
       if ( ! $img ) {
         $ext = get_field( 'mltv5_image_external_url', $pid );
         if ( is_array( $ext ) ) { $ext = isset( $ext['url'] ) ? $ext['url'] : ''; }
@@ -634,6 +641,8 @@ if ( ! function_exists( 'mtv2_resume_collect' ) ) {
         'summary'     => $summary,
         'label'       => $prod_label,
         'img'         => $img,
+        'img_w'         => $img_w,
+        'img_h'         => $img_h,
         'score10'     => $score10,
         'score_tag'   => $score_tag,
         'cust_rating' => $cust_rating,
@@ -704,7 +713,7 @@ if ( ! function_exists( 'mtv2_resume_list' ) ) {
         <div class="t5-media">
           <div class="ph">
             <?php if ( $it['img'] ) : ?>
-              <img src="<?php echo esc_url( $it['img'] ); ?>" alt="<?php echo esc_attr( $it['name'] ); ?>" loading="lazy" decoding="async">
+              <img src="<?php echo esc_url( $it['img'] ); ?>" alt="<?php echo esc_attr( $it['name'] ); ?>" width="<?php echo (int) $it['img_w']; ?>" height="<?php echo (int) $it['img_h']; ?>" loading="lazy" decoding="async">
             <?php else : ?>
               <span class="ph-cap"><?php echo esc_html( $it['name'] ); ?></span>
             <?php endif; ?>
