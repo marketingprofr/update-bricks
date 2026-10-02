@@ -177,19 +177,12 @@ if ( ! function_exists( 'mt_intro_reco' ) ) {
   }
 }
 
-if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
-  /* Ouverture juste sous le H1 (tests Jev du 2026-10-02, variante O5 : ouverture 0,92) :
-     « La meilleure X en 2026 est A (9,0/10), devant B (8,9/10) et C (8,8/10). Nous avons analysé
-     N X et retenu les T meilleur(e)s. Chaque fiche est notée sur 10 ; le classement a été mis à
-     jour le {date} et le guide détaille k critères de choix. »
-     Nom du produit et lien du n°1 : même logique que mt_intro_reco. Notes : même calcul que les
-     cartes du résumé (get_acf_score_divided_by_10). */
-  function mt_verdict_ouverture( $ids, $type_plur, $type_sing, $llm, $n, $date, $k ) {
-    $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
-    $t   = count( $ids );
-    if ( $t === 0 ) { return ''; }
-    $prods = array();
-    foreach ( array_slice( $ids, 0, 3 ) as $pid ) {
+if ( ! function_exists( 'mt_top_infos' ) ) {
+  /* Nom affiché et note /10 des premiers produits du classement (verdict, méta description).
+     Nom : même logique que mt_intro_reco. Note : même calcul que les cartes du résumé. */
+  function mt_top_infos( $ids, $max ) {
+    $out = array();
+    foreach ( array_slice( array_values( array_filter( array_map( 'intval', (array) $ids ) ) ), 0, $max ) as $pid ) {
       $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $pid ) );
       $brand  = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
       $model  = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
@@ -202,9 +195,46 @@ if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
       $s10 = function_exists( 'get_acf_score_divided_by_10' ) ? (float) get_acf_score_divided_by_10() : round( (float) get_field( 'mltv5_score_recent', $pid ) / 10, 1 );
       $GLOBALS['post'] = $mt_keep;
       if ( $mt_keep ) { setup_postdata( $mt_keep ); }
-      $prods[] = array( 'pid' => $pid, 'name' => $name, 'score' => $s10 );
+      $out[] = array( 'pid' => $pid, 'name' => html_entity_decode( $name, ENT_QUOTES, 'UTF-8' ), 'score' => $s10 );
     }
-    if ( $prods[0]['name'] === '' ) { return ''; }
+    return $out;
+  }
+}
+if ( ! function_exists( 'mt_meta_auto' ) ) {
+  /* Méta description automatique (tests Jev du 2026-10-02, format M3 de l'Architecture, 2,99/3) :
+     « A arrive en tête de notre comparatif 2026 (x/10). N X analysé(e)s, T retenu(e)s : notes,
+     avantages et inconvénients. » Au-delà de 158 caractères, la fin « : notes, avantages et
+     inconvénients » est retirée. Texte brut (pas de HTML). '' si aucun produit. */
+  function mt_meta_auto( $ids, $type_plur, $llm, $n ) {
+    $t = count( array_filter( array_map( 'intval', (array) $ids ) ) );
+    $p = mt_top_infos( $ids, 1 );
+    if ( empty( $p ) || $p[0]['name'] === '' ) { return ''; }
+    $fem  = ( mb_strpos( mb_strtolower( (string) $llm, 'UTF-8' ), 'meilleure' ) !== false );
+    $plur = mb_strtolower( trim( html_entity_decode( (string) $type_plur, ENT_QUOTES, 'UTF-8' ) ), 'UTF-8' );
+    $e    = ( $fem && $plur !== '' ) ? 'e' : '';
+    $typ  = $plur !== '' ? $plur : 'produits';
+    $note = $p[0]['score'] > 0 ? ' (' . number_format( $p[0]['score'], 1, ',', '' ) . '/10)' : '';
+    $tete = $p[0]['name'] . ' arrive en tête de notre comparatif ' . date_i18n( 'Y' ) . $note . '. ';
+    $nb   = ( $n > $t ) ? $n . ' ' . $typ . ' analysé' . $e . 's, ' . $t . ' retenu' . $e . 's'
+                        : max( (int) $n, $t ) . ' ' . $typ . ' analysé' . $e . 's et classé' . $e . 's';
+    $meta = $tete . $nb . ' : notes, avantages et inconvénients.';
+    if ( mb_strlen( $meta, 'UTF-8' ) > 158 ) { $meta = $tete . $nb . '.'; }
+    return $meta;
+  }
+}
+if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
+  /* Ouverture juste sous le H1 (tests Jev du 2026-10-02, variante O5 : ouverture 0,92) :
+     « La meilleure X en 2026 est A (9,0/10), devant B (8,9/10) et C (8,8/10). Nous avons analysé
+     N X et retenu les T meilleur(e)s. Chaque fiche est notée sur 10 ; le classement a été mis à
+     jour le {date} et le guide détaille k critères de choix. »
+     Nom du produit et lien du n°1 : même logique que mt_intro_reco. Notes : même calcul que les
+     cartes du résumé (get_acf_score_divided_by_10). */
+  function mt_verdict_ouverture( $ids, $type_plur, $type_sing, $llm, $n, $date, $k ) {
+    $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
+    $t   = count( $ids );
+    if ( $t === 0 ) { return ''; }
+    $prods = mt_top_infos( $ids, 3 );
+    if ( empty( $prods ) || $prods[0]['name'] === '' ) { return ''; }
 
     /* Lien du n°1 : ASIN Amazon, sinon 1er lien produit, sinon son test complet */
     $p1   = $prods[0]['pid'];
@@ -389,7 +419,8 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
      publiés du type + attributs (sans majoration), T = produits du classement ; si
      N <= T, repli sur « Meilleur(e) X 2026 (N produits comparés) ».
      Méta description : une description saisie à la main (différente de l'extrait) n'est
-     plus écrasée ; seule la description automatique (= extrait) est mise à jour. */
+     plus écrasée ; la description automatique (= extrait) est mt_meta_auto() sur un
+     comparatif (format M3 des tests Jev), les 50 premiers mots de l'introduction sinon. */
   if ( ! function_exists( 'mt_avis_count' ) ) {
     /* Avis publiés du même type de produit et de TOUS les attributs du comparatif. */
     function mt_avis_count( $id ) {
@@ -438,22 +469,24 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       return html_entity_decode( $titre, ENT_QUOTES, 'UTF-8' );
     }
   }
-  if (($template_description ?? '') == 0 || $post_type === 'liste') {
-      $rank_math_description = (string) get_post_meta($this_id, 'rank_math_description', true);
-      $p = get_post($this_id);
-      $excerpt = (string) ($p->post_excerpt ?? '');
-      if ($rank_math_description === '' || $rank_math_description === $excerpt) {
-          $new_desc = intro(50, $this_id);
-          if (($new_desc !== $rank_math_description) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_description', $new_desc); }
-          if ($excerpt !== $new_desc) { wp_update_post(array('ID'=>$this_id,'post_excerpt'=>$new_desc)); }
-      }
-  }
-  /* N = produits analysés (title, verdict) ; multi-comparatif : jamais moins que les produits affichés. */
+  /* N = produits analysés (title, méta, verdict) ; multi-comparatif : jamais moins que les produits affichés. */
   $mt_n = 0;
   if ($post_type === 'comparatif') {
       $mt_n = mt_avis_count( $this_id );
       $mt_pl = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
       if ( $mt_pl && ! empty( $mt_pl['is_multi'] ) ) { $mt_n = max( $mt_n, count( $mt_pl['origin'] ) ); }
+  }
+  if (($template_description ?? '') == 0 || $post_type === 'liste') {
+      $rank_math_description = (string) get_post_meta($this_id, 'rank_math_description', true);
+      $p = get_post($this_id);
+      $excerpt = (string) ($p->post_excerpt ?? '');
+      if ($rank_math_description === '' || $rank_math_description === $excerpt) {
+          /* Comparatif : méta automatique tirée des données (repli : 50 premiers mots de l'introduction). */
+          $new_desc = ($post_type === 'comparatif') ? mt_meta_auto( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '', $mt_n ) : '';
+          if ($new_desc === '') { $new_desc = intro(50, $this_id); }
+          if (($new_desc !== $rank_math_description) && ($this_id <> 4224)) { update_post_meta($this_id, 'rank_math_description', $new_desc); }
+          if ($excerpt !== $new_desc) { wp_update_post(array('ID'=>$this_id,'post_excerpt'=>$new_desc)); }
+      }
   }
   if (!empty($forcer_affichage_du_titre ?? '')) { $new_title = $forcer_affichage_du_titre; }
   elseif ($post_type === 'liste') { $new_title = get_the_title($this_id); }

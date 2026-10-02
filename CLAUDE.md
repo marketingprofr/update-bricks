@@ -963,4 +963,11 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     décision de Samuel. Méta automatique tirée des données : 2,94-2,99 (Architecture) ;
     proposée à Samuel, rien codé.
   - Banc : `outils/tests/run-verdict.php`.
+  - **Méta description automatique** (validée par Samuel) : `mt_meta_auto()` (format M3 de
+    l'Architecture, 2,99/3) « A arrive en tête de notre comparatif 2026 (x/10). N X analysé(e)s,
+    T retenu(e)s : notes, avantages et inconvénients. » ; > 158 car. : sans la fin « : notes… »
+    (le repli M6 testé est plus long que M3, inutilisable pour raccourcir). Écrite dans
+    `rank_math_description` ET `post_excerpt` (l'égalité des deux = « automatique ») ; une méta
+    saisie à la main reste prioritaire. `mt_top_infos()` (nom + note /10) est partagée par le
+    verdict et la méta. Banc : `outils/tests/run-meta.php`.
 
