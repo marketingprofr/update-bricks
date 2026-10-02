@@ -19,6 +19,8 @@ foreach ( range( 1, 14 ) as $i ) { if ( ! isset( $GLOBALS['P'][ $i ] ) ) { conti
   $GLOBALS['P'][ $i ]->post_content = '<p>' . str_repeat( 'mot ', 1700 ) . '<a href="https://source-etude.org/x">étude</a> <img src="https://m.media-amazon.com/i.jpg"></p>';
 }
 $GLOBALS['ACF'][100]['mltv5_faq_comparatif'] = array( array( 'mltv5_faq_comparatif_question' => 'Q ?', 'mltv5_faq_comparatif_reponse' => 'R.' ), array( 'mltv5_faq_comparatif_question' => 'Q2 ?', 'mltv5_faq_comparatif_reponse' => '' ) );
+if ( getenv( 'PHRASE' ) ) { $GLOBALS['ACF'][100]['mltv5_phrase_sources'] = getenv( 'PHRASE' ); }
+if ( getenv( 'CRIT' ) ) { $GLOBALS['ACF'][100]['mltv5_criteres_courts'] = getenv( 'CRIT' ); }
 $src = file_get_contents( MT_REPO . '/php-css/hero-encart.code.php' );
 $src = str_replace( '$MT_ENCADRE_REEL = false;', '$MT_ENCADRE_REEL = true;', $src );
 if ( getenv( 'SRC' ) || getenv( 'ETUD' ) ) {
@@ -28,4 +30,10 @@ file_put_contents( __DIR__ . '/out/encart-reel.php', $src );
 ob_start(); ( function() { include __DIR__ . '/out/encart-reel.php'; } )(); $h = ob_get_clean();
 preg_match_all( '#<div class="mt-sc-num">([^<]*)</div><div class="mt-sc-lbl">([^<]*)</div>#', $h, $m, PREG_SET_ORDER );
 foreach ( $m as $x ) { echo '  ', html_entity_decode( $x[1] ), ' ', $x[2], "\n"; }
+if ( preg_match( '#<ul class="mt-sc-liste">(.*?)</ul>#s', $h, $u ) ) {
+  foreach ( explode( '</li>', $u[1] ) as $li ) {
+    $t = trim( html_entity_decode( strip_tags( $li ), ENT_QUOTES, 'UTF-8' ) );
+    if ( $t !== '' ) { echo '  • ', $t, "\n"; }
+  }
+}
 echo '  titre de l\'encadré en <p> : ', ( strpos( $h, '<p class="mt-card-h">' ) !== false ? 'oui' : 'NON' ), "\n";

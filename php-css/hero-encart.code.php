@@ -1,5 +1,9 @@
 <?php
-$MT_ENCADRE_REEL = false; // true : 4 cases à valeurs réelles (tests Jev du 2026-10-02) au lieu de heures / années / avis par défaut
+$MT_ENCADRE_REEL = true;  // encadré à valeurs réelles, validé par Samuel le 2026-10-02 (false = ancien encadré)
+$MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Architecture) : « des guides d'achat internationaux (…), … » ; vide = pas de puce
+$MT_CHAMP_CRITERES_COURTS = 'mltv5_criteres_courts'; // champ du comparatif (Architecture) : libellés courts des critères ; vide = pas de puce
+$MT_TXT_AFFILIATION = '';    // puce « Affiliation : … » (formulation en test) ; '' = pas de puce
+$MT_SIGNALEMENT     = false; // true quand le formulaire « Signaler une erreur » existe (le contact actuel exige un compte)
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
 $MT_AVIS_REPLI    = '200+'; // case 3 si mltv5_avis_etudies est vide ou par défaut (597) : consigne de la rédaction, lire au moins 200 avis (Samuel) ; '' = avis clients, sinon produits retenus
 $MT_SEUIL_AVIS_CL = 10000; // avis clients recensés affichés à partir de ce total (500 faisait baisser la note, 18 440 aidait)
@@ -122,6 +126,31 @@ if ( $MT_ENCADRE_REEL ) {
     }
   }
   if ( $mt_mots >= 8000 ) { $mt_cases[] = array( $ic_book, number_format( $mt_mots, 0, ',', "\xE2\x80\xAF" ), 'mots dans ce guide' ); }
+
+  /* Ordre validé par Samuel : mots · sources · produits analysés · avis étudiés (tri stable) */
+  $mt_rang = function ( $c ) {
+    if ( $c[2] === 'mots dans ce guide' ) { return 0; }
+    if ( $c[2] === 'sources consultées' ) { return 1; }
+    if ( preg_match( '/analysée?s$/u', $c[2] ) ) { return 2; }
+    return 3;
+  };
+  usort( $mt_cases, function ( $a, $b ) use ( $mt_rang ) { return $mt_rang( $a ) <=> $mt_rang( $b ); } );
+
+  /* Puces sous les cases (liste à intitulés en gras), à la place de la phrase générique */
+  $mt_puces = array();
+  $mt_phrase = trim( (string) get_field( $MT_CHAMP_PHRASE_SOURCES, $this_id ) );
+  if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
+    $mt_puces[] = '<b>Nos sources&nbsp;:</b> ' . esc_html( $mt_src_aff ) . ' sources consultées, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
+  }
+  $mt_courts = get_field( $MT_CHAMP_CRITERES_COURTS, $this_id );
+  $mt_courts = is_array( $mt_courts ) ? implode( ', ', array_filter( array_map( 'trim', mt_encadre_textes( $mt_courts ) ) ) ) : trim( (string) $mt_courts );
+  if ( $mt_courts !== '' ) {
+    $mt_typ = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' );
+    $mt_puces[] = '<b>Notre analyse&nbsp;:</b> nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';
+  }
+  if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = '<b>Affiliation&nbsp;:</b> ' . $MT_TXT_AFFILIATION; }
+  if ( $MT_SIGNALEMENT ) { $mt_puces[] = '<b>Une erreur&nbsp;? Une offre a changé&nbsp;?</b> <a href="#mt-signaler" class="mt-signaler">Signalez-la-nous</a>.'; }
+  $mt_puces[] = '<b>Notre indépendance&nbsp;:</b> aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne. <b>Samuel Petit, responsable éditorial</b>';
 }
 ?>
 <div class="mt-card">
@@ -163,8 +192,15 @@ if ( $MT_ENCADRE_REEL ) {
     <div class="mt-sc-row mt-sc-date"><span class="mt-ti"><?php echo $ic_refresh; ?></span><span>Mis à jour le <b><?php echo $mod; ?></b></span></div>
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_book; ?></span><span><b><?php echo $rt; ?> min</b> de lecture</span></div>
   </div>
+  <?php if ( $MT_ENCADRE_REEL && ! empty( $mt_puces ) ) : ?>
+    <div class="mt-sc-process link-black">
+      <ul class="mt-sc-liste"><?php foreach ( $mt_puces as $mt_p ) : ?><li><?php echo $mt_p; ?></li><?php endforeach; ?></ul>
+      <p>Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
+    </div>
+  <?php else : ?>
     <div class="mt-sc-process link-black"><p>Les guides d'achat de Meilleurtest résultent d'un processus de sélection approfondi et d'une vérification méticuleuse. Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
   </div>
+  <?php endif; ?>
   <div class="mt-sc-vote">
     <p class="mt-sc-vote-h">Avis des lecteurs sur cette s&eacute;lection</p>
     <?php /* Rate My Post envoie toujours « Pas encore de note ! », caché par la classe --hidden quand la
