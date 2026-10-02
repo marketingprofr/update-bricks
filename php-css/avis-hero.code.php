@@ -120,37 +120,41 @@ if ( ! function_exists( 'fp_score_class' ) ) {
     return 'low';
   }
 }
-if ( ! function_exists( 'mt_prix_mensuel' ) ) {
-  /* Prix d'abonnement (2026-10-03, préparé désactivé) : case ACF « mltv5_prix_mensuel » (vrai / faux) sur le type de
-     produit (taxonomie post-type-produit). Tant qu'elle n'existe pas ou n'est pas cochée, rien ne change ; cochée, les
-     prix du type s'affichent « à partir de X €/mois » au lieu de « environ X € ».
+if ( ! function_exists( 'mt_prix_unite' ) ) {
+  /* Unité du prix (2026-10-03, préparé désactivé) : liste de choix ACF « mltv5_unite_du_prix » sur le type de produit
+     (taxonomie post-type-produit) : « unique » (par défaut), « mois », « an ». Tant que le champ n'existe pas ou vaut
+     « unique », rien ne change. « mois » / « an » = prix d'appel d'un abonnement : « à partir de X €/mois » (ou « /an »),
+     minimum seul, jamais de borne haute, au lieu de « environ X € ».
      Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
-  function mt_prix_mensuel( $post_id ) {
+  function mt_prix_unite( $post_id ) {
     static $memo = array();
     $post_id = (int) $post_id;
     if ( ! isset( $memo[ $post_id ] ) ) {
-      $memo[ $post_id ] = false;
+      $memo[ $post_id ] = '';
       $terms = get_the_terms( $post_id, 'post-type-produit' );
       foreach ( is_array( $terms ) ? $terms : array() as $t ) {
-        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_prix_mensuel', 'term_' . $t->term_id ) : null;
-        if ( $v === null || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_prix_mensuel', true ); }
-        if ( ! empty( $v ) && $v !== '0' ) { $memo[ $post_id ] = true; break; }
+        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_unite_du_prix', 'term_' . $t->term_id ) : null;
+        if ( $v === null || $v === false || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_unite_du_prix', true ); }
+        if ( is_array( $v ) ) { $v = isset( $v['value'] ) ? $v['value'] : reset( $v ); }  // format de retour « valeur et libellé »
+        $v = mb_strtolower( trim( (string) $v ), 'UTF-8' );
+        if ( preg_match( '/mois|mensuel/u', $v ) ) { $memo[ $post_id ] = 'mois'; break; }
+        if ( preg_match( '/^an$|par an|annuel|année/u', $v ) ) { $memo[ $post_id ] = 'an'; break; }
       }
     }
     return $memo[ $post_id ];
   }
 }
-if ( ! function_exists( 'mt_prix_mois' ) ) {
-  /* « 2,49 €/mois », « 20 €/mois » (centimes seulement s'il y en a) */
-  function mt_prix_mois( $v ) {
+if ( ! function_exists( 'mt_prix_par' ) ) {
+  /* « 2,49 €/mois », « 49 €/an » (centimes seulement s'il y en a) */
+  function mt_prix_par( $v, $unite ) {
     $v = (float) $v;
-    return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/mois";
+    return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/" . $unite;
   }
 }
 if ( ! function_exists( 'fp_format_price' ) ) {
   function fp_format_price( $p ) {
     if ( ! is_numeric( $p ) || $p <= 0 ) return '';
-    if ( ! empty( $GLOBALS['fp_prix_mensuel'] ) ) { return mt_prix_mois( $p ); }  // abonnement : « X €/mois »
+    if ( ! empty( $GLOBALS['fp_prix_unite'] ) ) { return mt_prix_par( $p, $GLOBALS['fp_prix_unite'] ); }  // abonnement : « X €/mois » ou « X €/an »
     return number_format( (float) $p, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€";
   }
 }
@@ -235,7 +239,7 @@ $nb_avis_fmt = function_exists( 'mt5_reviews_label' ) ? mt5_reviews_label( $nb_a
 
 $price_raw = get_field( $FP_PRICE, $pid );
 $price_num = function_exists( 'mt5_num' ) ? mt5_num( $price_raw ) : (float) $price_raw;
-$GLOBALS['fp_prix_mensuel'] = mt_prix_mensuel( $pid );  // case « prix mensuel » du type de produit
+$GLOBALS['fp_prix_unite'] = mt_prix_unite( $pid );  // unité du prix du type de produit : '' (prix unique), 'mois' ou 'an'
 $price_fmt = fp_format_price( $price_num );
 
 $asin = get_field( $FP_ASIN, $pid ) ?: '';
@@ -729,10 +733,10 @@ $fp_uid = 'fp' . substr( md5( $pid . 'avis' ), 0, 5 );
         <div class="fp-buy-or"><span>ou</span></div>
         <div class="fp-buy-opt">
           <a class="fp-buy-btn secondary" href="<?php echo esc_url( $fp_idealo_url ); ?>" target="_blank" rel="nofollow noopener">Meilleur prix sur Idealo <?php echo $FP_SVG_ARROW; ?></a>
-          <div class="fp-price-avg"><?php echo ! empty( $GLOBALS['fp_prix_mensuel'] ) ? 'À partir de' : 'Prix moyen constaté :'; ?> <b><?php echo $price_fmt; ?></b></div>
+          <div class="fp-price-avg"><?php echo ! empty( $GLOBALS['fp_prix_unite'] ) ? 'À partir de' : 'Prix moyen constaté :'; ?> <b><?php echo $price_fmt; ?></b></div>
         </div>
         <?php elseif ( $price_fmt !== '' ) : ?>
-        <div class="fp-price-avg"><?php echo ! empty( $GLOBALS['fp_prix_mensuel'] ) ? 'À partir de' : 'Prix moyen constaté :'; ?> <b><?php echo $price_fmt; ?></b></div>
+        <div class="fp-price-avg"><?php echo ! empty( $GLOBALS['fp_prix_unite'] ) ? 'À partir de' : 'Prix moyen constaté :'; ?> <b><?php echo $price_fmt; ?></b></div>
         <?php endif; ?>
       </div>
       <?php endif; ?>

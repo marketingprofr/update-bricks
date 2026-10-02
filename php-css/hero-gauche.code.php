@@ -354,31 +354,35 @@ if ( ! function_exists( 'mt_faq_read' ) ) {
     return is_array( $rows ) ? $rows : array();
   }
 }
-if ( ! function_exists( 'mt_prix_mensuel' ) ) {
-  /* Prix d'abonnement (2026-10-03, préparé désactivé) : case ACF « mltv5_prix_mensuel » (vrai / faux) sur le type de
-     produit (taxonomie post-type-produit). Tant qu'elle n'existe pas ou n'est pas cochée, rien ne change ; cochée, les
-     prix du type s'affichent « à partir de X €/mois » au lieu de « environ X € ».
+if ( ! function_exists( 'mt_prix_unite' ) ) {
+  /* Unité du prix (2026-10-03, préparé désactivé) : liste de choix ACF « mltv5_unite_du_prix » sur le type de produit
+     (taxonomie post-type-produit) : « unique » (par défaut), « mois », « an ». Tant que le champ n'existe pas ou vaut
+     « unique », rien ne change. « mois » / « an » = prix d'appel d'un abonnement : « à partir de X €/mois » (ou « /an »),
+     minimum seul, jamais de borne haute, au lieu de « environ X € ».
      Copie IDENTIQUE dans les blocs qui affichent un prix (faq, hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content). */
-  function mt_prix_mensuel( $post_id ) {
+  function mt_prix_unite( $post_id ) {
     static $memo = array();
     $post_id = (int) $post_id;
     if ( ! isset( $memo[ $post_id ] ) ) {
-      $memo[ $post_id ] = false;
+      $memo[ $post_id ] = '';
       $terms = get_the_terms( $post_id, 'post-type-produit' );
       foreach ( is_array( $terms ) ? $terms : array() as $t ) {
-        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_prix_mensuel', 'term_' . $t->term_id ) : null;
-        if ( $v === null || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_prix_mensuel', true ); }
-        if ( ! empty( $v ) && $v !== '0' ) { $memo[ $post_id ] = true; break; }
+        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_unite_du_prix', 'term_' . $t->term_id ) : null;
+        if ( $v === null || $v === false || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_unite_du_prix', true ); }
+        if ( is_array( $v ) ) { $v = isset( $v['value'] ) ? $v['value'] : reset( $v ); }  // format de retour « valeur et libellé »
+        $v = mb_strtolower( trim( (string) $v ), 'UTF-8' );
+        if ( preg_match( '/mois|mensuel/u', $v ) ) { $memo[ $post_id ] = 'mois'; break; }
+        if ( preg_match( '/^an$|par an|annuel|année/u', $v ) ) { $memo[ $post_id ] = 'an'; break; }
       }
     }
     return $memo[ $post_id ];
   }
 }
-if ( ! function_exists( 'mt_prix_mois' ) ) {
-  /* « 2,49 €/mois », « 20 €/mois » (centimes seulement s'il y en a) */
-  function mt_prix_mois( $v ) {
+if ( ! function_exists( 'mt_prix_par' ) ) {
+  /* « 2,49 €/mois », « 49 €/an » (centimes seulement s'il y en a) */
+  function mt_prix_par( $v, $unite ) {
     $v = (float) $v;
-    return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/mois";
+    return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/" . $unite;
   }
 }
 if ( ! function_exists( 'mt_vq_phrase' ) ) {
@@ -448,8 +452,8 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       }
       if ( count( $prix ) >= 2 ) {
         $euro  = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€"; };
-        $mens  = mt_prix_mensuel( $page_id );  // abonnement : « de X €/mois à Y €/mois »
-        if ( $mens ) { $euro = function ( $v ) { return mt_prix_mois( $v ); }; }
+        $mens  = mt_prix_unite( $page_id );  // abonnement : « à partir de X €/mois » (ou « /an »)
+        if ( $mens !== '' ) { $euro = function ( $v ) use ( $mens ) { return mt_prix_par( $v, $mens ); }; }
         $indef = $plural
           ? ( 'des ' . ( $type_plur !== '' ? $type_plur : $type_sing ) )
           : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );

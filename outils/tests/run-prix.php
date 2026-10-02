@@ -1,7 +1,7 @@
 <?php
-/* Prix d'abonnement (case ACF « mltv5_prix_mensuel » du type de produit) : réponse « budget » de la FAQ (et son JSON-LD
+/* Prix d'abonnement (liste ACF « mltv5_unite_du_prix » du type de produit : unique / mois / an) : réponse « budget » de la FAQ (et son JSON-LD
    FAQPage), encart « Vos questions », offres JSON-LD des tests V1/V2, prix des fiches avis.
-   Usage : php run-prix.php ; MENSUEL=1 coche la case sur le type du faux comparatif ; PRIX0=1 met tous les prix à 0 ;
+   Usage : php run-prix.php ; UNITE=mois ou UNITE=an règle l'unité du prix du type du faux comparatif (MENSUEL=1 = UNITE=mois) ; PRIX0=1 met tous les prix à 0 ;
    FEM=1 pour un type au féminin (accords). */
 require __DIR__ . '/wp-stubs.php';
 if ( ! function_exists( 'get_the_modified_date' ) ) { function get_the_modified_date( $f = '', $id = 0 ) { return 'octobre 2026'; } }
@@ -19,8 +19,9 @@ $GLOBALS['ACF'][100]['mltv5_faq_comparatif'] = array(
 );
 $prix = getenv( 'PRIX0' ) ? array_fill( 1, 14, '0' ) : array( 1 => '19,99', 2 => '2.49', 3 => '', 4 => '35', 5 => '9.9' );
 foreach ( $prix as $i => $p ) { $GLOBALS['ACF'][ $i ]['mltv5_prix_indicatif'] = $p; }
-if ( getenv( 'MENSUEL' ) ) { $GLOBALS['ACF']['term_10']['mltv5_prix_mensuel'] = true; }
-echo 'mode : ', getenv( 'MENSUEL' ) ? 'case « prix mensuel » cochée' : 'case absente (comme aujourd\'hui)', getenv( 'PRIX0' ) ? ', tous les prix à 0' : '', "\n";
+$unite = getenv( 'UNITE' ) ?: ( getenv( 'MENSUEL' ) ? 'mois' : '' );
+if ( $unite !== '' ) { $GLOBALS['ACF']['term_10']['mltv5_unite_du_prix'] = $unite; }
+echo 'mode : ', $unite !== '' ? 'unité du prix « ' . $unite . ' »' : 'champ absent (comme aujourd\'hui)', getenv( 'PRIX0' ) ? ', tous les prix à 0' : '', "\n";
 $plat = function ( $h ) { return trim( preg_replace( '/\s+/u', ' ', html_entity_decode( strip_tags( $h ), ENT_QUOTES, 'UTF-8' ) ) ); };
 
 /* 1) FAQ */
@@ -73,5 +74,5 @@ $GLOBALS['TERMS'][1]['post-type-produit'] = $GLOBALS['TERMS'][100]['post-type-pr
 $code = file_get_contents( MT_REPO . '/php-css/avis-hero.code.php' );
 preg_match( "#if \( ! function_exists\( 'fp_format_price' \) \).*?\R\}\R#s", $code, $fp );
 eval( $fp[0] );
-$GLOBALS['fp_prix_mensuel'] = mt_prix_mensuel( 1 );
-echo 'Fiche avis : ', ( ! empty( $GLOBALS['fp_prix_mensuel'] ) ? 'À partir de' : 'Prix moyen constaté :' ), ' ', fp_format_price( mt5_num( $GLOBALS['ACF'][1]['mltv5_prix_indicatif'] ) ), ' | 2,49 → ', fp_format_price( 2.49 ), ' | 0 → « ', fp_format_price( 0 ), " »\n";
+$GLOBALS['fp_prix_unite'] = mt_prix_unite( 1 );
+echo 'Fiche avis : ', ( ! empty( $GLOBALS['fp_prix_unite'] ) ? 'À partir de' : 'Prix moyen constaté :' ), ' ', fp_format_price( mt5_num( $GLOBALS['ACF'][1]['mltv5_prix_indicatif'] ) ), ' | 2,49 → ', fp_format_price( 2.49 ), ' | 0 → « ', fp_format_price( 0 ), " »\n";

@@ -1007,16 +1007,18 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     rédigé par l'Architecture) juste avant le top 5 (utilité +0,08) ; ordre visé : réponse courte →
     « Vos questions » → … → point de vigilance → top 5. Biographie de l'auteur juste sous la ligne
     auteur (+0,07), quand l'Architecture aura fait valider les bios (champ à confirmer).
-  - **Prix d'abonnement, préparé désactivé** (`mt_prix_mensuel()` + `mt_prix_mois()`, copie IDENTIQUE dans faq,
-    hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content) : case ACF vrai/faux `mltv5_prix_mensuel` sur le
-    type de produit (taxonomie `post-type-produit`, lue par `get_field( …, 'term_ID' )` puis `get_term_meta`). Tant
-    qu'elle n'existe pas : rien ne change. Cochée (prix d'appel, donc JAMAIS de borne haute) : FAQ « Les X de notre
-    sélection sont proposé(e)s à partir de X €/mois », « coûte à partir de », « (à partir de X €/mois) » (aussi dans
-    le JSON-LD FAQPage) ; encart « Vos questions » idem ; offres JSON-LD des tests sans `highPrice` +
-    `priceSpecification` UnitPriceSpecification (1 MON) ; fiches avis « À partir de X €/mois » au lieu de
-    « Prix moyen constaté : X € » (centimes gardés s'il y en a). 22 types (liste de référence de l'Architecture :
+  - **Unité du prix, préparée désactivée** (`mt_prix_unite()` + `mt_prix_par()`, copie IDENTIQUE dans faq, hero
+    gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content) : liste de choix ACF `mltv5_unite_du_prix` sur le type
+    de produit (taxonomie `post-type-produit`, lue par `get_field( …, 'term_ID' )` puis `get_term_meta`), valeurs
+    `unique` (défaut) / `mois` / `an` (libellés « Par mois », « Par an » acceptés). Champ absent ou « unique » : rien
+    ne change (rendu V1/V2 vérifié identique). « mois » / « an » = prix d'appel, donc minimum seul, JAMAIS de borne
+    haute : FAQ « Les X de notre sélection sont proposé(e)s à partir de X €/mois », « coûte à partir de »,
+    « (à partir de X €/mois) » (aussi dans le JSON-LD FAQPage) ; encart « Vos questions » idem ; offres JSON-LD des
+    tests sans `highPrice` + `priceSpecification` UnitPriceSpecification (1 MON ou 1 ANN) ; fiches avis « À partir de
+    X €/mois » au lieu de « Prix moyen constaté : X € » (centimes gardés s'il y en a). Remplace la case
+    `mltv5_prix_mensuel` (Samuel, 2026-10-03). 22 types « par mois » (liste de référence de l'Architecture :
     `wp-avis/types-prix-mensuel-2026-10-03.csv` ; « service de stockage » exclu). Prix à 0 = aucune phrase de prix
-    ni offre JSON-LD (vérifié).
-    Corrigés au passage : tri « Prix » du top 5 (un produit sans prix passait n°1 « Le meilleur pas cher ») et
-    carrousel « marque » des fiches avis (« À partir de » sans montant). Banc : `outils/tests/run-prix.php`.
+    ni offre JSON-LD (vérifié). Corrigés au passage : tri « Prix » du top 5 (un produit sans prix passait n°1
+    « Le meilleur pas cher ») et carrousel « marque » des fiches avis (« À partir de » sans montant). Banc :
+    `outils/tests/run-prix.php` (`UNITE=mois|an`, `PRIX0=1`, `FEM=1`).
 
