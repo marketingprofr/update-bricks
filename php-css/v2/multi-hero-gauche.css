@@ -34,6 +34,12 @@
 .mt-verdict a { color: var(--at-primary); text-decoration: underline; }
 .mt-verdict a:hover { color: var(--at-primary-d-1); }
 
+/* Ligne auteur « Vérifié par … » : forme courte sur mobile (data-court), la forme complète reste dans le texte */
+@media (max-width: 767px) {
+  .mt-verif { font-size: 0; }
+  .mt-verif::after { content: attr(data-court); font-size: 13px; }
+}
+
 .mt-picks-intro { font-size: clamp(15px, 1.4vw, 16.5px); line-height: 1.62; color: var(--at-black-l-2); margin: 0 0 4px; }
 .mt-picks { margin: 0 0 26px; padding-left: 22px; }
 .mt-picks li { font-size: clamp(15px, 1.4vw, 16.5px); line-height: 1.62; color: var(--at-black-l-2); }

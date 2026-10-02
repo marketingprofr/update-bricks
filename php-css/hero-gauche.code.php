@@ -559,9 +559,13 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       <span>Rédigé et vérifié par <b><?php echo esc_html( $MT_VERIFIE_PAR ); ?></b>, responsable éditorial</span>
       <?php } else { ?>
       <span>Par <b><?php echo esc_html($author ?? ''); ?></b></span>
-      <?php if ( $MT_VERIFIE_PAR !== '' ) { ?>
+      <?php if ( $MT_VERIFIE_PAR !== '' ) {
+          /* Forme courte (« S. Petit, resp. éditorial ») affichée sur mobile par le CSS via data-court :
+             seule la forme complète est dans le texte de la page (lue par Jev et les lecteurs d'écran). */
+          $mt_vp = preg_split( '/\s+/u', trim( $MT_VERIFIE_PAR ), 2 );
+          $mt_vp_court = count( $mt_vp ) === 2 ? mb_substr( $mt_vp[0], 0, 1, 'UTF-8' ) . '. ' . $mt_vp[1] : $MT_VERIFIE_PAR; ?>
       <span class="mt-dot">&bull;</span>
-      <span>Vérifié par <b><?php echo esc_html( $MT_VERIFIE_PAR ); ?></b>, responsable éditorial</span>
+      <span class="mt-verif" data-court="<?php echo esc_attr( 'Vérifié par ' . $mt_vp_court . ', resp. éditorial' ); ?>">Vérifié par <b><?php echo esc_html( $MT_VERIFIE_PAR ); ?></b>, responsable éditorial</span>
       <?php } } ?>
       <span class="mt-dot">&bull;</span>
       <span>Mis à jour le <?php echo $mod; ?></span>
