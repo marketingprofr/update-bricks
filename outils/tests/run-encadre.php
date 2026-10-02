@@ -1,6 +1,6 @@
 <?php
 /* Encadré « Pourquoi nous faire confiance » à valeurs réelles (hero-encart, réglage $MT_ENCADRE_REEL activé
-   dans une copie). Usage : NAVIS=16 php run-encadre.php ; CASE1="~20" pour la case des sources ;
+   dans une copie). Usage : NAVIS=16 php run-encadre.php ; SRC=31 ETUD=390 pour le champ « La recherche » (10 / 597 = valeurs par défaut) ;
    AVIS=60000 pour dépasser le seuil des avis clients. */
 require __DIR__ . '/wp-stubs.php';
 if ( ! function_exists( 'strip_shortcodes' ) ) { function strip_shortcodes( $s ) { return $s; } }
@@ -21,7 +21,9 @@ foreach ( range( 1, 14 ) as $i ) { if ( ! isset( $GLOBALS['P'][ $i ] ) ) { conti
 $GLOBALS['ACF'][100]['mltv5_faq_comparatif'] = array( array( 'mltv5_faq_comparatif_question' => 'Q ?', 'mltv5_faq_comparatif_reponse' => 'R.' ), array( 'mltv5_faq_comparatif_question' => 'Q2 ?', 'mltv5_faq_comparatif_reponse' => '' ) );
 $src = file_get_contents( MT_REPO . '/php-css/hero-encart.code.php' );
 $src = str_replace( '$MT_ENCADRE_REEL = false;', '$MT_ENCADRE_REEL = true;', $src );
-if ( getenv( 'CASE1' ) ) { $src = str_replace( '$MT_CASE1_NUM   = \'\';', '$MT_CASE1_NUM   = \'' . getenv( 'CASE1' ) . '\';', $src ); }
+if ( getenv( 'SRC' ) || getenv( 'ETUD' ) ) {
+  $GLOBALS['ACF'][100]['mltv5_la_recherche_comparatif'] = array( 'mltv5_sources_consultees' => (int) getenv( 'SRC' ), 'mltv5_avis_etudies' => (int) getenv( 'ETUD' ) );
+}
 file_put_contents( __DIR__ . '/out/encart-reel.php', $src );
 ob_start(); ( function() { include __DIR__ . '/out/encart-reel.php'; } )(); $h = ob_get_clean();
 preg_match_all( '#<div class="mt-sc-num">([^<]*)</div><div class="mt-sc-lbl">([^<]*)</div>#', $h, $m, PREG_SET_ORDER );

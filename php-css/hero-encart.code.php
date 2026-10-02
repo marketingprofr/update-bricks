@@ -1,7 +1,7 @@
 <?php
 $MT_ENCADRE_REEL = false; // true : 4 cases à valeurs réelles (tests Jev du 2026-10-02) au lieu de heures / années / avis par défaut
-$MT_CASE1_NUM   = '';                   // case 1 : sources consultées par guide, valeur du site (ex. '~20') ; '' = case retirée
-$MT_CASE1_LBL   = 'sources consultées'; // libellé de la case 1 (en test)
+$MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
+$MT_AVIS_REPLI    = '';    // case 3 si mltv5_avis_etudies est vide ou par défaut (597) ; '' = avis clients ≥ 50 000, sinon FAQ
 $this_id = get_the_ID();
 extract(get_all_template_variables($this_id));
 $mod = date_i18n('j F Y', get_the_modified_time('U'));
@@ -75,26 +75,36 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $mt_plan && ! empty( $mt_plan['is_multi'] ) ) { $mt_aff = array_values( array_unique( array_merge( $mt_aff, $mt_plan['tests'] ) ) ); }
   if ( $mt_aff ) { update_meta_cache( 'post', $mt_aff ); }
 
-  /* Case 1 : sources consultées. La liste des sources de chaque guide n'existe plus : valeur et libellé au
-     niveau du site, en réglage ($MT_CASE1_NUM, $MT_CASE1_LBL). Pas de comptage de liens (refusé par Samuel :
-     ce seraient des marchands, pas des sources). */
-  if ( $MT_CASE1_NUM !== '' && $MT_CASE1_LBL !== '' ) { $mt_cases[] = array( $ic_layers, $MT_CASE1_NUM, $MT_CASE1_LBL ); }
+  /* Champ de la page « La recherche » : vraies valeurs reprises de l'ancien site (sources : environ 30 par
+     guide ; avis étudiés variés sur deux tiers des guides). 10 sources et 597 avis = valeurs par défaut. */
+  $mt_rech = get_field( 'mltv5_la_recherche_comparatif', $this_id );
+  $mt_rech = is_array( $mt_rech ) ? $mt_rech : array();
+  $mt_src  = (int) ( $mt_rech['mltv5_sources_consultees'] ?? 0 );
+  $mt_etud = (int) ( $mt_rech['mltv5_avis_etudies'] ?? 0 );
+
+  /* Case 1 : sources consultées (repli : réglage $MT_SOURCES_REPLI) */
+  $mt_src_aff = ( $mt_src > 0 && $mt_src !== 10 ) ? (string) $mt_src : $MT_SOURCES_REPLI;
+  if ( $mt_src_aff !== '' ) { $mt_cases[] = array( $ic_layers, $mt_src_aff, 'sources consultées' ); }
 
   /* Case 2 : produits analysés = même N que le title (+5 si < 10) */
   $mt_lbl_n = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits analysés' : mb_strtolower( $tp, 'UTF-8' ) . ' analysé' . $mt_e . 's';
   $mt_cases[] = array( $ic_tablet, $mt_display_count, $mt_lbl_n );
 
-  /* Case 3 : avis clients recensés (≥ 50 000 seulement), sinon questions fréquentes traitées */
+  /* Case 3 : avis étudiés (champ de la page, hors valeur par défaut 597), sinon réglage $MT_AVIS_REPLI,
+     sinon avis clients recensés (≥ 50 000), sinon questions fréquentes traitées */
   $mt_avis = 0;
   if ( $mt_ids ) {
     update_meta_cache( 'post', $mt_ids );
     foreach ( $mt_ids as $pid ) {
-      /* « 3104 », « 1 234 » ou « 1 234 » : espaces de milliers retirés, puis valeur numérique */
-      $mt_v = str_replace( array( ' ', "Â ", "â¯" ), '', (string) get_post_meta( $pid, 'mltv5_nombre_avis_clients', true ) );
+      /* « 3104 », « 1 234 », avec espace normale, insécable ou fine : espaces de milliers retirés, puis valeur numérique */
+      $mt_v = str_replace( array( ' ', "\xc2\xa0", "\xe2\x80\xaf" ), '', (string) get_post_meta( $pid, 'mltv5_nombre_avis_clients', true ) );
       $mt_avis += is_numeric( $mt_v ) ? (int) round( (float) $mt_v ) : 0;
     }
   }
-  if ( $mt_avis >= 50000 ) {
+  $mt_etud_aff = ( $mt_etud > 0 && $mt_etud !== 597 ) ? number_format( $mt_etud, 0, ',', "\xE2\x80\xAF" ) : $MT_AVIS_REPLI;
+  if ( $mt_etud_aff !== '' ) {
+    $mt_cases[] = array( $ic_chat, $mt_etud_aff, 'avis étudiés' );
+  } elseif ( $mt_avis >= 50000 ) {
     $mt_cases[] = array( $ic_chat, number_format( $mt_avis, 0, ',', "\xE2\x80\xAF" ), 'avis clients recensés' );
   } else {
     /* Même décompte que la FAQ : questions saisies avec une réponse + questions automatiques
