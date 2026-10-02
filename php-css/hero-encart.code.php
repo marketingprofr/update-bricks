@@ -1,7 +1,7 @@
 <?php
 $MT_ENCADRE_REEL = false; // true : 4 cases à valeurs réelles (tests Jev du 2026-10-02) au lieu de heures / années / avis par défaut
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
-$MT_AVIS_REPLI    = '';    // case 3 si mltv5_avis_etudies est vide ou par défaut (597) ; '' = avis clients, sinon produits retenus
+$MT_AVIS_REPLI    = '200+'; // case 3 si mltv5_avis_etudies est vide ou par défaut (597) : consigne de la rédaction, lire au moins 200 avis (Samuel) ; '' = avis clients, sinon produits retenus
 $MT_SEUIL_AVIS_CL = 10000; // avis clients recensés affichés à partir de ce total (500 faisait baisser la note, 18 440 aidait)
 $this_id = get_the_ID();
 extract(get_all_template_variables($this_id));
