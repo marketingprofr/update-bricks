@@ -136,11 +136,12 @@ if ( $MT_ENCADRE_REEL ) {
   };
   usort( $mt_cases, function ( $a, $b ) use ( $mt_rang ) { return $mt_rang( $a ) <=> $mt_rang( $b ); } );
 
-  /* Puces sous les cases (liste à intitulés en gras), à la place de la phrase générique */
+  /* Puces sous les cases (liste SANS intitulés, choix de Samuel du 2026-10-02 ; les intitulés n'ont aucun effet
+     mesurable sur Jev), à la place de la phrase générique */
   $mt_puces = array();
   $mt_phrase = trim( (string) get_field( $MT_CHAMP_PHRASE_SOURCES, $this_id ) );
   if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
-    $mt_puces[] = '<b>Nos sources&nbsp;:</b> ' . esc_html( $mt_src_aff ) . ' sources consultées, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
+    $mt_puces[] = esc_html( $mt_src_aff ) . ' sources consultées, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
   /* Libellés courts des critères : champ mltv5_criteres_courts s'il est rempli, sinon tirés automatiquement
      des critères du guide (page, sinon annexe en cache) :
@@ -172,15 +173,15 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $mt_champ !== '' ) { $mt_courts = $mt_champ; }
   if ( $mt_courts !== '' ) {
     $mt_typ = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' );
-    $mt_puces[] = '<b>Notre analyse&nbsp;:</b> nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';
+    $mt_puces[] = 'Nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';
   }
-  if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = '<b>Affiliation&nbsp;:</b> ' . $MT_TXT_AFFILIATION; }
+  if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }
   if ( $MT_SIGNALEMENT ) {
     /* La page d'origine est transmise au formulaire (identifiant + adresse), sans donnée personnelle */
     $mt_url_sig = add_query_arg( array( 'page_id' => $this_id, 'url' => rawurlencode( get_permalink( $this_id ) ) ), home_url( $MT_URL_SIGNALEMENT ) );
-    $mt_puces[] = '<b>Une erreur&nbsp;? Une offre a changé&nbsp;?</b> <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Signalez-la-nous</a>.';
+    $mt_puces[] = 'Une erreur&nbsp;? Une offre a changé&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Signalez-la-nous</a>.';
   }
-  $mt_puces[] = '<b>Notre indépendance&nbsp;:</b> aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne. <b>Samuel Petit, responsable éditorial</b>';
+  $mt_puces[] = 'Aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne. <b>Samuel Petit, responsable éditorial</b>';
 }
 ?>
 <div class="mt-card">
