@@ -1,4 +1,8 @@
 <?php
+$MT_ENCADRE_REEL = false; // true : 4 cases à valeurs réelles (tests Jev du 2026-10-02) au lieu de heures / années / avis par défaut
+$MT_LBL_SITES_SERVICE = 'sites officiels consultés';          // case 1, comparatif rangé sous la catégorie « Services »
+$MT_LBL_SITES_PRODUIT = 'sites marchands et officiels cités'; // case 1, autres comparatifs ; '' = case retirée
+$MT_CAT_SERVICES      = 'services';                           // slug de la catégorie racine des services
 $this_id = get_the_ID();
 extract(get_all_template_variables($this_id));
 $mod = date_i18n('j F Y', get_the_modified_time('U'));
@@ -45,11 +49,133 @@ $ic_chat    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
 $ic_check   = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.2 2.2L16 9"/></svg>';
 $ic_refresh = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v5h-5"/></svg>';
 $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6c-1.6-1.2-4-2-7-2v13c3 0 5.4.8 7 2 1.6-1.2 4-2 7-2V4c-3 0-5.4.8-7 2Z"/><path d="M12 6v13"/></svg>';
+
+/* ---- Encadré à valeurs réelles ($MT_ENCADRE_REEL) : chaque case n'apparaît que si sa valeur est utile ---- */
+if ( ! function_exists( 'mt_encadre_mots' ) ) {
+  function mt_encadre_mots( $html ) {
+    $t = trim( html_entity_decode( wp_strip_all_tags( (string) $html ), ENT_QUOTES, 'UTF-8' ) );
+    return $t === '' ? 0 : count( preg_split( '/\s+/u', $t ) );
+  }
+  /* Toutes les chaînes d'une valeur ACF (groupes et répéteurs compris) */
+  function mt_encadre_textes( $v ) {
+    if ( is_string( $v ) ) { return array( $v ); }
+    $out = array();
+    if ( is_array( $v ) ) { foreach ( $v as $x ) { $out = array_merge( $out, mt_encadre_textes( $x ) ); } }
+    return $out;
+  }
+}
+$mt_cases = array();
+if ( $MT_ENCADRE_REEL ) {
+  $mt_fem   = ( ( $masculinsfeminins ?? '' ) == 'Meilleures' );
+  $mt_e     = $mt_fem ? 'e' : '';
+  $mt_ids   = isset( $mt_cq ) ? array_map( 'intval', $mt_cq->posts ) : array();
+  $mt_top   = array_values( array_filter( array_map( 'intval', (array) ( $top_avis_ids ?? array() ) ) ) );
+  /* Produits affichés : classement principal + tests complets d'un multi-comparatif */
+  $mt_aff   = $mt_top;
+  $mt_plan  = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
+  if ( $mt_plan && ! empty( $mt_plan['is_multi'] ) ) { $mt_aff = array_values( array_unique( array_merge( $mt_aff, $mt_plan['tests'] ) ) ); }
+  if ( $mt_aff ) { update_meta_cache( 'post', $mt_aff ); }
+
+  /* Case 1 : sites cités = domaines externes des liens de la page (boutons d'achat, liens des tests,
+     introduction), hors réseaux sociaux, images, outils et redirections d'affiliation. */
+  $mt_exclus = array( 'meilleurtest.fr', 'x.com', 'twitter.com', 'facebook.com', 'youtube.com', 'youtu.be', 'linkedin.com',
+    'instagram.com', 'pinterest.', 'tiktok.com', 'media-amazon.com', 'images-amazon.com', 'cookiedatabase.org', 'digidip',
+    'awin1.com', 'tradedoubler.com', 'effiliation.com', 'metaffiliation.com', 'linksynergy.com', 'prf.hn', 'sjv.io', 'pxf.io',
+    'anrdoezrs.net', 'jdoqocy.com', 'tkqlhce.com', 'dpbolvw.net', 'kqzyfj.com', 'publicidees.com', 'viglink.com',
+    'skimresources.com', 'affilae.com', 'kwanko.com', 'lgbtracking', 'gotrackier', 'go2cloud.org' );
+  $mt_liens = array();
+  $mt_html  = (string) ( $introduction ?? '' );
+  foreach ( $mt_aff as $pid ) {
+    if ( trim( (string) get_field( 'mltv5_asin_amazon', $pid ) ) !== '' ) { $mt_liens[] = 'https://www.amazon.fr/'; }
+    for ( $li = 1; $li <= 3; $li++ ) { $mt_liens[] = trim( (string) get_field( 'mltv5_lien_du_produit_' . $li, $pid ) ); }
+    $mt_html .= ' ' . get_post_field( 'post_content', $pid );
+  }
+  if ( preg_match_all( '#href=["\'](https?://[^"\']+)#i', $mt_html, $mt_m ) ) { $mt_liens = array_merge( $mt_liens, $mt_m[1] ); }
+  $mt_dom = array();
+  foreach ( $mt_liens as $u ) {
+    $h = strtolower( (string) wp_parse_url( $u, PHP_URL_HOST ) );
+    $h = preg_replace( '/^www\./', '', $h );
+    if ( $h === '' ) { continue; }
+    foreach ( $mt_exclus as $x ) { if ( strpos( $h, $x ) !== false ) { continue 2; } }
+    $mt_dom[ $h ] = true;
+  }
+  /* Service = comparatif rangé sous la catégorie « Services » (ou une de ses sous-catégories) */
+  $mt_service = false;
+  foreach ( (array) get_the_category( $this_id ) as $mt_cat ) {
+    $mt_chaine = array_merge( array( (int) $mt_cat->term_id ), array_map( 'intval', (array) get_ancestors( $mt_cat->term_id, 'category' ) ) );
+    foreach ( $mt_chaine as $mt_tid ) {
+      $mt_t = get_term( $mt_tid, 'category' );
+      if ( $mt_t && ! is_wp_error( $mt_t ) && $mt_t->slug === $MT_CAT_SERVICES ) { $mt_service = true; break 2; }
+    }
+  }
+  $mt_lbl_sites = $mt_service ? $MT_LBL_SITES_SERVICE : $MT_LBL_SITES_PRODUIT;
+  if ( $mt_lbl_sites !== '' && count( $mt_dom ) > 0 ) {
+    $mt_cases[] = array( $ic_layers, count( $mt_dom ), $mt_lbl_sites );
+  }
+
+  /* Case 2 : produits analysés = même N que le title (+5 si < 10) */
+  $mt_lbl_n = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits analysés' : mb_strtolower( $tp, 'UTF-8' ) . ' analysé' . $mt_e . 's';
+  $mt_cases[] = array( $ic_tablet, $mt_display_count, $mt_lbl_n );
+
+  /* Case 3 : avis clients recensés (≥ 50 000 seulement), sinon questions fréquentes traitées */
+  $mt_avis = 0;
+  if ( $mt_ids ) {
+    update_meta_cache( 'post', $mt_ids );
+    foreach ( $mt_ids as $pid ) {
+      /* « 3104 », « 1 234 » ou « 1 234 » : espaces de milliers retirés, puis valeur numérique */
+      $mt_v = str_replace( array( ' ', "Â ", "â¯" ), '', (string) get_post_meta( $pid, 'mltv5_nombre_avis_clients', true ) );
+      $mt_avis += is_numeric( $mt_v ) ? (int) round( (float) $mt_v ) : 0;
+    }
+  }
+  if ( $mt_avis >= 50000 ) {
+    $mt_cases[] = array( $ic_chat, number_format( $mt_avis, 0, ',', "\xE2\x80\xAF" ), 'avis clients recensés' );
+  } else {
+    /* Même décompte que la FAQ : questions saisies avec une réponse + questions automatiques
+       (n°1, budget/avis/confiance, méthode ; marques si >= 3 marques ; choix si le guide a des critères) */
+    $mt_faq  = get_field( 'mltv5_faq_comparatif', $this_id );
+    if ( empty( $mt_faq ) ) { $mt_fid = (int) get_field( 'mltv5_cached_id_faq', $this_id ); $mt_faq = $mt_fid ? get_field( 'mltv5_faq_comparatif', $mt_fid ) : array(); }
+    $mt_nq = 0;
+    foreach ( (array) $mt_faq as $r ) {
+      if ( trim( (string) ( $r['mltv5_faq_comparatif_question'] ?? '' ) ) !== '' && trim( wp_strip_all_tags( (string) ( $r['mltv5_faq_comparatif_reponse'] ?? '' ) ) ) !== '' ) { $mt_nq++; }
+    }
+    if ( $mt_top ) {
+      $mt_nq += 3;
+      $mt_marques = array();
+      foreach ( $mt_top as $pid ) { $b = mb_strtolower( trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) ), 'UTF-8' ); if ( $b !== '' ) { $mt_marques[ $b ] = true; } }
+      if ( count( $mt_marques ) >= 3 ) { $mt_nq++; }
+      $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
+      if ( empty( $mt_crit ) ) { $mt_cid = (int) get_field( 'mltv5_cached_id_criteres', $this_id ); $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array(); }
+      if ( ! empty( $mt_crit ) ) { $mt_nq++; }
+    }
+    if ( $mt_nq > 0 ) { $mt_cases[] = array( $ic_chat, $mt_nq, 'questions fréquentes traitées' ); }
+  }
+
+  /* Case 4 : mots du contenu (introduction, guide d'achat, tests complets) ; affichée à partir de 8 000 */
+  $mt_mots = mt_encadre_mots( $introduction ?? '' );
+  foreach ( $mt_aff as $pid ) { $mt_mots += mt_encadre_mots( get_post_field( 'post_content', $pid ) ) + mt_encadre_mots( get_field( 'mltv5_resume_produit', $pid ) ); }
+  foreach ( array( 'criteres', 'types', 'marques', 'astuces', 'raisons', 'faq' ) as $mt_part ) {
+    $mt_aid = (int) get_field( 'mltv5_cached_id_' . $mt_part, $this_id );
+    if ( $mt_aid && function_exists( 'get_fields' ) ) {
+      foreach ( mt_encadre_textes( get_fields( $mt_aid ) ) as $t ) { $mt_mots += mt_encadre_mots( $t ); }
+    }
+  }
+  if ( $mt_mots >= 8000 ) { $mt_cases[] = array( $ic_book, number_format( $mt_mots, 0, ',', "\xE2\x80\xAF" ), 'mots dans ce guide' ); }
+}
 ?>
 <div class="mt-card">
 
   <p class="mt-card-h"><span class="mt-card-hi"><?php echo $ic_shield; ?></span>Pourquoi nous faire confiance</p>
 
+  <?php if ( $MT_ENCADRE_REEL && $mt_cases ) : ?>
+  <div class="mt-sc-grid">
+    <?php foreach ( $mt_cases as $mt_c ) : ?>
+    <div class="mt-sc-cell">
+      <span class="mt-sc-ico"><?php echo $mt_c[0]; ?></span>
+      <div><div class="mt-sc-num"><?php echo esc_html( $mt_c[1] ); ?></div><div class="mt-sc-lbl"><?php echo esc_html( $mt_c[2] ); ?></div></div>
+    </div>
+    <?php endforeach; ?>
+  </div>
+  <?php else : ?>
   <div class="mt-sc-grid">
     <div class="mt-sc-cell">
       <span class="mt-sc-ico"><?php echo $ic_clock; ?></span>
@@ -68,6 +194,7 @@ $ic_book    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" strok
       <div><div class="mt-sc-num"><?php echo esc_html($avis_etudies ?? ''); ?></div><div class="mt-sc-lbl">avis étudiés</div></div>
     </div>
   </div>
+  <?php endif; ?>
 
   <div class="mt-sc-trust">
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_check; ?></span><span><b>100&nbsp;% indépendant</b> (et sans pub)</span></div>
