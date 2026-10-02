@@ -389,3 +389,10 @@
 .mt-top5 .t5-admin-tag { position: absolute; top: 8px; right: 8px; z-index: 5; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; line-height: 1.4; }
 .mt-top5 .t5-admin-oos .t5-admin-tag  { background: #fb923c; color: #fff; }
 .mt-top5 .t5-admin-disco .t5-admin-tag { background: #ef4444; color: #fff; }
+
+/* « Point de vigilance » (pilote du 2026-10-03) : passage d'une autorité publique, juste avant le top 5 */
+.mt-vigilance { margin: 0 0 24px; padding: 16px 18px; background: var(--at-white); border: 1px solid var(--at-grey-l-3); border-left: 4px solid var(--at-primary); border-radius: 12px; }
+.mt-vigilance h2 { font-size: 18px; line-height: 1.3; font-weight: 600; letter-spacing: 0; margin: 0 0 8px; color: var(--at-black-l-1); }
+.mt-vigilance p { font-size: 15px; line-height: 1.6; color: var(--at-black-l-2); margin: 0 0 8px; }
+.mt-vigilance .mt-vigilance-source { font-size: 13px; color: var(--at-grey); margin: 0; }
+.mt-vigilance a { color: var(--at-primary); text-decoration: underline; }

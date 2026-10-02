@@ -1006,10 +1006,20 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
     220 caractères au plus. Aides de faq.code.php copiées à l'identique (`mt_guide_cache_id`, `mt5_num`,
     `mt_faq_read`). `mt_criteres_courts()` : copie IDENTIQUE dans hero-encart et les blocs hero.
     CSS `.mt-faq-mini` (fichiers complets du hero). Banc : `outils/tests/run-questions.php`.
-  - **À venir, sur décision de Samuel** : « point de vigilance » (h2 + paragraphe tiré d'un champ,
-    rédigé par l'Architecture) juste avant le top 5 (utilité +0,08) ; ordre visé : réponse courte →
-    « Vos questions » → … → point de vigilance → top 5. Biographie de l'auteur juste sous la ligne
-    auteur (+0,07), quand l'Architecture aura fait valider les bios (champ à confirmer).
+  - **« Point de vigilance », pilote préparé désactivé** (`$MT_POINT_VIGILANCE` = false dans top5-resume et
+    multi-resume ; `mt_point_vigilance()` + `mt_vigilance_date()`, copie IDENTIQUE dans les deux) : passage qui cite
+    une autorité publique, juste avant le top 5 (après « Vos questions » s'il est réglé sur 'avant_top5' ; utilité
+    +0,08 sur 5 pages). Champs ACF sur le type de produit (taxonomie `post-type-produit`) : `mltv5_vigilance_titre`,
+    `mltv5_vigilance_texte`, `mltv5_vigilance_autorite`, `mltv5_vigilance_url`, `mltv5_vigilance_date_verif`
+    (obligatoires) et `mltv5_vigilance_date_page` (facultative : page officielle parfois non datée). Rendu :
+    `section.mt-vigilance` > h2 + paragraphe + « Source : <a class="nodip">ADEME</a>, page du 29 mai 2026, vérifiée
+    le 2 octobre 2026. » (lien suivi ; la classe `nodip` empêche redir.js d'en faire un lien Digidip). Pilote :
+    climatiseur mobile (passage ADEME dans `wp-avis/points-de-vigilance-2026-10-02.md`). CSS dans les fichiers
+    complets du résumé V1/V2. Banc : `outils/tests/run-vigilance.php`.
+  - **Encart « Vos questions »** : place retenue par Samuel 'sous_reponse' ; 'apres_intro' (après `div.mt-lede`, sur
+    mobile l'encart suit l'intro) mesure autant (+0,09).
+  - **À venir** : biographie de l'auteur juste sous la ligne auteur (+0,07), quand l'Architecture aura fait valider
+    les bios (champ à confirmer). Ligne d'auteur : « Rédigé par », spécialité, pseudo façon Reddit = neutres.
   - **Unité du prix, préparée désactivée** (`mt_prix_unite()` + `mt_prix_par()`, copie IDENTIQUE dans faq, hero
     gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content) : liste de choix ACF `mltv5_unite_du_prix` sur le type
     de produit (taxonomie `post-type-produit`, lue par `get_field( …, 'term_ID' )` puis `get_term_meta`), valeurs

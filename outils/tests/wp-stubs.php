@@ -101,7 +101,7 @@ function current_user_can( $c ) { return $GLOBALS['CAN']; }
 function is_user_logged_in() { return $GLOBALS['CAN']; }
 function wp_create_nonce( $a ) { return 'nonce'; }
 function admin_url( $p ) { return '/wp-admin/' . $p; }
-function date_i18n( $f ) { return date( $f ); }
+function date_i18n( $f, $ts = null ) { return date( $f, $ts ?? time() ); }
 function add_action( $h, $cb, $p = 10, $n = 1 ) { if ( $h === 'wp_footer' ) { $GLOBALS['FOOTER'][] = $cb; } }
 function add_filter( $h, $cb, $p = 10, $n = 1 ) {}
 function apply_filters( $h, $v ) { return $v; }

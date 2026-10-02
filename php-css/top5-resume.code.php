@@ -12,10 +12,50 @@
 $T5_CUST_RATING_FIELD = 'mltv5_score_avis_clients';    // note clients /5 (étoile)
 $T5_CUST_COUNT_FIELD  = 'mltv5_nombre_avis_clients';   // nombre d'avis clients
 $T5_AMAZON_TAG        = 'mlt00-21';                     // tag affilié Amazon
+$MT_POINT_VIGILANCE   = false;  // « Point de vigilance » (champs du type de produit) juste avant le top 5 : pilote, en attente de Samuel
 
 /* ---------------------------------------------------------------------
    Helpers (déclarés une fois)
    --------------------------------------------------------------------- */
+if ( ! function_exists( 'mt_point_vigilance' ) ) {
+  /* « Point de vigilance » (pilote climatiseur mobile, 2026-10-03 ; utilité +0,08 sur 5 pages) : passage qui cite
+     une autorité publique, juste avant le top 5. Champs ACF sur le type de produit (taxonomie post-type-produit),
+     partagés par tous les comparatifs du type : mltv5_vigilance_titre, mltv5_vigilance_texte,
+     mltv5_vigilance_autorite, mltv5_vigilance_url, mltv5_vigilance_date_verif (obligatoires) et
+     mltv5_vigilance_date_page (facultative : certaines pages officielles ne sont pas datées). Rien n'est affiché
+     s'il manque un champ obligatoire. Le lien de la source porte la classe « nodip » : le script d'affiliation
+     (redir.js) ne le transforme pas en lien Digidip.
+     Copie IDENTIQUE dans top5-resume (V1) et multi-resume (V2). */
+  function mt_vigilance_date( $v ) {
+    $v = trim( (string) $v );
+    foreach ( array( 'Ymd', 'Y-m-d', 'd/m/Y', 'Y-m-d H:i:s' ) as $fmt ) {
+      $d = DateTime::createFromFormat( '!' . $fmt, $v );
+      if ( $v !== '' && $d && $d->format( $fmt ) === $v ) { return date_i18n( 'j F Y', $d->getTimestamp() ); }
+    }
+    return '';
+  }
+  function mt_point_vigilance( $page_id ) {
+    $terms = get_the_terms( $page_id, 'post-type-produit' );
+    foreach ( is_array( $terms ) ? $terms : array() as $t ) {
+      $c = array();
+      foreach ( array( 'titre', 'texte', 'autorite', 'url', 'date_page', 'date_verif' ) as $k ) {
+        /* valeur brute (dates au format Ymd), puis méta du terme si ACF ne répond pas */
+        $v = function_exists( 'get_field' ) ? get_field( 'mltv5_vigilance_' . $k, 'term_' . $t->term_id, false ) : null;
+        if ( $v === null || $v === false || $v === '' ) { $v = get_term_meta( $t->term_id, 'mltv5_vigilance_' . $k, true ); }
+        $c[ $k ] = is_string( $v ) ? trim( $v ) : '';
+      }
+      $verif = mt_vigilance_date( $c['date_verif'] );
+      if ( $c['titre'] === '' || $c['texte'] === '' || $c['autorite'] === '' || ! preg_match( '#^https?://#i', $c['url'] ) || $verif === '' ) { continue; }
+      $page  = mt_vigilance_date( $c['date_page'] );
+      $texte = preg_match( '/<p[\s>]/i', $c['texte'] ) ? wp_kses_post( $c['texte'] ) : '<p>' . wp_kses_post( $c['texte'] ) . '</p>';
+      $src   = 'Source&nbsp;: <a href="' . esc_url( $c['url'] ) . '" class="nodip" rel="noopener" target="_blank">' . esc_html( $c['autorite'] ) . '</a>'
+             . ( $page !== '' ? ', page du ' . esc_html( $page ) . ', vérifiée le ' : ', page vérifiée le ' ) . esc_html( $verif ) . '.';
+      return '<section class="mt-vigilance" aria-labelledby="mt-vigilance-titre"><h2 id="mt-vigilance-titre">' . esc_html( wp_strip_all_tags( $c['titre'] ) ) . '</h2>'
+           . $texte . '<p class="mt-vigilance-source">' . $src . '</p></section>';
+    }
+    return '';
+  }
+}
 if ( ! function_exists( 'mt5_num' ) ) {
   function mt5_num( $v ) {
     $v = str_replace( array( ' ', "\xc2\xa0", '€' ), '', (string) $v );
@@ -318,6 +358,8 @@ $top5_set      = array_flip( $ids );
 
 /* Encart « Vos questions » préparé par le hero gauche quand il est réglé sur 'avant_top5' */
 if ( ! empty( $GLOBALS['mt_vos_questions'] ) ) { echo $GLOBALS['mt_vos_questions']; unset( $GLOBALS['mt_vos_questions'] ); }
+/* « Point de vigilance » : juste avant le top 5 */
+if ( $MT_POINT_VIGILANCE ) { echo mt_point_vigilance( get_the_ID() ); }
 ?>
 <div class="mt-top5" aria-labelledby="mt-top5-title">
   <header class="t5-head">
