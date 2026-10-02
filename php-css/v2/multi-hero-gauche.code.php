@@ -854,7 +854,9 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
           : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
         $noun  = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
         $items[] = array( 'Quel budget prévoir pour ' . trim( $indef ) . "\xc2\xa0?",
-          'Les ' . $noun . ' de notre sélection s’échelonnent ' . ( $mens ? 'de ' : 'd’environ ' ) . $euro( min( $prix ) ) . ' à ' . $euro( max( $prix ) ) . '.' );
+          $mens  // abonnement : prix d'appel, donc le minimum seul
+            ? 'Les ' . $noun . ' de notre sélection sont proposé' . ( $fem ? 'e' : '' ) . 's à partir de ' . $euro( min( $prix ) ) . '.'
+            : 'Les ' . $noun . ' de notre sélection s’échelonnent d’environ ' . $euro( min( $prix ) ) . ' à ' . $euro( max( $prix ) ) . '.' );
       } elseif ( $notes < 2 ) {
         $items[] = array( "Pourquoi faire confiance à ce comparatif\xc2\xa0?",
           "Notre rédaction travaille en toute indépendance\xc2\xa0: aucune marque ne peut acheter sa place dans un classement, et nous n’acceptons ni publicité ni cadeau des marques." );

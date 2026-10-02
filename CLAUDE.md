@@ -1010,11 +1010,13 @@ Jev + 0,3 × règles ; perf = 0,5 × Lighthouse mobile + 0,5 × observations).
   - **Prix d'abonnement, préparé désactivé** (`mt_prix_mensuel()` + `mt_prix_mois()`, copie IDENTIQUE dans faq,
     hero gauche V1/V2, tests V1/V2, avis, avis-hero, avis-content) : case ACF vrai/faux `mltv5_prix_mensuel` sur le
     type de produit (taxonomie `post-type-produit`, lue par `get_field( …, 'term_ID' )` puis `get_term_meta`). Tant
-    qu'elle n'existe pas : rien ne change. Cochée : FAQ « s'échelonnent de X €/mois à Y €/mois », « coûte à partir
-    de », « (à partir de X €/mois) » (aussi dans le JSON-LD FAQPage) ; encart « Vos questions » idem ; offres JSON-LD
-    des tests + `priceSpecification` UnitPriceSpecification (1 MON) ; fiches avis « À partir de X €/mois » au lieu de
-    « Prix moyen constaté : X € » (centimes gardés s'il y en a). 23 types listés par l'Architecture
-    (`wp-avis/prix-types-abonnement-2026-10-02.csv`). Prix à 0 = aucune phrase de prix ni offre JSON-LD (vérifié).
+    qu'elle n'existe pas : rien ne change. Cochée (prix d'appel, donc JAMAIS de borne haute) : FAQ « Les X de notre
+    sélection sont proposé(e)s à partir de X €/mois », « coûte à partir de », « (à partir de X €/mois) » (aussi dans
+    le JSON-LD FAQPage) ; encart « Vos questions » idem ; offres JSON-LD des tests sans `highPrice` +
+    `priceSpecification` UnitPriceSpecification (1 MON) ; fiches avis « À partir de X €/mois » au lieu de
+    « Prix moyen constaté : X € » (centimes gardés s'il y en a). 22 types (liste de référence de l'Architecture :
+    `wp-avis/types-prix-mensuel-2026-10-03.csv` ; « service de stockage » exclu). Prix à 0 = aucune phrase de prix
+    ni offre JSON-LD (vérifié).
     Corrigés au passage : tri « Prix » du top 5 (un produit sans prix passait n°1 « Le meilleur pas cher ») et
     carrousel « marque » des fiches avis (« À partir de » sans montant). Banc : `outils/tests/run-prix.php`.
 

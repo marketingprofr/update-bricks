@@ -1,7 +1,8 @@
 <?php
 /* Prix d'abonnement (case ACF « mltv5_prix_mensuel » du type de produit) : réponse « budget » de la FAQ (et son JSON-LD
    FAQPage), encart « Vos questions », offres JSON-LD des tests V1/V2, prix des fiches avis.
-   Usage : php run-prix.php ; MENSUEL=1 coche la case sur le type du faux comparatif ; PRIX0=1 met tous les prix à 0. */
+   Usage : php run-prix.php ; MENSUEL=1 coche la case sur le type du faux comparatif ; PRIX0=1 met tous les prix à 0 ;
+   FEM=1 pour un type au féminin (accords). */
 require __DIR__ . '/wp-stubs.php';
 if ( ! function_exists( 'get_the_modified_date' ) ) { function get_the_modified_date( $f = '', $id = 0 ) { return 'octobre 2026'; } }
 if ( ! function_exists( 'wpautop' ) ) { function wpautop( $s ) { return '<p>' . $s . '</p>'; } }
@@ -9,6 +10,7 @@ if ( ! function_exists( 'wp_kses' ) ) { function wp_kses( $s, $t ) { return $s; 
 if ( ! function_exists( 'remove_accents' ) ) { function remove_accents( $t ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $t ); } }
 $GLOBALS['TV'][100]['lalalesmeilleur'] = 'le meilleur';
 $GLOBALS['TV'][100]['template_description'] = 0;
+if ( getenv( 'FEM' ) ) { $GLOBALS['TV'][100]['lalalesmeilleur'] = 'la meilleure'; $GLOBALS['TV'][100]['type_de_produit_au_singulier'] = 'mutuelle'; $GLOBALS['TV'][100]['type_de_produit_au_pluriel'] = 'mutuelles'; }
 unset( $GLOBALS['META'][100]['mltv5_sous_comparatifs'] );
 $GLOBALS['ACF'][100]['mltv5_criteres_de_choix'] = array_map( function ( $t ) { return array( 'mltv5_critere_de_choix' => $t ); }, array( 'Le débit', 'La latence', 'Le prix', 'Le service client' ) );
 $GLOBALS['ACF'][100]['mltv5_faq_comparatif'] = array(
@@ -54,7 +56,7 @@ foreach ( array( 'top5-tests.code.php', 'v2/multi-tests.code.php' ) as $f ) {
       if ( ! is_array( $n ) ) { continue; }
       if ( isset( $n['@type'] ) && $n['@type'] === 'Product' ) {
         $o = $n['offers'] ?? null;
-        $offres[ $n['name'] ] = $o ? ( $o['@type'] . ' ' . ( $o['price'] ?? $o['lowPrice'] ) . ( isset( $o['priceSpecification'] ) ? ' + ' . $o['priceSpecification']['@type'] . ' /' . $o['priceSpecification']['referenceQuantity']['unitCode'] : '' ) ) : 'sans offre';
+        $offres[ $n['name'] ] = $o ? ( $o['@type'] . ' ' . ( $o['price'] ?? $o['lowPrice'] ) . ( isset( $o['highPrice'] ) ? ' high ' . $o['highPrice'] : '' ) . ( isset( $o['priceSpecification'] ) ? ' + ' . $o['priceSpecification']['@type'] . ' /' . $o['priceSpecification']['referenceQuantity']['unitCode'] : '' ) ) : 'sans offre';
         continue;
       }
       foreach ( $n as $v ) { $pile[] = $v; }

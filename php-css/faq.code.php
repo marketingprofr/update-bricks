@@ -299,7 +299,10 @@ if ( ! empty( $prods ) ) {
       : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
     $noun_pl = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
     $q2 = 'Quel budget pr&eacute;voir pour ' . esc_html( trim( $indef ) ) . '&nbsp;?';
-    $a2 = '<p>Les ' . esc_html( $noun_pl ) . ' de notre s&eacute;lection s&rsquo;&eacute;chelonnent ' . ( $mt_mens ? 'de ' : 'd&rsquo;environ ' ) . $euro( $min ) . ' &agrave; ' . $euro( $max ) . '.';
+    /* Abonnement : prix d'appel (tarif sur engagement…), donc le minimum seul, jamais de borne haute */
+    $a2 = $mt_mens
+      ? '<p>Les ' . esc_html( $noun_pl ) . ' de notre s&eacute;lection sont propos&eacute;' . ( $fem ? 'e' : '' ) . 's &agrave; partir de ' . $euro( $min ) . '.'
+      : '<p>Les ' . esc_html( $noun_pl ) . ' de notre s&eacute;lection s&rsquo;&eacute;chelonnent d&rsquo;environ ' . $euro( $min ) . ' &agrave; ' . $euro( $max ) . '.';
     if ( $p1['price'] > 0 && $cheap['name'] !== $p1['name'] ) {
       $a2 .= ' Notre num&eacute;ro&nbsp;1, <strong>' . esc_html( $p1['name'] ) . '</strong>, ' . ( $mt_mens ? 'co&ucirc;te &agrave; partir de ' : 'se situe autour de ' ) . $euro( $p1['price'] ) . '.';
     }

@@ -1046,7 +1046,8 @@ foreach ( $products as $it ) {
     );
   }
   if ( isset( $ld['offers'] ) && mt_prix_mensuel( get_the_ID() ) ) {
-    /* Abonnement (case du type de produit) : le prix est mensuel */
+    /* Abonnement (case du type de produit) : le prix est mensuel, et c'est un prix d'appel (pas de borne haute) */
+    unset( $ld['offers']['highPrice'] );
     $ld['offers']['priceSpecification'] = array(
       '@type'             => 'UnitPriceSpecification',
       'price'             => number_format( $it['prix'], 2, '.', '' ),
