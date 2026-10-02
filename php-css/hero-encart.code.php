@@ -1,7 +1,7 @@
 <?php
 $MT_ENCADRE_REEL = true;  // encadré à valeurs réelles, validé par Samuel le 2026-10-02 (false = ancien encadré)
 $MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Architecture) : « des guides d'achat internationaux (…), … » ; vide = pas de puce
-$MT_TXT_AFFILIATION = '';    // puce « Affiliation : … » (formulation en test) ; '' = pas de puce
+$MT_TXT_AFFILIATION = 'Si vous achetez via nos liens, nous pouvons toucher une commission (sans surcoût pour vous). Elle n\'a aucun effet sur le classement, mais elle nous aide à faire vivre le site.'; // puce d'affiliation : formulation provisoire (Samuel teste les siennes) ; '' = pas de puce
 $MT_SIGNALEMENT     = false; // true quand le formulaire « Signaler une erreur » existe (le contact actuel exige un compte)
 $MT_URL_SIGNALEMENT = '/signaler-une-erreur/'; // page du formulaire Fluent Forms (champs cachés : {get.page_id}, {get.url})
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
