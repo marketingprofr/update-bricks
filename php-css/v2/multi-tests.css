@@ -23,6 +23,10 @@
 
 /* Espace au-dessus de la section pour la détacher de la partie précédente */
 .ed-a { padding-top: 60px; }
+/* Largeur limitée à la colonne (2026-10-03) : le bloc Bricks parent est en flex avec retour à la ligne et aligné à
+   gauche ; sans cette règle, la section prenait 1 040 px et toute la page débordait sur téléphone (1 055 px pour
+   un écran de 390, sur tous les multi-comparatifs) et de 10 px sur un écran de 1 280. */
+.ed-a { width: 100%; max-width: 100%; }
 
 /* En-tête de section */
 .ed-a-head { max-width: 720px; margin: 0 auto 8px; text-align: center; }
