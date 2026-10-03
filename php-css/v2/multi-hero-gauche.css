@@ -28,6 +28,7 @@
 .mt-lede a { color: var(--at-primary); text-decoration: underline; }
 .mt-lede a:hover { color: var(--at-primary-d-1); }
 .mt-lede-reco { margin: 14px 0 0; }
+.mt-lede .mt-lede-reponse { margin: 0 0 14px; } /* la réponse automatique, séparée du texte de la rédaction */
 
 /* « L'essentiel en 30 secondes » sous la ligne auteur (demande de Samuel, 2026-10-03) : faits de la réponse courte en liste */
 .mt-essentiel { margin: 0 0 18px; padding: 18px 20px 16px; background: var(--at-primary-l-6); border: 1px solid var(--at-primary-l-4); border-radius: 12px; }

@@ -925,9 +925,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   rend `div.mt-essentiel` > `p.mt-essentiel-titre` (pas un h2 : 0,85 contre 0,82) + liste de phrases complètes
   (n°1 et suivants avec notes, N analysés et T retenus, profils du multi, notation sur 10 et k critères). Plus de
   date dans l'encart (elle est dans la ligne auteur).
-- **« Vos questions »** : chaque réponse finit par « Lire la réponse complète » vers `#faq-{slug de la question}`
+- **« Vos questions »** : chaque réponse finit par « En savoir plus » vers `#faq-{slug de la question}`
   (`mt_faq_ancre()`, copie IDENTIQUE dans faq et les hero ; la FAQ pose l'id sur chaque question, le rend unique,
-  et un petit script ouvre le `<details>` visé) ; en bas « Voir les N questions de notre FAQ » (N = questions
+  et un petit script ouvre le `<details>` visé) ; en bas « Voir les N questions-réponses de notre foire aux questions » (N = questions
   automatiques recalculées comme dans faq.code.php + questions de la rédaction). **Choix des questions** (règle de
   l'instance « SEO - FAQ optimization », notes Jev par question) : au moins 3 questions de la rédaction → les 3
   premières du répéteur (l'ordre du répéteur = ordre de qualité, rangé par cette instance) + budget s'il y a des prix,
@@ -943,10 +943,17 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   toutes les variantes à 0,3 point près sur 100 ; l'intro de la rédaction AVANT toute réponse coûte -1,2 point) :
   titre → ligne auteur → **intro qui commence par la réponse** (`$MT_REPONSE_INTRO`, `mt_reponse_intro()` : « {n°1}
   (note) est le meilleur {type} en 2026, devant {n°2} (note) et {n°3} (note). Nous avons analysé N {types} et retenu les
-  T meilleurs. » dans le 1er `<p>` de l'intro) → **un seul encart** « L'essentiel en 30 secondes » = les questions
+  T meilleurs. » dans son propre `p.mt-lede-reponse`, marge basse 14 px, avant le texte de la rédaction : demande de
+  Samuel du 2026-10-04) → **un seul encart** « L'essentiel en 30 secondes » = les questions
   (`$MT_VOS_QUESTIONS = 'apres_intro'`, titre `$MT_TITRE_QUESTIONS` en `<p>` avec icône ; '' = sans titre). L'encart séparé
   `mt_verdict_ouverture()` reste dans le code, coupé (`$MT_VERDICT_SOUS_H1 = false`). Encadré : `$MT_DUREE_LECTURE = false` ; phrase des critères choisie par Samuel (C2) : « Chaque {type} est noté(e) sur {k} critère(s) (…) ».
   Lots de test : `wp-avis/tests-jev/essentiel-v3*`, `fusion-v3-2026-10-03`, `intro-reponse-2026-10-03`.
+- **Relecture de Samuel du 2026-10-04** : liens de l'encart « En savoir plus » (au lieu de « Lire la réponse
+  complète ») ; lien du bas « Voir les N questions-réponses de notre foire aux questions » (« Voir notre foire aux
+  questions » si l'encart montre déjà tout) ; point de vigilance en **encart jaune** construit comme « L'essentiel »
+  (fond `--at-warning-l-1`, bordure `--at-warning-l-2`, h2 Inter 20 px 700 avec icône d'alerte `--at-warning-d-2`,
+  texte à la taille de l'intro, liens `--at-primary-d-1` car `--at-primary` sur ce jaune = contraste 4,06).
+  Remarque : `--at-warning-l-6` n'est pas défini dans les variables de la page (seuls l-1 à l-3), alors que la barre admin des tests l'utilise.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

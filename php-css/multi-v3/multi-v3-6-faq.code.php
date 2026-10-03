@@ -31,7 +31,7 @@ $MT_METHODO_ENCADRE = true;  // « Comment avons-nous établi ce classement ? »
 
 if ( ! function_exists( 'mt_faq_ancre' ) ) {
   /* Ancre d'une question de la FAQ (« faq-quel-budget-prevoir-pour-un-climatiseur-mobile ») : calculée de la même façon
-     par la FAQ (id de la question) et par l'encart « Vos questions » (lien « Lire la réponse complète »).
+     par la FAQ (id de la question) et par l'encart « Vos questions » (lien « En savoir plus »).
      Copie IDENTIQUE dans faq et les blocs hero (V1 et V2). */
   function mt_faq_ancre( $q ) {
     $t = str_replace( "\xc2\xa0", ' ', html_entity_decode( wp_strip_all_tags( (string) $q ), ENT_QUOTES, 'UTF-8' ) );
@@ -451,7 +451,7 @@ foreach ( $rows as $r ) {
    3) Fusion (autos en tête) + normalisation (a + a_schema)
    ===================================================================== */
 $faqs = array();
-$mt_ancres = array();  // ancre unique par question (liens « Lire la réponse complète » de l'encart « Vos questions »)
+$mt_ancres = array();  // ancre unique par question (liens « En savoir plus » de l'encart « Vos questions »)
 foreach ( array_merge( $autos, $manual ) as $f ) {
   $mt_a = mt_faq_ancre( $f['q'] );
   $mt_b = $mt_a; $mt_n = 2;

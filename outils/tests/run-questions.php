@@ -64,7 +64,7 @@ if ( preg_match( '#<div class="mt-faq-mini">.*?</div>#s', $bloc, $m ) ) {
   preg_match_all( '#<li><b>(.*?)</b> (.*?)</li>#s', $m[0], $li, PREG_SET_ORDER );
   foreach ( $li as $x ) { echo '  • ', html_entity_decode( $x[1], ENT_QUOTES, 'UTF-8' ), "\n      ", html_entity_decode( strip_tags( $x[2] ), ENT_QUOTES, 'UTF-8' ), "\n"; }
   echo 'lien du bas : ', preg_match( '#<p class="mt-faq-mini-tout"><a href="([^"]+)">([^<]+)</a>#', $m[0], $tout ) ? $tout[2] . ' → ' . $tout[1] : 'ABSENT', "\n";
-  /* Chaque « Lire la réponse complète » doit mener à une question de la FAQ (même page, bloc faq rendu ensuite) */
+  /* Chaque « En savoir plus » doit mener à une question de la FAQ (même page, bloc faq rendu ensuite) */
   if ( ! function_exists( 'get_the_modified_date' ) ) { function get_the_modified_date( $f = '', $id = 0 ) { return 'octobre 2026'; } }
   if ( ! function_exists( 'wpautop' ) ) { function wpautop( $s ) { return '<p>' . $s . '</p>'; } }
   if ( ! function_exists( 'wp_kses' ) ) { function wp_kses( $s, $t ) { return $s; } }

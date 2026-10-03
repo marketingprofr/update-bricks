@@ -32,6 +32,7 @@ if ( ! function_exists( 'mt_point_vigilance' ) ) {
      mltv5_vigilance_date_page (facultative : certaines pages officielles ne sont pas datées). Rien n'est affiché
      s'il manque un champ obligatoire. Le lien de la source porte la classe « nodip » : le script d'affiliation
      (redir.js) ne le transforme pas en lien Digidip.
+     Encart jaune avec une icône d'alerte dans le titre (demande de Samuel, 2026-10-04).
      Copie IDENTIQUE dans top5-resume (V1) et multi-resume (V2). */
   function mt_vigilance_date( $v ) {
     $v = trim( (string) $v );
@@ -57,7 +58,7 @@ if ( ! function_exists( 'mt_point_vigilance' ) ) {
       $texte = preg_match( '/<p[\s>]/i', $c['texte'] ) ? wp_kses_post( $c['texte'] ) : '<p>' . wp_kses_post( $c['texte'] ) . '</p>';
       $src   = 'Source&nbsp;: <a href="' . esc_url( $c['url'] ) . '" class="nodip" rel="noopener" target="_blank">' . esc_html( $c['autorite'] ) . '</a>'
              . ( $page !== '' ? ', page du ' . esc_html( $page ) . ', vérifiée le ' : ', page vérifiée le ' ) . esc_html( $verif ) . '.';
-      return '<section class="mt-vigilance" aria-labelledby="mt-vigilance-titre"><h2 id="mt-vigilance-titre">' . esc_html( wp_strip_all_tags( $c['titre'] ) ) . '</h2>'
+      return '<section class="mt-vigilance" aria-labelledby="mt-vigilance-titre"><h2 id="mt-vigilance-titre"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>' . esc_html( wp_strip_all_tags( $c['titre'] ) ) . '</h2>'
            . $texte . '<p class="mt-vigilance-source">' . $src . '</p></section>';
     }
     return '';

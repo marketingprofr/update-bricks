@@ -796,7 +796,7 @@ if ( ! function_exists( 'mt_prix_par' ) ) {
 }
 if ( ! function_exists( 'mt_faq_ancre' ) ) {
   /* Ancre d'une question de la FAQ (« faq-quel-budget-prevoir-pour-un-climatiseur-mobile ») : calculée de la même façon
-     par la FAQ (id de la question) et par l'encart « Vos questions » (lien « Lire la réponse complète »).
+     par la FAQ (id de la question) et par l'encart « Vos questions » (lien « En savoir plus »).
      Copie IDENTIQUE dans faq et les blocs hero (V1 et V2). */
   function mt_faq_ancre( $q ) {
     $t = str_replace( "\xc2\xa0", ' ', html_entity_decode( wp_strip_all_tags( (string) $q ), ENT_QUOTES, 'UTF-8' ) );
@@ -941,15 +941,16 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       foreach ( $redac as $x ) { if ( count( $items ) >= 5 ) { break; } $items[] = $x; }
     }
     if ( count( $items ) < 3 ) { return ''; }
-    /* Chaque réponse courte mène à sa réponse complète dans la FAQ (ancre de la question, qui s'ouvre au clic) ;
-       le lien du bas annonce le nombre de questions de la FAQ (automatiques + rédaction, mêmes règles que faq.code.php) */
+    /* Chaque réponse courte mène à sa réponse complète dans la FAQ (« En savoir plus », ancre de la question, qui s'ouvre
+       au clic) ; le lien du bas annonce le nombre de questions de la FAQ (automatiques + rédaction, mêmes règles que
+       faq.code.php). Libellés choisis par Samuel le 2026-10-04 */
     $li = '';
     foreach ( $items as $it ) {
       $li .= '<li><b>' . esc_html( $it[0] ) . '</b> ' . esc_html( $it[1] )
-           . ' <a class="mt-faq-mini-lien" href="#' . esc_attr( mt_faq_ancre( $it[0] ) ) . '">Lire la réponse complète</a></li>';
+           . ' <a class="mt-faq-mini-lien" href="#' . esc_attr( mt_faq_ancre( $it[0] ) ) . '">En savoir plus</a></li>';
     }
     $nb   = $nb_autos + $nb_redac;
-    $tout = $nb > count( $items ) ? 'Voir les ' . $nb . ' questions de notre FAQ' : 'Voir notre FAQ';
+    $tout = $nb > count( $items ) ? 'Voir les ' . $nb . ' questions-réponses de notre foire aux questions' : 'Voir notre foire aux questions';
     /* Titre en <p> (test Jev : un titre d'encart en h2 coûte un peu d'ouverture) ; '' = sans titre */
     $tit = $titre !== '' ? '<p class="mt-faq-mini-titre"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>' . esc_html( $titre ) . '</p>' : '';
     return '<div class="mt-faq-mini">' . $tit . '<ul>' . $li . '</ul><p class="mt-faq-mini-tout"><a href="#partie-faq">' . esc_html( $tout ) . '</a></p></div>';
@@ -1353,12 +1354,9 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       ) );
   }
   if ( $MT_REPONSE_INTRO && $post_type === 'comparatif' ) {
-      /* La réponse ouvre le 1er paragraphe de l'intro (dans le même <p>), sinon un paragraphe à part */
+      /* La réponse forme son propre paragraphe, avant le texte de la rédaction (demande de Samuel, 2026-10-04) */
       $mt_rep = mt_reponse_intro( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n );
-      if ( $mt_rep !== '' ) {
-          if ( preg_match( '#^\s*<p\b[^>]*>#i', $mt_intro_html, $mt_m ) ) { $mt_intro_html = $mt_m[0] . $mt_rep . ' ' . substr( ltrim( $mt_intro_html ), strlen( ltrim( $mt_m[0] ) ) ); }
-          else { $mt_intro_html = '<p>' . $mt_rep . '</p>' . $mt_intro_html; }
-      }
+      if ( $mt_rep !== '' ) { $mt_intro_html = '<p class="mt-lede-reponse">' . $mt_rep . '</p>' . $mt_intro_html; }
   }
   echo $mt_intro_html;
   if ( $MT_SHOW_INTRO_RECO && ! $MT_VERDICT_SOUS_H1 && ! $MT_REPONSE_INTRO && $post_type === 'comparatif' ) {

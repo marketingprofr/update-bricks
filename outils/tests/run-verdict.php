@@ -13,7 +13,8 @@ if ( getenv( 'AUTEURAPRES' ) ) { @mkdir( __DIR__ . '/out' ); file_put_contents( 
 ob_start(); ( function() use ( $f ) { include $f; } )(); $h = ob_get_clean();
 $txt = function( $re ) use ( $h ) { return preg_match( $re, $h, $m ) ? trim( preg_replace( '/\s+/', ' ', html_entity_decode( strip_tags( $m[1] ) ) ) ) : '(absent)'; };
 echo 'H1      : ', $txt( '#<h1 class="mt-h1">(.*?)</h1>#s' ), "\n";
-echo 'intro   : ', mb_substr( $txt( '#<div class="mt-lede">(.*?)</div>#s' ), 0, 330 ), "\n";
+echo 'réponse : ', $txt( '#<div class="mt-lede"><p class="mt-lede-reponse">(.*?)</p>#s' ), "\n";
+echo 'puis    : ', mb_substr( $txt( '#<p class="mt-lede-reponse">.*?</p>(.*?)</div>#s' ), 0, 120 ), "\n";
 echo 'encart séparé « L\'essentiel » : ', strpos( $h, 'class="mt-essentiel"' ) !== false ? 'présent' : 'absent', "\n";
 echo 'auteur  : ', $txt( '#<span class="mt-byline-text">(.*?)</span>\s*</div>#s' ), "\n";
 echo 'chapô   : ', ( strpos( $h, 'mt-lede-reco' ) !== false ? 'contient encore la phrase verdict' : 'sans phrase verdict' ), "\n";
