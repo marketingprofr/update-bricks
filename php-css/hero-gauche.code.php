@@ -2,8 +2,10 @@
 $MT_SHOW_QUICK_PICKS = false;
 $MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
-$MT_VERDICT_SOUS_H1  = true;   // verdict (top 3 avec notes /10, N analysés, méthode, date) juste sous le H1 ; false = ancienne phrase dans le chapô
+$MT_VERDICT_SOUS_H1  = true;   // encart « L'essentiel en 30 secondes » (n°1 et ses suivants avec notes /10, N analysés, méthode) sous la ligne auteur ; false = ancienne phrase dans le chapô
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
+$MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (demande de Samuel) ; false = juste après « L'essentiel »
+                                // (test Jev : ouverture 0,82 sous le titre, 0,91 après « L'essentiel »)
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 $MT_VOS_QUESTIONS    = 'sous_reponse'; // encart « Vos questions » (questions de la FAQ, réponse d'une phrase) : 'sous_reponse' = juste après
                                 // la réponse courte (choix de Samuel, 2026-10-03), 'apres_intro' = juste après l'intro de la rédaction
@@ -264,28 +266,28 @@ if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
     $an    = date_i18n( 'Y' );
     $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
 
+    /* Encart « L'essentiel en 30 secondes » (demande de Samuel, 2026-10-03) : les faits de la réponse courte S2,
+       en phrases complètes, sans le libellé « Réponse courte : » ; la date est dans la ligne auteur.
+       Titre en <p> et non en h2 (test Jev : ouverture 0,85 contre 0,82). */
     $lien = '<a href="' . esc_url( $url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>' . $note( $prods[0] );
-    if ( ! $pl && $sing !== '' ) { $out = 'Réponse courte : ' . $lien . ' est ' . ( $fem ? 'la meilleure ' : 'le meilleur ' ) . esc_html( $sing ) . ' en ' . $an; }
-    else { $out = 'Réponse courte : ' . $lien . ' est notre n°1 parmi les ' . esc_html( $plur !== '' ? $plur : 'produits' ) . ' en ' . $an; }
+    if ( ! $pl && $sing !== '' ) { $l1 = $lien . ' est ' . ( $fem ? 'la meilleure ' : 'le meilleur ' ) . esc_html( $sing ) . ' en ' . $an; }
+    else { $l1 = $lien . ' est notre n°1 parmi les ' . esc_html( $plur !== '' ? $plur : 'produits' ) . ' en ' . $an; }
     $autres = array();
     foreach ( array_slice( $prods, 1 ) as $p ) { if ( $p['name'] !== '' ) { $autres[] = esc_html( $p['name'] ) . $note( $p ); } }
-    if ( count( $autres ) === 2 ) { $out .= ', devant ' . $autres[0] . ' et ' . $autres[1]; }
-    elseif ( count( $autres ) === 1 ) { $out .= ', devant ' . $autres[0]; }
-    $out .= '.';
+    if ( count( $autres ) === 2 ) { $l1 .= ', devant ' . $autres[0] . ' et ' . $autres[1]; }
+    elseif ( count( $autres ) === 1 ) { $l1 .= ', devant ' . $autres[0]; }
+    $lignes = array( $l1 . '.' );
 
     $typ = esc_html( $plur !== '' ? $plur : 'produits' );
     $e   = ( $fem && $plur !== '' ) ? 'e' : '';
+    if ( $n > $t ) { $lignes[] = 'Nous avons analysé ' . (int) $n . ' ' . $typ . ' et retenu les ' . $t . ' meilleur' . $e . 's, détaillé' . $e . 's sur cette page.'; }
+    else { $lignes[] = 'Nous avons analysé et classé ' . max( (int) $n, $t ) . ' ' . $typ . ', détaillé' . $e . 's sur cette page.'; }
     $profils = array_slice( array_values( array_filter( array_map( 'trim', (array) $profils ) ) ), 0, 3 );
-    $suite = ' : cette page détaille notre top ' . $t
-      . ( $profils ? ', les classe aussi par profil (' . esc_html( implode( ', ', $profils ) ) . ')' : '' )
-      . ' et vous aide à choisir.';
-    if ( $n > $t ) { $out .= ' Nous avons analysé ' . (int) $n . ' ' . $typ . ' et retenu les ' . $t . ' meilleur' . $e . 's' . $suite; }
-    else { $out .= ' Nous avons analysé et classé ' . max( (int) $n, $t ) . ' ' . $typ . $suite; }
+    if ( $profils ) { $lignes[] = 'Notre sélection est aussi classée par profil (' . esc_html( implode( ', ', $profils ) ) . ').'; }
+    $lignes[] = 'Chaque fiche est notée sur 10' . ( $k >= 3 ? ', et le guide détaille ' . (int) $k . ' critères de choix' : '' ) . '.';
 
-    $out .= ' Chaque fiche est notée sur 10'
-      . ( $k >= 3 ? ' et le guide détaille ' . (int) $k . ' critères de choix' : '' )
-      . ' ; classement mis à jour le ' . esc_html( $date ) . '.';
-    return '<p class="mt-verdict">' . $out . '</p>';
+    return '<div class="mt-essentiel"><p class="mt-essentiel-titre">L’essentiel en 30 secondes</p><ul><li>'
+      . implode( '</li><li>', $lignes ) . '</li></ul></div>';
   }
 }
 
@@ -391,6 +393,16 @@ if ( ! function_exists( 'mt_prix_par' ) ) {
     return number_format( $v, ( abs( $v - round( $v ) ) < 0.005 ? 0 : 2 ), ',', "\xc2\xa0" ) . "\xc2\xa0€/" . $unite;
   }
 }
+if ( ! function_exists( 'mt_faq_ancre' ) ) {
+  /* Ancre d'une question de la FAQ (« faq-quel-budget-prevoir-pour-un-climatiseur-mobile ») : calculée de la même façon
+     par la FAQ (id de la question) et par l'encart « Vos questions » (lien « Lire la réponse complète »).
+     Copie IDENTIQUE dans faq et les blocs hero (V1 et V2). */
+  function mt_faq_ancre( $q ) {
+    $t = str_replace( "\xc2\xa0", ' ', html_entity_decode( wp_strip_all_tags( (string) $q ), ENT_QUOTES, 'UTF-8' ) );
+    $s = sanitize_title( $t );
+    return 'faq-' . ( $s !== '' ? substr( $s, 0, 80 ) : 'question' );
+  }
+}
 if ( ! function_exists( 'mt_vq_phrase' ) ) {
   /* Encart « Vos questions » : réponse d'une phrase tirée d'une réponse de la FAQ (règle de la Coordination, 2026-10-03).
      1re phrase qui contient un chiffre, un nom propre ou plus de 60 caractères, sinon les deux premières ;
@@ -437,14 +449,33 @@ if ( ! function_exists( 'mt_vq_phrase' ) ) {
 
 if ( ! function_exists( 'mt_vos_questions' ) ) {
   /* Encart « Vos questions » (tests Jev du 2026-10-03 sur 10 pages : utilité +0,07 avant le top 5, +0,09 après
-     la réponse courte) : 4 ou 5 questions de la FAQ de la page, dans le même ordre (questions automatiques puis
-     questions ACF), chacune avec une réponse d'une phrase, et un lien vers la FAQ complète.
+     la réponse courte), chaque question avec une réponse d'une phrase et un lien vers sa réponse complète.
+     Choix des questions (règle de l'instance FAQ optimization, 2026-10-03, notée avec Jev question par question) :
+     - au moins 3 questions de la rédaction : les 3 premières du répéteur (l'ordre du répéteur = ordre de qualité,
+       rangé par cette instance), puis « Quel budget prévoir… » s'il y a des prix, sinon la 4e question de la rédaction ;
+       « Comment bien choisir… » reste dans la FAQ (phrase trop générale) ;
+     - moins de 3 (FAQ pas encore refaite) : règle d'avant, budget (ou « Pourquoi faire confiance »), comment choisir,
+       puis la rédaction, 5 au plus.
      Sautées, car déjà dites plus haut : « Quel est le meilleur… », « meilleures marques », « meilleurs avis »,
      « Comment avons-nous établi… ». Au moins 3 questions, sinon rien. */
   function mt_vos_questions( $page_id, $ids, $type_sing, $type_plur, $llm ) {
-    $items = array();
-    $ids   = array_slice( array_values( array_filter( array_map( 'intval', (array) $ids ) ) ), 0, 5 );
+    $items    = array();
+    $budget   = null; $confiance = null; $choisir = null;
+    $nb_autos = 0;
+    $ids      = array_slice( array_values( array_filter( array_map( 'intval', (array) $ids ) ) ), 0, 5 );
     if ( ! empty( $ids ) ) {
+      /* Nombre de questions automatiques de la FAQ (mêmes conditions que faq.code.php) : meilleur produit, budget ou
+         avis ou confiance, méthode ; + marques (au moins 3 marques dans le top 5) ; + comment choisir (critères du guide) */
+      $marques = array();
+      foreach ( $ids as $pid ) { $bn = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) ); if ( $bn !== '' ) { $marques[ $bn ] = true; } }
+      $crit_faq = get_field( 'mltv5_criteres_de_choix', $page_id );
+      if ( ! is_array( $crit_faq ) || empty( $crit_faq ) ) {
+        $cc = mt_guide_cache_id( $page_id, 'criteres' );
+        $crit_faq = ( $cc && $cc !== (int) $page_id ) ? get_field( 'mltv5_criteres_de_choix', $cc ) : array();
+      }
+      $a_crit = false;
+      foreach ( (array) $crit_faq as $r ) { if ( is_array( $r ) && trim( (string) ( $r['mltv5_critere_de_choix'] ?? '' ) ) !== '' ) { $a_crit = true; break; } }
+      $nb_autos = 3 + ( count( $marques ) >= 3 ? 1 : 0 ) + ( $a_crit ? 1 : 0 );
       /* Questions automatiques de la FAQ (mêmes conditions et mêmes accords que faq.code.php) */
       $low    = strtolower( (string) $llm );
       $plural = ( strpos( $low, 'les ' ) === 0 );
@@ -466,20 +497,20 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
           ? ( 'des ' . ( $type_plur !== '' ? $type_plur : $type_sing ) )
           : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
         $noun  = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
-        $items[] = array( 'Quel budget prévoir pour ' . trim( $indef ) . "\xc2\xa0?",
+        $budget = array( 'Quel budget prévoir pour ' . trim( $indef ) . "\xc2\xa0?",
           $mens  // abonnement : prix d'appel, donc le minimum seul
             ? 'Les ' . $noun . ' de notre sélection sont proposé' . ( $fem ? 'e' : '' ) . 's à partir de ' . $euro( min( $prix ) ) . '.'
             : 'Les ' . $noun . ' de notre sélection s’échelonnent d’environ ' . $euro( min( $prix ) ) . ' à ' . $euro( max( $prix ) ) . '.' );
       } elseif ( $notes < 2 ) {
-        $items[] = array( "Pourquoi faire confiance à ce comparatif\xc2\xa0?",
-          "Notre rédaction travaille en toute indépendance\xc2\xa0: aucune marque ne peut acheter sa place dans un classement, et nous n’acceptons ni publicité ni cadeau des marques." );
+        $confiance = array( "Pourquoi faire confiance à ce comparatif\xc2\xa0?",
+          "Notre rédaction travaille en toute indépendance. Aucune marque ne peut acheter sa place dans un classement, et nous n’acceptons ni publicité ni cadeau des marques." );
       }
       /* « Comment bien choisir… » : les libellés courts des critères, plutôt que la 1re phrase générique de la FAQ */
       $crit = mt_criteres_courts( $page_id );
       if ( $crit !== '' ) {
         $best_noun = $plural ? ( $type_plur !== '' ? $type_plur : $type_sing ) : ( $type_sing !== '' ? $type_sing : $type_plur );
-        $items[] = array( 'Comment bien choisir ' . ( $plural ? 'vos' : 'votre' ) . ' ' . ( $best_noun !== '' ? $best_noun : 'produit' ) . "\xc2\xa0?",
-          "Les critères qui font vraiment la différence\xc2\xa0: " . preg_replace( '/, ([^,]+)$/u', ' et $1', $crit ) . '.' );
+        $choisir = array( 'Comment bien choisir ' . ( $plural ? 'vos' : 'votre' ) . ' ' . ( $best_noun !== '' ? $best_noun : 'produit' ) . "\xc2\xa0?",
+          'Pour bien choisir, comparez surtout ces critères (' . preg_replace( '/, ([^,]+)$/u', ' et $1', $crit ) . ').' );
       }
     }
     /* Questions de la rédaction (repeater ACF, page puis annexe en cache) */
@@ -488,18 +519,37 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       $c = mt_guide_cache_id( $page_id, 'faq' );
       if ( $c && $c !== (int) $page_id ) { $rows = mt_faq_read( $c ); }
     }
-    $saute = '/^(Quel(le)?s? (est|sont) (le|la|les) meilleur|Quelles sont les meilleures marques|Quel produit a les meilleurs avis|Comment avons-nous établi)/u';
+    $nb_redac = 0;
     foreach ( $rows as $r ) {
-      if ( count( $items ) >= 5 ) { break; }
+      if ( trim( (string) ( $r['mltv5_faq_comparatif_question'] ?? '' ) ) !== '' || trim( (string) ( $r['mltv5_faq_comparatif_reponse'] ?? '' ) ) !== '' ) { $nb_redac++; }
+    }
+    $saute = '/^(Quel(le)?s? (est|sont) (le|la|les) meilleur|Quelles sont les meilleures marques|Quel produit a les meilleurs avis|Comment avons-nous établi)/u';
+    $redac = array();
+    foreach ( $rows as $r ) {
+      if ( count( $redac ) >= 5 ) { break; }
       $q = trim( html_entity_decode( wp_strip_all_tags( (string) ( $r['mltv5_faq_comparatif_question'] ?? '' ) ), ENT_QUOTES, 'UTF-8' ) );
       if ( $q === '' || preg_match( $saute, $q ) ) { continue; }
       $a = mt_vq_phrase( (string) ( $r['mltv5_faq_comparatif_reponse'] ?? '' ) );
-      if ( $a !== '' ) { $items[] = array( $q, $a ); }
+      if ( $a !== '' ) { $redac[] = array( $q, $a ); }
+    }
+    if ( count( $redac ) >= 3 ) {
+      $items = array_slice( $redac, 0, 3 );
+      if ( $budget ) { $items[] = $budget; } elseif ( isset( $redac[3] ) ) { $items[] = $redac[3]; }
+    } else {
+      $items = array_values( array_filter( array( $budget ? $budget : $confiance, $choisir ) ) );
+      foreach ( $redac as $x ) { if ( count( $items ) >= 5 ) { break; } $items[] = $x; }
     }
     if ( count( $items ) < 3 ) { return ''; }
+    /* Chaque réponse courte mène à sa réponse complète dans la FAQ (ancre de la question, qui s'ouvre au clic) ;
+       le lien du bas annonce le nombre de questions de la FAQ (automatiques + rédaction, mêmes règles que faq.code.php) */
     $li = '';
-    foreach ( $items as $it ) { $li .= '<li><b>' . esc_html( $it[0] ) . '</b> ' . esc_html( $it[1] ) . '</li>'; }
-    return '<div class="mt-faq-mini"><h2>Vos questions</h2><ul>' . $li . '</ul><p><a href="#partie-faq">Toutes les réponses</a></p></div>';
+    foreach ( $items as $it ) {
+      $li .= '<li><b>' . esc_html( $it[0] ) . '</b> ' . esc_html( $it[1] )
+           . ' <a class="mt-faq-mini-lien" href="#' . esc_attr( mt_faq_ancre( $it[0] ) ) . '">Lire la réponse complète</a></li>';
+    }
+    $nb   = $nb_autos + $nb_redac;
+    $tout = $nb > count( $items ) ? 'Voir les ' . $nb . ' questions de notre FAQ' : 'Voir notre FAQ';
+    return '<div class="mt-faq-mini"><h2>Vos questions</h2><ul>' . $li . '</ul><p class="mt-faq-mini-tout"><a href="#partie-faq">' . esc_html( $tout ) . '</a></p></div>';
   }
 }
 
@@ -748,34 +798,8 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   ?>
   </h1>
 
-
-  <?php if ( $MT_SHOW_INTRO_RECO && $MT_VERDICT_SOUS_H1 && $post_type === 'comparatif' ) {
-      /* k = critères de choix du guide (page, sinon annexe en cache) */
-      $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
-      if ( empty( $mt_crit ) ) {
-          $mt_cid  = (int) get_field( 'mltv5_cached_id_criteres', $this_id );
-          $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array();
-      }
-      /* Profils = libellés courts des sections du multi-comparatif (comme le sommaire), 1re lettre en minuscule */
-      $mt_profils = array();
-      if ( ! empty( $mt_pl['is_multi'] ) ) {
-          foreach ( $mt_pl['subs'] as $mt_sb ) {
-              $mt_l = trim( (string) $mt_sb['label'] );
-              if ( $mt_l !== '' ) { $mt_profils[] = mb_strtolower( mb_substr( $mt_l, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_l, 1, null, 'UTF-8' ); }
-          }
-      }
-      echo mt_verdict_ouverture( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n, $mod, is_array( $mt_crit ) ? count( $mt_crit ) : 0, $mt_profils );
-  } ?>
-
-  <?php if ( $MT_VOS_QUESTIONS !== '' && $post_type === 'comparatif' ) {
-      /* Encart « Vos questions » : affiché ici, après l'intro de la rédaction (plus bas dans ce bloc), ou confié au bloc
-         du top 5 (résumé V1 / multi-resume V2) qui l'affiche juste avant */
-      $mt_vq = mt_vos_questions( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
-      if ( $MT_VOS_QUESTIONS === 'avant_top5' ) { $GLOBALS['mt_vos_questions'] = $mt_vq; }
-      elseif ( $MT_VOS_QUESTIONS === 'apres_intro' ) { $mt_vq_apres_intro = $mt_vq; }
-      else { echo $mt_vq; }
-  } ?>
-
+  <?php /* Ligne auteur et date : préparée ici, affichée sous le titre ou juste après « L'essentiel » ($MT_AUTEUR_SOUS_H1) */
+  ob_start(); ?>
   <div class="mt-byline">
     <?php if (!empty($author_avatar_id ?? '')) {
         echo '<span class="mt-avatar">' . wp_get_attachment_image($author_avatar_id, array(30,30), '', array('alt'=>$author_avatar_alt ?? '')) . '</span>';
@@ -797,6 +821,36 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       <span>Mis à jour le <?php echo $mod; ?></span>
     </span>
   </div>
+  <?php $mt_byline_html = ob_get_clean(); if ( $MT_AUTEUR_SOUS_H1 ) { echo $mt_byline_html; } ?>
+
+  <?php if ( $MT_SHOW_INTRO_RECO && $MT_VERDICT_SOUS_H1 && $post_type === 'comparatif' ) {
+      /* k = critères de choix du guide (page, sinon annexe en cache) */
+      $mt_crit = get_field( 'mltv5_criteres_de_choix', $this_id );
+      if ( empty( $mt_crit ) ) {
+          $mt_cid  = (int) get_field( 'mltv5_cached_id_criteres', $this_id );
+          $mt_crit = $mt_cid ? get_field( 'mltv5_criteres_de_choix', $mt_cid ) : array();
+      }
+      /* Profils = libellés courts des sections du multi-comparatif (comme le sommaire), 1re lettre en minuscule */
+      $mt_profils = array();
+      if ( ! empty( $mt_pl['is_multi'] ) ) {
+          foreach ( $mt_pl['subs'] as $mt_sb ) {
+              $mt_l = trim( (string) $mt_sb['label'] );
+              if ( $mt_l !== '' ) { $mt_profils[] = mb_strtolower( mb_substr( $mt_l, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_l, 1, null, 'UTF-8' ); }
+          }
+      }
+      echo mt_verdict_ouverture( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n, $mod, is_array( $mt_crit ) ? count( $mt_crit ) : 0, $mt_profils );
+  } ?>
+
+  <?php if ( ! $MT_AUTEUR_SOUS_H1 ) { echo $mt_byline_html; } ?>
+
+  <?php if ( $MT_VOS_QUESTIONS !== '' && $post_type === 'comparatif' ) {
+      /* Encart « Vos questions » : affiché ici (après « L'essentiel »), après l'intro de la rédaction (plus bas dans ce bloc), ou confié au bloc
+         du top 5 (résumé V1 / multi-resume V2) qui l'affiche juste avant */
+      $mt_vq = mt_vos_questions( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
+      if ( $MT_VOS_QUESTIONS === 'avant_top5' ) { $GLOBALS['mt_vos_questions'] = $mt_vq; }
+      elseif ( $MT_VOS_QUESTIONS === 'apres_intro' ) { $mt_vq_apres_intro = $mt_vq; }
+      else { echo $mt_vq; }
+  } ?>
 
   <div class="mt-lede"><?php
   $mt_intro_html = $introduction ?? '';

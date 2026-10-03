@@ -29,11 +29,17 @@
 	font-family: "Source Serif 4",serif;
   font-size: var(--at-text--xs);
 }
-/* Liste sous les cases (encadré à valeurs réelles) : même texte que la phrase de méthode ; le thème ajoute retraits et puces aux ul/li */
-.mt-sc-liste { margin: 0 !important; padding: 0 !important; list-style: none !important; display: flex; flex-direction: column; gap: 8px; }
-.mt-sc-liste li { margin: 0 !important; padding: 0 !important; list-style: none !important; font-family: "Source Serif 4", serif; font-size: var(--at-text--xs); line-height: 22px; color: var(--at-black-l-2); }
-.mt-sc-liste li::before, .mt-sc-liste li::marker { content: none !important; }
+/* Liste sous les cases (encadré à valeurs réelles), lisible : phrases courtes à puce, police du site ; le thème ajoute
+   retraits et puces aux ul/li, d'où les !important */
+.mt-sc-liste { margin: 0 !important; padding: 0 !important; list-style: none !important; display: flex; flex-direction: column; gap: 9px; }
+.mt-sc-liste li { position: relative; margin: 0 !important; padding: 0 0 0 16px !important; list-style: none !important; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 13px; line-height: 1.5; color: var(--at-black-l-2); }
+.mt-sc-liste li::marker { content: none !important; }
+.mt-sc-liste li::before { content: "" !important; position: absolute; left: 2px; top: 0.6em; width: 6px; height: 6px; border-radius: 50%; background: var(--at-primary); }
 .mt-sc-liste b { color: var(--at-black-l-1); font-weight: 600; }
+.mt-sc-liste a { color: var(--at-primary-d-1); text-decoration: underline; }
+/* Engagement d'indépendance signé, à part sous la liste */
+.mt-sc-process p.mt-sc-citation { margin: 2px 0 0; padding: 2px 0 2px 12px; border-left: 3px solid var(--at-primary); font-style: italic; font-size: 13.5px; line-height: 1.5; color: var(--at-black-l-1); }
+.mt-sc-signature { display: block; margin-top: 4px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-style: normal; font-size: 12px; font-weight: 600; color: var(--at-black-l-2); }
 .mt-ti { width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--at-primary-l-6); color: var(--at-primary); display: flex; align-items: center; justify-content: center; }
 .mt-ti svg { width: 16px; height: 16px; }
 

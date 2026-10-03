@@ -915,6 +915,33 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
 - Hors de ce modèle : fiches avis (`avis-hero`, `avis-content` : prix par étiquette, carrousel marque), modèle V1,
   CSS global du formulaire (`php-css/formulaire-signalement.css`, Bricks → Code personnalisé).
 
+### Corrections après relecture de la page V3 par Samuel (2026-10-03)
+
+- **Ligne auteur sous le H1** (`$MT_AUTEUR_SOUS_H1 = true`, demande de Samuel : un visiteur attend auteur et date
+  sous le titre). La ligne est mise en tampon (`ob_start`) et affichée sous le titre ou juste après « L'essentiel ».
+  Test Jev (Coordination) : ouverture 0,82 sous le titre, 0,91 après « L'essentiel », 0,95 avec l'ancienne réponse
+  courte avant la ligne auteur. Samuel tranche.
+- **« L'essentiel en 30 secondes »** remplace le paragraphe « Réponse courte : … » (jugé laid) : `mt_verdict_ouverture()`
+  rend `div.mt-essentiel` > `p.mt-essentiel-titre` (pas un h2 : 0,85 contre 0,82) + liste de phrases complètes
+  (n°1 et suivants avec notes, N analysés et T retenus, profils du multi, notation sur 10 et k critères). Plus de
+  date dans l'encart (elle est dans la ligne auteur).
+- **« Vos questions »** : chaque réponse finit par « Lire la réponse complète » vers `#faq-{slug de la question}`
+  (`mt_faq_ancre()`, copie IDENTIQUE dans faq et les hero ; la FAQ pose l'id sur chaque question, le rend unique,
+  et un petit script ouvre le `<details>` visé) ; en bas « Voir les N questions de notre FAQ » (N = questions
+  automatiques recalculées comme dans faq.code.php + questions de la rédaction). **Choix des questions** (règle de
+  l'instance « SEO - FAQ optimization », notes Jev par question) : au moins 3 questions de la rédaction → les 3
+  premières du répéteur (l'ordre du répéteur = ordre de qualité, rangé par cette instance) + budget s'il y a des prix,
+  sinon la 4e ; « Comment bien choisir » reste dans la FAQ. Moins de 3 → règle d'avant. Banc : `run-questions.php`
+  vérifie que chaque lien trouve sa question dans la FAQ.
+- **Encadré** : phrases complètes (« Nous avons consulté 27 sources, dont… », « Nous avons appliqué nos propres
+  critères (…) aux 55 … analysés. ») — la liste « sans intitulés » avait laissé des fragments sans verbe ; liste à
+  puces en Inter ; engagement d'indépendance à part, en citation signée (`p.mt-sc-citation`) ; **plus de phrase
+  d'affiliation** (`$MT_TXT_AFFILIATION = ''` : elle remplace le texte du bandeau du header, élément Bricks modifié
+  par Samuel) ; `$MT_LIGNES_CONFIANCE = false` retire « 100 % indépendant » et « Mis à jour le » (doublons, test
+  Jev neutre), la durée de lecture reste.
+- **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
+  des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
+
 ## Audit Jev (jev-seo) — estimation gabarit (2026-10-02)
 
 Données : branche `claude/verify-seo-skill-install-u596xu`, `data/jev-comparatifs-2026-10-01/`

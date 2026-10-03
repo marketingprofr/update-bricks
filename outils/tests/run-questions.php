@@ -48,8 +48,8 @@ if ( $dans_hero === false && $dans_res === false ) {
   echo 'place   : ', $ok ? 'intro de la rédaction > Vos questions > photo (absent du top 5)' : 'PLACE INATTENDUE', "\n";
   $bloc = $h;
 } elseif ( $pos === 'sous_reponse' ) {
-  $ok = $dans_hero !== false && strpos( $h, 'mt-verdict' ) < $dans_hero && $dans_hero < strpos( $h, 'mt-byline' ) && $dans_res === false;
-  echo 'place   : ', $ok ? 'réponse courte > Vos questions > ligne auteur (absent du top 5)' : 'PLACE INATTENDUE', "\n";
+  $ok = $dans_hero !== false && strpos( $h, 'mt-essentiel' ) < $dans_hero && $dans_hero < strpos( $h, 'mt-lede' ) && $dans_res === false;
+  echo 'place   : ', $ok ? 'L\'essentiel > Vos questions > intro (absent du top 5)' : 'PLACE INATTENDUE', "\n";
   $bloc = $h;
 } else {
   $ok = $dans_hero === false && $dans_res !== false && $dans_res < strpos( $r, '<div class="mt-top5"' ) && ! isset( $GLOBALS['mt_vos_questions'] );
@@ -61,7 +61,17 @@ if ( preg_match( '#<div class="mt-faq-mini">.*?</div>#s', $bloc, $m ) ) {
   $d = new DOMDocument(); $d->loadHTML( '<?xml encoding="utf-8"?><html><body>' . $m[0] . '</body></html>' );
   echo 'HTML    : ', count( array_filter( libxml_get_errors(), function ( $e ) { return $e->level > LIBXML_ERR_WARNING; } ) ), " erreur(s)\n";
   preg_match_all( '#<li><b>(.*?)</b> (.*?)</li>#s', $m[0], $li, PREG_SET_ORDER );
-  foreach ( $li as $x ) { echo '  • ', html_entity_decode( $x[1], ENT_QUOTES, 'UTF-8' ), "\n      ", html_entity_decode( $x[2], ENT_QUOTES, 'UTF-8' ), "\n"; }
+  foreach ( $li as $x ) { echo '  • ', html_entity_decode( $x[1], ENT_QUOTES, 'UTF-8' ), "\n      ", html_entity_decode( strip_tags( $x[2] ), ENT_QUOTES, 'UTF-8' ), "\n"; }
+  echo 'lien du bas : ', preg_match( '#<p class="mt-faq-mini-tout"><a href="([^"]+)">([^<]+)</a>#', $m[0], $tout ) ? $tout[2] . ' → ' . $tout[1] : 'ABSENT', "\n";
+  /* Chaque « Lire la réponse complète » doit mener à une question de la FAQ (même page, bloc faq rendu ensuite) */
+  if ( ! function_exists( 'get_the_modified_date' ) ) { function get_the_modified_date( $f = '', $id = 0 ) { return 'octobre 2026'; } }
+  if ( ! function_exists( 'wpautop' ) ) { function wpautop( $s ) { return '<p>' . $s . '</p>'; } }
+  if ( ! function_exists( 'wp_kses' ) ) { function wp_kses( $s, $t ) { return $s; } }
+  ob_start(); ( function() { include MT_REPO . '/php-css/faq.code.php'; } )(); $faq = ob_get_clean();
+  preg_match_all( '#class="mt-faq-mini-lien" href="\#([^"]+)"#', $m[0], $liens );
+  preg_match_all( '#class="mt-faq-item[^"]*" id="([^"]+)"#', $faq, $ids_faq );
+  $manquants = array_diff( $liens[1], $ids_faq[1] );
+  echo 'liens vers la FAQ : ', count( $liens[1] ), ' | trouvés dans la FAQ : ', count( $liens[1] ) - count( $manquants ), ( $manquants ? ' | MANQUANTS : ' . implode( ', ', $manquants ) : '' ), ' | questions dans la FAQ : ', count( $ids_faq[1] ), "\n";
 } else {
   echo "encart  : absent\n";
 }

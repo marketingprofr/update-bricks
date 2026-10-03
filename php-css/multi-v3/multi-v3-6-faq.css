@@ -35,7 +35,7 @@
 
 /* === Liste FAQ (accordéon natif) === */
 .mt-faq-list { border-top: 1px solid var(--line); }
-.mt-faq-item { border-bottom: 1px solid var(--line); }
+.mt-faq-item { border-bottom: 1px solid var(--line); scroll-margin-top: 90px; } /* lien direct vers une question : pas cachée sous l'en-tête */
 
 .mt-faq-q {
   list-style: none;

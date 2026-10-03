@@ -29,6 +29,16 @@
 $MT_METHODO_ENCADRE = true;  // « Comment avons-nous établi ce classement ? » : mêmes chiffres que l'encadré « Pourquoi nous
                              // faire confiance » (hero-encart), sans heures ; false = anciennes valeurs (10 sources, 597 avis, heures)
 
+if ( ! function_exists( 'mt_faq_ancre' ) ) {
+  /* Ancre d'une question de la FAQ (« faq-quel-budget-prevoir-pour-un-climatiseur-mobile ») : calculée de la même façon
+     par la FAQ (id de la question) et par l'encart « Vos questions » (lien « Lire la réponse complète »).
+     Copie IDENTIQUE dans faq et les blocs hero (V1 et V2). */
+  function mt_faq_ancre( $q ) {
+    $t = str_replace( "\xc2\xa0", ' ', html_entity_decode( wp_strip_all_tags( (string) $q ), ENT_QUOTES, 'UTF-8' ) );
+    $s = sanitize_title( $t );
+    return 'faq-' . ( $s !== '' ? substr( $s, 0, 80 ) : 'question' );
+  }
+}
 if ( ! function_exists( 'mt_guide_cache_id' ) ) {
   /* Résout l'ID du post lié mis en cache : essaie `mltv5_cache_id_{suffix}`
      puis `mltv5_cached_id_{suffix}` (ancien nom) ; accepte un ID ou un objet post. */
@@ -441,8 +451,14 @@ foreach ( $rows as $r ) {
    3) Fusion (autos en tête) + normalisation (a + a_schema)
    ===================================================================== */
 $faqs = array();
+$mt_ancres = array();  // ancre unique par question (liens « Lire la réponse complète » de l'encart « Vos questions »)
 foreach ( array_merge( $autos, $manual ) as $f ) {
+  $mt_a = mt_faq_ancre( $f['q'] );
+  $mt_b = $mt_a; $mt_n = 2;
+  while ( isset( $mt_ancres[ $mt_a ] ) ) { $mt_a = $mt_b . '-' . $mt_n; $mt_n++; }
+  $mt_ancres[ $mt_a ] = true;
   $faqs[] = array(
+    'ancre'    => $mt_a,
     'q'        => $f['q'],
     'a'        => $f['a'],
     'a_schema' => trim( wp_kses( $f['a'], $faq_schema_tags ) ),
@@ -493,7 +509,7 @@ if ( ! empty( $entities ) ) {
   <div class="mt-faq-list">
     <?php foreach ( $faqs as $i => $f ) : ?>
       <?php if ( $f['a'] !== '' ) : ?>
-      <details class="mt-faq-item"<?php echo $i === 0 ? ' open' : ''; ?>>
+      <details class="mt-faq-item" id="<?php echo esc_attr( $f['ancre'] ); ?>"<?php echo $i === 0 ? ' open' : ''; ?>>
         <summary class="mt-faq-q">
           <span class="mt-faq-qh"><?php echo $f['q']; ?></span>
           <span class="mt-faq-icon" aria-hidden="true"></span>
@@ -501,7 +517,7 @@ if ( ! empty( $entities ) ) {
         <div class="mt-faq-a"><?php echo $f['a']; ?></div>
       </details>
       <?php else : ?>
-      <div class="mt-faq-item mt-faq-static">
+      <div class="mt-faq-item mt-faq-static" id="<?php echo esc_attr( $f['ancre'] ); ?>">
         <span class="mt-faq-qh"><?php echo $f['q']; ?></span>
       </div>
       <?php endif; ?>
@@ -511,4 +527,16 @@ if ( ! empty( $entities ) ) {
   <?php if ( $jsonld !== '' ) : ?>
   <script type="application/ld+json"><?php echo $jsonld; ?></script>
   <?php endif; ?>
+  <script>
+  /* Lien vers une question précise (#faq-…, encart « Vos questions ») : la question s'ouvre */
+  (function () {
+    function ouvrir() {
+      var id = decodeURIComponent( ( location.hash || '' ).slice( 1 ) );
+      var el = id ? document.getElementById( id ) : null;
+      if ( el && el.tagName === 'DETAILS' ) { el.open = true; }
+    }
+    window.addEventListener( 'hashchange', ouvrir );
+    ouvrir();
+  })();
+  </script>
 </section>

@@ -1,7 +1,8 @@
 <?php
 $MT_ENCADRE_REEL = true;  // encadré à valeurs réelles, validé par Samuel le 2026-10-02 (false = ancien encadré)
 $MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Architecture) : « des guides d'achat internationaux (…), … » ; vide = pas de puce
-$MT_TXT_AFFILIATION = 'Si vous achetez via nos liens, nous pouvons toucher une commission (sans surcoût pour vous). Cela n\'a aucun effet sur le classement, mais nous aide à faire vivre le site.'; // puce d'affiliation : version finale de Samuel (2026-10-03) ; '' = pas de puce
+$MT_TXT_AFFILIATION = ''; // puce d'affiliation : version finale de Samuel (2026-10-03) ; '' = pas de puce
+$MT_LIGNES_CONFIANCE = false; // lignes « 100 % indépendant » et « Mis à jour le » (doublons de la phrase d'indépendance et de la ligne auteur ; test Jev neutre) ; true = affichées
 $MT_SIGNALEMENT     = true;  // ligne « Une erreur… ? Prévenez-nous » vers le formulaire Fluent Forms (en place le 2026-10-03) ; false = pas de ligne
 $MT_URL_SIGNALEMENT = '/signaler-une-erreur/'; // page du formulaire Fluent Forms (champs cachés : {get.source_id}, {get.source_url})
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
@@ -184,13 +185,15 @@ if ( $MT_ENCADRE_REEL ) {
   $mt_puces = array();
   $mt_phrase = trim( (string) get_field( $MT_CHAMP_PHRASE_SOURCES, $this_id ) );
   if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
-    $mt_puces[] = esc_html( $mt_src_aff ) . ' sources consultées, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
+    /* Phrases complètes, à la 1re personne du pluriel (demande de Samuel, 2026-10-03) */
+    $mt_src_txt = ( $mt_src_aff[0] === '~' ) ? 'environ ' . substr( $mt_src_aff, 1 ) : $mt_src_aff;
+    $mt_puces[] = 'Nous avons consulté ' . esc_html( $mt_src_txt ) . ' sources, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
   /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
   $mt_courts = mt_criteres_courts( $this_id );
   if ( $mt_courts !== '' ) {
     $mt_typ = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' );
-    $mt_puces[] = 'Nos propres critères (' . esc_html( $mt_courts ) . '), appliqués aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . '.';
+    $mt_puces[] = 'Nous avons appliqué nos propres critères (' . esc_html( $mt_courts ) . ') aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . ' analysé' . ( $mt_typ === 'produits' ? '' : $mt_e ) . 's.';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }
   if ( $MT_SIGNALEMENT ) {
@@ -201,7 +204,8 @@ if ( $MT_ENCADRE_REEL ) {
     /* Formulation choisie par Samuel (2026-10-03, confiance +0,01 sur 10 pages) */
     $mt_puces[] = 'Une erreur, ou un produit remplacé par un nouveau modèle&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Prévenez-nous</a>.';
   }
-  $mt_puces[] = 'Aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne. <b>Samuel Petit, responsable éditorial</b>';
+  /* Engagement d'indépendance, signé : à part, sous la liste */
+  $mt_citation = '<p class="mt-sc-citation">Aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne.<span class="mt-sc-signature">Samuel Petit, responsable éditorial</span></p>';
 }
 ?>
 <div class="mt-card">
@@ -239,13 +243,16 @@ if ( $MT_ENCADRE_REEL ) {
   <?php endif; ?>
 
   <div class="mt-sc-trust">
+    <?php if ( $MT_LIGNES_CONFIANCE ) : ?>
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_check; ?></span><span><b>100&nbsp;% indépendant</b> (et sans pub)</span></div>
     <div class="mt-sc-row mt-sc-date"><span class="mt-ti"><?php echo $ic_refresh; ?></span><span>Mis à jour le <b><?php echo $mod; ?></b></span></div>
+    <?php endif; ?>
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_book; ?></span><span><b><?php echo $rt; ?> min</b> de lecture</span></div>
   </div>
   <?php if ( $MT_ENCADRE_REEL && ! empty( $mt_puces ) ) : ?>
     <div class="mt-sc-process link-black">
       <ul class="mt-sc-liste"><?php foreach ( $mt_puces as $mt_p ) : ?><li><?php echo $mt_p; ?></li><?php endforeach; ?></ul>
+      <?php echo $mt_citation ?? ''; ?>
       <p>Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
     </div>
   <?php else : ?>
