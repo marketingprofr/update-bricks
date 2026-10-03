@@ -193,8 +193,13 @@ if ( $MT_ENCADRE_REEL ) {
   /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
   $mt_courts = mt_criteres_courts( $this_id );
   if ( $mt_courts !== '' ) {
-    $mt_typ = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' );
-    $mt_puces[] = 'Nous avons appliqué nos propres critères (' . esc_html( $mt_courts ) . ') aux ' . (int) $mt_display_count . ' ' . esc_html( $mt_typ ) . ' analysé' . ( $mt_typ === 'produits' ? '' : $mt_e ) . 's.';
+    /* Phrase choisie par Samuel (2026-10-03, test Jev « C2 », à égalité avec les autres) :
+       « Chaque climatiseur mobile est noté sur 4 critères (…) » ; « notée » au féminin, « critère » si un seul */
+    $mt_sing    = trim( (string) ( $type_de_produit_au_singulier ?? '' ) );
+    $mt_sing_ok = ( $mt_sing !== '' && strlen( $mt_sing ) < 22 );
+    $mt_k       = count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $mt_courts ) ) ) );
+    $mt_puces[] = 'Chaque ' . esc_html( $mt_sing_ok ? mb_strtolower( $mt_sing, 'UTF-8' ) : 'produit' ) . ' est noté' . ( $mt_sing_ok ? $mt_e : '' )
+                . ' sur ' . $mt_k . ' critère' . ( $mt_k > 1 ? 's' : '' ) . ' (' . esc_html( $mt_courts ) . ').';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }
   if ( $MT_SIGNALEMENT ) {

@@ -13,6 +13,7 @@ if ( ! function_exists( 'get_the_category' ) ) { function get_the_category( $id 
 if ( ! function_exists( 'get_fields' ) ) { function get_fields( $id ) { global $ACF; return $ACF[ $id ] ?? array(); } }
 if ( ! function_exists( 'remove_accents' ) ) { function remove_accents( $t ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $t ); } }
 $GLOBALS['TV'][100]['masculinsfeminins'] = 'Meilleurs';
+if ( getenv( 'FEM' ) ) { $GLOBALS['TV'][100]['masculinsfeminins'] = 'Meilleures'; $GLOBALS['TV'][100]['type_de_produit_au_singulier'] = 'banque en ligne'; $GLOBALS['TV'][100]['type_de_produit_au_pluriel'] = 'banques en ligne'; }
 $GLOBALS['ACF'][100]['mltv5_criteres_de_choix'] = array_map( function ( $t ) { return array( 'mltv5_critere_de_choix' => $t ); }, array( 'La puissance frigorifique (exprimée en BTU)', 'Le niveau sonore (exprimé en dB)', 'La consommation énergétique', 'Les options de confort', 'Les différents filtres' ) );
 foreach ( range( 1, 14 ) as $i ) { if ( ! isset( $GLOBALS['P'][ $i ] ) ) { continue; }
   $GLOBALS['META'][ $i ]['mltv5_nombre_avis_clients'] = (string) ( getenv( 'AVIS' ) ? intdiv( (int) getenv( 'AVIS' ), 14 ) : 100 );

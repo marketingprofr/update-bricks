@@ -80,7 +80,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 1. Juste sous le titre, la ligne auteur : « Rédigé et vérifié par Samuel Petit, responsable éditorial • Mis à jour le … ».
 2. L'intro commence par la réponse : « Midea PortaSplit 12000 BTU (9,0/10) est le meilleur climatiseur mobile en 2026, devant … Nous avons analysé 55 climatiseurs mobiles et retenu les 5 meilleurs. », puis le texte habituel.
 3. Juste après l'intro, un seul encart « L'essentiel en 30 secondes » (titre en gras avec une petite icône) : 4 questions, chacune avec sa réponse d'une phrase et « Lire la réponse complète », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions de notre FAQ ».
-4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », la phrase des critères, « Prévenez-nous »). Sous la liste, l'engagement d'indépendance signé. Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
+4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », « Chaque climatiseur mobile est noté sur 4 critères (…) », « Prévenez-nous »). Sous la liste, l'engagement d'indépendance signé. Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
 5. Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche, avec la source en petit.
 6. Sur téléphone, la page ne dépasse pas de l'écran : pas de défilement de côté.
 7. Dans la FAQ, « Comment avons-nous établi ce classement ? » donne les mêmes chiffres que l'encadré.

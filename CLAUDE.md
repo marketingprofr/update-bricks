@@ -945,7 +945,7 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   (note) est le meilleur {type} en 2026, devant {n°2} (note) et {n°3} (note). Nous avons analysé N {types} et retenu les
   T meilleurs. » dans le 1er `<p>` de l'intro) → **un seul encart** « L'essentiel en 30 secondes » = les questions
   (`$MT_VOS_QUESTIONS = 'apres_intro'`, titre `$MT_TITRE_QUESTIONS` en `<p>` avec icône ; '' = sans titre). L'encart séparé
-  `mt_verdict_ouverture()` reste dans le code, coupé (`$MT_VERDICT_SOUS_H1 = false`). Encadré : `$MT_DUREE_LECTURE = false`.
+  `mt_verdict_ouverture()` reste dans le code, coupé (`$MT_VERDICT_SOUS_H1 = false`). Encadré : `$MT_DUREE_LECTURE = false` ; phrase des critères choisie par Samuel (C2) : « Chaque {type} est noté(e) sur {k} critère(s) (…) ».
   Lots de test : `wp-avis/tests-jev/essentiel-v3*`, `fusion-v3-2026-10-03`, `intro-reponse-2026-10-03`.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
