@@ -6,7 +6,7 @@
    et écrit out/vos-questions-pages.txt. */
 require __DIR__ . '/wp-stubs.php';
 if ( ! function_exists( 'remove_accents' ) ) { function remove_accents( $t ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $t ); } }
-$pos = getenv( 'POS' ) ?: 'sous_reponse';
+$pos = getenv( 'POS' ) ?: 'apres_intro';
 $v2  = (bool) getenv( 'V2' );
 $GLOBALS['TV'][100]['lalalesmeilleur'] = 'le meilleur';
 $GLOBALS['TV'][100]['template_description'] = 0;
@@ -48,8 +48,8 @@ if ( $dans_hero === false && $dans_res === false ) {
   echo 'place   : ', $ok ? 'intro de la rédaction > Vos questions > photo (absent du top 5)' : 'PLACE INATTENDUE', "\n";
   $bloc = $h;
 } elseif ( $pos === 'sous_reponse' ) {
-  $ok = $dans_hero !== false && strpos( $h, 'mt-essentiel' ) < $dans_hero && $dans_hero < strpos( $h, 'mt-lede' ) && $dans_res === false;
-  echo 'place   : ', $ok ? 'L\'essentiel > Vos questions > intro (absent du top 5)' : 'PLACE INATTENDUE', "\n";
+  $ok = $dans_hero !== false && strpos( $h, 'mt-byline' ) < $dans_hero && $dans_hero < strpos( $h, 'class="mt-lede"' ) && $dans_res === false;
+  echo 'place   : ', $ok ? 'ligne auteur > encart > intro (absent du top 5)' : 'PLACE INATTENDUE', "\n";
   $bloc = $h;
 } else {
   $ok = $dans_hero === false && $dans_res !== false && $dans_res < strpos( $r, '<div class="mt-top5"' ) && ! isset( $GLOBALS['mt_vos_questions'] );
@@ -59,7 +59,8 @@ if ( $dans_hero === false && $dans_res === false ) {
 if ( preg_match( '#<div class="mt-faq-mini">.*?</div>#s', $bloc, $m ) ) {
   libxml_use_internal_errors( true );
   $d = new DOMDocument(); $d->loadHTML( '<?xml encoding="utf-8"?><html><body>' . $m[0] . '</body></html>' );
-  echo 'HTML    : ', count( array_filter( libxml_get_errors(), function ( $e ) { return $e->level > LIBXML_ERR_WARNING; } ) ), " erreur(s)\n";
+  $mt_err = array_filter( libxml_get_errors(), function ( $e ) { return $e->level > LIBXML_ERR_WARNING && strpos( $e->message, 'Tag ' ) === false; } );
+  echo 'HTML    : ', count( $mt_err ), " erreur(s) (balises SVG/HTML5 ignorées, comme run-page)", $mt_err ? ' : ' . trim( reset( $mt_err )->message ) : '', "\n";
   preg_match_all( '#<li><b>(.*?)</b> (.*?)</li>#s', $m[0], $li, PREG_SET_ORDER );
   foreach ( $li as $x ) { echo '  • ', html_entity_decode( $x[1], ENT_QUOTES, 'UTF-8' ), "\n      ", html_entity_decode( strip_tags( $x[2] ), ENT_QUOTES, 'UTF-8' ), "\n"; }
   echo 'lien du bas : ', preg_match( '#<p class="mt-faq-mini-tout"><a href="([^"]+)">([^<]+)</a>#', $m[0], $tout ) ? $tout[2] . ' → ' . $tout[1] : 'ABSENT', "\n";

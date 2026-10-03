@@ -21,15 +21,17 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 
 Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le tableau comparatif, le guide d'achat, les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
 
-## Si le modèle V3 est déjà collé (mise à jour du 3 octobre, après relecture)
+## Si le modèle V3 est déjà collé
 
-Recollez seulement ces éléments, Code et CSS :
-- **1** (ligne auteur, « L'essentiel », « Vos questions ») ;
-- **2** (encadré) ;
-- **5** (CSS : débordement mobile) ;
-- **6** (FAQ : chaque question a maintenant une ancre).
+**Disposition validée le 3 octobre au soir** : titre → ligne auteur → intro qui commence par la réponse → un seul encart « L'essentiel en 30 secondes » avec les questions.
 
-Les éléments 3 et 4 n'ont pas changé depuis le premier collage.
+Si tu as déjà fait le collage précédent (ligne auteur, encart « L'essentiel » séparé…), recolle seulement :
+- **1**, Code et CSS ;
+- **2**, Code seulement (durée de lecture retirée).
+
+Si tu n'avais collé que la toute première version, recolle aussi :
+- **5**, CSS seulement (débordement mobile) ;
+- **6**, Code et CSS (ancres des questions).
 
 ## Pas à pas
 
@@ -50,12 +52,15 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 
 | Fichier | Réglage | Valeur | Effet |
 |---|---|---|---|
-| 1 | `$MT_AUTEUR_SOUS_H1` | `true` | Ligne auteur et date juste sous le titre, comme tu l'as demandé. `false` la place juste après « L'essentiel ». Note d'ouverture Jev : 0,82 sous le titre, 0,91 après « L'essentiel ». |
-| 1 | `$MT_VERDICT_SOUS_H1` | `true` | Encart « L'essentiel en 30 secondes ». |
-| 1 | `$MT_VOS_QUESTIONS` | `'sous_reponse'` | « Vos questions » juste après « L'essentiel ». `'apres_intro'` le place après l'intro, `''` le retire. |
+| 1 | `$MT_AUTEUR_SOUS_H1` | `true` | Ligne auteur et date juste sous le titre. |
+| 1 | `$MT_REPONSE_INTRO` | `true` | L'intro commence par la réponse, par exemple « Midea PortaSplit 12000 BTU (9,0/10) est le meilleur climatiseur mobile en 2026, devant … Nous avons analysé 55 climatiseurs mobiles et retenu les 5 meilleurs. », puis le texte de la rédaction. |
+| 1 | `$MT_VERDICT_SOUS_H1` | `false` | L'ancien encart séparé « L'essentiel » (4 phrases) n'est plus affiché. |
+| 1 | `$MT_VOS_QUESTIONS` | `'apres_intro'` | Encart des questions juste après l'intro. `'sous_reponse'` le place sous la ligne auteur, `''` le retire. |
+| 1 | `$MT_TITRE_QUESTIONS` | `'L’essentiel en 30 secondes'` | Titre de cet encart (test Jev : les trois titres se valent, celui-ci arrive en tête). `''` = sans titre. |
 | 1 | `$MT_VERIFIE_PAR` | `'Samuel Petit'` | « Vérifié par Samuel Petit, responsable éditorial ». |
 | 2 | `$MT_ENCADRE_REEL` | `true` | Encadré à vrais chiffres. |
-| 2 | `$MT_LIGNES_CONFIANCE` | `false` | Retire les lignes « 100 % indépendant » et « Mis à jour le », qui répètent la phrase d'indépendance et la ligne auteur (test Jev neutre). `true` les remet. La ligne « … min de lecture » reste. |
+| 2 | `$MT_LIGNES_CONFIANCE` | `false` | Retire les lignes « 100 % indépendant » et « Mis à jour le », qui répètent la phrase d'indépendance et la ligne auteur (test Jev neutre). `true` les remet. |
+| 2 | `$MT_DUREE_LECTURE` | `false` | Retire « … min de lecture » (test Jev neutre). `true` la remet. |
 | 2 | `$MT_TXT_AFFILIATION` | `''` | Plus de phrase d'affiliation dans l'encadré : elle va dans le bandeau du header (voir plus bas). |
 | 2 | `$MT_SIGNALEMENT` | `true` | Ligne « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » vers `/signaler-une-erreur/`. |
 | 4 | `$MT_POINT_VIGILANCE` | `true` | Point de vigilance juste avant le top 5. Seuls les types de produit dont les champs sont remplis l'affichent : pour l'instant, le climatiseur mobile. |
@@ -73,9 +78,9 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 ## À vérifier sur la page climatiseur mobile, après prévisualisation
 
 1. Juste sous le titre, la ligne auteur : « Rédigé et vérifié par Samuel Petit, responsable éditorial • Mis à jour le … ».
-2. Dessous, l'encart « L'essentiel en 30 secondes » : 3 ou 4 phrases à puce (le n°1 et ses suivants avec leur note, le nombre de produits analysés, les profils, la notation sur 10).
-3. Puis « Vos questions » : chaque réponse se termine par « Lire la réponse complète », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions de notre FAQ ».
-4. Dans l'encadré de droite : les 4 cases, la durée de lecture, puis une liste à puces (« Nous avons consulté 27 sources, dont… », « Nous avons appliqué nos propres critères… », « Prévenez-nous »). Sous la liste, l'engagement d'indépendance signé. Il n'y a plus de phrase d'affiliation.
+2. L'intro commence par la réponse : « Midea PortaSplit 12000 BTU (9,0/10) est le meilleur climatiseur mobile en 2026, devant … Nous avons analysé 55 climatiseurs mobiles et retenu les 5 meilleurs. », puis le texte habituel.
+3. Juste après l'intro, un seul encart « L'essentiel en 30 secondes » (titre en gras avec une petite icône) : 4 questions, chacune avec sa réponse d'une phrase et « Lire la réponse complète », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions de notre FAQ ».
+4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », la phrase des critères, « Prévenez-nous »). Sous la liste, l'engagement d'indépendance signé. Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
 5. Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche, avec la source en petit.
 6. Sur téléphone, la page ne dépasse pas de l'écran : pas de défilement de côté.
 7. Dans la FAQ, « Comment avons-nous établi ce classement ? » donne les mêmes chiffres que l'encadré.

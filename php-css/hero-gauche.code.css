@@ -32,8 +32,8 @@
 /* « L'essentiel en 30 secondes » sous la ligne auteur (demande de Samuel, 2026-10-03) : faits de la réponse courte en liste */
 .mt-essentiel { margin: 0 0 18px; padding: 18px 20px 16px; background: var(--at-primary-l-6); border: 1px solid var(--at-primary-l-4); border-radius: 12px; }
 /* Titre d'encart : plus gros que le texte, en gras, avec une petite icône (demande de Samuel, modèle Le Bon Tri) */
-.mt-essentiel .mt-essentiel-titre, .mt-faq-mini h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 20px; line-height: 1.3; font-weight: 700; letter-spacing: -0.01em; text-transform: none; color: var(--at-black-l-1); }
-.mt-essentiel .mt-essentiel-titre svg { flex: none; width: 20px; height: 20px; color: var(--at-primary); }
+.mt-essentiel .mt-essentiel-titre, .mt-faq-mini .mt-faq-mini-titre { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 20px; line-height: 1.3; font-weight: 700; letter-spacing: -0.01em; text-transform: none; color: var(--at-black-l-1); }
+.mt-essentiel .mt-essentiel-titre svg, .mt-faq-mini .mt-faq-mini-titre svg { flex: none; width: 20px; height: 20px; color: var(--at-primary); }
 .mt-essentiel ul { margin: 0 !important; padding: 0 0 0 18px !important; list-style: disc outside !important; }
 /* Texte : même taille, même interligne et même couleur que l'intro de la rédaction */
 .mt-essentiel li { margin: 0 0 6px !important; padding: 0 !important; font-size: clamp(15px, 1.4vw, 16.5px); line-height: 1.62; color: var(--at-black-l-2); list-style: disc outside !important; }
@@ -44,9 +44,9 @@
 
 /* Encart « Vos questions » (tests Jev du 2026-10-03) : questions de la FAQ, réponse d'une phrase.
    Hors .mt-left exprès : il peut aussi être affiché juste avant le top 5. */
-.mt-faq-mini { margin: 0 0 22px; padding: 16px 18px; background: var(--at-white); border: 1px solid var(--at-grey-l-3); border-radius: 12px; }
+.mt-faq-mini { margin: 0 0 22px; padding: 18px 20px 16px; background: var(--at-primary-l-6); border: 1px solid var(--at-primary-l-4); border-radius: 12px; }
 .mt-faq-mini ul { list-style: none; margin: 0; padding: 0; }
-.mt-faq-mini li { font-size: 15px; line-height: 1.55; color: var(--at-black-l-2); margin: 0; padding: 9px 0; border-top: 1px solid var(--at-grey-l-3); }
+.mt-faq-mini li { font-size: 15px; line-height: 1.55; color: var(--at-black-l-2); margin: 0; padding: 9px 0; border-top: 1px solid var(--at-primary-l-4); }
 .mt-faq-mini li:first-child { border-top: 0; padding-top: 0; }
 .mt-faq-mini li b { display: block; color: var(--at-black-l-1); font-weight: 600; margin-bottom: 2px; }
 .mt-faq-mini p { margin: 10px 0 0; font-size: 14px; }

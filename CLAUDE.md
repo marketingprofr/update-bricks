@@ -939,6 +939,14 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   d'affiliation** (`$MT_TXT_AFFILIATION = ''` : elle remplace le texte du bandeau du header, élément Bricks modifié
   par Samuel) ; `$MT_LIGNES_CONFIANCE = false` retire « 100 % indépendant » et « Mis à jour le » (doublons, test
   Jev neutre), la durée de lecture reste.
+- **Disposition finale validée par Samuel (2026-10-03, soir)** après tests Jev sur 4 pages (note globale jev-seo :
+  toutes les variantes à 0,3 point près sur 100 ; l'intro de la rédaction AVANT toute réponse coûte -1,2 point) :
+  titre → ligne auteur → **intro qui commence par la réponse** (`$MT_REPONSE_INTRO`, `mt_reponse_intro()` : « {n°1}
+  (note) est le meilleur {type} en 2026, devant {n°2} (note) et {n°3} (note). Nous avons analysé N {types} et retenu les
+  T meilleurs. » dans le 1er `<p>` de l'intro) → **un seul encart** « L'essentiel en 30 secondes » = les questions
+  (`$MT_VOS_QUESTIONS = 'apres_intro'`, titre `$MT_TITRE_QUESTIONS` en `<p>` avec icône ; '' = sans titre). L'encart séparé
+  `mt_verdict_ouverture()` reste dans le code, coupé (`$MT_VERDICT_SOUS_H1 = false`). Encadré : `$MT_DUREE_LECTURE = false`.
+  Lots de test : `wp-avis/tests-jev/essentiel-v3*`, `fusion-v3-2026-10-03`, `intro-reponse-2026-10-03`.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

@@ -17,14 +17,16 @@
 $MT_SHOW_QUICK_PICKS = false;
 $MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
-$MT_VERDICT_SOUS_H1  = true;   // encart « L'essentiel en 30 secondes » (n°1 et ses suivants avec notes /10, N analysés, méthode) sous la ligne auteur ; false = ancienne phrase dans le chapô
+$MT_REPONSE_INTRO    = true;   // l'intro commence par la réponse : n°1 et ses suivants avec notes /10, puis N analysés et T retenus (validé par Samuel, 2026-10-03)
+$MT_VERDICT_SOUS_H1  = false;  // ancien encart séparé « L'essentiel en 30 secondes » sous la ligne auteur (remplacé par la réponse en tête de l'intro)
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
 $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (demande de Samuel) ; false = juste après « L'essentiel »
                                 // (test Jev : ouverture 0,82 sous le titre, 0,91 après « L'essentiel »)
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
-$MT_VOS_QUESTIONS    = 'sous_reponse'; // encart « Vos questions » (questions de la FAQ, réponse d'une phrase) : 'sous_reponse' = juste après
-                                // la réponse courte (choix de Samuel, 2026-10-03), 'apres_intro' = juste après l'intro de la rédaction
-                                // (mesure équivalente), 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
+$MT_VOS_QUESTIONS    = 'apres_intro'; // encart des questions (questions de la FAQ, réponse d'une phrase) : 'apres_intro' = juste après
+                                // l'intro (disposition validée par Samuel, 2026-10-03), 'sous_reponse' = sous la ligne auteur,
+                                // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
+$MT_TITRE_QUESTIONS  = 'L’essentiel en 30 secondes'; // titre de l'encart des questions (préféré par Samuel à « Vos questions ») ; '' = sans titre
 
 $this_id   = get_the_ID();
 extract(get_all_template_variables($this_id));
@@ -857,7 +859,7 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
        puis la rédaction, 5 au plus.
      Sautées, car déjà dites plus haut : « Quel est le meilleur… », « meilleures marques », « meilleurs avis »,
      « Comment avons-nous établi… ». Au moins 3 questions, sinon rien. */
-  function mt_vos_questions( $page_id, $ids, $type_sing, $type_plur, $llm ) {
+  function mt_vos_questions( $page_id, $ids, $type_sing, $type_plur, $llm, $titre = 'Vos questions' ) {
     $items    = array();
     $budget   = null; $confiance = null; $choisir = null;
     $nb_autos = 0;
@@ -948,7 +950,52 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
     }
     $nb   = $nb_autos + $nb_redac;
     $tout = $nb > count( $items ) ? 'Voir les ' . $nb . ' questions de notre FAQ' : 'Voir notre FAQ';
-    return '<div class="mt-faq-mini"><h2>Vos questions</h2><ul>' . $li . '</ul><p class="mt-faq-mini-tout"><a href="#partie-faq">' . esc_html( $tout ) . '</a></p></div>';
+    /* Titre en <p> (test Jev : un titre d'encart en h2 coûte un peu d'ouverture) ; '' = sans titre */
+    $tit = $titre !== '' ? '<p class="mt-faq-mini-titre"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>' . esc_html( $titre ) . '</p>' : '';
+    return '<div class="mt-faq-mini">' . $tit . '<ul>' . $li . '</ul><p class="mt-faq-mini-tout"><a href="#partie-faq">' . esc_html( $tout ) . '</a></p></div>';
+  }
+}
+
+if ( ! function_exists( 'mt_reponse_intro' ) ) {
+  /* Réponse en tête de l'intro (disposition validée par Samuel le 2026-10-03, test Jev « F5 » : ouverture 0,85) :
+     « {n°1 en lien} (note) est le meilleur {produit} en 2026, devant {n°2} (note) et {n°3} (note). Nous avons analysé
+     {N} {produits} et retenu les {T} meilleur(e)s. » Mêmes données que l'encart « L'essentiel » (mt_verdict_ouverture). */
+  function mt_reponse_intro( $ids, $type_plur, $type_sing, $llm, $n ) {
+    $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
+    $t   = count( $ids );
+    if ( $t === 0 ) { return ''; }
+    $prods = mt_top_infos( $ids, 3 );
+    if ( empty( $prods ) || $prods[0]['name'] === '' ) { return ''; }
+    $p1   = $prods[0]['pid'];
+    $asin = trim( (string) get_field( 'mltv5_asin_amazon', $p1 ) );
+    $url  = '';
+    if ( $asin !== '' ) {
+      $url = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=mlt00-21';
+    } else {
+      for ( $li = 1; $li <= 3; $li++ ) {
+        $lu = trim( (string) get_field( 'mltv5_lien_du_produit_' . $li, $p1 ) );
+        if ( $lu !== '' && strpos( $lu, 'http' ) === 0 ) { $url = $lu; break; }
+      }
+    }
+    if ( $url === '' ) { $url = '#produit-n-1'; }
+    $llm_t = mb_strtolower( trim( (string) $llm ), 'UTF-8' );
+    $fem   = ( mb_strpos( $llm_t, 'meilleure' ) !== false );
+    $pl    = ( mb_strpos( $llm_t, 'les ' ) === 0 );
+    $plur  = mb_strtolower( trim( (string) $type_plur ), 'UTF-8' );
+    $sing  = mb_strtolower( trim( (string) $type_sing ), 'UTF-8' );
+    $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
+    $lien  = '<a href="' . esc_url( $url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>' . $note( $prods[0] );
+    if ( ! $pl && $sing !== '' ) { $out = $lien . ' est ' . ( $fem ? 'la meilleure ' : 'le meilleur ' ) . esc_html( $sing ) . ' en ' . date_i18n( 'Y' ); }
+    else { $out = $lien . ' est notre n°1 parmi les ' . esc_html( $plur !== '' ? $plur : 'produits' ) . ' en ' . date_i18n( 'Y' ); }
+    $autres = array();
+    foreach ( array_slice( $prods, 1 ) as $p ) { if ( $p['name'] !== '' ) { $autres[] = esc_html( $p['name'] ) . $note( $p ); } }
+    if ( count( $autres ) === 2 ) { $out .= ', devant ' . $autres[0] . ' et ' . $autres[1]; }
+    elseif ( count( $autres ) === 1 ) { $out .= ', devant ' . $autres[0]; }
+    $typ = esc_html( $plur !== '' ? $plur : 'produits' );
+    $e   = ( $fem && $plur !== '' ) ? 'e' : '';
+    $out .= '. ' . ( $n > $t ? 'Nous avons analysé ' . (int) $n . ' ' . $typ . ' et retenu les ' . $t . ' meilleur' . $e . 's.'
+                             : 'Nous avons analysé et classé ' . max( (int) $n, $t ) . ' ' . $typ . '.' );
+    return $out;
   }
 }
 
@@ -1289,7 +1336,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   <?php if ( $MT_VOS_QUESTIONS !== '' && $post_type === 'comparatif' ) {
       /* Encart « Vos questions » : affiché ici (après « L'essentiel »), après l'intro de la rédaction (plus bas dans ce bloc), ou confié au bloc
          du top 5 (résumé V1 / multi-resume V2) qui l'affiche juste avant */
-      $mt_vq = mt_vos_questions( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '' );
+      $mt_vq = mt_vos_questions( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_singulier ?? '', $type_de_produit_au_pluriel ?? '', $lalalesmeilleur ?? '', $MT_TITRE_QUESTIONS );
       if ( $MT_VOS_QUESTIONS === 'avant_top5' ) { $GLOBALS['mt_vos_questions'] = $mt_vq; }
       elseif ( $MT_VOS_QUESTIONS === 'apres_intro' ) { $mt_vq_apres_intro = $mt_vq; }
       else { echo $mt_vq; }
@@ -1305,8 +1352,16 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
         'mf'   => $masculinsfeminins ?? '',
       ) );
   }
+  if ( $MT_REPONSE_INTRO && $post_type === 'comparatif' ) {
+      /* La réponse ouvre le 1er paragraphe de l'intro (dans le même <p>), sinon un paragraphe à part */
+      $mt_rep = mt_reponse_intro( $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '', $mt_n );
+      if ( $mt_rep !== '' ) {
+          if ( preg_match( '#^\s*<p\b[^>]*>#i', $mt_intro_html, $mt_m ) ) { $mt_intro_html = $mt_m[0] . $mt_rep . ' ' . substr( ltrim( $mt_intro_html ), strlen( ltrim( $mt_m[0] ) ) ); }
+          else { $mt_intro_html = '<p>' . $mt_rep . '</p>' . $mt_intro_html; }
+      }
+  }
   echo $mt_intro_html;
-  if ( $MT_SHOW_INTRO_RECO && ! $MT_VERDICT_SOUS_H1 && $post_type === 'comparatif' ) {
+  if ( $MT_SHOW_INTRO_RECO && ! $MT_VERDICT_SOUS_H1 && ! $MT_REPONSE_INTRO && $post_type === 'comparatif' ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
