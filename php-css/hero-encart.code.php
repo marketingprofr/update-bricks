@@ -2,6 +2,7 @@
 $MT_ENCADRE_REEL = true;  // encadré à valeurs réelles, validé par Samuel le 2026-10-02 (false = ancien encadré)
 $MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Architecture) : « des guides d'achat internationaux (…), … » ; vide = pas de puce
 $MT_TXT_AFFILIATION = ''; // puce d'affiliation : version finale de Samuel (2026-10-03) ; '' = pas de puce
+$MT_DUREE_LECTURE    = false; // ligne « … min de lecture » (test Jev neutre, -0,01) ; true = affichée
 $MT_LIGNES_CONFIANCE = false; // lignes « 100 % indépendant » et « Mis à jour le » (doublons de la phrase d'indépendance et de la ligne auteur ; test Jev neutre) ; true = affichées
 $MT_SIGNALEMENT     = true;  // ligne « Une erreur… ? Prévenez-nous » vers le formulaire Fluent Forms (en place le 2026-10-03) ; false = pas de ligne
 $MT_URL_SIGNALEMENT = '/signaler-une-erreur/'; // page du formulaire Fluent Forms (champs cachés : {get.source_id}, {get.source_url})
@@ -242,13 +243,17 @@ if ( $MT_ENCADRE_REEL ) {
   </div>
   <?php endif; ?>
 
+  <?php if ( $MT_LIGNES_CONFIANCE || $MT_DUREE_LECTURE ) : ?>
   <div class="mt-sc-trust">
     <?php if ( $MT_LIGNES_CONFIANCE ) : ?>
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_check; ?></span><span><b>100&nbsp;% indépendant</b> (et sans pub)</span></div>
     <div class="mt-sc-row mt-sc-date"><span class="mt-ti"><?php echo $ic_refresh; ?></span><span>Mis à jour le <b><?php echo $mod; ?></b></span></div>
     <?php endif; ?>
+    <?php if ( $MT_DUREE_LECTURE ) : ?>
     <div class="mt-sc-row"><span class="mt-ti"><?php echo $ic_book; ?></span><span><b><?php echo $rt; ?> min</b> de lecture</span></div>
+    <?php endif; ?>
   </div>
+  <?php endif; ?>
   <?php if ( $MT_ENCADRE_REEL && ! empty( $mt_puces ) ) : ?>
     <div class="mt-sc-process link-black">
       <ul class="mt-sc-liste"><?php foreach ( $mt_puces as $mt_p ) : ?><li><?php echo $mt_p; ?></li><?php endforeach; ?></ul>
