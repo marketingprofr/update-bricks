@@ -12,7 +12,7 @@
 $T5_CUST_RATING_FIELD = 'mltv5_score_avis_clients';    // note clients /5 (étoile)
 $T5_CUST_COUNT_FIELD  = 'mltv5_nombre_avis_clients';   // nombre d'avis clients
 $T5_AMAZON_TAG        = 'mlt00-21';                     // tag affilié Amazon
-$MT_POINT_VIGILANCE   = false;  // « Point de vigilance » (champs du type de produit) juste avant le top 5 : pilote, en attente de Samuel
+$MT_POINT_VIGILANCE   = true;   // « Point de vigilance » (champs du type de produit) juste avant le top 5 ; seuls les types remplis l'affichent (pilote : climatiseur mobile) ; false = jamais
 
 /* ---------------------------------------------------------------------
    Helpers (déclarés une fois)

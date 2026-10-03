@@ -25,12 +25,12 @@ if ( getenv( 'CRIT' ) ) { $GLOBALS['ACF'][100]['mltv5_criteres_courts'] = getenv
 if ( getenv( 'PHRASE' ) ) { $GLOBALS['ACF'][100]['mltv5_phrase_sources'] = getenv( 'PHRASE' ); }
 $src = file_get_contents( MT_REPO . '/php-css/hero-encart.code.php' );
 $src = str_replace( '$MT_ENCADRE_REEL = false;', '$MT_ENCADRE_REEL = true;', $src );
-if ( getenv( 'SIGNALEMENT' ) ) {  // ligne « Une erreur… ? Prévenez-nous » (réglage activé dans la copie)
-  $src = preg_replace( '/\$MT_SIGNALEMENT\s*=\s*false;/', '$MT_SIGNALEMENT = true;', $src, 1 );
-  /* comme WordPress : add_query_arg() n'encode pas les valeurs (build_query sans urlencode) */
-  if ( ! function_exists( 'add_query_arg' ) ) { function add_query_arg( $a, $u ) { $q = array(); foreach ( $a as $k => $v ) { $q[] = $k . '=' . $v; } return $u . ( strpos( $u, '?' ) === false ? '?' : '&' ) . implode( '&', $q ); } }
-  if ( ! function_exists( 'home_url' ) ) { function home_url( $p = '' ) { return 'https://meilleurtest.fr' . $p; } }
+if ( getenv( 'SANSSIGNALEMENT' ) ) {  // ligne « Une erreur… ? Prévenez-nous » retirée dans la copie
+  $src = preg_replace( '/\$MT_SIGNALEMENT\s*=\s*true;/', '$MT_SIGNALEMENT = false;', $src, 1 );
 }
+/* comme WordPress : add_query_arg() n'encode pas les valeurs (build_query sans urlencode) */
+if ( ! function_exists( 'add_query_arg' ) ) { function add_query_arg( $a, $u ) { $q = array(); foreach ( $a as $k => $v ) { $q[] = $k . '=' . $v; } return $u . ( strpos( $u, '?' ) === false ? '?' : '&' ) . implode( '&', $q ); } }
+if ( ! function_exists( 'home_url' ) ) { function home_url( $p = '' ) { return 'https://meilleurtest.fr' . $p; } }
 if ( getenv( 'SRC' ) || getenv( 'ETUD' ) ) {
   $GLOBALS['ACF'][100]['mltv5_la_recherche_comparatif'] = array( 'mltv5_sources_consultees' => (int) getenv( 'SRC' ), 'mltv5_avis_etudies' => (int) getenv( 'ETUD' ) );
 }

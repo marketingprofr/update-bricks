@@ -900,6 +900,21 @@ ses blocs restent **intacts** (solution de repli). Livrables dans **`php-css/v2/
   variantes candidates), redirections 301, dépublication/exclusion des listes,
   bascule du template multi-comparatif sur tous les comparatifs (conditions Bricks).
 
+## Modèle multi-comparatif V3 (2026-10-03) — dossier `php-css/multi-v3/`
+
+Samuel duplique le modèle multi-comparatif (V2, en ligne) et y colle les blocs de ce dossier : 6 éléments Code,
+numérotés dans l'ordre de collage (`multi-v3-1-hero-gauche`, `-2-encadre-confiance`, `-3-sommaire`,
+`-4-resume-top5`, `-5-tests-complets`, `-6-faq`), chacun en `.code.php` (onglet Code) + `.css` (onglet CSS, complet).
+Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément → fichiers, réglages, vérifications).
+- Ce sont des **COPIES EXACTES** des fichiers de référence (`v2/multi-*`, `hero-encart`, `faq`). On modifie TOUJOURS
+  la référence, puis `python outils/verifier-multi-v3.py --recopier` (sans option : vérification seule, « identique »
+  attendu pour les 12 fichiers).
+- Réglages livrés pour la mise en ligne (2026-10-03) : `$MT_VOS_QUESTIONS = 'sous_reponse'`, `$MT_SIGNALEMENT = true`
+  (formulaire Fluent Forms en place, champs cachés source_id / source_url), `$MT_POINT_VIGILANCE = true` (seuls les
+  types remplis l'affichent : climatiseur mobile 12835), `$MT_METHODO_ENCADRE = true`, `$MT_ENCADRE_REEL = true`.
+- Hors de ce modèle : fiches avis (`avis-hero`, `avis-content` : prix par étiquette, carrousel marque), modèle V1,
+  CSS global du formulaire (`php-css/formulaire-signalement.css`, Bricks → Code personnalisé).
+
 ## Audit Jev (jev-seo) — estimation gabarit (2026-10-02)
 
 Données : branche `claude/verify-seo-skill-install-u596xu`, `data/jev-comparatifs-2026-10-01/`

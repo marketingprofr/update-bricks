@@ -23,7 +23,7 @@ $GLOBALS['ACF']['term_10'] = array(
 );
 $v2  = (bool) getenv( 'V2' );
 $res = file_get_contents( MT_REPO . '/php-css/' . ( $v2 ? 'v2/multi-resume.code.php' : 'top5-resume.code.php' ) );
-$res = preg_replace( '/\$MT_POINT_VIGILANCE\s*=\s*false;/', '$MT_POINT_VIGILANCE = true;', $res, 1, $nb );
+$res = preg_replace( '/\$MT_POINT_VIGILANCE\s*=\s*(true|false);/', '$MT_POINT_VIGILANCE = true;', $res, 1, $nb );
 if ( $nb !== 1 ) { exit( "réglage \$MT_POINT_VIGILANCE introuvable\n" ); }
 @mkdir( __DIR__ . '/out' );
 file_put_contents( __DIR__ . '/out/resume-vigilance.php', $res );
