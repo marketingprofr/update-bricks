@@ -3,7 +3,7 @@ $MT_ENCADRE_REEL = true;  // encadré à valeurs réelles, validé par Samuel le
 $MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Architecture) : « des guides d'achat internationaux (…), … » ; vide = pas de puce
 $MT_TXT_AFFILIATION = 'Si vous achetez via nos liens, nous pouvons toucher une commission (sans surcoût pour vous). Cela n\'a aucun effet sur le classement, mais nous aide à faire vivre le site.'; // puce d'affiliation : version finale de Samuel (2026-10-03) ; '' = pas de puce
 $MT_SIGNALEMENT     = false; // true quand le formulaire « Signaler une erreur » existe (le contact actuel exige un compte)
-$MT_URL_SIGNALEMENT = '/signaler-une-erreur/'; // page du formulaire Fluent Forms (champs cachés : {get.page_id}, {get.url})
+$MT_URL_SIGNALEMENT = '/signaler-une-erreur/'; // page du formulaire Fluent Forms (champs cachés : {get.source_id}, {get.source_url})
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
 $MT_AVIS_REPLI    = '200+'; // case 3 si mltv5_avis_etudies est vide ou par défaut (597) : consigne de la rédaction, lire au moins 200 avis (Samuel) ; '' = avis clients, sinon produits retenus
 $MT_SEUIL_AVIS_CL = 10000; // avis clients recensés affichés à partir de ce total (500 faisait baisser la note, 18 440 aidait)
@@ -195,7 +195,9 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }
   if ( $MT_SIGNALEMENT ) {
     /* La page d'origine est transmise au formulaire (identifiant + adresse), sans donnée personnelle */
-    $mt_url_sig = add_query_arg( array( 'page_id' => $this_id, 'url' => rawurlencode( get_permalink( $this_id ) ) ), home_url( $MT_URL_SIGNALEMENT ) );
+    /* source_id / source_url, pas page_id / url : page_id est une variable de requête réservée par WordPress
+       (?page_id=37750 redirige vers la page 37750 au lieu d'afficher le formulaire) */
+    $mt_url_sig = add_query_arg( array( 'source_id' => $this_id, 'source_url' => rawurlencode( get_permalink( $this_id ) ) ), home_url( $MT_URL_SIGNALEMENT ) );
     /* Formulation choisie par Samuel (2026-10-03, confiance +0,01 sur 10 pages) */
     $mt_puces[] = 'Une erreur, ou un produit remplacé par un nouveau modèle&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Prévenez-nous</a>.';
   }

@@ -27,7 +27,8 @@ $src = file_get_contents( MT_REPO . '/php-css/hero-encart.code.php' );
 $src = str_replace( '$MT_ENCADRE_REEL = false;', '$MT_ENCADRE_REEL = true;', $src );
 if ( getenv( 'SIGNALEMENT' ) ) {  // ligne « Une erreur… ? Prévenez-nous » (réglage activé dans la copie)
   $src = preg_replace( '/\$MT_SIGNALEMENT\s*=\s*false;/', '$MT_SIGNALEMENT = true;', $src, 1 );
-  if ( ! function_exists( 'add_query_arg' ) ) { function add_query_arg( $a, $u ) { return $u . ( strpos( $u, '?' ) === false ? '?' : '&' ) . http_build_query( $a ); } }
+  /* comme WordPress : add_query_arg() n'encode pas les valeurs (build_query sans urlencode) */
+  if ( ! function_exists( 'add_query_arg' ) ) { function add_query_arg( $a, $u ) { $q = array(); foreach ( $a as $k => $v ) { $q[] = $k . '=' . $v; } return $u . ( strpos( $u, '?' ) === false ? '?' : '&' ) . implode( '&', $q ); } }
   if ( ! function_exists( 'home_url' ) ) { function home_url( $p = '' ) { return 'https://meilleurtest.fr' . $p; } }
 }
 if ( getenv( 'SRC' ) || getenv( 'ETUD' ) ) {
@@ -44,3 +45,4 @@ if ( preg_match( '#<ul class="mt-sc-liste">(.*?)</ul>#s', $h, $u ) ) {
   }
 }
 echo '  titre de l\'encadré en <p> : ', ( strpos( $h, '<p class="mt-card-h">' ) !== false ? 'oui' : 'NON' ), "\n";
+if ( preg_match( '#href="([^"]+)" class="mt-signaler"#', $h, $mt_sig ) ) { echo '  lien de signalement : ', html_entity_decode( $mt_sig[1] ), "\n"; }
