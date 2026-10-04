@@ -216,13 +216,10 @@
 /* Ancre V1 #produit-n-{rang} conservée (FAQ, tableau…) : invisible */
 .ed-a .mtv2-legacy-anchor { display: block; height: 0; overflow: hidden; }
 
-/* Performance : les tests hors écran (à partir du 4e) ne sont rendus
-   qu'à l'approche du scroll. */
-.ed-a .ed-a-piece:nth-of-type(n+4) { content-visibility: auto; contain-intrinsic-block-size: auto 1600px; }
-
 /* Dessin à la demande des avis détaillés (Samuel, 2026-10-04) : 21 avis d'environ 1 740 px sur ordinateur et 1 900 px
-   sur mobile, mesurés en ligne ; le navigateur ne les met en page qu'à l'approche de l'écran (hauteur seule : contain-intrinsic-block-size, sinon la largeur réservée serait aussi de 1 750 px). Recherche dans la page
-   et ancres #test-… inchangées. */
+   sur mobile, mesurés en ligne ; le navigateur ne les met en page qu'à l'approche de l'écran. Hauteur seule
+   (contain-intrinsic-block-size : avec contain-intrinsic-size, la largeur réservée serait aussi de 1 750 px).
+   Remplace l'ancienne règle « à partir du 4e test » (1 600 px). Recherche dans la page et ancres #test-… inchangées. */
 .ed-a-piece { content-visibility: auto; contain-intrinsic-block-size: auto 1750px; }
 @media (max-width: 767px) {
   .ed-a-piece { contain-intrinsic-block-size: auto 1900px; }
