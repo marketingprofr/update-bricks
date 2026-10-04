@@ -29,6 +29,12 @@
 .mt-lede a:hover { color: var(--at-primary-d-1); }
 .mt-lede-reco { margin: 14px 0 0; }
 .mt-lede .mt-lede-reponse { margin: 0 0 14px; } /* la réponse automatique, séparée du texte de la rédaction */
+/* Texte de la rédaction replié sur 2 lignes, « Afficher la suite » / « Masquer la suite » (demande de Samuel, 2026-10-04) */
+.mt-lede-texte { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.mt-lede-texte.mt-ouvert { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; }
+.mt-lede .mt-lede-suite { display: inline-block; margin: 4px 0 0; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; font: inherit; font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--at-primary); text-decoration: underline; text-transform: none; cursor: pointer; }
+.mt-lede .mt-lede-suite:hover { color: var(--at-primary-d-1); background: none; }
+.mt-lede .mt-lede-suite[hidden] { display: none; }
 
 /* « L'essentiel en 30 secondes » sous la ligne auteur (demande de Samuel, 2026-10-03) : faits de la réponse courte en liste */
 .mt-essentiel { margin: 0 0 18px; padding: 18px 20px 16px; background: var(--at-primary-l-6); border: 1px solid var(--at-primary-l-4); border-radius: 12px; }
@@ -46,9 +52,12 @@
 /* Encart « Vos questions » (tests Jev du 2026-10-03) : questions de la FAQ, réponse d'une phrase.
    Hors .mt-left exprès : il peut aussi être affiché juste avant le top 5. */
 .mt-faq-mini { margin: 0 0 22px; padding: 18px 20px 16px; background: var(--at-primary-l-6); border: 1px solid var(--at-primary-l-4); border-radius: 12px; }
-.mt-faq-mini ul { list-style: none; margin: 0; padding: 0; }
-.mt-faq-mini li { font-size: 15px; line-height: 1.55; color: var(--at-black-l-2); margin: 0; padding: 9px 0; border-top: 1px solid var(--at-primary-l-4); }
-.mt-faq-mini li:first-child { border-top: 0; padding-top: 0; }
+/* Trait bleu sous le titre ; questions en liste à puces, sans trait entre elles (demande de Samuel, 2026-10-04) */
+.mt-faq-mini .mt-faq-mini-titre { padding: 0 0 10px; margin: 0 0 12px; border-bottom: 1px solid var(--at-primary-l-4); }
+.mt-faq-mini ul { margin: 0 !important; padding: 0 0 0 20px !important; list-style: disc outside !important; }
+.mt-faq-mini li { font-size: 15px; line-height: 1.55; color: var(--at-black-l-2); margin: 0 0 12px !important; padding: 0 0 0 4px !important; border: 0; list-style: disc outside !important; }
+.mt-faq-mini li:last-child { margin-bottom: 0 !important; }
+.mt-faq-mini li::marker { color: var(--at-primary); }
 .mt-faq-mini li b { display: block; color: var(--at-black-l-1); font-weight: 600; margin-bottom: 2px; }
 .mt-faq-mini p { margin: 10px 0 0; font-size: 14px; }
 .mt-faq-mini .mt-faq-mini-lien { display: inline-block; margin-left: 2px; font-size: 13.5px; white-space: nowrap; }

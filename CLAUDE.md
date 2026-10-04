@@ -954,6 +954,18 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   (fond `--at-warning-l-1`, bordure `--at-warning-l-2`, h2 Inter 20 px 700 avec icône d'alerte `--at-warning-d-2`,
   texte à la taille de l'intro, liens `--at-primary-d-1` car `--at-primary` sur ce jaune = contraste 4,06).
   Remarque : `--at-warning-l-6` n'est pas défini dans les variables de la page (seuls l-1 à l-3), alors que la barre admin des tests l'utilise.
+- **2e passe de Samuel du 2026-10-04** : `mt_reponse_intro()` met la méthode d'abord (« Nous avons analysé N … et
+  retenu les T meilleur(e)s. {n°1} (note) est le meilleur … devant … ») ; `$MT_INTRO_REPLIEE = true` : texte de la
+  rédaction dans `div#mt-lede-texte.mt-lede-texte` replié sur 2 lignes (`-webkit-line-clamp: 2`, texte entier dans le
+  HTML), bouton `button.mt-lede-suite` « Afficher la suite » / « Masquer la suite » (aria-expanded, caché si le texte
+  tient sur 2 lignes ; vérifié au chargement, au load et au resize). Encart « L'essentiel » : trait `--at-primary-l-4`
+  sous le titre, questions en liste à puces (disc, puce primary), plus de trait entre les questions. Point de
+  vigilance : texte 15 px / 1,55 comme l'encart. Tailles en ligne : intro 16,5 px, intros de section 16 px, la plupart
+  des textes de section 15 px (Samuel trouve l'intro peut-être trop grosse : à trancher).
+  Image du hero : la Coordination recommande de la retirer de l'affichage du haut (élément LCP de la page, 7,3 s sur
+  mobile, chargée en lazy sans fetchpriority) ; si elle reste, après l'encart, sans lazy, avec fetchpriority="high".
+  Choix de Samuel attendu avant de coder. Titre forcé de 37750
+  toujours rempli le 2026-10-04 (« … 55 modèles comparés ») : signalé à l'Architecture.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

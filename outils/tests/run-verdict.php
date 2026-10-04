@@ -15,6 +15,7 @@ $txt = function( $re ) use ( $h ) { return preg_match( $re, $h, $m ) ? trim( pre
 echo 'H1      : ', $txt( '#<h1 class="mt-h1">(.*?)</h1>#s' ), "\n";
 echo 'réponse : ', $txt( '#<div class="mt-lede"><p class="mt-lede-reponse">(.*?)</p>#s' ), "\n";
 echo 'puis    : ', mb_substr( $txt( '#<p class="mt-lede-reponse">.*?</p>(.*?)</div>#s' ), 0, 120 ), "\n";
+echo 'repliée : ', ( strpos( $h, '<div class="mt-lede-texte" id="mt-lede-texte">' ) !== false && strpos( $h, '>Afficher la suite</button>' ) !== false ? 'oui, avec « Afficher la suite »' : 'non' ), "\n";
 echo 'encart séparé « L\'essentiel » : ', strpos( $h, 'class="mt-essentiel"' ) !== false ? 'présent' : 'absent', "\n";
 echo 'auteur  : ', $txt( '#<span class="mt-byline-text">(.*?)</span>\s*</div>#s' ), "\n";
 echo 'chapô   : ', ( strpos( $h, 'mt-lede-reco' ) !== false ? 'contient encore la phrase verdict' : 'sans phrase verdict' ), "\n";
