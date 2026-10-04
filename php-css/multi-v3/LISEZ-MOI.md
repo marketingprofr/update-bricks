@@ -50,6 +50,8 @@ Puis les 3 produits de la phrase d'ouverture ont chacun leur lien marchand, qui 
 
 Puis, dans l'encadré, le bloc de vote dit « Avis des lecteurs » et « Votre note nous aide à améliorer ce comparatif. » : **2**, Code seulement.
 
+Puis les 5 produits du top 5 ont le même format (celui des produits 2 à 5). Le n°1 garde seulement le laurier sur sa photo, et chaque note a sa pastille « Excellent », « Très bon »… dessous : **4**, CSS seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -108,7 +110,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 2. L'intro commence par une phrase à part : « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … ». Dessous, le texte habituel tient sur 2 lignes, la 2e ligne estompée, avec « Afficher la suite », qui ouvre et referme.
 3. Juste après l'intro, un seul encart « L'essentiel en 30 secondes » (titre en gras avec une petite icône, trait bleu dessous) : jusqu'à 4 questions de la rédaction (2 sur la page climatiseur mobile, qui n'en a que 2) en liste à puces, chacune avec sa réponse d'une phrase et « En savoir plus », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions-réponses de notre foire aux questions ».
 4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », « Chaque climatiseur mobile est noté principalement sur 4 critères (…) »). Sous la liste, l'engagement d'indépendance signé (« Aucune marque ne peut payer pour figurer dans nos classements. J'ai refusé des offres publicitaires allant jusqu'à 20 000 € pour garantir l'indépendance du site. »), puis « Découvrez notre méthodologie… » et, juste dessous, « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
-5. Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche dans un encart jaune, avec une icône d'alerte devant le titre et la source en petit.
+5. Dans le top 5, les 5 produits ont le même format, le laurier sur la photo du n°1, et sous chaque note la pastille « Excellent », « Très bon »… (sur ordinateur). Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche dans un encart jaune, avec une icône d'alerte devant le titre et la source en petit.
 6. Sur téléphone, la page ne dépasse pas de l'écran : pas de défilement de côté.
 7. Dans la FAQ, « Comment avons-nous établi ce classement ? » donne les mêmes chiffres que l'encadré.
 8. Plus de pastille « Vérifié le … » au-dessus du titre, ni de photo en haut de page, ni sur ordinateur ni sur téléphone. L'intro est en 16 px sur ordinateur (15 px sur téléphone).

@@ -992,6 +992,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   (le lien du n°1 n'avait ni target ni rel). Choix du nouvel onglet laissé à Templates par Samuel.
   Bloc de vote de l'encadré (textes de Samuel, test Jev sans recul) : titre « Avis des lecteurs », phrase « Votre note
   nous aide à améliorer ce comparatif. » (widget Rate My Post inchangé).
+  Top 5 résumé (multi-resume.css et top5-resume.css, CSS seulement) : plus de « MODE HERO » `li:first-child` ; les 5
+  produits au format rangée (celui des 2 à 5, mobile compris : sélecteurs `li:not(:first-child)` étendus à tous les `li`),
+  laurier 36 px sur la photo de `.t5-item[data-rank="1"]` (suit le rang de la rédaction, même après un tri ; caché
+  entre 768 et 880 px comme les photos), pastille `.t5-ed .tag` (« Excellent »…, get_acf_score_label) sous chaque note
+  (ordinateur et tablette ; sur mobile la note est dans le bouton « Lire l'avis complet », comme avant).
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 
