@@ -11,9 +11,9 @@ $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (dema
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 $MT_PASTILLE_VERIFIE = false;  // pastille « Vérifié le … » au-dessus du titre : retirée le 2026-10-04 (demande de Samuel), la ligne
                                 // auteur sous le titre dit déjà qui a vérifié et la date ; true = pastille affichée
-$MT_PHOTO_HERO       = false;  // photo et badge en haut de page : retirés le 2026-10-04 (choix de Samuel, conseil de la Coordination :
-                                // élément le plus lent de la page sur mobile, LCP 7,3 s) ; l'image mise en avant reste dans
-                                // WordPress (partage, og:image) ; true = photo affichée
+$MT_PHOTO_HERO       = true;   // photo (image mise en avant) et badge entre l'intro et l'encart « L'essentiel » (Samuel, 2026-10-04) ;
+                                // pas de photo sur un comparatif qui a l'étiquette « no featured » (au cas par cas, selon la
+                                // qualité des images) ; false = jamais de photo
 $MT_VOS_QUESTIONS    = 'apres_intro'; // encart des questions (questions de la FAQ, réponse d'une phrase) : 'apres_intro' = juste après
                                 // l'intro (disposition validée par Samuel, 2026-10-03), 'sous_reponse' = sous la ligne auteur,
                                 // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
@@ -901,19 +901,21 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
-  <?php if ( ! empty( $mt_vq_apres_intro ) ) { echo $mt_vq_apres_intro; } /* encart « Vos questions » réglé sur 'apres_intro' */ ?>
-
-  <?php if ( $MT_SHOW_QUICK_PICKS && $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
-    echo mt_quick_picks( $top_avis_ids );
-  } ?>
-
-  <?php if ( $MT_PHOTO_HERO ) : ?>
+  <?php /* Photo entre l'intro et l'encart « L'essentiel » ; pas de photo si le comparatif a l'étiquette « no featured ».
+     Chargée en priorité (pas de lazy, fetchpriority high) : c'était l'élément le plus lent de la page sur mobile. */
+  if ( $MT_PHOTO_HERO && ! has_term( array( 'no-featured', 'no featured', 'nofeatured' ), 'post_tag', $this_id ) ) : ?>
   <div class="mt-photo">
-    <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img')); ?>
+    <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img', 'loading'=>'eager', 'fetchpriority'=>'high', 'decoding'=>'async')); ?>
     <?php if ($post_type === 'comparatif') {
         echo '<img class="mt-badge" src="https://meilleurtest.fr/wp-content/uploads/2026/07/badge-mt3.png" alt="" style="position:absolute;top:0;left:0;max-width:130px;height:auto;">';
     } ?>
   </div>
   <?php endif; ?>
+
+  <?php if ( ! empty( $mt_vq_apres_intro ) ) { echo $mt_vq_apres_intro; } /* encart « Vos questions » réglé sur 'apres_intro' */ ?>
+
+  <?php if ( $MT_SHOW_QUICK_PICKS && $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
+    echo mt_quick_picks( $top_avis_ids );
+  } ?>
 
 </div>

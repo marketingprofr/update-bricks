@@ -17,7 +17,8 @@ echo 'réponse : ', $txt( '#<div class="mt-lede"><p class="mt-lede-reponse">(.*?
 echo 'puis    : ', mb_substr( $txt( '#<p class="mt-lede-reponse">.*?</p>(.*?)</div>#s' ), 0, 120 ), "\n";
 echo 'repliée : ', ( strpos( $h, '<div class="mt-lede-texte" id="mt-lede-texte">' ) !== false && strpos( $h, '>Afficher la suite</button>' ) !== false ? 'oui, avec « Afficher la suite »' : 'non' ), "\n";
 echo 'pastille: ', strpos( $h, 'class="mt-eyebrow"' ) !== false ? 'affichée' : 'retirée', "\n";
-echo 'photo   : ', strpos( $h, 'class="mt-photo"' ) !== false ? 'affichée' : 'retirée', "\n";
+$pp = strpos( $h, 'class="mt-photo"' ); $pq = strpos( $h, 'mt-faq-mini' ); $pl2 = strpos( $h, 'class="mt-lede"' );
+echo 'photo   : ', $pp === false ? 'retirée' : ( 'affichée' . ( $pl2 < $pp && ( $pq === false || $pp < $pq ) ? ', entre l\'intro et l\'encart' : ', PLACE INATTENDUE' ) ), "\n";
 echo 'encart séparé « L\'essentiel » : ', strpos( $h, 'class="mt-essentiel"' ) !== false ? 'présent' : 'absent', "\n";
 echo 'auteur  : ', $txt( '#<span class="mt-byline-text">(.*?)</span>\s*</div>#s' ), "\n";
 echo 'chapô   : ', ( strpos( $h, 'mt-lede-reco' ) !== false ? 'contient encore la phrase verdict' : 'sans phrase verdict' ), "\n";

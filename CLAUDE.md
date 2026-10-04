@@ -997,6 +997,14 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   laurier 36 px sur la photo de `.t5-item[data-rank="1"]` (suit le rang de la rédaction, même après un tri ; caché
   entre 768 et 880 px comme les photos), pastille `.t5-ed .tag` (« Excellent »…, get_acf_score_label) sous chaque note
   (ordinateur et tablette ; sur mobile la note est dans le bouton « Lire l'avis complet », comme avant).
+  Puis (Samuel, 2026-10-04) : `$MT_PHOTO_HERO = true`, photo DÉPLACÉE entre `div.mt-lede` et l'encart « L'essentiel »
+  (mobile : `.mt-photo { order: 1 }`), `loading="eager" fetchpriority="high"`, absente si le comparatif a l'étiquette
+  post_tag « no featured » (has_term sur 'no-featured' / 'no featured' / 'nofeatured' ; l'étiquette n'existe pas encore
+  sur le site, Samuel la crée). `.mt-crumb` margin-bottom 9 px. Top 5 : `.t5-ratings { min-width: 130px }`, avis
+  clients `nowrap`. Encadré : plus de border-top sur `.mt-sc-process`, trait sous `.mt-sc-liste` ; `.mt-sc-process p
+  { margin: 0 }` car Bricks met `:where(p) { margin-block: 0 1.2em }` (le « Découvrez… » avait 15,9 px en trop depuis
+  que « Prévenez-nous » le suit). Header et footer du site : sections DANS `<main id="brx-content">` (pas de modèle
+  Header/Footer Bricks), guide donné à Samuel pour les sortir.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

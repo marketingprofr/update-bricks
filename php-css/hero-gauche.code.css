@@ -5,7 +5,7 @@
    ===================================================================== */
 .mt-left { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; }
 
-.mt-crumb { font-size: 13px; line-height: 1.5; color: var(--at-grey); margin-bottom: 18px; }
+.mt-crumb { font-size: 13px; line-height: 1.5; color: var(--at-grey); margin-bottom: 9px; } /* 9 px au lieu de 18 (Samuel, 2026-10-04) */
 .mt-crumb a { color: var(--at-grey); text-decoration: none; white-space: nowrap; }
 .mt-crumb a:hover { color: var(--at-primary); }
 .mt-crumb .separator { color: var(--at-grey-l-1); }
@@ -82,7 +82,7 @@
 .mt-picks .mt-pick-r { font-size: 0.85em; color: var(--at-grey-l-1); text-decoration: none; }
 .mt-picks .mt-pick-r:hover { color: var(--at-primary); }
 
-.mt-photo { position: relative; border-radius: 12px; overflow: hidden; }
+.mt-photo { position: relative; border-radius: 12px; overflow: hidden; margin: 0 0 22px; } /* entre l'intro et l'encart « L'essentiel » */
 .mt-photo-img { display: block; width: 100%; height: 340px; object-fit: cover; }
 .mt-photo .mt-badge { border-radius: 0; }
 
@@ -92,6 +92,6 @@
   .mt-lede { order: 1; }
   .mt-lede ~ .mt-faq-mini { order: 1; } /* « Vos questions » réglé sur 'apres_intro' : reste juste après l'intro */
   .mt-photo-img { height: auto; aspect-ratio: 16/9; }
-  .mt-photo { margin-bottom: 20px; }
+  .mt-photo { order: 1; margin-bottom: 20px; } /* reste entre l'intro et l'encart sur mobile */
   .mt-lede { margin-bottom: 10px; }
 }
