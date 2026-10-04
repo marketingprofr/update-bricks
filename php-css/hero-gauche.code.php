@@ -453,10 +453,11 @@ if ( ! function_exists( 'mt_vq_phrase' ) ) {
 if ( ! function_exists( 'mt_vos_questions' ) ) {
   /* Encart « Vos questions » (tests Jev du 2026-10-03 sur 10 pages : utilité +0,07 avant le top 5, +0,09 après
      la réponse courte), chaque question avec une réponse d'une phrase et un lien vers sa réponse complète.
-     Choix des questions (règle de l'instance FAQ optimization, 2026-10-03, notée avec Jev question par question) :
-     - au moins 3 questions de la rédaction : les 3 premières du répéteur (l'ordre du répéteur = ordre de qualité,
-       rangé par cette instance), puis « Quel budget prévoir… » s'il y a des prix, sinon la 4e question de la rédaction ;
-       « Comment bien choisir… » reste dans la FAQ (phrase trop générale) ;
+     Choix des questions (instance FAQ optimization, notes Jev question par question ; décision de Samuel du 2026-10-04,
+     la question du budget ne bat la 4e question de la rédaction que sur 3 pages sur 11, dans le bruit) :
+     - au moins 4 questions de la rédaction : les 4 premières du répéteur (l'ordre du répéteur = ordre de qualité,
+       rangé par cette instance) ; « Quel budget prévoir… » et « Comment bien choisir… » restent dans la FAQ ;
+     - 3 questions de la rédaction : les 3, puis « Quel budget prévoir… » s'il y a des prix ;
      - moins de 3 (FAQ pas encore refaite) : règle d'avant, budget (ou « Pourquoi faire confiance »), comment choisir,
        puis la rédaction, 5 au plus.
      Sautées, car déjà dites plus haut : « Quel est le meilleur… », « meilleures marques », « meilleurs avis »,
@@ -535,9 +536,11 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       $a = mt_vq_phrase( (string) ( $r['mltv5_faq_comparatif_reponse'] ?? '' ) );
       if ( $a !== '' ) { $redac[] = array( $q, $a ); }
     }
-    if ( count( $redac ) >= 3 ) {
-      $items = array_slice( $redac, 0, 3 );
-      if ( $budget ) { $items[] = $budget; } elseif ( isset( $redac[3] ) ) { $items[] = $redac[3]; }
+    if ( count( $redac ) >= 4 ) {
+      $items = array_slice( $redac, 0, 4 );
+    } elseif ( count( $redac ) === 3 ) {
+      $items = $redac;
+      if ( $budget ) { $items[] = $budget; }
     } else {
       $items = array_values( array_filter( array( $budget ? $budget : $confiance, $choisir ) ) );
       foreach ( $redac as $x ) { if ( count( $items ) >= 5 ) { break; } $items[] = $x; }

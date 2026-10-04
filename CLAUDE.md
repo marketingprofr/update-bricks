@@ -929,9 +929,10 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   (`mt_faq_ancre()`, copie IDENTIQUE dans faq et les hero ; la FAQ pose l'id sur chaque question, le rend unique,
   et un petit script ouvre le `<details>` visé) ; en bas « Voir les N questions-réponses de notre foire aux questions » (N = questions
   automatiques recalculées comme dans faq.code.php + questions de la rédaction). **Choix des questions** (règle de
-  l'instance « SEO - FAQ optimization », notes Jev par question) : au moins 3 questions de la rédaction → les 3
-  premières du répéteur (l'ordre du répéteur = ordre de qualité, rangé par cette instance) + budget s'il y a des prix,
-  sinon la 4e ; « Comment bien choisir » reste dans la FAQ. Moins de 3 → règle d'avant. Banc : `run-questions.php`
+  l'instance « SEO - FAQ optimization », notes Jev par question ; décision de Samuel du 2026-10-04) : au moins 4
+  questions de la rédaction → les 4 premières du répéteur (l'ordre du répéteur = ordre de qualité, rangé par cette
+  instance), jamais le budget ; exactement 3 → les 3 + budget s'il y a des prix ; « Comment bien choisir » reste dans
+  la FAQ. Moins de 3 → règle d'avant. Banc : `run-questions.php`
   vérifie que chaque lien trouve sa question dans la FAQ.
 - **Encadré** : phrases complètes (« Nous avons consulté 27 sources, dont… », « Nous avons appliqué nos propres
   critères (…) aux 55 … analysés. ») — la liste « sans intitulés » avait laissé des fragments sans verbe ; liste à
