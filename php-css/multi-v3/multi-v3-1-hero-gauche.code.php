@@ -24,6 +24,9 @@ $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, res
 $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (demande de Samuel) ; false = juste après « L'essentiel »
                                 // (test Jev : ouverture 0,82 sous le titre, 0,91 après « L'essentiel »)
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
+$MT_PHOTO_HERO       = false;  // photo et badge en haut de page : retirés le 2026-10-04 (choix de Samuel, conseil de la Coordination :
+                                // élément le plus lent de la page sur mobile, LCP 7,3 s) ; l'image mise en avant reste dans
+                                // WordPress (partage, og:image) ; true = photo affichée
 $MT_VOS_QUESTIONS    = 'apres_intro'; // encart des questions (questions de la FAQ, réponse d'une phrase) : 'apres_intro' = juste après
                                 // l'intro (disposition validée par Samuel, 2026-10-03), 'sous_reponse' = sous la ligne auteur,
                                 // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
@@ -1386,11 +1389,13 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     echo mt_quick_picks( $top_avis_ids );
   } ?>
 
+  <?php if ( $MT_PHOTO_HERO ) : ?>
   <div class="mt-photo">
     <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img')); ?>
     <?php if ($post_type === 'comparatif') {
         echo '<img class="mt-badge" src="https://meilleurtest.fr/wp-content/uploads/2026/07/badge-mt3.png" alt="" style="position:absolute;top:0;left:0;max-width:130px;height:auto;">';
     } ?>
   </div>
+  <?php endif; ?>
 
 </div>

@@ -37,6 +37,9 @@ Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller p
 - **1**, Code seulement ;
 - **2**, Code seulement.
 
+**Quatrième passe du 4 octobre** (choix de Samuel) : l'encart « L'essentiel » montre les 4 premières questions de la rédaction, sans la question du budget. La photo du haut de page est retirée. L'intro passe de 16,5 à 16 px. Si tu as déjà collé la troisième passe, recolle :
+- **1**, Code et CSS.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -65,6 +68,7 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 |---|---|---|---|
 | 1 | `$MT_AUTEUR_SOUS_H1` | `true` | Ligne auteur et date juste sous le titre. |
 | 1 | `$MT_REPONSE_INTRO` | `true` | L'intro commence par une phrase à part, par exemple « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … », puis vient le texte de la rédaction. |
+| 1 | `$MT_PHOTO_HERO` | `false` | Plus de photo (ni de badge) en haut de page : c'était l'élément le plus lent à charger sur mobile. L'image mise en avant reste dans WordPress, pour les partages. `true` la remet. |
 | 1 | `$MT_INTRO_REPLIEE` | `true` | Le texte de la rédaction est replié sur 2 lignes, avec « Afficher la suite » (puis « Masquer la suite »). Le texte reste entier dans la page. Le lien se cache si l'intro tient sur 2 lignes. `false` = intro entière. |
 | 1 | `$MT_VERDICT_SOUS_H1` | `false` | L'ancien encart séparé « L'essentiel » (4 phrases) n'est plus affiché. |
 | 1 | `$MT_VOS_QUESTIONS` | `'apres_intro'` | Encart des questions juste après l'intro. `'sous_reponse'` le place sous la ligne auteur, `''` le retire. |
@@ -96,6 +100,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 5. Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche dans un encart jaune, avec une icône d'alerte devant le titre et la source en petit.
 6. Sur téléphone, la page ne dépasse pas de l'écran : pas de défilement de côté.
 7. Dans la FAQ, « Comment avons-nous établi ce classement ? » donne les mêmes chiffres que l'encadré.
+8. Plus de photo en haut de page, ni sur ordinateur ni sur téléphone. L'intro est en 16 px sur ordinateur (15 px sur téléphone).
 
 ## Pas dans ce modèle (à faire à part)
 

@@ -44,8 +44,8 @@ if ( $dans_hero === false && $dans_res === false ) {
   echo "place   : aucune (moins de 3 questions : pas d'encart)\n";
   $bloc = '';
 } elseif ( $pos === 'apres_intro' ) {
-  $ok = $dans_hero !== false && strpos( $h, 'class="mt-lede"' ) < $dans_hero && $dans_hero < strpos( $h, 'mt-photo' ) && $dans_res === false;
-  echo 'place   : ', $ok ? 'intro de la rédaction > Vos questions > photo (absent du top 5)' : 'PLACE INATTENDUE', "\n";
+  $ok = $dans_hero !== false && strpos( $h, 'class="mt-lede"' ) < $dans_hero && $dans_hero < ( strpos( $h, 'mt-photo' ) ?: strlen( $h ) ) && $dans_res === false;
+  echo 'place   : ', $ok ? 'intro de la rédaction > Vos questions (absent du top 5)' : 'PLACE INATTENDUE', "\n";
   $bloc = $h;
 } elseif ( $pos === 'sous_reponse' ) {
   $ok = $dans_hero !== false && strpos( $h, 'mt-byline' ) < $dans_hero && $dans_hero < strpos( $h, 'class="mt-lede"' ) && $dans_res === false;

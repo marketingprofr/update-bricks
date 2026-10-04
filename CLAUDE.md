@@ -976,6 +976,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   `.mt-sc-process p`, pas de CSS ajouté) ; citation « Aucune marque ne peut payer pour figurer dans nos classements.
   J'ai refusé des offres publicitaires allant jusqu'à 20 000 € pour garantir l'indépendance du site. » (pluriels voulus
   par Samuel). La phrase des sources (« dont The New York Times… ») est une donnée par comparatif : Architecture.
+- **4e passe, choix de Samuel du 2026-10-04** : `$MT_PHOTO_HERO = false` (photo + badge du hero retirés : élément LCP,
+  7,3 s sur mobile selon la Coordination ; l'image mise en avant reste pour og:image) ; intro `.mt-lede` en
+  clamp(15px, 1.4vw, 16px) au lieu de 16,5 px (intros de section du site en 16 px). Titre forcé de 37750 vidé par
+  l'Architecture le 2026-10-04 (accord de Samuel) : title, H1, og:title = « … 55 analysés, 5 retenus », vérifié avec
+  ?new&nocache. Les 9 autres pages auditées gardent leur titre forcé jusqu'à leur passage en V3 (prévenir l'Architecture).
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

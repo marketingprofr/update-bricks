@@ -24,7 +24,7 @@
 .mt-avatar { display: inline-flex; flex: none; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; }
 .mt-avatar img { width: 30px; height: 30px; object-fit: cover; display: block; }
 
-.mt-lede { font-size: clamp(15px, 1.4vw, 16.5px); line-height: 1.62; color: var(--at-black-l-2); margin: 0 0 26px; }
+.mt-lede { font-size: clamp(15px, 1.4vw, 16px); line-height: 1.62; color: var(--at-black-l-2); margin: 0 0 26px; }
 .mt-lede a { color: var(--at-primary); text-decoration: underline; }
 .mt-lede a:hover { color: var(--at-primary-d-1); }
 .mt-lede-reco { margin: 14px 0 0; }
