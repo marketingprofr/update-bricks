@@ -12,6 +12,7 @@ BLOCS = [
     ('4-resume-top5', 'v2/multi-resume.code.php', 'v2/multi-resume.css'),
     ('5-tests-complets', 'v2/multi-tests.code.php', 'v2/multi-tests.css'),
     ('6-faq', 'faq.code.php', 'faq.css'),
+    ('7-tableau', 'v2/multi-tableau.code.php', 'v2/multi-tableau.css'),  # ajouté le 2026-10-04 (3 produits par sous-comparatif)
 ]
 ecarts = 0
 for nom, php, css in BLOCS:

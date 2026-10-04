@@ -140,6 +140,12 @@
 }
 
 .mt-top5 .t5-disclosure { margin: 16px 2px 0; font-size: 11.5px; color: var(--muted-2); }
+/* Lien vers le guide complet d'un sous-comparatif publié (sous ses 3 produits) */
+.mt-top5 .mtv2-sub-more { margin: 14px 2px 0; font-size: 14px; line-height: 1.5; }
+.mt-top5 .mtv2-sub-more a { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
+.mt-top5 .mtv2-sub-more a:hover { border-color: var(--accent); }
+.mt-top5 .mtv2-sub-more .arr { transition: transform .15s; }
+.mt-top5 .mtv2-sub-more a:hover .arr { transform: translateX(3px); }
 
 /* ===== Responsive ===== */
 @media (max-width: 880px) {

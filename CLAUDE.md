@@ -1005,6 +1005,16 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   { margin: 0 }` car Bricks met `:where(p) { margin-block: 0 1.2em }` (le « Découvrez… » avait 15,9 px en trop depuis
   que « Prévenez-nous » le suit). Header et footer du site : sections DANS `<main id="brx-content">` (pas de modèle
   Header/Footer Bricks), guide donné à Samuel pour les sortir.
+- **Sous-comparatifs à 3 produits partout (Samuel, 2026-10-04)** : `MTV2_MAX_SUB = 3` (défini dans les 5 blocs multi) et
+  `array_slice( $ids, 0, MTV2_MAX_SUB )` dans `mtv2_plan()` (copie IDENTIQUE dans hero, résumé, sommaire, tableau,
+  tests) : seuls les produits affichés ont leur test, leur colonne de tableau, leur ItemList ; le top 5 principal garde
+  ses 5. `mtv2_resume_list( …, $tri = true )` : pas de barre de tri pour les sous-comparatifs ; sous chaque section,
+  `p.mtv2-sub-more` « Consulter le guide d'achat complet des meilleurs … → » si `status` (ajouté au plan) = publish.
+  Banc run-page : 13 → 10 tests et colonnes. Climatiseur mobile en ligne : 8 sous-comparatifs, 42 → 29 cartes.
+  Le tableau rejoint le dossier V3 (élément 7). Erreur 413 de Bricks : filtre type ModSecurity du serveur Cloudways sur
+  les CHAMPS de formulaire > 1 Mio (fichiers et corps bruts de 2 Mo passent ; .htaccess sans effet) ; contourné par
+  Samuel en passant des sections en modèles Bricks « Section » (le guide d'achat d'abord). Titre du top 5 : on garde
+  « … en un coup d'œil » (Jev, meilleure des 4 variantes).
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

@@ -44,6 +44,9 @@ if ( ! function_exists( 'mtv2_engine_version' ) ) {
 if ( ! defined( 'MTV2_MAX_TESTS' ) ) {
   define( 'MTV2_MAX_TESTS', 30 );    // nb max de tests complets (et de colonnes du tableau)
 }
+if ( ! defined( 'MTV2_MAX_SUB' ) ) {
+  define( 'MTV2_MAX_SUB', 3 );       // produits par sous-comparatif, partout : résumé, tests, tableau, sommaire (Samuel, 2026-10-04)
+}
 if ( ! defined( 'MTV2_FIELD_SUBS' ) ) {
   define( 'MTV2_FIELD_SUBS', 'mltv5_sous_comparatifs' );
 }
@@ -273,6 +276,9 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
         continue;
       }
 
+      /* 3 produits par sous-comparatif (le top 5 principal garde ses 5) : seuls les produits affichés ont leur test */
+      $ids = array_slice( $ids, 0, MTV2_MAX_SUB );
+
       $stv       = mtv2_tv( $sid );
       $sub_attr  = mtv2_terms( $sid, 'post-type-attribut' );
       $extra     = array_values( array_diff_key( $sub_attr, $parent_attr ) );
@@ -297,6 +303,7 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
 
       $plan['subs'][] = array(
         'id'         => $sid,
+        'status'     => $sp->post_status,   // lien « guide d'achat complet » seulement si publié
         'ids'        => $ids,
         'attr_names' => array_values( $sub_attr ),
         'extra'      => $extra,

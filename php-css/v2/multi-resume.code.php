@@ -227,6 +227,9 @@ if ( ! function_exists( 'mtv2_engine_version' ) ) {
 if ( ! defined( 'MTV2_MAX_TESTS' ) ) {
   define( 'MTV2_MAX_TESTS', 30 );    // nb max de tests complets (et de colonnes du tableau)
 }
+if ( ! defined( 'MTV2_MAX_SUB' ) ) {
+  define( 'MTV2_MAX_SUB', 3 );       // produits par sous-comparatif, partout : résumé, tests, tableau, sommaire (Samuel, 2026-10-04)
+}
 if ( ! defined( 'MTV2_FIELD_SUBS' ) ) {
   define( 'MTV2_FIELD_SUBS', 'mltv5_sous_comparatifs' );
 }
@@ -456,6 +459,9 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
         continue;
       }
 
+      /* 3 produits par sous-comparatif (le top 5 principal garde ses 5) : seuls les produits affichés ont leur test */
+      $ids = array_slice( $ids, 0, MTV2_MAX_SUB );
+
       $stv       = mtv2_tv( $sid );
       $sub_attr  = mtv2_terms( $sid, 'post-type-attribut' );
       $extra     = array_values( array_diff_key( $sub_attr, $parent_attr ) );
@@ -480,6 +486,7 @@ if ( ! function_exists( 'mtv2_plan' ) ) {
 
       $plan['subs'][] = array(
         'id'         => $sid,
+        'status'     => $sp->post_status,   // lien « guide d'achat complet » seulement si publié
         'ids'        => $ids,
         'attr_names' => array_values( $sub_attr ),
         'extra'      => $extra,
@@ -714,7 +721,7 @@ if ( ! function_exists( 'mtv2_resume_collect' ) ) {
    $plan : plan multi-comparatif (null = liens V1 #produit-n-{rang})
    --------------------------------------------------------------------- */
 if ( ! function_exists( 'mtv2_resume_list' ) ) {
-  function mtv2_resume_list( $data, $uid, $plan ) {
+  function mtv2_resume_list( $data, $uid, $plan, $tri = true ) {
     $products    = $data['products'];
     /* Onglets de tri (conditionnels) — mêmes règles que le V1
        - Prix : au moins 3 produits avec prix
@@ -724,7 +731,9 @@ if ( ! function_exists( 'mtv2_resume_list' ) ) {
     $show_rating = ( $data['count_rating'] >= 3 );
     $show_recent = ( ! $show_price && ! $show_rating );
     $can_edit    = current_user_can( 'edit_posts' );
+    /* $tri = false : pas de barre de tri (sections de sous-comparatifs, 3 produits : Samuel, 2026-10-04) */
 ?>
+<?php if ( $tri ) : ?>
   <div class="t5-bar">
     <span class="lbl" id="<?php echo esc_attr( $uid ); ?>-sortlbl">Trier par</span>
     <div class="t5-tabs" role="group" aria-labelledby="<?php echo esc_attr( $uid ); ?>-sortlbl">
@@ -742,6 +751,7 @@ if ( ! function_exists( 'mtv2_resume_list' ) ) {
     <a class="t5-howto" href="https://meilleurtest.fr/notre-methode/" target="_blank" rel="nofollow noopener">Comment nous &eacute;valuons <span class="arr" aria-hidden="true">&rarr;</span></a>
   </div>
   <p class="sr-only" role="status" data-t5-status></p>
+<?php endif; ?>
 
   <ol class="t5-list" data-t5-list>
 <?php foreach ( $products as $it ) :
@@ -939,7 +949,18 @@ if ( $is_multi ) :
     </div>
   </header>
 
-<?php mtv2_resume_list( $sub_data, $aid, $plan ); ?>
+<?php mtv2_resume_list( $sub_data, $aid, $plan, false ); ?>
+<?php
+    /* Lien vers le guide complet du sous-comparatif, seulement si sa page est publiée (pas privée ni brouillon) :
+       « Consulter le guide d'achat complet des meilleurs climatiseurs mobiles 12000 BTU » (Samuel, 2026-10-04) */
+    if ( ( $sub['status'] ?? '' ) === 'publish' ) {
+      $sub_url = (string) get_permalink( $sub['id'] );
+      $sub_nom = preg_match( '/^les\s+/iu', $sub['title'] ) ? 'des ' . preg_replace( '/^les\s+/iu', '', $sub['title'] ) : ': ' . $sub['title'];
+      if ( $sub_url !== '' ) {
+        echo '  <p class="mtv2-sub-more"><a href="' . esc_url( $sub_url ) . '">Consulter le guide d&rsquo;achat complet ' . esc_html( $sub_nom ) . ' <span class="arr" aria-hidden="true">&rarr;</span></a></p>' . "\n";
+      }
+    }
+?>
 
 </section>
 <?php

@@ -18,8 +18,9 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 | 4 | Résumé du top 5 et sections des sous-comparatifs | `multi-v3-4-resume-top5.code.php` | `multi-v3-4-resume-top5.css` |
 | 5 | Tests complets | `multi-v3-5-tests-complets.code.php` | `multi-v3-5-tests-complets.css` |
 | 6 | Questions fréquentes (FAQ) | `multi-v3-6-faq.code.php` | `multi-v3-6-faq.css` |
+| 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` (inchangé) |
 
-Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le tableau comparatif, le guide d'achat, les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
+Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat, les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
 
 ## Si le modèle V3 est déjà collé
 
@@ -53,6 +54,8 @@ Puis, dans l'encadré, le bloc de vote dit « Avis des lecteurs » et « Votre n
 Puis les 5 produits du top 5 ont le même format (celui des produits 2 à 5). Le n°1 garde seulement le laurier sur sa photo, et chaque note a sa pastille « Excellent », « Très bon »… dessous : **4**, CSS seulement.
 
 Puis la photo revient entre l'intro et l'encart « L'essentiel » (sauf étiquette « no featured »), le fil d'Ariane passe à 9 px du titre, la colonne des notes du top 5 s'élargit un peu, et l'encadré perd le trait sous les 4 cases (il passe sous les puces) et la marge en trop sous « Découvrez notre méthodologie » : **1**, Code et CSS ; **2**, CSS seulement ; **4**, CSS seulement.
+
+Puis les sous-comparatifs passent à 3 produits partout : leurs sections résumées (sans barre de tri, avec « Consulter le guide d'achat complet des … » si la page du sous-comparatif est publiée), les tests complets, le tableau et le sommaire. Le top 5 principal garde ses 5 produits. Le calcul de la liste des produits est copié dans 5 éléments : **1**, Code ; **3**, Code ; **4**, Code et CSS ; **5**, Code ; **7**, Code.
 
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
@@ -125,7 +128,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 ## Pour l'instance Templates
 
 Les fichiers de ce dossier sont des **copies exactes** des fichiers de référence :
-- `v2/multi-hero-gauche`, `v2/multi-sommaire`, `v2/multi-resume`, `v2/multi-tests` ;
+- `v2/multi-hero-gauche`, `v2/multi-sommaire`, `v2/multi-resume`, `v2/multi-tests`, `v2/multi-tableau` ;
 - `hero-encart` et `faq`, partagés avec le V1.
 
-Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 12 fichiers.
+Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 14 fichiers.
