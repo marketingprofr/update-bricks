@@ -194,15 +194,12 @@ if ( $MT_ENCADRE_REEL ) {
   /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
   $mt_courts = mt_criteres_courts( $this_id );
   if ( $mt_courts !== '' ) {
-    /* Phrase choisie par Samuel (2026-10-03, test Jev « C2 », à égalité avec les autres ; « principalement » ajouté
-       le 2026-10-04) : « Chaque climatiseur mobile est noté principalement sur 4 critères (…) » ; « notée » au
-       féminin, « critère » si un seul */
-    $mt_sing    = trim( (string) ( $type_de_produit_au_singulier ?? '' ) );
-    $mt_sing_ok = ( $mt_sing !== '' && strlen( $mt_sing ) < 22 );
+    /* Phrase choisie par Samuel (2026-10-04, voix active, plus d'accord à faire) : « Pour établir le classement, nous
+       avons noté les climatiseurs mobiles sur 4 critères principaux (…) » ; « 1 critère principal » ; type vide ou
+       trop long : « les produits » (même repli que les cases) */
     $mt_k       = count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $mt_courts ) ) ) );
-    /* « Pour établir le classement, chaque climatiseur mobile a été noté principalement… » (passif, Samuel, 2026-10-04) */
-    $mt_puces[] = '<b>Pour établir le classement</b>, chaque ' . esc_html( $mt_sing_ok ? mb_strtolower( $mt_sing, 'UTF-8' ) : 'produit' ) . ' a été noté' . ( $mt_sing_ok ? $mt_e : '' )
-                . ' principalement sur ' . $mt_k . ' critère' . ( $mt_k > 1 ? 's' : '' ) . ' (' . esc_html( $mt_courts ) . ').';
+    $mt_puces[] = '<b>Pour établir le classement</b>, nous avons noté les ' . esc_html( ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' ) )
+                . ' sur ' . $mt_k . ( $mt_k > 1 ? ' critères principaux' : ' critère principal' ) . ' (' . esc_html( $mt_courts ) . ').';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }
   if ( $MT_SIGNALEMENT ) {

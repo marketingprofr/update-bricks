@@ -1017,7 +1017,14 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   « … en un coup d'œil » (Jev, meilleure des 4 variantes).
   Encadré, puces avec entrée en gras (Samuel, 2026-10-04, Jev neutre) : « <b>Pour réaliser ce comparatif</b>, nous avons
   consulté N sources, dont … » et « <b>Pour établir le classement</b>, chaque {type} a été noté(e) principalement sur k
-  critère(s) (…) » (passif ; repli « chaque produit a été noté »).
+  critère(s) (…) » (passif ; repli « chaque produit a été noté »). Puis voix active (Samuel) : « <b>Pour établir le
+  classement</b>, nous avons noté les {pluriel} sur k critères principaux (…) » (« 1 critère principal » ; repli
+  « les produits » si le pluriel est vide ou ≥ 22 octets, comme les cases).
+  Avis détaillés (multi-tests et top5-tests) : kick « Pour aller plus loin », H2 « Notre avis sur les meilleur(e)s
+  {pluriel} », chapô « Nous présentons ici les n {pluriel} de notre sélection, choisi(e)s parmi les N que nous avons
+  analysé(e)s, avec leurs caractéristiques, les retours des utilisateurs et leur rapport qualité-prix. » ; N = celui
+  du title, publié par le hero dans `$GLOBALS['mt_n_analyses']` (hero rendu avant les tests) ; clause retirée si N ≤ n
+  ou si N est absent ; féminin d'après masculinsfeminins.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

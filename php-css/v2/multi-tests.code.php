@@ -825,17 +825,24 @@ $type_sing = isset( $page_tv['type_de_produit_au_singulier'] ) ? trim( (string) 
 $type_plur = isset( $page_tv['type_de_produit_au_pluriel'] ) ? trim( (string) $page_tv['type_de_produit_au_pluriel'] ) : '';
 if ( $type_sing === '' ) { $type_sing = $type_plur; }
 
-$head_h2 = 'Le test complet de chaque' . ( $type_sing !== '' ? ' ' . esc_html( $type_sing ) : ' produit' );
-$head_p  = 'Notre r&eacute;daction a pass&eacute; en revue ' . (int) $nb
-  . ( $type_plur !== '' ? ' ' . esc_html( $type_plur ) : ' produits' )
-  . ', en analysant leurs caract&eacute;ristiques, les retours utilisateurs et le rapport qualit&eacute;-prix. Voici notre avis complet, produit par produit.';
+/* Choix de Samuel du 2026-10-04 (tests de la Coordination : l'ancien chapô contredisait « N analysés », cohérence 0,04 ;
+   le nouveau 0,99) : « Notre avis sur les meilleurs climatiseurs mobiles » ; « Nous présentons ici les 21 climatiseurs
+   mobiles de notre sélection, choisis parmi les 55 que nous avons analysés, avec … ». N = celui du title, publié par
+   le hero (mt_n_analyses) ; sans N plus grand que n, la fin « choisis parmi… » est retirée. */
+$mt_fem  = ( stripos( (string) ( $page_tv['masculinsfeminins'] ?? '' ), 'meilleures' ) !== false ) && $type_plur !== '';
+$mt_plur = $type_plur !== '' ? esc_html( $type_plur ) : 'produits';
+$mt_N    = (int) ( $GLOBALS['mt_n_analyses'] ?? 0 );
+$head_h2 = 'Notre avis sur les meilleur' . ( $mt_fem ? 'es' : 's' ) . ' ' . $mt_plur;
+$head_p  = 'Nous pr&eacute;sentons ici les ' . (int) $nb . ' ' . $mt_plur . ' de notre s&eacute;lection'
+  . ( $mt_N > $nb ? ', choisi' . ( $mt_fem ? 'es' : 's' ) . ' parmi les ' . $mt_N . ' que nous avons analys&eacute;' . ( $mt_fem ? 'es' : 's' ) : '' )
+  . ', avec leurs caract&eacute;ristiques, les retours des utilisateurs et leur rapport qualit&eacute;-prix.';
 ?>
 <section class="ed-a contenu-principal" id="partie-tests-complets" aria-labelledby="ed-a-title">
 <?php if ( ! empty( $GLOBALS['mtv2_stale_engine'] ) && current_user_can( 'edit_posts' ) ) : ?>
 <p class="mtv2-stale" style="margin:0 0 12px;padding:10px 14px;border:2px solid #c0392b;border-radius:8px;background:#fdecea;color:#c0392b;font:600 14px/1.5 Inter,sans-serif">&#9888; Multi-comparatif : une ANCIENNE version du code tourne encore sur cette page. Supprimez le snippet WPCodeBox « mtv2-core » s'il existe, recollez les 4 blocs multi-* (résumé, tests, tableau, sommaire), puis videz le cache. (Message visible des éditeurs uniquement.)</p>
 <?php endif; ?>
   <div class="ed-a-head">
-    <p class="kick">Nos avis d&eacute;taill&eacute;s</p>
+    <p class="kick">Pour aller plus loin</p>
     <h2 class="ed-a-serif" id="ed-a-title"><?php echo $head_h2; ?></h2>
     <p><?php echo $head_p; ?></p>
     <div class="rule"></div>

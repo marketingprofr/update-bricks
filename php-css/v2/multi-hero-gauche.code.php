@@ -1215,6 +1215,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       $mt_pl = function_exists( 'mtv2_plan' ) ? mtv2_plan( $this_id ) : null;
       if ( $mt_pl && ! empty( $mt_pl['is_multi'] ) ) { $mt_n = max( $mt_n, count( $mt_pl['origin'] ) ); }
   }
+  $GLOBALS['mt_n_analyses'] = $mt_n;  // repris par le chapô des avis détaillés (bloc tests) : même N que le title
   if (($template_description ?? '') == 0 || $post_type === 'liste') {
       $rank_math_description = (string) get_post_meta($this_id, 'rank_math_description', true);
       $mt_meta_prec = (string) get_post_meta($this_id, '_mt_meta_auto', true);
