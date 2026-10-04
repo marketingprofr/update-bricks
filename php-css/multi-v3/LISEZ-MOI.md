@@ -42,6 +42,8 @@ Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller p
 
 Puis la 2e ligne de l'intro repliée est estompée, pour montrer que le texte continue : **1**, Code et CSS.
 
+Puis l'encart « L'essentiel » ne montre plus que les questions écrites par la rédaction, jusqu'à 4, à partir de la première. Il ne montre jamais les questions automatiques de la FAQ (budget, « Comment bien choisir »). Avec moins de 2 questions de la rédaction, il n'y a pas d'encart : **1**, Code seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -97,7 +99,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 
 1. Juste sous le titre, la ligne auteur : « Rédigé et vérifié par Samuel Petit, responsable éditorial • Mis à jour le … ».
 2. L'intro commence par une phrase à part : « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … ». Dessous, le texte habituel tient sur 2 lignes, la 2e ligne estompée, avec « Afficher la suite », qui ouvre et referme.
-3. Juste après l'intro, un seul encart « L'essentiel en 30 secondes » (titre en gras avec une petite icône, trait bleu dessous) : 4 questions en liste à puces, chacune avec sa réponse d'une phrase et « En savoir plus », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions-réponses de notre foire aux questions ».
+3. Juste après l'intro, un seul encart « L'essentiel en 30 secondes » (titre en gras avec une petite icône, trait bleu dessous) : jusqu'à 4 questions de la rédaction (2 sur la page climatiseur mobile, qui n'en a que 2) en liste à puces, chacune avec sa réponse d'une phrase et « En savoir plus », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions-réponses de notre foire aux questions ».
 4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », « Chaque climatiseur mobile est noté principalement sur 4 critères (…) »). Sous la liste, l'engagement d'indépendance signé (« Aucune marque ne peut payer pour figurer dans nos classements. J'ai refusé des offres publicitaires allant jusqu'à 20 000 € pour garantir l'indépendance du site. »), puis « Découvrez notre méthodologie… » et, juste dessous, « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
 5. Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche dans un encart jaune, avec une icône d'alerte devant le titre et la source en petit.
 6. Sur téléphone, la page ne dépasse pas de l'écran : pas de défilement de côté.

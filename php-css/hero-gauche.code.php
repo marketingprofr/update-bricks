@@ -456,18 +456,14 @@ if ( ! function_exists( 'mt_vq_phrase' ) ) {
 if ( ! function_exists( 'mt_vos_questions' ) ) {
   /* Encart « Vos questions » (tests Jev du 2026-10-03 sur 10 pages : utilité +0,07 avant le top 5, +0,09 après
      la réponse courte), chaque question avec une réponse d'une phrase et un lien vers sa réponse complète.
-     Choix des questions (instance FAQ optimization, notes Jev question par question ; décision de Samuel du 2026-10-04,
+     Choix des questions (décisions de Samuel du 2026-10-04 ; instance FAQ optimization, notes Jev question par question :
      la question du budget ne bat la 4e question de la rédaction que sur 3 pages sur 11, dans le bruit) :
-     - au moins 4 questions de la rédaction : les 4 premières du répéteur (l'ordre du répéteur = ordre de qualité,
-       rangé par cette instance) ; « Quel budget prévoir… » et « Comment bien choisir… » restent dans la FAQ ;
-     - 3 questions de la rédaction : les 3, puis « Quel budget prévoir… » s'il y a des prix ;
-     - moins de 3 (FAQ pas encore refaite) : règle d'avant, budget (ou « Pourquoi faire confiance »), comment choisir,
-       puis la rédaction, 5 au plus.
+     seulement les questions écrites par la rédaction (répéteur ACF), les 4 premières dans l'ordre du répéteur
+     (l'ordre de qualité, rangé par cette instance). Jamais les questions automatiques de la FAQ (« Quel budget
+     prévoir… », « Comment bien choisir… », « Pourquoi faire confiance… ») : elles restent dans la FAQ.
      Sautées, car déjà dites plus haut : « Quel est le meilleur… », « meilleures marques », « meilleurs avis »,
-     « Comment avons-nous établi… ». Au moins 3 questions, sinon rien. */
+     « Comment avons-nous établi… ». Au moins 2 questions de la rédaction, sinon pas d'encart. */
   function mt_vos_questions( $page_id, $ids, $type_sing, $type_plur, $llm, $titre = 'Vos questions' ) {
-    $items    = array();
-    $budget   = null; $confiance = null; $choisir = null;
     $nb_autos = 0;
     $ids      = array_slice( array_values( array_filter( array_map( 'intval', (array) $ids ) ) ), 0, 5 );
     if ( ! empty( $ids ) ) {
@@ -483,42 +479,6 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       $a_crit = false;
       foreach ( (array) $crit_faq as $r ) { if ( is_array( $r ) && trim( (string) ( $r['mltv5_critere_de_choix'] ?? '' ) ) !== '' ) { $a_crit = true; break; } }
       $nb_autos = 3 + ( count( $marques ) >= 3 ? 1 : 0 ) + ( $a_crit ? 1 : 0 );
-      /* Questions automatiques de la FAQ (mêmes conditions et mêmes accords que faq.code.php) */
-      $low    = strtolower( (string) $llm );
-      $plural = ( strpos( $low, 'les ' ) === 0 );
-      $fem    = $plural ? ( strpos( $low, 'meilleures' ) !== false ) : ( strpos( $low, 'la ' ) === 0 );
-      $prix   = array();
-      $notes  = 0;
-      foreach ( $ids as $pid ) {
-        $v = mt5_num( get_field( 'mltv5_prix_indicatif', $pid ) );
-        if ( $v > 0 ) { $prix[ $pid ] = $v; }
-        if ( mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ) > 0 ) { $notes++; }
-      }
-      /* Unité du prix (étiquettes prix-mensuel / prix-annuel des fiches avec prix) ; unités différentes : pas de phrase de prix */
-      $mens = mt_prix_unite_liste( array_keys( $prix ) );
-      if ( $mens === null ) { $prix = array(); }
-      if ( count( $prix ) >= 2 ) {
-        $euro  = function ( $v ) { return number_format( (float) $v, 0, ',', "\xc2\xa0" ) . "\xc2\xa0€"; };
-        if ( $mens !== '' ) { $euro = function ( $v ) use ( $mens ) { return mt_prix_par( $v, $mens ); }; }
-        $indef = $plural
-          ? ( 'des ' . ( $type_plur !== '' ? $type_plur : $type_sing ) )
-          : ( ( $fem ? 'une' : 'un' ) . ' ' . ( $type_sing !== '' ? $type_sing : $type_plur ) );
-        $noun  = $type_plur !== '' ? $type_plur : ( $type_sing !== '' ? $type_sing : 'produits' );
-        $budget = array( 'Quel budget prévoir pour ' . trim( $indef ) . "\xc2\xa0?",
-          $mens  // abonnement : prix d'appel, donc le minimum seul
-            ? 'Les ' . $noun . ' de notre sélection sont proposé' . ( $fem ? 'e' : '' ) . 's à partir de ' . $euro( min( $prix ) ) . '.'
-            : 'Les ' . $noun . ' de notre sélection s’échelonnent d’environ ' . $euro( min( $prix ) ) . ' à ' . $euro( max( $prix ) ) . '.' );
-      } elseif ( $notes < 2 ) {
-        $confiance = array( "Pourquoi faire confiance à ce comparatif\xc2\xa0?",
-          "Notre rédaction travaille en toute indépendance. Aucune marque ne peut acheter sa place dans un classement, et nous n’acceptons ni publicité ni cadeau des marques." );
-      }
-      /* « Comment bien choisir… » : les libellés courts des critères, plutôt que la 1re phrase générique de la FAQ */
-      $crit = mt_criteres_courts( $page_id );
-      if ( $crit !== '' ) {
-        $best_noun = $plural ? ( $type_plur !== '' ? $type_plur : $type_sing ) : ( $type_sing !== '' ? $type_sing : $type_plur );
-        $choisir = array( 'Comment bien choisir ' . ( $plural ? 'vos' : 'votre' ) . ' ' . ( $best_noun !== '' ? $best_noun : 'produit' ) . "\xc2\xa0?",
-          'Pour bien choisir, comparez surtout ces critères (' . preg_replace( '/, ([^,]+)$/u', ' et $1', $crit ) . ').' );
-      }
     }
     /* Questions de la rédaction (repeater ACF, page puis annexe en cache) */
     $rows = mt_faq_read( $page_id );
@@ -533,22 +493,14 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
     $saute = '/^(Quel(le)?s? (est|sont) (le|la|les) meilleur|Quelles sont les meilleures marques|Quel produit a les meilleurs avis|Comment avons-nous établi)/u';
     $redac = array();
     foreach ( $rows as $r ) {
-      if ( count( $redac ) >= 5 ) { break; }
+      if ( count( $redac ) >= 4 ) { break; }
       $q = trim( html_entity_decode( wp_strip_all_tags( (string) ( $r['mltv5_faq_comparatif_question'] ?? '' ) ), ENT_QUOTES, 'UTF-8' ) );
       if ( $q === '' || preg_match( $saute, $q ) ) { continue; }
       $a = mt_vq_phrase( (string) ( $r['mltv5_faq_comparatif_reponse'] ?? '' ) );
       if ( $a !== '' ) { $redac[] = array( $q, $a ); }
     }
-    if ( count( $redac ) >= 4 ) {
-      $items = array_slice( $redac, 0, 4 );
-    } elseif ( count( $redac ) === 3 ) {
-      $items = $redac;
-      if ( $budget ) { $items[] = $budget; }
-    } else {
-      $items = array_values( array_filter( array( $budget ? $budget : $confiance, $choisir ) ) );
-      foreach ( $redac as $x ) { if ( count( $items ) >= 5 ) { break; } $items[] = $x; }
-    }
-    if ( count( $items ) < 3 ) { return ''; }
+    $items = $redac;
+    if ( count( $items ) < 2 ) { return ''; }
     /* Chaque réponse courte mène à sa réponse complète dans la FAQ (« En savoir plus », ancre de la question, qui s'ouvre
        au clic) ; le lien du bas annonce le nombre de questions de la FAQ (automatiques + rédaction, mêmes règles que
        faq.code.php). Libellés choisis par Samuel le 2026-10-04 */

@@ -1,7 +1,7 @@
 <?php
 /* Encart « Vos questions » (hero gauche, réglage $MT_VOS_QUESTIONS activé dans une copie).
    Usage : php run-questions.php ; POS=apres_intro (après l'intro) ou POS=avant_top5 (juste avant le top 5) ; V2=1 pour les blocs multi-* ;
-   PRIX=0 sans prix ni note clients (question « Pourquoi faire confiance ») ; FAQ=0 sans questions de la rédaction.
+   PRIX=0 sans prix ni note clients ; FAQ=0 sans questions de la rédaction (pas d'encart).
    PAGES=<dossier> : applique la règle de la phrase aux FAQ de pages HTML enregistrées (<dossier>/<page>/G0.html)
    et écrit out/vos-questions-pages.txt. */
 require __DIR__ . '/wp-stubs.php';
@@ -41,7 +41,7 @@ echo 'blocs   : ', $v2 ? 'V2 (multi-hero-gauche + multi-resume)' : 'V1 (hero-gau
 $dans_hero = strpos( $h, 'mt-faq-mini' );
 $dans_res  = strpos( $r, 'mt-faq-mini' );
 if ( $dans_hero === false && $dans_res === false ) {
-  echo "place   : aucune (moins de 3 questions : pas d'encart)\n";
+  echo "place   : aucune (moins de 2 questions de la rédaction : pas d'encart)\n";
   $bloc = '';
 } elseif ( $pos === 'apres_intro' ) {
   $ok = $dans_hero !== false && strpos( $h, 'class="mt-lede"' ) < $dans_hero && $dans_hero < ( strpos( $h, 'mt-photo' ) ?: strlen( $h ) ) && $dans_res === false;
