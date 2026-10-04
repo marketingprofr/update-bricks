@@ -29,15 +29,18 @@
 .mt-lede a:hover { color: var(--at-primary-d-1); }
 .mt-lede-reco { margin: 14px 0 0; }
 .mt-lede .mt-lede-reponse { margin: 0 0 14px; } /* la réponse automatique, séparée du texte de la rédaction */
-/* Texte de la rédaction replié sur 2 lignes, « Afficher la suite » / « Masquer la suite » (demande de Samuel, 2026-10-04) */
-.mt-lede-texte { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
-.mt-lede-texte.mt-ouvert { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; }
-/* 2e ligne estompée tant que l'intro est repliée : on voit que le texte continue (demande de Samuel, 2026-10-04).
-   Masque de transparence (pas une couleur) : marche sur tous les fonds, en clair comme en sombre */
-.mt-lede-texte:not(.mt-ouvert):not(.mt-entier) { -webkit-mask-image: linear-gradient(to bottom, #000 45%, rgba(0, 0, 0, 0.15) 100%); mask-image: linear-gradient(to bottom, #000 45%, rgba(0, 0, 0, 0.15) 100%); }
+/* Texte de la rédaction : entier sur ordinateur ; sur mobile, replié sur 3 lignes, coupé net (sans fondu), puis
+   « Afficher la suite » / « Masquer la suite » (décision de Samuel, 2026-10-04) */
+@media (max-width: 767px) {
+  .mt-lede-texte { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
+  .mt-lede-texte.mt-ouvert { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; }
+}
 .mt-lede .mt-lede-suite { display: inline-block; margin: 4px 0 0; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; font: inherit; font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--at-primary); text-decoration: underline; text-transform: none; cursor: pointer; }
 .mt-lede .mt-lede-suite:hover { color: var(--at-primary-d-1); background: none; }
 .mt-lede .mt-lede-suite[hidden] { display: none; }
+@media (min-width: 768px) {
+  .mt-lede .mt-lede-suite { display: none; } /* intro entière sur ordinateur : pas de bouton */
+}
 
 /* « L'essentiel en 30 secondes » sous la ligne auteur (demande de Samuel, 2026-10-03) : faits de la réponse courte en liste */
 .mt-essentiel { margin: 0 0 18px; padding: 18px 20px 16px; background: var(--at-primary-l-6); border: 1px solid var(--at-primary-l-4); border-radius: 12px; }

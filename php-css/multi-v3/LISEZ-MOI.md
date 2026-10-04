@@ -65,6 +65,8 @@ Puis, dans le sommaire, « Tests complets » devient « Avis détaillés » : **
 
 Puis le chapô des avis détaillés finit par « avec leurs caractéristiques, leur rapport qualité-prix et notre verdict. » : **5**, Code seulement.
 
+Puis l'intro de la rédaction est entière sur ordinateur, et repliée sur 3 lignes sur téléphone (coupée net, sans fondu), avec « Afficher la suite » : **1**, Code et CSS.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -95,7 +97,7 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 | 1 | `$MT_REPONSE_INTRO` | `true` | L'intro commence par une phrase à part, par exemple « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … », puis vient le texte de la rédaction. |
 | 1 | `$MT_PASTILLE_VERIFIE` | `false` | Plus de pastille « Vérifié le … » au-dessus du titre : la ligne auteur dit déjà qui a vérifié, et la date. `true` la remet. |
 | 1 | `$MT_PHOTO_HERO` | `true` | La photo (image mise en avant) est entre l'intro et l'encart « L'essentiel », sur ordinateur comme sur téléphone, chargée en priorité. Un comparatif avec l'étiquette « no featured » n'a pas de photo. `false` = jamais de photo. |
-| 1 | `$MT_INTRO_REPLIEE` | `true` | Le texte de la rédaction est replié sur 2 lignes, la 2e ligne estompée, avec « Afficher la suite » (puis « Masquer la suite »). Le texte reste entier dans la page. Le lien se cache si l'intro tient sur 2 lignes. `false` = intro entière. |
+| 1 | `$MT_INTRO_REPLIEE` | `true` | Sur téléphone, le texte de la rédaction est replié sur 3 lignes, avec « Afficher la suite » (puis « Masquer la suite »). Sur ordinateur, l'intro est entière, sans bouton. Le texte reste entier dans la page. Le lien se cache si l'intro tient sur 3 lignes. `false` = intro entière partout. |
 | 1 | `$MT_VERDICT_SOUS_H1` | `false` | L'ancien encart séparé « L'essentiel » (4 phrases) n'est plus affiché. |
 | 1 | `$MT_VOS_QUESTIONS` | `'apres_intro'` | Encart des questions juste après l'intro. `'sous_reponse'` le place sous la ligne auteur, `''` le retire. |
 | 1 | `$MT_TITRE_QUESTIONS` | `'L’essentiel en 30 secondes'` | Titre de cet encart (test Jev : les trois titres se valent, celui-ci arrive en tête). `''` = sans titre. |
@@ -120,7 +122,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 ## À vérifier sur la page climatiseur mobile, après prévisualisation
 
 1. Juste sous le titre, la ligne auteur : « Rédigé et vérifié par Samuel Petit, responsable éditorial • Mis à jour le … ».
-2. L'intro commence par une phrase à part : « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … ». Dessous, le texte habituel tient sur 2 lignes, la 2e ligne estompée, avec « Afficher la suite », qui ouvre et referme.
+2. L'intro commence par une phrase à part : « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … ». Dessous, le texte habituel : entier sur ordinateur ; sur téléphone, 3 lignes puis « Afficher la suite », qui ouvre et referme.
 3. Juste après l'intro, un seul encart « L'essentiel en 30 secondes » (titre en gras avec une petite icône, trait bleu dessous) : jusqu'à 4 questions de la rédaction (2 sur la page climatiseur mobile, qui n'en a que 2) en liste à puces, chacune avec sa réponse d'une phrase et « En savoir plus », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions-réponses de notre foire aux questions ».
 4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », « Pour établir le classement, nous avons noté les climatiseurs mobiles sur 4 critères principaux (…) », chacune avec son début en gras). Sous la liste, l'engagement d'indépendance signé (« Aucune marque ne peut payer pour figurer dans nos classements. J'ai refusé des offres publicitaires allant jusqu'à 20 000 € pour garantir l'indépendance du site. »), puis « Découvrez notre méthodologie… » et, juste dessous, « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
 5. Dans le top 5, les 5 produits ont le même format, le laurier sur la photo du n°1, et sous chaque note la pastille « Excellent », « Très bon »… (sur ordinateur). Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche dans un encart jaune, avec une icône d'alerte devant le titre et la source en petit.

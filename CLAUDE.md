@@ -982,9 +982,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   clamp(15px, 1.4vw, 16px) au lieu de 16,5 px (intros de section du site en 16 px). Titre forcé de 37750 vidé par
   l'Architecture le 2026-10-04 (accord de Samuel) : title, H1, og:title = « … 55 analysés, 5 retenus », vérifié avec
   ?new&nocache. Les 9 autres pages auditées gardent leur titre forcé jusqu'à leur passage en V3 (prévenir l'Architecture).
-  Intro repliée : 2e ligne estompée (mask-image en dégradé, 45 % opaque puis 0,15 en bas ; masque de transparence,
-  donc valable en clair comme en sombre), retiré quand l'intro est ouverte ou quand elle tient sur 2 lignes (classe
-  `mt-entier` posée par le script).
+  Intro repliée (décision finale de Samuel, 2026-10-04) : entière sur ordinateur (bouton masqué en ≥ 768 px) ; sur
+  mobile, `-webkit-line-clamp: 3`, coupée net (le fondu mask-image et la classe `mt-entier` sont retirés), bouton
+  « Afficher la suite » caché par le script si le texte n'est pas coupé.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),

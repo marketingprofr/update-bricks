@@ -18,7 +18,7 @@ $MT_SHOW_QUICK_PICKS = false;
 $MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
 $MT_REPONSE_INTRO    = true;   // l'intro commence par une phrase à part : « Sur les N … que nous avons analysés, n°1 (note) est le meilleur en 2026, devant … » (Samuel, 2026-10-04)
-$MT_INTRO_REPLIEE    = true;   // texte de la rédaction replié sur 2 lignes, avec « Afficher la suite » (demande de Samuel, 2026-10-04) ; false = intro entière
+$MT_INTRO_REPLIEE    = true;   // mobile : texte de la rédaction replié sur 3 lignes, puis « Afficher la suite » ; ordinateur : intro entière (Samuel, 2026-10-04) ; false = intro entière partout
 $MT_VERDICT_SOUS_H1  = false;  // ancien encart séparé « L'essentiel en 30 secondes » sous la ligne auteur (remplacé par la réponse en tête de l'intro)
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
 $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (demande de Samuel) ; false = juste après « L'essentiel »
@@ -1337,12 +1337,12 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       if ( $mt_rep !== '' ) { echo '<p class="mt-lede-reponse">' . $mt_rep . '</p>'; }
   }
   if ( $MT_INTRO_REPLIEE && trim( wp_strip_all_tags( $mt_intro_html ) ) !== '' ) {
-      /* Texte de la rédaction replié sur 2 lignes (CSS), entier dans le HTML, 2e ligne estompée. Le bouton ouvre et
-         referme ; si le texte tient déjà sur 2 lignes, le bouton se cache et la classe mt-entier retire le fondu. */
+      /* Texte de la rédaction entier dans le HTML ; replié sur 3 lignes sur mobile seulement (CSS). Le bouton ouvre et
+         referme ; il se cache quand le texte n'est pas coupé (ordinateur, ou intro de 3 lignes au plus). */
       echo '<div class="mt-lede-texte" id="mt-lede-texte">' . $mt_intro_html . '</div>'
          . '<button type="button" class="mt-lede-suite" aria-expanded="false" aria-controls="mt-lede-texte">Afficher la suite</button>'
          . '<script>(function(){var t=document.getElementById("mt-lede-texte"),b=t&&t.nextElementSibling;if(!b){return;}'
-         . 'function v(){if(!t.classList.contains("mt-ouvert")){var e=t.scrollHeight<=t.clientHeight+2;b.hidden=e;t.classList.toggle("mt-entier",e);}}'
+         . 'function v(){if(!t.classList.contains("mt-ouvert")){b.hidden=t.scrollHeight<=t.clientHeight+2;}}'
          . 'b.addEventListener("click",function(){var o=t.classList.toggle("mt-ouvert");b.setAttribute("aria-expanded",o?"true":"false");b.textContent=o?"Masquer la suite":"Afficher la suite";});'
          . 'v();window.addEventListener("load",v);window.addEventListener("resize",v);})();</script>';
   } else {
