@@ -525,39 +525,44 @@ if ( ! function_exists( 'mt_reponse_intro' ) ) {
      « Sur les {N} {produits} que nous avons analysés, {n°1 en lien} (note) est le meilleur en 2026, devant {n°2} (note)
      et {n°3} (note). » « analysées » et « la meilleure » au féminin ; « devant {n°2} » s'il n'y a que 2 produits, sans
      « devant » s'il n'y en a qu'un. Le top 5 suit juste en dessous, d'où plus de « retenu les 5 meilleurs ».
-     Mêmes données que l'encart « L'essentiel » (mt_verdict_ouverture). */
+     Mêmes données que l'encart « L'essentiel » (mt_verdict_ouverture).
+     Lien marchand sur chacun des 3 produits (demande de Samuel du 2026-10-04) : Amazon si la fiche a un ASIN, sinon le
+     1er lien marchand de la fiche ; nouvel onglet et rel « nofollow sponsored noopener », comme tous les autres liens
+     marchands de la page (on garde le comparatif ouvert pour comparer les 3). Sans lien marchand : le nom seul. */
   function mt_reponse_intro( $ids, $type_plur, $type_sing, $llm, $n ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
     $t   = count( $ids );
     if ( $t === 0 ) { return ''; }
     $prods = mt_top_infos( $ids, 3 );
     if ( empty( $prods ) || $prods[0]['name'] === '' ) { return ''; }
-    $p1   = $prods[0]['pid'];
-    $asin = trim( (string) get_field( 'mltv5_asin_amazon', $p1 ) );
-    $url  = '';
-    if ( $asin !== '' ) {
-      $url = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=mlt00-21';
-    } else {
-      for ( $li = 1; $li <= 3; $li++ ) {
-        $lu = trim( (string) get_field( 'mltv5_lien_du_produit_' . $li, $p1 ) );
-        if ( $lu !== '' && strpos( $lu, 'http' ) === 0 ) { $url = $lu; break; }
+    $lien_de = function ( $p ) {
+      $asin = trim( (string) get_field( 'mltv5_asin_amazon', $p['pid'] ) );
+      $url  = '';
+      if ( $asin !== '' ) {
+        $url = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=mlt00-21';
+      } else {
+        for ( $li = 1; $li <= 3; $li++ ) {
+          $lu = trim( (string) get_field( 'mltv5_lien_du_produit_' . $li, $p['pid'] ) );
+          if ( $lu !== '' && strpos( $lu, 'http' ) === 0 ) { $url = $lu; break; }
+        }
       }
-    }
-    if ( $url === '' ) { $url = '#produit-n-1'; }
+      if ( $url === '' ) { return esc_html( $p['name'] ); }
+      return '<a href="' . esc_url( $url ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $p['name'] ) . '</a>';
+    };
     $llm_t = mb_strtolower( trim( (string) $llm ), 'UTF-8' );
     $fem   = ( mb_strpos( $llm_t, 'meilleure' ) !== false );
     $pl    = ( mb_strpos( $llm_t, 'les ' ) === 0 );
     $plur  = mb_strtolower( trim( (string) $type_plur ), 'UTF-8' );
     $sing  = mb_strtolower( trim( (string) $type_sing ), 'UTF-8' );
     $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
-    $lien  = '<a href="' . esc_url( $url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>' . $note( $prods[0] );
+    $lien  = $lien_de( $prods[0] ) . $note( $prods[0] );
     $fem   = ( $fem && $plur !== '' );  // type vide : « produits », au masculin
     $typ   = esc_html( $plur !== '' ? $plur : 'produits' );
     $nn    = max( (int) $n, $t );
     $rep   = ( $nn > 1 ? 'Sur les ' . $nn . ' ' . $typ . ' que nous avons analysé' . ( $fem ? 'es' : 's' ) . ', ' : '' )
            . $lien . ' est ' . ( $fem ? 'la meilleure' : 'le meilleur' ) . ' en ' . date_i18n( 'Y' );
     $autres = array();
-    foreach ( array_slice( $prods, 1 ) as $p ) { if ( $p['name'] !== '' ) { $autres[] = esc_html( $p['name'] ) . $note( $p ); } }
+    foreach ( array_slice( $prods, 1 ) as $p ) { if ( $p['name'] !== '' ) { $autres[] = $lien_de( $p ) . $note( $p ); } }
     if ( count( $autres ) === 2 ) { $rep .= ', devant ' . $autres[0] . ' et ' . $autres[1]; }
     elseif ( count( $autres ) === 1 ) { $rep .= ', devant ' . $autres[0]; }
     return $rep . '.';

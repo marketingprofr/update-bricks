@@ -46,6 +46,8 @@ Puis l'encart « L'essentiel » ne montre plus que les questions écrites par la
 
 Puis la pastille « Vérifié le … » au-dessus du titre est retirée, car la ligne auteur sous le titre le dit déjà : **1**, Code seulement.
 
+Puis les 3 produits de la phrase d'ouverture ont chacun leur lien marchand, qui s'ouvre dans un nouvel onglet comme tous les autres liens marchands de la page : **1**, Code seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 

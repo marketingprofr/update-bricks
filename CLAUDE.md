@@ -987,6 +987,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   `mt-entier` posée par le script).
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
+  Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
+  `target="_blank" rel="nofollow sponsored noopener"` comme les 177 autres liens marchands de la page climatiseur
+  (le lien du n°1 n'avait ni target ni rel). Choix du nouvel onglet laissé à Templates par Samuel.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 
