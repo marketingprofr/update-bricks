@@ -990,6 +990,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
   `target="_blank" rel="nofollow sponsored noopener"` comme les 177 autres liens marchands de la page climatiseur
   (le lien du n°1 n'avait ni target ni rel). Choix du nouvel onglet laissé à Templates par Samuel.
+  Bloc de vote de l'encadré (textes de Samuel, test Jev sans recul) : titre « Avis des lecteurs », phrase « Votre note
+  nous aide à améliorer ce comparatif. » (widget Rate My Post inchangé).
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

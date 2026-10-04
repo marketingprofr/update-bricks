@@ -48,6 +48,8 @@ Puis la pastille « Vérifié le … » au-dessus du titre est retirée, car la 
 
 Puis les 3 produits de la phrase d'ouverture ont chacun leur lien marchand, qui s'ouvre dans un nouvel onglet comme tous les autres liens marchands de la page : **1**, Code seulement.
 
+Puis, dans l'encadré, le bloc de vote dit « Avis des lecteurs » et « Votre note nous aide à améliorer ce comparatif. » : **2**, Code seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 

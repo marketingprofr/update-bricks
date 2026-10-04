@@ -274,12 +274,13 @@ if ( $MT_ENCADRE_REEL ) {
   </div>
   <?php endif; ?>
   <div class="mt-sc-vote">
-    <p class="mt-sc-vote-h">Avis des lecteurs sur cette s&eacute;lection</p>
+    <p class="mt-sc-vote-h">Avis des lecteurs</p>
     <?php /* Rate My Post envoie toujours « Pas encore de note ! », caché par la classe --hidden quand la
              page a des votes : son texte est vidé pour que les moteurs ne lisent pas de contradiction
              (l'élément reste, le JS du plugin s'en sert). */
     echo preg_replace( '#(<p\b[^>]*rmp-rating-widget__not-rated--hidden[^>]*>).*?(</p>)#s', '$1$2', do_shortcode('[ratemypost]') ); ?>
-    <p class="mt-sc-note">Votre note oriente les autres lecteurs et nous aide &agrave; am&eacute;liorer ce contenu. Merci&nbsp;!</p>
+    <?php /* Textes du bloc de vote choisis par Samuel le 2026-10-04 (test Jev sans recul) */ ?>
+    <p class="mt-sc-note">Votre note nous aide &agrave; am&eacute;liorer ce comparatif.</p>
   </div>
 
 </div>
