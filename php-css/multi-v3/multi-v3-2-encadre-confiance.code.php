@@ -186,9 +186,10 @@ if ( $MT_ENCADRE_REEL ) {
   $mt_puces = array();
   $mt_phrase = trim( (string) get_field( $MT_CHAMP_PHRASE_SOURCES, $this_id ) );
   if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
-    /* Phrases complètes, à la 1re personne du pluriel (demande de Samuel, 2026-10-03) */
+    /* Phrases complètes, à la 1re personne du pluriel (demande de Samuel, 2026-10-03), avec une entrée en gras qui
+       répond à « Pourquoi nous faire confiance » (choix de Samuel du 2026-10-04, test Jev neutre) */
     $mt_src_txt = ( $mt_src_aff[0] === '~' ) ? 'environ ' . substr( $mt_src_aff, 1 ) : $mt_src_aff;
-    $mt_puces[] = 'Nous avons consulté ' . esc_html( $mt_src_txt ) . ' sources, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
+    $mt_puces[] = '<b>Pour réaliser ce comparatif</b>, nous avons consulté ' . esc_html( $mt_src_txt ) . ' sources, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
   /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
   $mt_courts = mt_criteres_courts( $this_id );
@@ -199,7 +200,8 @@ if ( $MT_ENCADRE_REEL ) {
     $mt_sing    = trim( (string) ( $type_de_produit_au_singulier ?? '' ) );
     $mt_sing_ok = ( $mt_sing !== '' && strlen( $mt_sing ) < 22 );
     $mt_k       = count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $mt_courts ) ) ) );
-    $mt_puces[] = 'Chaque ' . esc_html( $mt_sing_ok ? mb_strtolower( $mt_sing, 'UTF-8' ) : 'produit' ) . ' est noté' . ( $mt_sing_ok ? $mt_e : '' )
+    /* « Pour établir le classement, chaque climatiseur mobile a été noté principalement… » (passif, Samuel, 2026-10-04) */
+    $mt_puces[] = '<b>Pour établir le classement</b>, chaque ' . esc_html( $mt_sing_ok ? mb_strtolower( $mt_sing, 'UTF-8' ) : 'produit' ) . ' a été noté' . ( $mt_sing_ok ? $mt_e : '' )
                 . ' principalement sur ' . $mt_k . ' critère' . ( $mt_k > 1 ? 's' : '' ) . ' (' . esc_html( $mt_courts ) . ').';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }

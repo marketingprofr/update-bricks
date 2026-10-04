@@ -1015,6 +1015,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   les CHAMPS de formulaire > 1 Mio (fichiers et corps bruts de 2 Mo passent ; .htaccess sans effet) ; contourné par
   Samuel en passant des sections en modèles Bricks « Section » (le guide d'achat d'abord). Titre du top 5 : on garde
   « … en un coup d'œil » (Jev, meilleure des 4 variantes).
+  Encadré, puces avec entrée en gras (Samuel, 2026-10-04, Jev neutre) : « <b>Pour réaliser ce comparatif</b>, nous avons
+  consulté N sources, dont … » et « <b>Pour établir le classement</b>, chaque {type} a été noté(e) principalement sur k
+  critère(s) (…) » (passif ; repli « chaque produit a été noté »).
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 
