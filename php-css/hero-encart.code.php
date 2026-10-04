@@ -4,6 +4,8 @@ $MT_CHAMP_PHRASE_SOURCES  = 'mltv5_phrase_sources';  // champ du comparatif (Arc
 $MT_TXT_AFFILIATION = ''; // puce d'affiliation : version finale de Samuel (2026-10-03) ; '' = pas de puce
 $MT_DUREE_LECTURE    = false; // ligne « … min de lecture » (test Jev neutre, -0,01) ; true = affichée
 $MT_LIGNES_CONFIANCE = false; // lignes « 100 % indépendant » et « Mis à jour le » (doublons de la phrase d'indépendance et de la ligne auteur ; test Jev neutre) ; true = affichées
+$MT_PHOTO_ENCADRE   = true;  // image mise en avant tout en haut de l'encadré, pleine largeur (Samuel, 2026-10-04) ; pas d'image si le
+                            // comparatif a l'étiquette « no featured » ; false = pas d'image
 $MT_SIGNALEMENT     = true;  // ligne « Une erreur… ? Prévenez-nous » vers le formulaire Fluent Forms (en place le 2026-10-03) ; false = pas de ligne
 $MT_URL_SIGNALEMENT = '/signaler-une-erreur/'; // page du formulaire Fluent Forms (champs cachés : {get.source_id}, {get.source_url})
 $MT_SOURCES_REPLI = '~20'; // case 1 si mltv5_sources_consultees est vide ou à la valeur par défaut (10) ; '' = case retirée
@@ -217,7 +219,25 @@ if ( $MT_ENCADRE_REEL ) {
 }
 ?>
 <div class="mt-card">
-
+<?php
+  /* Image mise en avant en tête de l'encadré (sans le badge « Meilleurtest »). Chargée en priorité : sur ordinateur, elle
+     est dans le premier écran. Alt = le type de produit (« Climatiseurs mobiles ») : l'image n'a pas d'alt, et Rank Math
+     en ajoutait un numéroté (« … 1 », title « … 10 »). */
+  if ( $MT_PHOTO_ENCADRE && ! has_term( array( 'no-featured', 'no featured', 'nofeatured' ), 'post_tag', $this_id ) ) {
+      $mt_alt = trim( (string) $tp );
+      $mt_alt = $mt_alt !== '' ? mb_strtoupper( mb_substr( $mt_alt, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_alt, 1, null, 'UTF-8' ) : '';
+      $mt_img = get_the_post_thumbnail( $this_id, 'full', array(
+          'class'         => 'mt-card-photo-img',
+          'alt'           => $mt_alt,
+          'title'         => $mt_alt,
+          'loading'       => 'eager',
+          'fetchpriority' => 'high',
+          'decoding'      => 'async',
+          'sizes'         => '(max-width: 991px) calc(100vw - 32px), 350px',
+      ) );
+      if ( $mt_img !== '' ) { echo '<div class="mt-card-photo">' . $mt_img . '</div>'; }
+  }
+?>
   <p class="mt-card-h"><span class="mt-card-hi"><?php echo $ic_shield; ?></span>Pourquoi nous faire confiance</p>
 
   <?php if ( $MT_ENCADRE_REEL && $mt_cases ) : ?>
@@ -283,3 +303,11 @@ if ( $MT_ENCADRE_REEL ) {
   </div>
 
 </div>
+<script>(function(){
+  /* L'encadré ne reste collant (sticky) que s'il tient dans la hauteur de l'écran : avec l'image, il dépasse souvent
+     768 à 900 px, et son bas (avis des lecteurs) serait caché pendant tout le défilement */
+  var c=document.querySelector('.mt-card'); if(!c){return;}
+  function f(){ c.classList.toggle('mt-card-collant', c.offsetHeight + 40 <= window.innerHeight); }
+  f(); window.addEventListener('load',f); window.addEventListener('resize',f);
+  if('ResizeObserver' in window){ new ResizeObserver(f).observe(c); }
+})();</script>

@@ -5,7 +5,17 @@
    Correspondances : bg carte = grey-l-6 · filets = grey-l-3 · texte = black-l-1/l-2
    · atténué = grey · accent = primary · étoiles = gold (vides = grey-l-2).
    ===================================================================== */
-.mt-card { background: var(--at-grey-l-6); border: 1px solid var(--at-grey-l-3); border-radius: 16px; padding: 24px; position: sticky; top: 20px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; color: var(--at-black-l-2); }
+/* Collant seulement s'il tient dans l'écran : classe mt-card-collant posée par le script de l'élément (Samuel, 2026-10-04) */
+.mt-card { background: var(--at-grey-l-6); border: 1px solid var(--at-grey-l-3); border-radius: 16px; padding: 24px; position: relative; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; color: var(--at-black-l-2); }
+
+@media (min-width: 768px) {
+  .mt-card.mt-card-collant { position: sticky; top: 20px; }
+}
+/* Image mise en avant en tête de l'encadré : pleine largeur (marges négatives = padding), coins du haut arrondis
+   comme l'encadré, légère ombre intérieure en bas (dégradé en surimpression), pas d'ombre portée */
+.mt-card-photo { position: relative; margin: -24px -24px 18px; border-radius: 15px 15px 0 0; overflow: hidden; }
+.mt-card-photo-img { display: block; width: 100%; height: auto; }
+.mt-card-photo::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 36%; background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.12)); pointer-events: none; }
 
 /* Titres en Inter (sinon ils heritent de la police de titre du theme) */
 .mt-card-h, .mt-sc-vote-h { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; }
@@ -84,6 +94,7 @@
 
 @media (max-width: 767px) {
   .mt-card { padding: 16px; border-radius: 12px; position: static; }
+  .mt-card-photo { margin: -16px -16px 14px; border-radius: 11px 11px 0 0; }
   .mt-card-h { margin-bottom: 12px; }
   .mt-sc-cell { padding: 12px 10px; gap: 8px; }
   .mt-sc-cell > div { display: flex; align-items: center; gap: 6px; }

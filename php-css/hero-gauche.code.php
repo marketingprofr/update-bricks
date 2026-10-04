@@ -11,9 +11,8 @@ $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (dema
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 $MT_PASTILLE_VERIFIE = false;  // pastille « Vérifié le … » au-dessus du titre : retirée le 2026-10-04 (demande de Samuel), la ligne
                                 // auteur sous le titre dit déjà qui a vérifié et la date ; true = pastille affichée
-$MT_PHOTO_HERO       = true;   // photo (image mise en avant) et badge entre l'intro et l'encart « L'essentiel » (Samuel, 2026-10-04) ;
-                                // pas de photo sur un comparatif qui a l'étiquette « no featured » (au cas par cas, selon la
-                                // qualité des images) ; false = jamais de photo
+$MT_PHOTO_HERO       = false;  // photo et badge entre l'intro et l'encart « L'essentiel » : la photo est passée en haut de l'encadré
+                                // « Pourquoi nous faire confiance » (élément 2, Samuel, 2026-10-04) ; true = photo ici aussi
 $MT_VOS_QUESTIONS    = 'apres_intro'; // encart des questions (questions de la FAQ, réponse d'une phrase) : 'apres_intro' = juste après
                                 // l'intro (disposition validée par Samuel, 2026-10-03), 'sous_reponse' = sous la ligne auteur,
                                 // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart

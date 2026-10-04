@@ -985,6 +985,12 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Intro repliée (décision finale de Samuel, 2026-10-04) : entière sur ordinateur (bouton masqué en ≥ 768 px) ; sur
   mobile, `-webkit-line-clamp: 3`, coupée net (le fondu mask-image et la classe `mt-entier` sont retirés), bouton
   « Afficher la suite » caché par le script si le texte n'est pas coupé.
+  Photo (Samuel, 2026-10-04) : `$MT_PHOTO_HERO = false` ; `$MT_PHOTO_ENCADRE = true` dans hero-encart : `div.mt-card-photo`
+  en tête de `.mt-card` (marges négatives = padding 24/16 px, rayon 15/11 px, dégradé ::after à 12 % en bas, pas de
+  badge), get_the_post_thumbnail 'full' eager + fetchpriority high + sizes, alt ET title = type au pluriel (l'image
+  230419 n'a pas d'alt : Rank Math sortait « … 1 » / « … 10 »). Étiquette « no featured » = pas d'image. `.mt-card` n'est
+  plus sticky par défaut : le script pose `mt-card-collant` (sticky top 20 px, ≥ 768 px) seulement si la carte + 40 px
+  tient dans window.innerHeight (load, resize, ResizeObserver). Carte ≈ 960 px avec l'image.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),

@@ -67,6 +67,8 @@ Puis le chapô des avis détaillés finit par « avec leurs caractéristiques, l
 
 Puis l'intro de la rédaction est entière sur ordinateur, et repliée sur 3 lignes sur téléphone (coupée net, sans fondu), avec « Afficher la suite » : **1**, Code et CSS.
 
+Puis la photo passe tout en haut de l'encadré « Pourquoi nous faire confiance », pleine largeur, sans le badge, avec un alt propre ; l'encadré ne reste collant que s'il tient dans la hauteur de l'écran : **1**, Code ; **2**, Code et CSS.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -96,7 +98,8 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 | 1 | `$MT_AUTEUR_SOUS_H1` | `true` | Ligne auteur et date juste sous le titre. |
 | 1 | `$MT_REPONSE_INTRO` | `true` | L'intro commence par une phrase à part, par exemple « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … », puis vient le texte de la rédaction. |
 | 1 | `$MT_PASTILLE_VERIFIE` | `false` | Plus de pastille « Vérifié le … » au-dessus du titre : la ligne auteur dit déjà qui a vérifié, et la date. `true` la remet. |
-| 1 | `$MT_PHOTO_HERO` | `true` | La photo (image mise en avant) est entre l'intro et l'encart « L'essentiel », sur ordinateur comme sur téléphone, chargée en priorité. Un comparatif avec l'étiquette « no featured » n'a pas de photo. `false` = jamais de photo. |
+| 1 | `$MT_PHOTO_HERO` | `false` | Plus de photo entre l'intro et l'encart « L'essentiel » : elle est en haut de l'encadré (réglage `$MT_PHOTO_ENCADRE` de l'élément 2). `true` la remet ici aussi. |
+| 2 | `$MT_PHOTO_ENCADRE` | `true` | Image mise en avant tout en haut de l'encadré, pleine largeur, chargée en priorité, alt « Climatiseurs mobiles ». Pas d'image si le comparatif a l'étiquette « no featured ». `false` = pas d'image. |
 | 1 | `$MT_INTRO_REPLIEE` | `true` | Sur téléphone, le texte de la rédaction est replié sur 3 lignes, avec « Afficher la suite » (puis « Masquer la suite »). Sur ordinateur, l'intro est entière, sans bouton. Le texte reste entier dans la page. Le lien se cache si l'intro tient sur 3 lignes. `false` = intro entière partout. |
 | 1 | `$MT_VERDICT_SOUS_H1` | `false` | L'ancien encart séparé « L'essentiel » (4 phrases) n'est plus affiché. |
 | 1 | `$MT_VOS_QUESTIONS` | `'apres_intro'` | Encart des questions juste après l'intro. `'sous_reponse'` le place sous la ligne auteur, `''` le retire. |
@@ -128,7 +131,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 5. Dans le top 5, les 5 produits ont le même format, le laurier sur la photo du n°1, et sous chaque note la pastille « Excellent », « Très bon »… (sur ordinateur). Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche dans un encart jaune, avec une icône d'alerte devant le titre et la source en petit.
 6. Sur téléphone, la page ne dépasse pas de l'écran : pas de défilement de côté.
 7. Dans la FAQ, « Comment avons-nous établi ce classement ? » donne les mêmes chiffres que l'encadré.
-8. Plus de pastille « Vérifié le … » au-dessus du titre. La photo est entre l'intro et l'encart « L'essentiel » (sauf étiquette « no featured »). L'intro est en 16 px sur ordinateur (15 px sur téléphone). Le fil d'Ariane est à 9 px du titre.
+8. Plus de pastille « Vérifié le … » au-dessus du titre. La photo est tout en haut de l'encadré de droite (sauf étiquette « no featured »), et l'encadré ne reste collant que sur un écran assez haut pour le montrer en entier. L'intro est entière sur ordinateur, sur 3 lignes avec « Afficher la suite » sur téléphone. Le fil d'Ariane est à 9 px du titre.
 
 ## Pas dans ce modèle (à faire à part)
 
