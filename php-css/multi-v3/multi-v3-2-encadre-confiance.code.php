@@ -226,14 +226,17 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $MT_PHOTO_ENCADRE && ! has_term( array( 'no-featured', 'no featured', 'nofeatured' ), 'post_tag', $this_id ) ) {
       $mt_alt = trim( (string) $tp );
       $mt_alt = $mt_alt !== '' ? mb_strtoupper( mb_substr( $mt_alt, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_alt, 1, null, 'UTF-8' ) : '';
-      $mt_img = get_the_post_thumbnail( $this_id, 'full', array(
+      /* Taille moyenne par défaut (Samuel, 2026-10-04 : « il n'y a pas de petites économies ») : un écran classique
+         prend la version 300 px (9 Ko au lieu de 42) ; un écran Retina ou un téléphone prend la 672 px du srcset,
+         sinon l'image serait floue. WordPress n'a pas de taille intermédiaire pour cette image (originale 672 px). */
+      $mt_img = get_the_post_thumbnail( $this_id, 'medium', array(
           'class'         => 'mt-card-photo-img',
           'alt'           => $mt_alt,
           'title'         => $mt_alt,
           'loading'       => 'eager',
           'fetchpriority' => 'high',
           'decoding'      => 'async',
-          'sizes'         => '(max-width: 991px) calc(100vw - 32px), 350px',
+          'sizes'         => '(max-width: 991px) calc(100vw - 32px), 300px',
       ) );
       if ( $mt_img !== '' ) { echo '<div class="mt-card-photo">' . $mt_img . '</div>'; }
   }

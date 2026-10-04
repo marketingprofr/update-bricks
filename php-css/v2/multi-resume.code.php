@@ -632,6 +632,10 @@ if ( ! function_exists( 'mtv2_resume_collect' ) ) {
         if ( is_array( $ext ) ) { $ext = isset( $ext['url'] ) ? $ext['url'] : ''; }
         $ext = trim( (string) $ext );
         if ( $ext !== '' ) { $img = $ext; }
+        /* Image Amazon en 200 px (affichée en 92 px au plus, nette en écran 2x) : 22 Ko → 5 Ko (Samuel, 2026-10-04) */
+        if ( strpos( $img, 'media-amazon.com/images/I/' ) !== false ) {
+          $img = preg_replace( '#(/images/I/[^./]+)(?:\.[^/]*?)?(\.(?:jpe?g|png|webp))$#i', '$1._SL200_$2', $img );
+        }
       }
 
       /* Score rédac /10 + libellés */

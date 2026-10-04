@@ -990,7 +990,15 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   badge), get_the_post_thumbnail 'full' eager + fetchpriority high + sizes, alt ET title = type au pluriel (l'image
   230419 n'a pas d'alt : Rank Math sortait « … 1 » / « … 10 »). Étiquette « no featured » = pas d'image. `.mt-card` n'est
   plus sticky par défaut : le script pose `mt-card-collant` (sticky top 20 px, ≥ 768 px) seulement si la carte + 40 px
-  tient dans window.innerHeight (load, resize, ResizeObserver). Carte ≈ 960 px avec l'image.
+  tient dans window.innerHeight (load, resize, ResizeObserver). Carte ≈ 960 px avec l'image. Puis taille 'medium' +
+  sizes « (max-width: 991px) calc(100vw - 32px), 300px » : écran classique → 300 px (9 Ko), Retina et téléphone → 672 px
+  (42 Ko) via srcset (vérifié par currentSrc). Pas de taille intermédiaire (original 672 px) ; WebP à voir côté serveur.
+- **Performance (Samuel, 2026-10-04, propositions de l'instance « SEO - Technique »)** : cartes du top 5 (V1 et V2),
+  images Amazon réécrites en `._SL200_` (22 → 5 Ko ; tests et tableau gardent leurs tailles) ; badge du hero eager +
+  360×223 ; `content-visibility: auto` + `contain-intrinsic-size: auto` (hauteurs mesurées en ligne) sur `.ed-a-piece`
+  (1750/1900 px), `.mt-cmp-root` (2100) et `.mt-faq` (1100/1500), PAS sur `.mtv2-sub` (la containment de peinture couperait
+  l'ombre des cartes). Ancres vérifiées en ligne avec la CSS injectée : mêmes positions qu'avant. Icônes Font Awesome :
+  attendre la méthode de l'instance Technique.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),

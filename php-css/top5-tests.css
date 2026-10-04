@@ -204,3 +204,11 @@
     border-right: 0; border-bottom: 1px solid var(--line);
   }
 }
+
+/* Dessin à la demande des avis détaillés (Samuel, 2026-10-04) : 21 avis d'environ 1 740 px sur ordinateur et 1 900 px
+   sur mobile, mesurés en ligne ; le navigateur ne les met en page qu'à l'approche de l'écran. Recherche dans la page
+   et ancres #test-… inchangées. */
+.ed-a-piece { content-visibility: auto; contain-intrinsic-size: auto 1750px; }
+@media (max-width: 767px) {
+  .ed-a-piece { contain-intrinsic-size: auto 1900px; }
+}

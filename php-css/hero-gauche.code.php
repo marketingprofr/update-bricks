@@ -907,7 +907,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   <div class="mt-photo">
     <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img', 'loading'=>'eager', 'fetchpriority'=>'high', 'decoding'=>'async')); ?>
     <?php if ($post_type === 'comparatif') {
-        echo '<img class="mt-badge" src="https://meilleurtest.fr/wp-content/uploads/2026/07/badge-mt3.png" alt="" style="position:absolute;top:0;left:0;max-width:130px;height:auto;">';
+        echo '<img class="mt-badge" src="https://meilleurtest.fr/wp-content/uploads/2026/07/badge-mt3.png" alt="" width="360" height="223" loading="eager" decoding="async" style="position:absolute;top:0;left:0;max-width:130px;height:auto;">';
     } ?>
   </div>
   <?php endif; ?>

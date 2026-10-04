@@ -218,3 +218,6 @@
   .mt-cmp th, .mt-cmp td { padding: 11px; }
   .mt-cmp .product-cell, .mt-cmp .score-cell, .mt-cmp .buy-cell { padding: 14px 11px; }
 }
+
+/* Dessin à la demande du tableau comparatif (Samuel, 2026-10-04) : environ 2 100 px de haut, mesuré en ligne */
+.mt-cmp-root { content-visibility: auto; contain-intrinsic-size: auto 2100px; }

@@ -101,3 +101,10 @@ details.mt-faq-item[open] > .mt-faq-q .mt-faq-icon::before { content: "\2212"; }
   .mt-faq-a h3 { font-size: 22px; }
   .mt-faq-a h4 { font-size: 18px; }
 }
+
+/* Dessin à la demande de la FAQ (Samuel, 2026-10-04) : environ 1 100 px sur ordinateur, 1 500 px sur mobile ; les liens
+   « En savoir plus » de l'encart « L'essentiel » ouvrent toujours leur question (#faq-…) */
+.mt-faq { content-visibility: auto; contain-intrinsic-size: auto 1100px; }
+@media (max-width: 767px) {
+  .mt-faq { contain-intrinsic-size: auto 1500px; }
+}
