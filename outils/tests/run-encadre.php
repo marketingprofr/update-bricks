@@ -47,3 +47,5 @@ if ( preg_match( '#<ul class="mt-sc-liste">(.*?)</ul>#s', $h, $u ) ) {
 }
 echo '  titre de l\'encadré en <p> : ', ( strpos( $h, '<p class="mt-card-h">' ) !== false ? 'oui' : 'NON' ), "\n";
 if ( preg_match( '#href="([^"]+)" class="mt-signaler"#', $h, $mt_sig ) ) { echo '  lien de signalement : ', html_entity_decode( $mt_sig[1] ), "\n"; }
+$mt_pd = strpos( $h, 'qualité.</p>' ); $mt_ps = strpos( $h, '<p class="mt-sc-signalement">' );
+echo '  « Prévenez-nous » : ', $mt_ps === false ? 'absent' : ( strpos( $h, 'mt-signaler' ) > strpos( $h, '</ul>' ) && $mt_pd !== false && $mt_ps > $mt_pd ? 'hors de la liste, sous « Découvrez notre méthodologie… »' : 'PLACE INATTENDUE' ), "\n";

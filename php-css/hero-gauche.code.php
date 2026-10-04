@@ -2,7 +2,7 @@
 $MT_SHOW_QUICK_PICKS = false;
 $MT_SHOW_BOLD_INTRO  = false;
 $MT_SHOW_INTRO_RECO  = true;
-$MT_REPONSE_INTRO    = true;   // l'intro commence par un paragraphe à part : N analysés et T retenus, puis le n°1 et ses suivants avec notes /10 (Samuel, 2026-10-04)
+$MT_REPONSE_INTRO    = true;   // l'intro commence par une phrase à part : « Sur les N … que nous avons analysés, n°1 (note) est le meilleur en 2026, devant … » (Samuel, 2026-10-04)
 $MT_INTRO_REPLIEE    = true;   // texte de la rédaction replié sur 2 lignes, avec « Afficher la suite » (demande de Samuel, 2026-10-04) ; false = intro entière
 $MT_VERDICT_SOUS_H1  = false;  // ancien encart séparé « L'essentiel en 30 secondes » sous la ligne auteur (remplacé par la réponse en tête de l'intro)
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
@@ -560,9 +560,11 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
 }
 
 if ( ! function_exists( 'mt_reponse_intro' ) ) {
-  /* Réponse en tête de l'intro (disposition validée par Samuel le 2026-10-03, test Jev « F5 » : ouverture 0,85 ;
-     méthode d'abord, demande de Samuel du 2026-10-04) : « Nous avons analysé {N} {produits} et retenu les {T}
-     meilleur(e)s. {n°1 en lien} (note) est le meilleur {produit} en 2026, devant {n°2} (note) et {n°3} (note). »
+  /* Réponse en tête de l'intro (disposition validée par Samuel le 2026-10-03, test Jev « F5 » : ouverture 0,85).
+     Une seule phrase, qui relie la méthode et la réponse (choix de Samuel du 2026-10-04, test Jev 20,35 contre 20,21) :
+     « Sur les {N} {produits} que nous avons analysés, {n°1 en lien} (note) est le meilleur en 2026, devant {n°2} (note)
+     et {n°3} (note). » « analysées » et « la meilleure » au féminin ; « devant {n°2} » s'il n'y a que 2 produits, sans
+     « devant » s'il n'y en a qu'un. Le top 5 suit juste en dessous, d'où plus de « retenu les 5 meilleurs ».
      Mêmes données que l'encart « L'essentiel » (mt_verdict_ouverture). */
   function mt_reponse_intro( $ids, $type_plur, $type_sing, $llm, $n ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
@@ -589,17 +591,16 @@ if ( ! function_exists( 'mt_reponse_intro' ) ) {
     $sing  = mb_strtolower( trim( (string) $type_sing ), 'UTF-8' );
     $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
     $lien  = '<a href="' . esc_url( $url ) . '">' . esc_html( $prods[0]['name'] ) . '</a>' . $note( $prods[0] );
-    if ( ! $pl && $sing !== '' ) { $rep = $lien . ' est ' . ( $fem ? 'la meilleure ' : 'le meilleur ' ) . esc_html( $sing ) . ' en ' . date_i18n( 'Y' ); }
-    else { $rep = $lien . ' est notre n°1 parmi les ' . esc_html( $plur !== '' ? $plur : 'produits' ) . ' en ' . date_i18n( 'Y' ); }
+    $fem   = ( $fem && $plur !== '' );  // type vide : « produits », au masculin
+    $typ   = esc_html( $plur !== '' ? $plur : 'produits' );
+    $nn    = max( (int) $n, $t );
+    $rep   = ( $nn > 1 ? 'Sur les ' . $nn . ' ' . $typ . ' que nous avons analysé' . ( $fem ? 'es' : 's' ) . ', ' : '' )
+           . $lien . ' est ' . ( $fem ? 'la meilleure' : 'le meilleur' ) . ' en ' . date_i18n( 'Y' );
     $autres = array();
     foreach ( array_slice( $prods, 1 ) as $p ) { if ( $p['name'] !== '' ) { $autres[] = esc_html( $p['name'] ) . $note( $p ); } }
     if ( count( $autres ) === 2 ) { $rep .= ', devant ' . $autres[0] . ' et ' . $autres[1]; }
     elseif ( count( $autres ) === 1 ) { $rep .= ', devant ' . $autres[0]; }
-    $typ = esc_html( $plur !== '' ? $plur : 'produits' );
-    $e   = ( $fem && $plur !== '' ) ? 'e' : '';
-    $met = $n > $t ? 'Nous avons analysé ' . (int) $n . ' ' . $typ . ' et retenu les ' . $t . ' meilleur' . $e . 's.'
-                   : 'Nous avons analysé et classé ' . max( (int) $n, $t ) . ' ' . $typ . '.';
-    return $met . ' ' . $rep . '.';
+    return $rep . '.';
   }
 }
 

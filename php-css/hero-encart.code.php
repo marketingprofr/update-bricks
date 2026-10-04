@@ -193,13 +193,14 @@ if ( $MT_ENCADRE_REEL ) {
   /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
   $mt_courts = mt_criteres_courts( $this_id );
   if ( $mt_courts !== '' ) {
-    /* Phrase choisie par Samuel (2026-10-03, test Jev « C2 », à égalité avec les autres) :
-       « Chaque climatiseur mobile est noté sur 4 critères (…) » ; « notée » au féminin, « critère » si un seul */
+    /* Phrase choisie par Samuel (2026-10-03, test Jev « C2 », à égalité avec les autres ; « principalement » ajouté
+       le 2026-10-04) : « Chaque climatiseur mobile est noté principalement sur 4 critères (…) » ; « notée » au
+       féminin, « critère » si un seul */
     $mt_sing    = trim( (string) ( $type_de_produit_au_singulier ?? '' ) );
     $mt_sing_ok = ( $mt_sing !== '' && strlen( $mt_sing ) < 22 );
     $mt_k       = count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $mt_courts ) ) ) );
     $mt_puces[] = 'Chaque ' . esc_html( $mt_sing_ok ? mb_strtolower( $mt_sing, 'UTF-8' ) : 'produit' ) . ' est noté' . ( $mt_sing_ok ? $mt_e : '' )
-                . ' sur ' . $mt_k . ' critère' . ( $mt_k > 1 ? 's' : '' ) . ' (' . esc_html( $mt_courts ) . ').';
+                . ' principalement sur ' . $mt_k . ' critère' . ( $mt_k > 1 ? 's' : '' ) . ' (' . esc_html( $mt_courts ) . ').';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }
   if ( $MT_SIGNALEMENT ) {
@@ -207,11 +208,13 @@ if ( $MT_ENCADRE_REEL ) {
     /* source_id / source_url, pas page_id / url : page_id est une variable de requête réservée par WordPress
        (?page_id=37750 redirige vers la page 37750 au lieu d'afficher le formulaire) */
     $mt_url_sig = add_query_arg( array( 'source_id' => $this_id, 'source_url' => rawurlencode( get_permalink( $this_id ) ) ), home_url( $MT_URL_SIGNALEMENT ) );
-    /* Formulation choisie par Samuel (2026-10-03, confiance +0,01 sur 10 pages) */
-    $mt_puces[] = 'Une erreur, ou un produit remplacé par un nouveau modèle&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Prévenez-nous</a>.';
+    /* Formulation choisie par Samuel (2026-10-03, confiance +0,01 sur 10 pages). Hors de la liste depuis le
+       2026-10-04 : paragraphe juste sous « Découvrez notre méthodologie… » (choix de Samuel) */
+    $mt_signalement = '<p class="mt-sc-signalement">Une erreur, ou un produit remplacé par un nouveau modèle&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Prévenez-nous</a>.</p>';
   }
-  /* Engagement d'indépendance, signé : à part, sous la liste */
-  $mt_citation = '<p class="mt-sc-citation">Aucune marque ne peut payer pour figurer dans ce classement&nbsp;: j\'ai toujours refusé la publicité et le contenu sponsorisé, y compris une offre de 20&nbsp;000&nbsp;€ d\'une grande enseigne.<span class="mt-sc-signature">Samuel Petit, responsable éditorial</span></p>';
+  /* Engagement d'indépendance, signé : à part, sous la liste. Texte choisi par Samuel le 2026-10-04 (« nos classements »,
+     « des offres » au pluriel : l'offre ne visait pas ce comparatif) */
+  $mt_citation = '<p class="mt-sc-citation">Aucune marque ne peut payer pour figurer dans nos classements. J\'ai refusé des offres publicitaires allant jusqu\'à 20&nbsp;000&nbsp;€ pour garantir l\'indépendance du site.<span class="mt-sc-signature">Samuel Petit, responsable éditorial</span></p>';
 }
 ?>
 <div class="mt-card">
@@ -264,6 +267,7 @@ if ( $MT_ENCADRE_REEL ) {
       <ul class="mt-sc-liste"><?php foreach ( $mt_puces as $mt_p ) : ?><li><?php echo $mt_p; ?></li><?php endforeach; ?></ul>
       <?php echo $mt_citation ?? ''; ?>
       <p>Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
+      <?php echo $mt_signalement ?? ''; ?>
     </div>
   <?php else : ?>
     <div class="mt-sc-process link-black"><p>Les guides d'achat de Meilleurtest résultent d'un processus de sélection approfondi et d'une vérification méticuleuse. Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>

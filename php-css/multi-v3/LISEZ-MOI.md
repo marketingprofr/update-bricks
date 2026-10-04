@@ -33,6 +33,10 @@ Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller p
 - **1**, Code et CSS ;
 - **4**, CSS seulement.
 
+**Troisième passe du 4 octobre** (choix de Samuel) : la phrase d'ouverture devient une seule phrase, « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … ». Dans l'encadré, « noté principalement sur 4 critères », la ligne « Prévenez-nous » sort de la liste et passe sous « Découvrez notre méthodologie… », et la citation est raccourcie. Si tu as déjà collé la deuxième passe, recolle :
+- **1**, Code seulement ;
+- **2**, Code seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -60,7 +64,7 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 | Fichier | Réglage | Valeur | Effet |
 |---|---|---|---|
 | 1 | `$MT_AUTEUR_SOUS_H1` | `true` | Ligne auteur et date juste sous le titre. |
-| 1 | `$MT_REPONSE_INTRO` | `true` | L'intro commence par un paragraphe à part, par exemple « Nous avons analysé 55 climatiseurs mobiles et retenu les 5 meilleurs. Midea PortaSplit 12000 BTU (9,0/10) est le meilleur climatiseur mobile en 2026, devant … », puis vient le texte de la rédaction. |
+| 1 | `$MT_REPONSE_INTRO` | `true` | L'intro commence par une phrase à part, par exemple « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … », puis vient le texte de la rédaction. |
 | 1 | `$MT_INTRO_REPLIEE` | `true` | Le texte de la rédaction est replié sur 2 lignes, avec « Afficher la suite » (puis « Masquer la suite »). Le texte reste entier dans la page. Le lien se cache si l'intro tient sur 2 lignes. `false` = intro entière. |
 | 1 | `$MT_VERDICT_SOUS_H1` | `false` | L'ancien encart séparé « L'essentiel » (4 phrases) n'est plus affiché. |
 | 1 | `$MT_VOS_QUESTIONS` | `'apres_intro'` | Encart des questions juste après l'intro. `'sous_reponse'` le place sous la ligne auteur, `''` le retire. |
@@ -70,7 +74,7 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 | 2 | `$MT_LIGNES_CONFIANCE` | `false` | Retire les lignes « 100 % indépendant » et « Mis à jour le », qui répètent la phrase d'indépendance et la ligne auteur (test Jev neutre). `true` les remet. |
 | 2 | `$MT_DUREE_LECTURE` | `false` | Retire « … min de lecture » (test Jev neutre). `true` la remet. |
 | 2 | `$MT_TXT_AFFILIATION` | `''` | Plus de phrase d'affiliation dans l'encadré : elle va dans le bandeau du header (voir plus bas). |
-| 2 | `$MT_SIGNALEMENT` | `true` | Ligne « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » vers `/signaler-une-erreur/`. |
+| 2 | `$MT_SIGNALEMENT` | `true` | Ligne « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » vers `/signaler-une-erreur/`, sous « Découvrez notre méthodologie… ». |
 | 4 | `$MT_POINT_VIGILANCE` | `true` | Point de vigilance juste avant le top 5. Seuls les types de produit dont les champs sont remplis l'affichent : pour l'instant, le climatiseur mobile. |
 | 6 | `$MT_METHODO_ENCADRE` | `true` | « Comment avons-nous établi ce classement ? » reprend les chiffres de l'encadré. |
 
@@ -86,9 +90,9 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 ## À vérifier sur la page climatiseur mobile, après prévisualisation
 
 1. Juste sous le titre, la ligne auteur : « Rédigé et vérifié par Samuel Petit, responsable éditorial • Mis à jour le … ».
-2. L'intro commence par un paragraphe à part : « Nous avons analysé 55 climatiseurs mobiles et retenu les 5 meilleurs. Midea PortaSplit 12000 BTU (9,0/10) est le meilleur climatiseur mobile en 2026, devant … ». Dessous, le texte habituel tient sur 2 lignes, avec « Afficher la suite », qui ouvre et referme.
+2. L'intro commence par une phrase à part : « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … ». Dessous, le texte habituel tient sur 2 lignes, avec « Afficher la suite », qui ouvre et referme.
 3. Juste après l'intro, un seul encart « L'essentiel en 30 secondes » (titre en gras avec une petite icône, trait bleu dessous) : 4 questions en liste à puces, chacune avec sa réponse d'une phrase et « En savoir plus », qui descend à la question dans la FAQ et l'ouvre. En bas, « Voir les N questions-réponses de notre foire aux questions ».
-4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », « Chaque climatiseur mobile est noté sur 4 critères (…) », « Prévenez-nous »). Sous la liste, l'engagement d'indépendance signé. Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
+4. Dans l'encadré de droite : les 4 cases, puis une liste à puces (« Nous avons consulté 27 sources, dont… », « Chaque climatiseur mobile est noté principalement sur 4 critères (…) »). Sous la liste, l'engagement d'indépendance signé (« Aucune marque ne peut payer pour figurer dans nos classements. J'ai refusé des offres publicitaires allant jusqu'à 20 000 € pour garantir l'indépendance du site. »), puis « Découvrez notre méthodologie… » et, juste dessous, « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » Ni phrase d'affiliation, ni « 100 % indépendant », ni date, ni durée de lecture.
 5. Juste avant le top 5, le « Point de vigilance » de l'ADEME s'affiche dans un encart jaune, avec une icône d'alerte devant le titre et la source en petit.
 6. Sur téléphone, la page ne dépasse pas de l'écran : pas de défilement de côté.
 7. Dans la FAQ, « Comment avons-nous établi ce classement ? » donne les mêmes chiffres que l'encadré.

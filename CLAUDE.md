@@ -966,6 +966,15 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   mobile, chargée en lazy sans fetchpriority) ; si elle reste, après l'encart, sans lazy, avec fetchpriority="high".
   Choix de Samuel attendu avant de coder. Titre forcé de 37750
   toujours rempli le 2026-10-04 (« … 55 modèles comparés ») : signalé à l'Architecture.
+- **3e passe, choix de Samuel du 2026-10-04 (relayé par la Coordination, test Jev 20,35 contre 20,21 en ligne)** :
+  `mt_reponse_intro()` = une seule phrase « Sur les {N} {pluriel} que nous avons analysé(e)s, {n°1 en lien} (note) est
+  le (la) meilleur(e) en {année}, devant {n°2} (note) et {n°3} (note). » (N = max(compteur, T) ; plus de « retenu les 5
+  meilleurs », le top 5 suit ; type vide → « produits », masculin ; 2 produits → « devant {n°2} » ; 1 → sans
+  « devant » ; N ≤ 1 → sans « Sur les … »). Encadré : « Chaque {type} est noté(e) principalement sur {k} critère(s) (…) » ;
+  « Prévenez-nous » hors de la liste, `p.mt-sc-signalement` juste sous « Découvrez notre méthodologie… » (style des
+  `.mt-sc-process p`, pas de CSS ajouté) ; citation « Aucune marque ne peut payer pour figurer dans nos classements.
+  J'ai refusé des offres publicitaires allant jusqu'à 20 000 € pour garantir l'indépendance du site. » (pluriels voulus
+  par Samuel). La phrase des sources (« dont The New York Times… ») est une donnée par comparatif : Architecture.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 
