@@ -226,4 +226,4 @@
 .mt-cmp .pn-origin { display: inline-block; margin-top: 8px; padding: 2px 8px; border-radius: 999px; background: var(--accent-soft); font-size: 11px; font-weight: 700; letter-spacing: 0.03em; line-height: 1.5; color: var(--accent); }
 
 /* Dessin à la demande du tableau comparatif (Samuel, 2026-10-04) : environ 2 100 px de haut, mesuré en ligne */
-.mt-cmp-root { content-visibility: auto; contain-intrinsic-size: auto 2100px; }
+.mt-cmp-root { content-visibility: auto; contain-intrinsic-block-size: auto 2100px; }

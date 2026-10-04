@@ -998,7 +998,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   360×223 ; `content-visibility: auto` + `contain-intrinsic-size: auto` (hauteurs mesurées en ligne) sur `.ed-a-piece`
   (1750/1900 px), `.mt-cmp-root` (2100) et `.mt-faq` (1100/1500), PAS sur `.mtv2-sub` (la containment de peinture couperait
   l'ombre des cartes). Ancres vérifiées en ligne avec la CSS injectée : mêmes positions qu'avant. Icônes Font Awesome :
-  attendre la méthode de l'instance Technique.
+  rien à faire : Samuel garde les icônes, l'instance Technique réduit les polices aux 52 icônes utilisées (mêmes classes).
+  Écriture : `contain-intrinsic-block-size` (hauteur seule) ; `contain-intrinsic-size: auto <l>` réserve aussi la LARGEUR
+  (débordement mobile vu par l'instance Technique sur son banc ; rien en ligne à 412 px, mesuré).
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
