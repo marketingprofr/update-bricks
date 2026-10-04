@@ -985,6 +985,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Intro repliée : 2e ligne estompée (mask-image en dégradé, 45 % opaque puis 0,15 en bas ; masque de transparence,
   donc valable en clair comme en sombre), retiré quand l'intro est ouverte ou quand elle tient sur 2 lignes (classe
   `mt-entier` posée par le script).
+  `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
+  auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

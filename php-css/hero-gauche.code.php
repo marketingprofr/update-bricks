@@ -9,6 +9,8 @@ $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, res
 $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (demande de Samuel) ; false = juste après « L'essentiel »
                                 // (test Jev : ouverture 0,82 sous le titre, 0,91 après « L'essentiel »)
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
+$MT_PASTILLE_VERIFIE = false;  // pastille « Vérifié le … » au-dessus du titre : retirée le 2026-10-04 (demande de Samuel), la ligne
+                                // auteur sous le titre dit déjà qui a vérifié et la date ; true = pastille affichée
 $MT_PHOTO_HERO       = false;  // photo et badge en haut de page : retirés le 2026-10-04 (choix de Samuel, conseil de la Coordination :
                                 // élément le plus lent de la page sur mobile, LCP 7,3 s) ; l'image mise en avant reste dans
                                 // WordPress (partage, og:image) ; true = photo affichée
@@ -692,10 +694,12 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       echo '<div class="mt-crumb">' . $bc . '</div>';
   } ?>
 
+  <?php if ( $MT_PASTILLE_VERIFIE ) : ?>
   <div class="mt-eyebrow">
     <span class="pill">Vérifié</span>
     <span>le <?php echo $mod; ?></span>
   </div>
+  <?php endif; ?>
 
   <?php // Effets SEO Rank Math
   /* Title (tests Jev du 2026-10-02, voir CLAUDE.md) : titre forcé s'il est rempli ;
