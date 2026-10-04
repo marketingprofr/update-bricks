@@ -430,7 +430,8 @@ if ( $toc_title !== '' ) {
   $toc_title = mb_strtoupper( mb_substr( $toc_title, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $toc_title, 1, null, 'UTF-8' );
 }
 
-/* Entrées : En {année} (encart principal), sous-comparatifs, Tests complets, Tableau */
+/* Entrées : En {année} (encart principal), sous-comparatifs, Avis détaillés, Tableau
+   (« Avis détaillés » au lieu de « Tests complets » : choix de Samuel du 2026-10-04, suit le titre « Notre avis sur … ») */
 $sections = array( array( 'label' => 'En ' . esc_html( date_i18n( 'Y' ) ), 'anchor' => 'mt-top5-title' ) );
 if ( $plan['is_multi'] ) {
   foreach ( $plan['subs'] as $sb ) {
@@ -442,7 +443,7 @@ if ( $plan['is_multi'] ) {
 }
 /* Raccourcis mis en avant (pastilles) */
 $pills = array(
-  array( 'label' => 'Tests complets',     'anchor' => 'partie-tests-complets',     'cls' => 'is-tests' ),
+  array( 'label' => 'Avis détaillés',     'anchor' => 'partie-tests-complets',     'cls' => 'is-tests' ),
   array( 'label' => 'Tableau comparatif', 'anchor' => 'partie-tableau-comparatif', 'cls' => 'is-table' ),
 );
 ?>

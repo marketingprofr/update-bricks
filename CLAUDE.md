@@ -1024,7 +1024,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   {pluriel} », chapô « Nous présentons ici les n {pluriel} de notre sélection, choisi(e)s parmi les N que nous avons
   analysé(e)s, avec leurs caractéristiques, les retours des utilisateurs et leur rapport qualité-prix. » ; N = celui
   du title, publié par le hero dans `$GLOBALS['mt_n_analyses']` (hero rendu avant les tests) ; clause retirée si N ≤ n
-  ou si N est absent ; féminin d'après masculinsfeminins.
+  ou si N est absent ; féminin d'après masculinsfeminins. Sommaire (V1 et multi) : « Tests complets » → « Avis détaillés »
+  (Samuel). Fin du chapô (« les retours des utilisateurs ») en cours de test par la Coordination.
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

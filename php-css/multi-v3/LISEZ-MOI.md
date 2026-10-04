@@ -61,6 +61,8 @@ Puis les 2 puces de l'encadré commencent par une entrée en gras : « **Pour r�
 
 Puis la puce 2 passe à la voix active, « **Pour établir le classement**, nous avons noté les climatiseurs mobiles sur 4 critères principaux (…) », et la section des avis détaillés change d'en-tête : « Pour aller plus loin », « Notre avis sur les meilleurs climatiseurs mobiles », « Nous présentons ici les 21 climatiseurs mobiles de notre sélection, choisis parmi les 55 que nous avons analysés, avec leurs caractéristiques, les retours des utilisateurs et leur rapport qualité-prix. » : **1**, Code ; **2**, Code ; **5**, Code.
 
+Puis, dans le sommaire, « Tests complets » devient « Avis détaillés » : **3**, Code seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 

@@ -49,7 +49,7 @@ $guide_label = "Guide d&rsquo;achat" . ( $type_plur !== '' ? ' ' . esc_html( $ty
 
 $sections_cfg = array(
   array( 'label' => 'Notre s&eacute;lection',     'anchor' => 'mt-top5-title',            'show' => true ),
-  array( 'label' => 'Tests complets',             'anchor' => 'partie-tests-complets',    'show' => true ),
+  array( 'label' => 'Avis détaillés',             'anchor' => 'partie-tests-complets',    'show' => true ), // « Tests complets » jusqu'au 2026-10-04 (Samuel)
   array( 'label' => 'Tableau comparatif',         'anchor' => 'partie-tableau-comparatif','show' => true ),
   array( 'label' => $guide_label,                 'anchor' => 'partie-guide-achat',       'show' => 'criteres' ),
   array( 'label' => 'Quel type choisir&nbsp;?',   'anchor' => 'partie-types',             'show' => 'choix' ),
