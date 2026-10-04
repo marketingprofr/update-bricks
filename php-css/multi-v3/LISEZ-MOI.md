@@ -63,6 +63,8 @@ Puis la puce 2 passe à la voix active, « **Pour établir le classement**, nous
 
 Puis, dans le sommaire, « Tests complets » devient « Avis détaillés » : **3**, Code seulement.
 
+Puis le chapô des avis détaillés finit par « avec leurs caractéristiques, leur rapport qualité-prix et notre verdict. » : **5**, Code seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
