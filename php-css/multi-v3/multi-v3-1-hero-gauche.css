@@ -32,6 +32,9 @@
 /* Texte de la rédaction replié sur 2 lignes, « Afficher la suite » / « Masquer la suite » (demande de Samuel, 2026-10-04) */
 .mt-lede-texte { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 .mt-lede-texte.mt-ouvert { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; }
+/* 2e ligne estompée tant que l'intro est repliée : on voit que le texte continue (demande de Samuel, 2026-10-04).
+   Masque de transparence (pas une couleur) : marche sur tous les fonds, en clair comme en sombre */
+.mt-lede-texte:not(.mt-ouvert):not(.mt-entier) { -webkit-mask-image: linear-gradient(to bottom, #000 45%, rgba(0, 0, 0, 0.15) 100%); mask-image: linear-gradient(to bottom, #000 45%, rgba(0, 0, 0, 0.15) 100%); }
 .mt-lede .mt-lede-suite { display: inline-block; margin: 4px 0 0; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; font: inherit; font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--at-primary); text-decoration: underline; text-transform: none; cursor: pointer; }
 .mt-lede .mt-lede-suite:hover { color: var(--at-primary-d-1); background: none; }
 .mt-lede .mt-lede-suite[hidden] { display: none; }

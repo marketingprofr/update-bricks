@@ -981,6 +981,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   clamp(15px, 1.4vw, 16px) au lieu de 16,5 px (intros de section du site en 16 px). Titre forcé de 37750 vidé par
   l'Architecture le 2026-10-04 (accord de Samuel) : title, H1, og:title = « … 55 analysés, 5 retenus », vérifié avec
   ?new&nocache. Les 9 autres pages auditées gardent leur titre forcé jusqu'à leur passage en V3 (prévenir l'Architecture).
+  Intro repliée : 2e ligne estompée (mask-image en dégradé, 45 % opaque puis 0,15 en bas ; masque de transparence,
+  donc valable en clair comme en sombre), retiré quand l'intro est ouverte ou quand elle tient sur 2 lignes (classe
+  `mt-entier` posée par le script).
 - **Débordement mobile** de tous les multis (antérieur à la V3) : `.ed-a { width:100%; max-width:100% }` dans le CSS
   des tests (la section prenait 1 040 px dans un bloc Bricks flex + wrap aligné à gauche).
 

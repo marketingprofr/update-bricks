@@ -1368,12 +1368,12 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       if ( $mt_rep !== '' ) { echo '<p class="mt-lede-reponse">' . $mt_rep . '</p>'; }
   }
   if ( $MT_INTRO_REPLIEE && trim( wp_strip_all_tags( $mt_intro_html ) ) !== '' ) {
-      /* Texte de la rédaction replié sur 2 lignes (CSS), entier dans le HTML. Le bouton ouvre et referme ;
-         il se cache si le texte tient déjà sur 2 lignes. */
+      /* Texte de la rédaction replié sur 2 lignes (CSS), entier dans le HTML, 2e ligne estompée. Le bouton ouvre et
+         referme ; si le texte tient déjà sur 2 lignes, le bouton se cache et la classe mt-entier retire le fondu. */
       echo '<div class="mt-lede-texte" id="mt-lede-texte">' . $mt_intro_html . '</div>'
          . '<button type="button" class="mt-lede-suite" aria-expanded="false" aria-controls="mt-lede-texte">Afficher la suite</button>'
          . '<script>(function(){var t=document.getElementById("mt-lede-texte"),b=t&&t.nextElementSibling;if(!b){return;}'
-         . 'function v(){if(!t.classList.contains("mt-ouvert")){b.hidden=t.scrollHeight<=t.clientHeight+2;}}'
+         . 'function v(){if(!t.classList.contains("mt-ouvert")){var e=t.scrollHeight<=t.clientHeight+2;b.hidden=e;t.classList.toggle("mt-entier",e);}}'
          . 'b.addEventListener("click",function(){var o=t.classList.toggle("mt-ouvert");b.setAttribute("aria-expanded",o?"true":"false");b.textContent=o?"Masquer la suite":"Afficher la suite";});'
          . 'v();window.addEventListener("load",v);window.addEventListener("resize",v);})();</script>';
   } else {
