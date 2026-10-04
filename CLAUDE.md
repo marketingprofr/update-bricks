@@ -1001,6 +1001,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   rien à faire : Samuel garde les icônes, l'instance Technique réduit les polices aux 52 icônes utilisées (mêmes classes).
   Écriture : `contain-intrinsic-block-size` (hauteur seule) ; `contain-intrinsic-size: auto <l>` réserve aussi la LARGEUR
   (débordement mobile vu par l'instance Technique sur son banc ; rien en ligne à 412 px, mesuré).
+  Hero en deux colonnes (conteneur Bricks natif brxe-zbbrbe, colonne droite brxe-vewtxx) : largeurs réglées par Samuel
+  dans Bricks (380 px + écart 60 px le 2026-10-04 ; avant 345 + 52). Mesures : à 1 440 px, encadré 960 contre gauche 941 ;
+  bloc de vote resserré (sélecteurs Rate My Post renforcés : marges 10 px autour du widget, 4 px sous les étoiles) →
+  encadré 946. NB : le CSS des éléments Code est imprimé dans le body, après un <style> injecté dans le head : pour
+  simuler un changement en ligne, ajouter le <style> en fin de body.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),

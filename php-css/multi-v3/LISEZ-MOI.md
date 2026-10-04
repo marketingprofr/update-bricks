@@ -71,6 +71,8 @@ Puis la photo passe tout en haut de l'encadré « Pourquoi nous faire confiance 
 
 Puis, pour la vitesse : l'image de l'encadré en taille moyenne sur les écrans classiques (9 Ko au lieu de 42), les images Amazon des cartes du top 5 en 200 px (5 Ko au lieu de 22), le badge de la photo du hero chargé tout de suite, et les avis détaillés, le tableau et la FAQ dessinés seulement à l'approche de l'écran : **1**, Code ; **2**, Code ; **4**, Code ; **5**, CSS ; **6**, CSS ; **7**, CSS.
 
+Puis le bloc « Avis des lecteurs » de l'encadré est resserré (14 px de moins sur ordinateur) : **2**, CSS seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
