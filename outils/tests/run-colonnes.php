@@ -2,7 +2,7 @@
 /* Colonnes gauche et droite de la partie guide d'achat (modèle Game8). Page multi-comparatif du faux site :
    hero gauche (aides), résumé du top 5, avis détaillés, puis le conteneur du guide comme dans Bricks
    (.brxe-container > .brxe-code colonne gauche + .brxe-block guide et FAQ + .brxe-code colonne droite).
-   Usage : php run-colonnes.php ; CLICS=1 pose des clics Google sur 3 comparatifs ; SAISON=1 remplit « De saison » ;
+   Usage : php run-colonnes.php ; CLICS=1 pose des clics Google sur 3 comparatifs ;
    SANSFAQ=1 sans questions de la rédaction. Écrit out/colonnes.html (CSS compris) et affiche les blocs. */
 require __DIR__ . '/wp-stubs.php';
 if ( ! function_exists( 'remove_accents' ) ) { function remove_accents( $t ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $t ); } }
@@ -18,7 +18,7 @@ mkp( 106, 'comparatif', 'comparatif-ventilateur', 'Les meilleurs ventilateurs en
 $GLOBALS['TERMS'][106] = array( 'post-type-produit' => tm( array( 12 => 'Ventilateur' ) ) );
 $GLOBALS['P'][102]->post_status = 'publish';
 if ( getenv( 'CLICS' ) ) { foreach ( array( 102 => 900, 106 => 400, 104 => 120 ) as $i => $c ) { $GLOBALS['META'][ $i ]['mltv5_clics_28j'] = $c; } }
-if ( getenv( 'SAISON' ) ) { $GLOBALS['ACF']['option']['mltv5_de_saison'] = array( 106, 102 ); }
+
 $GLOBALS['TV'][100]['lalalesmeilleur'] = 'le meilleur';
 $GLOBALS['TV'][100]['template_description'] = 0;
 if ( ! getenv( 'SANSFAQ' ) ) {

@@ -21,7 +21,7 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 | 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` |
 | 8 | « Quel choix faire ? » (duels, par ex. « Climatiseur mobile ou climatiseur fixe ? ») | `multi-v3-8-choix.code.php` | `multi-v3-8-choix.css` |
 | 9 | **Nouveau** : colonne de gauche du guide d'achat (accès rapide, tous les guides du type, modèles analysés) | `multi-v3-9-colonne-gauche.code.php` | `multi-v3-9-colonne-gauche.css` |
-| 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés, mis à jour récemment, populaires, de saison, même catégorie, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | **vide** (le CSS des deux colonnes est dans le 9) |
+| 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés de la catégorie, mis à jour récemment, même catégorie, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | **vide** (le CSS des deux colonnes est dans le 9) |
 
 Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat (sauf le bloc des duels, élément 8), les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
 
@@ -103,9 +103,7 @@ Sur le modèle de Game8 : une colonne à gauche et une à droite autour du guide
 
 Le CSS transforme lui-même le conteneur en 3 colonnes (220 px | guide | 280 px dès 1 200 px ; la colonne de droite passe sous le guide entre 992 et 1 199 px ; colonnes masquées en dessous) : aucun réglage Bricks à changer. Chaque bloc se règle en haut de son fichier (`true` / `false`) pour retirer ce qui ne sert pas.
 
-Deux blocs restent masqués tant qu'il manque leurs données :
-- « Les plus consultés en … » et « Les comparatifs populaires » : il faut le champ numérique `mltv5_clics_28j` (clics Google sur 28 jours) sur les comparatifs, rempli par l'Architecture ;
-- « De saison » : il faut un champ ACF de relation `mltv5_de_saison` sur une page d'options, avec 3 à 6 comparatifs.
+Tous les blocs restent dans la catégorie ou le type du comparatif (entonnoirs thématiques) : « De saison » et « Les comparatifs populaires » de tout le site ont été retirés. « Les plus consultés en … » reste masqué tant que sa source de clics n'est pas décidée.
 
 ## CSS des éléments 1 et 2 : dans le bandeau (depuis le 5 octobre)
 

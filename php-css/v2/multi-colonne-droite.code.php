@@ -13,28 +13,25 @@
    Blocs (titres en <p class="mt-side-h">, pas de titre HTML) ; un bloc sans
    données ne s'affiche pas :
      4. « Les plus consultés en {catégorie} » : les 5 comparatifs de la
-        catégorie qui ont le plus de clics Google sur 28 jours (champ
-        $MT_SIDE_CHAMP_CLICS, importé par l'Architecture) ;
+        catégorie qui ont le plus de clics Google sur 28 jours (source à
+        décider par Samuel ; sans données, bloc masqué) ;
      5. « Mis à jour récemment » : les 5 derniers comparatifs modifiés de la
         catégorie, avec leur date ;
-     6. « Les comparatifs populaires » : le top 5 du site, même champ de clics ;
-     7. « De saison » : liste choisie par Samuel (champ ACF d'options
-        $MT_SIDE_CHAMP_SAISON, 3 à 6 comparatifs) ;
      8. « Dans la même catégorie » : comparatifs principaux des autres types
         de produit de la catégorie (ventilateur, déshumidificateur…) ;
      9. « Questions fréquentes » : 5 questions de la rédaction, avec un lien
         vers leur réponse dans la FAQ de la page.
-   Honnêteté : « plus consultés » et « populaires » seulement avec de vrais
-   clics, jamais de compteur inventé. Listes en cache 12 h (transients).
+   Tout reste dans la catégorie ou le type : le site fonctionne en entonnoirs
+   thématiques (Samuel, 2026-10-05). « De saison » et « Les comparatifs
+   populaires » (tout le site) ont été retirés pour cette raison.
+   Honnêteté : « plus consultés » seulement avec de vrais clics, jamais de
+   compteur inventé. Listes en cache 12 h (transients).
    ===================================================================== */
 $MT_SIDE_CONSULTES    = true;  // 4. « Les plus consultés en {catégorie} »
 $MT_SIDE_RECENTS      = true;  // 5. « Mis à jour récemment »
-$MT_SIDE_POPULAIRES   = true;  // 6. « Les comparatifs populaires »
-$MT_SIDE_SAISON       = true;  // 7. « De saison »
 $MT_SIDE_CATEGORIE    = true;  // 8. « Dans la même catégorie »
 $MT_SIDE_FAQ          = true;  // 9. « Questions fréquentes »
-$MT_SIDE_CHAMP_CLICS  = 'mltv5_clics_28j';  // clics Google sur 28 jours d'un comparatif (champ numérique, importé par l'Architecture)
-$MT_SIDE_CHAMP_SAISON = 'mltv5_de_saison';  // champ ACF d'une page d'options : relation vers 3 à 6 comparatifs
+$MT_SIDE_CHAMP_CLICS  = 'mltv5_clics_28j';  // clics Google sur 28 jours (provisoire : la source est à décider par Samuel ; sans données, bloc masqué)
 $MT_SIDE_MAX          = 10;    // liens au plus par bloc
 
 /* ---------------------------------------------------------------------
@@ -98,7 +95,7 @@ $mt_sd_cat = mt_side_cat( $mt_sd );
 $mt_sd_nom = $mt_sd_cat ? mb_strtolower( html_entity_decode( (string) $mt_sd_cat->name, ENT_QUOTES, 'UTF-8' ), 'UTF-8' ) : '';
 $mt_sd_html = '';
 
-/* Comparatifs publiés (ids), avec un tri ; $cat = 0 pour tout le site ; $clics = tri par le champ de clics (> 0 seulement) */
+/* Comparatifs publiés de la catégorie (ids), avec un tri ; $clics = tri par le champ de clics (> 0 seulement) */
 $mt_sd_req = function ( $cat, $clics, $n ) use ( $mt_sd, $MT_SIDE_CHAMP_CLICS ) {
   $a = array( 'post_type' => 'comparatif', 'post_status' => 'publish', 'posts_per_page' => $n + 1, 'fields' => 'ids', 'no_found_rows' => true, 'post__not_in' => array( $mt_sd ) );
   if ( $cat ) { $a['cat'] = (int) $cat; }
@@ -126,29 +123,6 @@ if ( $MT_SIDE_RECENTS && $mt_sd_cat ) {
     return array_map( function ( $id ) use ( $mt_sd_lien ) { return $mt_sd_lien( $id, date_i18n( 'j F Y', (int) get_post_modified_time( 'U', true, $id ) ) ); }, $mt_sd_req( (int) $mt_sd_cat->term_id, false, 5 ) );
   } );
   $mt_sd_html .= mt_side_bloc( 'Mis à jour récemment', $mt_sd_l );
-}
-
-/* 6. Les comparatifs populaires du site (vrais clics seulement) */
-if ( $MT_SIDE_POPULAIRES ) {
-  $mt_sd_l = mt_side_cache( 0, 'populaires', function () use ( $mt_sd_req, $mt_sd_lien ) {
-    return array_map( $mt_sd_lien, $mt_sd_req( 0, true, 5 ) );
-  } );
-  $mt_sd_html .= mt_side_bloc( 'Les comparatifs populaires', $mt_sd_l, true );
-}
-
-/* 7. De saison : liste choisie par Samuel (champ d'options), 6 au plus ; en cache comme les autres listes */
-if ( $MT_SIDE_SAISON && function_exists( 'get_field' ) ) {
-  $mt_sd_l = mt_side_cache( 0, 'saison', function () use ( $mt_sd_lien, $MT_SIDE_CHAMP_SAISON ) {
-    $s = get_field( $MT_SIDE_CHAMP_SAISON, 'option' );
-    $l = array();
-    foreach ( array_slice( is_array( $s ) ? $s : array(), 0, 6 ) as $p ) {
-      $id = is_object( $p ) ? (int) $p->ID : (int) $p;
-      if ( $id && get_post_status( $id ) === 'publish' ) { $l[] = array( 'id' => $id ) + $mt_sd_lien( $id ); }
-    }
-    return $l;
-  } );
-  $mt_sd_l = array_values( array_filter( $mt_sd_l, function ( $x ) use ( $mt_sd ) { return (int) $x['id'] !== $mt_sd; } ) );
-  $mt_sd_html .= mt_side_bloc( 'De saison', $mt_sd_l );
 }
 
 /* 8. Dans la même catégorie : comparatifs principaux (sans attribut) des autres types de produit */

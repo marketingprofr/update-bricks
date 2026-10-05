@@ -1050,6 +1050,10 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   fréquentes (5 de la rédaction, #faq-…, ≥ 3). Titres en p.mt-side-h, <nav aria-label>. Cache transients 12 h (clé =
   page + date de modification). Banc : outils/tests/run-colonnes.php (le stub get_posts ignore tax/meta/tri). Poids : ~8 Ko
   de HTML + 4,7 Ko de CSS par élément.
+  Puis (Samuel, entonnoirs thématiques) : « De saison » et « Les comparatifs populaires » (tout le site) RETIRÉS ; tout reste
+  dans la catégorie ou le type. Source des clics de « Les plus consultés » à décider (pas de champ par comparatif ; piste :
+  une option WordPress ID → clics remplie par l'Architecture). Votes FeedbackWP (rmp_vote_count) inutilisables : 190 à 340
+  votes et 4,6 à 4,9 de moyenne sur 10 comparatifs tirés au hasard le 2026-10-05 (pas un signal de popularité).
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
