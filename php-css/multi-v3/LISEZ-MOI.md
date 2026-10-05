@@ -111,7 +111,19 @@ Sur le modèle de Game8 : une colonne à gauche et une à droite autour du guide
 
 Le CSS transforme lui-même le conteneur en 3 colonnes (220 px | guide | 280 px dès 1 200 px ; la colonne de droite passe sous le guide entre 992 et 1 199 px ; colonnes masquées en dessous) : aucun réglage Bricks à changer. Chaque bloc se règle en haut de son fichier (`true` / `false`) pour retirer ce qui ne sert pas.
 
-Tous les blocs restent dans la catégorie ou le type du comparatif (entonnoirs thématiques) : « De saison » et « Les comparatifs populaires » de tout le site ont été retirés. « Les plus consultés en … » reste masqué tant que sa source de clics n'est pas décidée.
+Tous les blocs restent dans la catégorie ou le type du comparatif (entonnoirs thématiques) : « De saison » et « Les comparatifs populaires » de tout le site ont été retirés.
+
+Depuis le 5 octobre au soir, chaque bloc a sa propre mise en forme (inspirée de Game8, sans la copier) :
+- **Accès rapide** : panneau gris, tuiles sur deux colonnes, la partie en cours de lecture assombrie ;
+- **Tous les guides** : pastilles en deux niveaux, comme les « Comparatifs similaires » sous le tableau (les guides du même type, page en cours en bleu, puis les autres guides de la catégorie) ;
+- **Les modèles analysés** : 10 au plus, rang, nom et note dans une pastille ;
+- colonne de droite : chaque bloc dans un cadre, filet bleu en haut, icône devant le titre ;
+- **Les plus consultés en …** : numéros 1 à 5 dans des carrés bleus. Il repose sur les vrais clics Google des 28 derniers jours, lus dans la page privée `mt-clics-28j` que l'instance Architecture créera (avec votre accord). Tant que cette page n'existe pas, ou si elle est illisible, le bloc reste masqué ;
+- **Mis à jour récemment** : le premier en grande image, les autres en vignette, avec leur date ;
+- **Dans la même catégorie** : petite image carrée et nom ;
+- **Questions fréquentes** : un « ? » devant chaque question.
+
+À recoller : **9**, Code et CSS ; **10**, Code seulement.
 
 ## CSS des éléments 1 et 2 : dans le bandeau (depuis le 5 octobre)
 

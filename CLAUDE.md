@@ -1054,6 +1054,19 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   dans la catégorie ou le type. Source des clics de « Les plus consultés » à décider (pas de champ par comparatif ; piste :
   une option WordPress ID → clics remplie par l'Architecture). Votes FeedbackWP (rmp_vote_count) inutilisables : 190 à 340
   votes et 4,6 à 4,9 de moyenne sur 10 comparatifs tirés au hasard le 2026-10-05 (pas un signal de popularité).
+  Puis (Samuel, « tous tes widgets ont exactement la même mise en forme », modèle Game8) : un style par bloc, classe passée
+  en 5e argument de mt_side_bloc (mt-side-acces, -modeles, -top, -recents, -cat, -faq ; items avec 'img' → img.mt-side-img).
+  Accès rapide = panneau gris, tuiles 2 colonnes, a.mt-side-actif foncé. Tous les guides = nav.mt-side-guides, p.mt-side-sous
+  + ul.mt-side-pills en 2 niveaux via mt_sim_ranked_ids (repli get_posts) : même type (page courante li.mt-side-cur en
+  pastille pleine) puis « Autres guides {catégorie} » (8 max). Modèles = 10 max, dédoublonnés par nom, note « 9,0 » en
+  pastille. Droite : cadre + filet primary en haut, icônes en masque SVG (--mt-side-ico sur .mt-side-h::before) ; plus
+  consultés = carrés numérotés ; récents = 1re grande image (medium, 16/9) puis vignettes 72×54 + date seule (j F Y,
+  clé de cache recents3) ; même catégorie = vignettes 40×40 ; FAQ = bulle « ? ». De 992 à 1199 px, la droite passe en
+  colonnes de journal (columns: 240px, pas de trou sous les blocs courts).
+  Clics (contrat accepté par l'Architecture) : page privée slug `mt-clics-28j`, post_content = JSON {"ID": clics} (clés
+  numériques, comparatifs publiés seulement, ~60 Ko, mise à jour hebdomadaire, post_modified = fraîcheur). Lue par
+  get_page_by_path ; absente, vide ou illisible → bloc masqué (jamais de classement partiel). Création de la page par
+  l'Architecture avec l'accord de Samuel. Banc : CLICS=1 (page valide), CLICS=invalide (JSON cassé → bloc masqué).
 - **JSON-LD sans aggregateRating (accord de Samuel, 2026-10-05, demande de l'instance Technique)** : multi-tests et top5-tests
   n'émettent plus la note clients Amazon (règle Google des review snippets : « Ratings must be sourced directly from
   users ») ; affichage inchangé. Product sans review ni offers : pas de nœud (V2 : l'ItemList met l'URL de la fiche ; V1 :

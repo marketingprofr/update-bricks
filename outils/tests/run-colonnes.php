@@ -2,7 +2,7 @@
 /* Colonnes gauche et droite de la partie guide d'achat (modèle Game8). Page multi-comparatif du faux site :
    hero gauche (aides), résumé du top 5, avis détaillés, puis le conteneur du guide comme dans Bricks
    (.brxe-container > .brxe-code colonne gauche + .brxe-block guide et FAQ + .brxe-code colonne droite).
-   Usage : php run-colonnes.php ; CLICS=1 pose des clics Google sur 3 comparatifs ;
+   Usage : php run-colonnes.php ; CLICS=1 crée la page privée mt-clics-28j (clics Google de 4 comparatifs), CLICS=invalide la crée illisible ;
    SANSFAQ=1 sans questions de la rédaction. Écrit out/colonnes.html (CSS compris) et affiche les blocs. */
 require __DIR__ . '/wp-stubs.php';
 if ( ! function_exists( 'remove_accents' ) ) { function remove_accents( $t ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $t ); } }
@@ -13,11 +13,23 @@ if ( ! function_exists( 'get_ancestors' ) ) { function get_ancestors( $id, $tax 
 if ( ! function_exists( 'get_the_modified_date' ) ) { function get_the_modified_date( $f = '', $id = 0 ) { return 'octobre 2026'; } }
 if ( ! function_exists( 'wpautop' ) ) { function wpautop( $s ) { return '<p>' . $s . '</p>'; } }
 if ( ! function_exists( 'wp_kses' ) ) { function wp_kses( $s, $t ) { return $s; } }
+if ( ! function_exists( 'get_page_by_path' ) ) { function get_page_by_path( $slug, $o = OBJECT, $type = 'page' ) { foreach ( $GLOBALS['P'] as $p ) { if ( $p->post_name === $slug && $p->post_type === $type ) { return $p; } } return null; } }
+if ( ! defined( 'OBJECT' ) ) { define( 'OBJECT', 'OBJECT' ); }
 /* comparatif d'un autre type, principal, dans la même catégorie (« Dans la même catégorie ») */
 mkp( 106, 'comparatif', 'comparatif-ventilateur', 'Les meilleurs ventilateurs en 2026' );
 $GLOBALS['TERMS'][106] = array( 'post-type-produit' => tm( array( 12 => 'Ventilateur' ) ) );
+foreach ( array( 107 => array( 'comparatif-deshumidificateur', 'Les meilleurs déshumidificateurs en 2026', 13, 'Déshumidificateur' ),
+                 108 => array( 'comparatif-purificateur-air', 'Les meilleurs purificateurs d’air en 2026', 14, 'Purificateur d’air' ),
+                 109 => array( 'comparatif-radiateur-electrique', 'Les meilleurs radiateurs électriques en 2026', 15, 'Radiateur électrique' ),
+                 110 => array( 'comparatif-pompe-a-chaleur', 'Les meilleures pompes à chaleur en 2026', 16, 'Pompe à chaleur' ) ) as $i => $c ) {
+  mkp( $i, 'comparatif', $c[0], $c[1] );
+  $GLOBALS['TERMS'][ $i ] = array( 'post-type-produit' => tm( array( $c[2] => $c[3] ) ) );
+}
 $GLOBALS['P'][102]->post_status = 'publish';
-if ( getenv( 'CLICS' ) ) { foreach ( array( 102 => 900, 106 => 400, 104 => 120 ) as $i => $c ) { $GLOBALS['META'][ $i ]['mltv5_clics_28j'] = $c; } }
+if ( getenv( 'CLICS' ) ) {
+  mkp( 900, 'page', 'mt-clics-28j', 'Clics 28 jours', 'private' );
+  $GLOBALS['P'][900]->post_content = getenv( 'CLICS' ) === 'invalide' ? '<p>{"102": 900</p>' : json_encode( array( '102' => 900, '106' => 400, '108' => 260, '104' => 120, '100' => 5000 ) );
+}
 
 $GLOBALS['TV'][100]['lalalesmeilleur'] = 'le meilleur';
 $GLOBALS['TV'][100]['template_description'] = 0;
@@ -47,8 +59,11 @@ $page = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="
 file_put_contents( __DIR__ . '/out/colonnes.html', $page );
 foreach ( array( 'GAUCHE' => $g, 'DROITE' => $d ) as $nom => $h ) {
   echo "== colonne $nom\n";
-  preg_match_all( '#<nav class="mt-side-bloc" aria-label="[^"]*"><p class="mt-side-h">(.*?)</p><(ol|ul) class="mt-side-list">(.*?)</\2>(.*?)</nav>#s', $h, $bl, PREG_SET_ORDER );
+  preg_match_all( '#<nav class="mt-side-bloc(?! mt-side-guides)[^"]*" aria-label="[^"]*"><p class="mt-side-h">(.*?)</p><(ol|ul) class="mt-side-list">(.*?)</\2>(.*?)</nav>#s', $h, $bl, PREG_SET_ORDER );
   if ( ! $bl ) { echo "  (aucun bloc)\n"; }
+  if ( preg_match( '#<nav class="mt-side-bloc mt-side-guides".*?</nav>#s', $h, $gm ) ) {
+    echo '  Tous les guides : ', html_entity_decode( trim( preg_replace( '/\s+/', ' ', strip_tags( str_replace( array( '</a>', '</span>', '<p class="mt-side-sous">' ), array( ' | ', ' (page courante) | ', "\n     # " ), $gm[0] ) ) ) ), ENT_QUOTES, 'UTF-8' ), "\n";
+  }
   foreach ( $bl as $b ) {
     preg_match_all( '#<li([^>]*)>(.*?)</li>#s', $b[3], $li, PREG_SET_ORDER );
     echo '  ', html_entity_decode( $b[1] ), ' (', count( $li ), ( $b[2] === 'ol' ? ', numérotés' : '' ), ")\n";

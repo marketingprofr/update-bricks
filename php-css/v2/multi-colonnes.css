@@ -1,6 +1,7 @@
 /* =====================================================================
    MEILLEURTEST — Partie guide d'achat : colonnes de gauche et de droite
-   (modèle Game8, demande de Samuel du 2026-10-05).
+   (modèle Game8, demande de Samuel du 2026-10-05 ; chaque bloc a sa
+   propre mise en forme, inspirée de Game8 sans la copier).
    Collé UNE SEULE FOIS, dans l'onglet CSS de l'élément de la colonne de
    gauche ; l'onglet CSS de la colonne de droite reste vide (si l'on retire
    la colonne de gauche, recoller ce fichier dans la colonne de droite).
@@ -20,35 +21,99 @@
   .brxe-container:has(> .brxe-code > .mt-side-gauche) > .brxe-block { grid-column: 2; }
   .brxe-container > .brxe-code:has(> .mt-side-gauche) { grid-column: 1; grid-row: 1; align-self: stretch; }
   .mt-side-gauche { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px; }
-  /* Colonne de droite entre 992 et 1199 px : sous le guide */
+  /* Colonne de droite entre 992 et 1199 px : sous le guide, blocs en colonnes de journal (pas de trou sous les blocs courts) */
   .brxe-container:has(> .brxe-code > .mt-side-gauche) > .brxe-code:has(> .mt-side-droite) { grid-column: 2; grid-row: 2; }
-  .mt-side-droite { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); column-gap: 32px; }
+  .mt-side-droite { columns: 240px; column-gap: 24px; }
+  .mt-side-droite .mt-side-bloc { break-inside: avoid; }
 }
 @media (min-width: 1200px) {
   .brxe-container:has(> .brxe-code > .mt-side-gauche):has(> .brxe-code > .mt-side-droite) { grid-template-columns: 220px minmax(0, 1fr) 280px; }
   .brxe-container:has(> .brxe-code > .mt-side-gauche) > .brxe-code:has(> .mt-side-droite) { grid-column: 3; grid-row: 1; }
   .brxe-container:not(:has(> .brxe-code > .mt-side-gauche)):has(> .brxe-code > .mt-side-droite) { grid-template-columns: minmax(0, 1fr) 280px; }
   .brxe-container:not(:has(> .brxe-code > .mt-side-gauche)) > .brxe-code:has(> .mt-side-droite) { grid-column: 2; grid-row: 1; }
-  .mt-side-droite { display: block; }
+  .mt-side-droite { columns: auto; }
 }
 @media (max-width: 991px) {
   .brxe-code:has(> .mt-side) { display: none; }
 }
 
-/* Blocs */
+/* ===== Commun ===== */
 .mt-side { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 14px; line-height: 1.45; color: var(--at-black-l-2); }
-.mt-side-bloc { margin: 0 0 26px; }
-.mt-side-h { margin: 0 0 6px !important; padding: 0 0 8px; border-bottom: 2px solid var(--at-primary); font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 12.5px; font-weight: 700; line-height: 1.3; letter-spacing: 0.05em; text-transform: uppercase; color: var(--at-black-l-1); }
-.mt-side-list { list-style: none !important; margin: 0 !important; padding: 0 !important; counter-reset: mtside; }
-.mt-side-list li { display: flex; align-items: baseline; gap: 8px; margin: 0 !important; padding: 0 !important; list-style: none !important; border-bottom: 1px solid var(--at-grey-l-4); }
-.mt-side-list li > a { flex: 1; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 2px; color: inherit; text-decoration: none; }
-.mt-side-list li:not(:has(> a)) { justify-content: space-between; padding: 7px 2px !important; }
-.mt-side-list li > a:hover .mt-side-t { color: var(--at-primary); text-decoration: underline; }
+.mt-side a { color: inherit; text-decoration: none; }
+.mt-side a:hover .mt-side-t { color: var(--at-primary); text-decoration: underline; }
+.mt-side-bloc { margin: 0 0 28px; }
+.mt-side-list { list-style: none !important; margin: 0 !important; padding: 0 !important; }
+.mt-side-list li { margin: 0 !important; padding: 0 !important; list-style: none !important; }
 .mt-side-t { min-width: 0; }
-.mt-side-m { flex: none; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--at-grey); white-space: nowrap; }
-ol.mt-side-list li::before { counter-increment: mtside; content: counter(mtside); flex: none; width: 18px; font-size: 12px; font-weight: 700; color: var(--at-primary); }
-.mt-side-cur .mt-side-t { font-weight: 600; color: var(--at-black-l-1); }
-.mt-side-list a.mt-side-actif .mt-side-t { font-weight: 600; color: var(--at-primary); }
-.mt-side-list a.mt-side-actif { box-shadow: inset 3px 0 0 var(--at-primary); padding-left: 8px; }
-.mt-side-plus { margin: 8px 0 0 !important; font-size: 13px; }
+/* Titre de bloc : icône + texte (pas un titre HTML) */
+.mt-side-h { display: flex; align-items: center; gap: 8px; margin: 0 0 10px !important; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 15px; font-weight: 700; line-height: 1.3; color: var(--at-black-l-1); }
+.mt-side-h::before { content: ""; flex: none; width: 18px; height: 18px; background-color: var(--at-primary); -webkit-mask: var(--mt-side-ico) center / contain no-repeat; mask: var(--mt-side-ico) center / contain no-repeat; }
+.mt-side-acces   { --mt-side-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'%3E%3Crect x='3' y='3' width='7' height='7' rx='1'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1'/%3E%3C/svg%3E"); }
+.mt-side-guides  { --mt-side-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z'/%3E%3Cpath d='M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z'/%3E%3C/svg%3E"); }
+.mt-side-modeles { --mt-side-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 2l3 6.5 7 .8-5.2 4.8 1.5 7L12 17.6 5.7 21.1l1.5-7L2 9.3l7-.8z'/%3E%3C/svg%3E"); }
+.mt-side-top     { --mt-side-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 7 13.5 15.5 8.5 10.5 2 17'/%3E%3Cpath d='M16 7h6v6'/%3E%3C/svg%3E"); }
+.mt-side-recents { --mt-side-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E"); }
+.mt-side-cat     { --mt-side-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E"); }
+.mt-side-faq     { --mt-side-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E"); }
+.mt-side-plus { margin: 10px 0 0 !important; font-size: 13px; }
 .mt-side-plus a { color: var(--at-primary); font-weight: 600; text-decoration: underline; }
+
+/* Colonne de droite : chaque bloc dans un cadre, filet de couleur en haut (comme les encadrés de Game8) */
+.mt-side-droite .mt-side-bloc { padding: 12px 14px 6px; background: var(--at-white); border: 1px solid var(--at-grey-l-3); border-top: 3px solid var(--at-primary); border-radius: 6px; }
+.mt-side-droite .mt-side-h { padding: 0 0 10px; border-bottom: 1px solid var(--at-grey-l-4); }
+.mt-side-droite .mt-side-list li { border-bottom: 1px solid var(--at-grey-l-5); }
+.mt-side-droite .mt-side-list li:last-child { border-bottom: 0; }
+.mt-side-droite .mt-side-plus { padding: 0 0 8px; }
+
+/* ===== 1. Accès rapide : panneau gris, tuiles sur deux colonnes, partie en cours assombrie ===== */
+.mt-side-acces { padding: 12px 10px; background: var(--at-grey-l-6); border: 1px solid var(--at-grey-l-4); border-radius: 10px; }
+.mt-side-acces .mt-side-h { justify-content: center; font-size: 14px; color: var(--at-grey); }
+.mt-side-acces .mt-side-h::before { background-color: var(--at-grey); }
+.mt-side-acces .mt-side-list { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.mt-side-acces .mt-side-list li > a { display: flex; align-items: center; justify-content: center; min-height: 42px; padding: 6px 4px; text-align: center; background: var(--at-grey-l-4); border-radius: 4px; font-size: 12.5px; font-weight: 600; line-height: 1.25; color: var(--at-black-l-2); transition: background .15s; }
+.mt-side-acces .mt-side-list li > a:hover { background: var(--at-grey-l-3); }
+.mt-side-acces .mt-side-list li > a:hover .mt-side-t { color: inherit; text-decoration: none; }
+.mt-side-acces .mt-side-list li > a.mt-side-actif { background: var(--at-black-l-2); color: var(--at-white); }
+
+/* ===== 2. Tous les guides : pastilles en deux niveaux (comme les « Comparatifs similaires ») ===== */
+.mt-side-sous { margin: 12px 0 6px !important; font-size: 11.5px; font-weight: 700; line-height: 1.3; letter-spacing: 0.05em; text-transform: uppercase; color: var(--at-grey); }
+.mt-side-guides .mt-side-h + .mt-side-sous { margin-top: 0 !important; }
+.mt-side-pills { display: flex; flex-wrap: wrap; gap: 6px; list-style: none !important; margin: 0 !important; padding: 0 !important; }
+.mt-side-pills li { margin: 0 !important; padding: 0 !important; list-style: none !important; }
+.mt-side-pills a, .mt-side-pills span { display: inline-block; padding: 5px 10px; background: var(--at-white); border: 1px solid var(--at-grey-l-3); border-radius: 999px; font-size: 12.5px; line-height: 1.3; color: var(--at-black-l-2); transition: border-color .15s, color .15s; }
+.mt-side-pills a:hover { border-color: var(--at-primary); color: var(--at-primary); }
+.mt-side-pills .mt-side-cur span { background: var(--at-primary); border-color: var(--at-primary); color: var(--at-white); font-weight: 600; }
+
+/* ===== 3. Les modèles analysés : rang, nom, note dans une pastille ===== */
+.mt-side-modeles .mt-side-list { counter-reset: mtm; }
+.mt-side-modeles .mt-side-list li { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--at-grey-l-4); }
+.mt-side-modeles .mt-side-list li::before { counter-increment: mtm; content: counter(mtm); flex: none; width: 16px; font-size: 12px; font-weight: 700; color: var(--at-grey); }
+.mt-side-modeles li > a, .mt-side-modeles .mt-side-sans { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 7px 0; }
+.mt-side-modeles .mt-side-t { font-size: 13px; }
+.mt-side-modeles .mt-side-m { flex: none; min-width: 34px; padding: 2px 6px; text-align: center; background: var(--at-primary-l-6); border-radius: 6px; font-size: 12px; font-weight: 700; color: var(--at-primary-d-1); }
+.mt-side-modeles .mt-side-list li:first-child .mt-side-m { background: var(--at-primary); color: var(--at-white); }
+
+/* ===== 4. Les plus consultés : numéros dans des carrés de couleur ===== */
+.mt-side-top .mt-side-list { counter-reset: mtt; }
+.mt-side-top .mt-side-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0 !important; }
+.mt-side-top .mt-side-list li::before { counter-increment: mtt; content: counter(mtt); flex: none; display: grid; place-items: center; width: 26px; height: 26px; background: var(--at-primary); border-radius: 4px; font-size: 13px; font-weight: 700; color: var(--at-white); }
+.mt-side-top .mt-side-t { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 13.5px; font-weight: 600; line-height: 1.3; color: var(--at-black-l-1); }
+
+/* ===== 5. Mis à jour récemment : le 1er en grande image, les autres en vignette ===== */
+.mt-side-recents .mt-side-list li { padding: 10px 0 !important; }
+.mt-side-recents li > a, .mt-side-recents .mt-side-sans { display: grid; grid-template-columns: 72px minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 10px; row-gap: 3px; align-items: start; }
+.mt-side-recents .mt-side-img { grid-row: 1 / span 2; width: 72px; height: 54px; object-fit: cover; border-radius: 6px; background: var(--at-grey-l-5); }
+.mt-side-recents .mt-side-t { font-size: 13.5px; font-weight: 600; line-height: 1.3; color: var(--at-black-l-1); }
+.mt-side-recents .mt-side-m { font-size: 12px; color: var(--at-grey); }
+.mt-side-recents li:first-child > a, .mt-side-recents li:first-child .mt-side-sans { grid-template-columns: minmax(0, 1fr); }
+.mt-side-recents li:first-child .mt-side-img { grid-row: auto; width: 100%; height: auto; aspect-ratio: 16 / 9; margin-bottom: 6px; }
+
+/* ===== 8. Dans la même catégorie : petite image carrée + nom ===== */
+.mt-side-cat li > a, .mt-side-cat .mt-side-sans { display: flex; align-items: center; gap: 10px; padding: 7px 0; }
+.mt-side-cat .mt-side-img { flex: none; width: 40px; height: 40px; object-fit: cover; border-radius: 8px; background: var(--at-grey-l-5); }
+.mt-side-cat .mt-side-t { font-size: 13.5px; font-weight: 600; line-height: 1.3; color: var(--at-black-l-1); }
+
+/* ===== 9. Questions fréquentes : chaque question précédée d'un « ? » ===== */
+.mt-side-faq li > a { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; }
+.mt-side-faq li > a::before { content: "?"; flex: none; display: grid; place-items: center; width: 20px; height: 20px; margin-top: 1px; background: var(--at-primary-l-6); border-radius: 50%; font-size: 12px; font-weight: 700; color: var(--at-primary-d-1); }
+.mt-side-faq .mt-side-t { font-size: 13px; line-height: 1.4; }
