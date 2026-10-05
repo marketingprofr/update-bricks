@@ -1068,6 +1068,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   liste simple façon « Guide Index » de Game8 (les pastilles ul.mt-side-pills jugées « très laides », classe gardée) ;
   icônes en currentColor (pas de bleu) ; droite : cadre grey-l-4, séparateurs grey-l-2 d'un bord à l'autre (padding sur
   les li, pas sur le cadre) ; récents : grille 1fr auto auto 1fr pour centrer titre + date sur la vignette.
+  Mesure de la Technique (éléments 9 et 10 en ligne) : mobile 78/82, ordinateur 99, CLS 0, HTML 148 Ko inchangé ;
+  masques SVG, :has() à combinateurs enfants et sticky jugés sans coût.
+- **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
+  multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
+  Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
   Clics (contrat accepté par l'Architecture) : page privée slug `mt-clics-28j`, post_content = JSON {"ID": clics} (clés
   numériques, comparatifs publiés seulement, ~60 Ko, mise à jour hebdomadaire, post_modified = fraîcheur). Lue par
   get_page_by_path ; absente, vide ou illisible → bloc masqué (jamais de classement partiel). Création de la page par

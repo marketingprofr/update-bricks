@@ -1,10 +1,3 @@
-/* =====================================================================
-   MEILLEURTEST — « Quel choix faire ? » (onglet CSS de l'élément Code)
-   Scope : .mt-choix  (cf. choix.code.php)
-   Duels entre 2 alternatives (option 1 VS option 2 + verdict).
-   Palette/typo alignées (Source Serif titres, Inter corps, accent --at-primary-*).
-   ===================================================================== */
-
 .mt-choix {
   --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
   --muted: var(--at-grey); --muted-2: var(--at-grey-l-1);
@@ -15,20 +8,14 @@
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif;
   color: var(--ink);
   width: 100%;
-  margin-top: 30px;            /* marge réelle entre parties du guide d'achat */
+  margin-top: 30px;
   -webkit-font-smoothing: antialiased;
   line-height: 1.5;
 }
 .mt-choix * { box-sizing: border-box; }
 .mt-choix a { color: inherit; text-decoration: none; }
-/* La marge inter-parties (30px) est portée par la racine -> le 1er élément
-   ne rajoute pas sa propre marge haute. */
 .mt-choix > :first-child { margin-top: 0; }
-
-/* === Un duel (sobre : pas de carte) === */
 .mt-choix-list { display: grid; gap: 44px; }
-
-/* Titre du duel = H2 « X ou X ? » (échelle de titres unifiée du guide) */
 .mt-duel-title {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.025em;
@@ -37,8 +24,6 @@
 .mt-duel-intro { font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 800px; margin: 0 0 22px; }
 .mt-duel-intro p { margin: 0 0 12px; }
 .mt-duel-intro > :last-child { margin-bottom: 0; }
-
-/* Grille des 2 options + badge VS (VS centré verticalement via stretch) */
 .mt-duel-grid {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -46,16 +31,12 @@
   gap: 0;
 }
 .mt-duel-grid.single { grid-template-columns: 1fr; }
-
-/* Wrappers gris clairs autour des 2 options */
 .mt-duel-col {
   background: var(--bg-2);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 20px 22px;
 }
-
-/* Titre d'option = H3 sous le H2 du duel (H4 jusqu'au 2026-10-05), style fixé par la classe + filet séparateur conservé */
 .mt-duel-ch {
   font-family: "Source Serif 4", Georgia, serif;
   font-size: 20px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.2;
@@ -68,8 +49,6 @@
 .mt-duel-d li { margin-bottom: 5px; }
 .mt-duel-d strong, .mt-duel-d b { color: var(--ink); font-weight: 600; }
 .mt-duel-d > :last-child { margin-bottom: 0; }
-
-/* Badge VS au centre */
 .mt-duel-vs { display: grid; place-items: center; padding: 0 20px; }
 .mt-duel-vs span {
   width: 46px; height: 46px; border-radius: 50%;
@@ -78,8 +57,6 @@
   font-size: 14px; font-weight: 800; letter-spacing: 0.02em;
   box-shadow: 0 0 0 5px var(--accent-soft);
 }
-
-/* Verdict — sobre : libellé + texte, séparé par un filet (pas d'encart) */
 .mt-duel-verdict {
   margin-top: 24px;
   padding-top: 16px;
@@ -95,21 +72,13 @@
 }
 .mt-duel-verdict-body p { margin: 0 0 10px; }
 .mt-duel-verdict-body > :last-child { margin-bottom: 0; }
-
-/* === Largeur de lecture : 700px centrés (comme « tests complets ») ===
-   Titre / intro / verdict bornés à 700px et centrés dans la colonne (~954px).
-   La grille des 2 options + VS (.mt-duel-grid) et tout .breakout gardent la
-   pleine largeur. */
 .mt-choix .mt-duel-title,
 .mt-choix .mt-duel-intro,
 .mt-choix .mt-duel-verdict { max-width: 700px; margin-left: auto; margin-right: auto; }
 .mt-choix .breakout { max-width: none; }
-
-/* === Responsive === */
 @media (max-width: 767px) {
   .mt-duel-title { font-size: 26px; }
   .mt-duel-ch { font-size: 18px; }
-  /* Empilement vertical : le badge VS devient un séparateur horizontal */
   .mt-duel-grid { grid-template-columns: 1fr; }
   .mt-duel-vs { padding: 8px 0; }
 }

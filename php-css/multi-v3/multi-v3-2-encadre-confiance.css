@@ -1,69 +1,42 @@
-/* =====================================================================
-   MEILLEURTEST — Hero, encart « Notre enquête » (onglet CSS de l'élément Code)
-   Scope : .mt-card (grille 2×2 des stats + signaux de confiance + [ratemypost]).
-   100 % variables Advanced Themer (aucune couleur en dur) → bascule dark auto.
-   Correspondances : bg carte = grey-l-6 · filets = grey-l-3 · texte = black-l-1/l-2
-   · atténué = grey · accent = primary · étoiles = gold (vides = grey-l-2).
-   ===================================================================== */
-/* Collant seulement s'il tient dans l'écran : classe mt-card-collant posée par le script de l'élément (Samuel, 2026-10-04) */
 .mt-card { background: var(--at-grey-l-6); border: 1px solid var(--at-grey-l-3); border-radius: 16px; padding: 24px; position: relative; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; color: var(--at-black-l-2); }
-
 @media (min-width: 768px) {
   .mt-card.mt-card-collant { position: sticky; top: 20px; }
 }
-/* Image mise en avant en tête de l'encadré : pleine largeur (marges négatives = padding), coins du haut arrondis
-   comme l'encadré, légère ombre intérieure en bas (dégradé en surimpression), pas d'ombre portée */
 .mt-card-photo { position: relative; margin: -24px -24px 18px; border-radius: 15px 15px 0 0; overflow: hidden; }
 .mt-card-photo-img { display: block; width: 100%; height: auto; }
 .mt-card-photo::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 36%; background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.12)); pointer-events: none; }
-
-/* Titres en Inter (sinon ils heritent de la police de titre du theme) */
 .mt-card-h, .mt-sc-vote-h { font-family: Inter, "Helvetica Neue", system-ui, sans-serif; }
-
 .mt-card-h { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--at-primary); margin: 0 0 18px; }
 .mt-card-hi { display: flex; }
 .mt-card-hi svg { width: 16px; height: 16px; }
-
 .mt-sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--at-grey-l-3); border: 1px solid var(--at-grey-l-3); border-radius: 10px; overflow: hidden; }
 .mt-sc-cell { background: var(--at-white); padding: 14px 16px; display: flex; align-items: center; gap: 11px; }
 .mt-sc-ico { color: var(--at-primary); flex-shrink: 0; display: flex; }
 .mt-sc-ico svg { width: 19px; height: 19px; display: block; }
 .mt-sc-num { font-family: ui-monospace, monospace; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; color: var(--at-black-l-1); }
 .mt-sc-lbl { font-size: 10.5px; color: var(--at-grey); margin-top: 4px; line-height: 1.2; }
-
 .mt-sc-trust  { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--at-grey-l-3); display: flex; flex-direction: column; gap: 11px; }
 .mt-sc-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--at-black-l-2); }
 .mt-sc-row b { color: var(--at-black-l-1); font-weight: 600; }
-/* Plus de trait sous les 4 cases : il passe sous la liste à puces (demande de Samuel, 2026-10-04) */
 .mt-sc-process  { margin-top: 16px; display: flex; flex-direction: column; gap: 11px; line-height:22px }
-/* margin: 0 : Bricks ajoute 1,2 em sous chaque paragraphe sauf le dernier (:where(p)) ; l'écart vient du gap, comme
-   entre les autres éléments (« Prévenez-nous » sous « Découvrez… » était trop loin) */
 .mt-sc-process p {
   margin: 0;
 	font-family: "Source Serif 4",serif;
   font-size: var(--at-text--xs);
 }
-/* Liste sous les cases (encadré à valeurs réelles), lisible : phrases courtes à puce, police du site ; le thème ajoute
-   retraits et puces aux ul/li, d'où les !important */
 .mt-sc-liste { margin: 0 !important; padding: 0 0 14px !important; border-bottom: 1px solid var(--at-grey-l-3); list-style: none !important; display: flex; flex-direction: column; gap: 9px; }
 .mt-sc-liste li { position: relative; margin: 0 !important; padding: 0 0 0 16px !important; list-style: none !important; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 13px; line-height: 1.5; color: var(--at-black-l-2); }
 .mt-sc-liste li::marker { content: none !important; }
 .mt-sc-liste li::before { content: "" !important; position: absolute; left: 2px; top: 0.6em; width: 6px; height: 6px; border-radius: 50%; background: var(--at-primary); }
 .mt-sc-liste b { color: var(--at-black-l-1); font-weight: 600; }
 .mt-sc-liste a { color: var(--at-primary-d-1); text-decoration: underline; }
-/* Engagement d'indépendance signé, à part sous la liste */
 .mt-sc-process p.mt-sc-citation { margin: 2px 0 0; padding: 2px 0 2px 12px; border-left: 3px solid var(--at-primary); font-style: italic; font-size: 13.5px; line-height: 1.5; color: var(--at-black-l-1); }
 .mt-sc-signature { display: block; margin-top: 4px; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-style: normal; font-size: 12px; font-weight: 600; color: var(--at-black-l-2); }
 .mt-ti { width: 30px; height: 30px; flex-shrink: 0; border-radius: 8px; background: var(--at-primary-l-6); color: var(--at-primary); display: flex; align-items: center; justify-content: center; }
 .mt-ti svg { width: 16px; height: 16px; }
-
-/* Bloc de vote resserré (Samuel, 2026-10-04 : encadré plus court d'environ 14 px) */
 .mt-sc-vote { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--at-grey-l-3); }
 .mt-sc-vote-h { margin: 0 0 8px; font-size: 13.5px; font-weight: 600; color: var(--at-black-l-1); }
 .mt-sc-note { margin: 6px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--at-grey); }
-
-/* ----- Widget [ratemypost] recale sur le template ----- */
-/* Sélecteurs renforcés : le CSS de Rate My Post ajoutait 10 px autour du widget et 4 px sous les étoiles */
 .mt-sc-vote .rmp-widgets-container.rmp-wp-plugin.rmp-main-container { margin: 0; padding: 0; line-height: 1.5; }
 .mt-sc-vote .rmp-rating-widget { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
 .mt-sc-vote .rmp-widgets-container.rmp-wp-plugin.rmp-main-container .rmp-rating-widget__icons { order: 1; margin: 0; display: flex; align-items: center; }
@@ -93,7 +66,6 @@
     color: var(--at-primary);
     border-bottom: 1px solid var(--at-primary);
 }
-
 @media (max-width: 767px) {
   .mt-card { padding: 16px; border-radius: 12px; position: static; }
   .mt-card-photo { margin: -16px -16px 14px; border-radius: 11px 11px 0 0; }

@@ -134,6 +134,10 @@ Puis, après la relecture de Samuel (CSS seulement, le HTML ne change pas) :
 
 À recoller : **9**, CSS seulement.
 
+## CSS sans commentaires (5 octobre)
+
+Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.
+
 ## CSS des éléments 1 et 2 : dans le bandeau (depuis le 5 octobre)
 
 Bricks imprime l'onglet CSS d'un élément Code juste après son contenu, au milieu de la page : pendant le chargement, le hero et l'encadré s'affichaient un instant sans mise en forme, puis se réarrangeaient (décalage mesuré par PageSpeed). Le CSS des éléments natifs, lui, est rassemblé dans la tête de la page. Depuis le 5 octobre (idée de Samuel) :
@@ -206,9 +210,9 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 
 ## Pour l'instance Templates
 
-Les fichiers de ce dossier sont des **copies exactes** des fichiers de référence :
+Les fichiers de ce dossier sont des **copies exactes** des fichiers de référence. Les CSS sont copiés **sans leurs commentaires** (depuis le 5 octobre), car Bricks les imprime tels quels dans chaque page ; les commentaires restent dans les fichiers de référence. Les fichiers de référence sont :
 - `v2/multi-hero-gauche`, `v2/multi-sommaire`, `v2/multi-resume`, `v2/multi-tests`, `v2/multi-tableau` ;
 - `choix` (duels), partagé avec le V1 ;
 - `hero-encart` et `faq`, partagés avec le V1.
 
-Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 20 fichiers.
+Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 19 fichiers.

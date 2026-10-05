@@ -1,32 +1,14 @@
-/* =====================================================================
-   MEILLEURTEST — MULTI-COMPARATIF (V2) : sommaire
-   Onglet CSS de l'élément Code Bricks (markup + JS : multi-sommaire.code.php).
-   Couleurs = variables Advanced Themer (bascule sombre automatique).
-
-   Mise en forme (dictée par le client) :
-   - titre « SOMMAIRE : MEILLEUR {TYPE} » en majuscules gras, gris sombre,
-     souligné d'une bordure de 2px de la même couleur ;
-   - pas de fond gris : liste sur fond blanc, typo d'origine, barre bleue
-     verticale à gauche de l'entrée en cours (progression au scroll),
-     bordure de 1px gris clair entre chaque entrée ;
-   - « Tests complets » (fond primary-l-5) et « Tableau comparatif » (fond
-     success-l-2) collés à la suite de la liste, 7px d'écart entre eux.
-   ===================================================================== */
-
 .mt-toc {
   --ink: var(--at-black-l-1); --ink-2: var(--at-black-l-2);
-  --title: var(--at-grey);                  /* gris sombre du titre d'origine */
+  --title: var(--at-grey);
   --line: var(--at-grey-l-3);
   --accent: var(--at-primary);
 }
-
 .mt-toc,
 .mt-toc * {
   font-family: "Inter", "Helvetica Neue", system-ui, sans-serif !important;
   box-sizing: border-box;
 }
-
-/* Sticky : appliqué au wrapper Bricks (%root%) ET à .mt-toc */
 %root% {
   position: sticky;
   top: 24px;
@@ -40,8 +22,6 @@
   padding: 0;
   background: none;
 }
-
-/* ===== Titre ===== */
 .mt-toc .mt-toc-title {
   margin: 0 !important;
   padding: 0 0 10px !important;
@@ -53,9 +33,6 @@
   text-transform: uppercase;
   color: var(--title);
 }
-
-/* ===== Liste =====
-   Remise à zéro : le thème ajoute retrait, marges et puces aux listes. */
 .mt-toc ul.mt-toc-list,
 .mt-toc ul.mt-toc-list li {
   list-style: none !important;
@@ -65,19 +42,17 @@
 }
 .mt-toc ul.mt-toc-list li::before,
 .mt-toc ul.mt-toc-list li::marker { content: none !important; display: none !important; }
-
 .mt-toc ul.mt-toc-list { border: 0 !important; }
 .mt-toc ul.mt-toc-list li {
   border: 0 !important;
-  border-bottom: 1px solid var(--line) !important;   /* séparation entre les entrées */
+  border-bottom: 1px solid var(--line) !important;
 }
 .mt-toc ul.mt-toc-list li:last-child { border-bottom: 0 !important; }
-
 .mt-toc .mt-toc-link {
   display: block;
   margin: 0;
   padding: 7px 0 7px 12px;
-  border-left: 2px solid transparent;                 /* barre de progression */
+  border-left: 2px solid transparent;
   background: var(--at-white);
   font-size: 13px;
   font-weight: 400;
@@ -92,13 +67,10 @@
   color: var(--accent);
   font-weight: 600;
 }
-
-/* ===== « Tests complets » / « Tableau comparatif » =====
-   Collés à la liste ; 7px d'écart entre les deux. */
 .mt-toc .mt-toc-pills {
   display: flex;
   flex-direction: column;
-  gap: 7px;                        /* écart entre Tests complets et Tableau comparatif */
+  gap: 7px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -118,13 +90,10 @@
 }
 .mt-toc .mt-toc-pill.is-tests.is-active { border-left-color: var(--at-primary); }
 .mt-toc .mt-toc-pill.is-table.is-active { border-left-color: var(--at-success-d-1); }
-
 .mt-toc a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-
-/* Responsive : en colonne empilée, le sticky n'a plus de sens */
 @media (max-width: 991px) {
   %root%,
   .mt-toc { position: static; top: auto; }
