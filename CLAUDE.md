@@ -1070,6 +1070,12 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   les li, pas sur le cadre) ; récents : grille 1fr auto auto 1fr pour centrer titre + date sur la vignette.
   Mesure de la Technique (éléments 9 et 10 en ligne) : mobile 78/82, ordinateur 99, CLS 0, HTML 148 Ko inchangé ;
   masques SVG, :has() à combinateurs enfants et sticky jugés sans coût.
+- **Guides séparés (Samuel, 2026-10-05)** : « Tous les guides » à deux niveaux doublonnait « Dans la même catégorie »
+  (droite). Gauche = « Guides {type pluriel} » via mt_side_bloc (classe mt-side-guides, liste grise --at-grey, survol
+  sans bleu, page courante li.mt-side-cur en tête ; même post-type-produit, 10 max, clé guides3 ; vide si la page est
+  seule). Droite = « Autres guides {catégorie} » (classe mt-side-cat, vignettes) : mt_sim_ranked_ids(max 80, car les
+  guides du même type passent en premier) moins le même type, filtré sur la catégorie la plus précise (le moteur prend
+  aussi la parente), 20 max, clé categorie3. Plus de p.mt-side-sous ni ul.mt-side-pills. Banc : SIM=1 (faux moteur).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.

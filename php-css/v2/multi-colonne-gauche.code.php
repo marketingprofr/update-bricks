@@ -15,9 +15,10 @@
      1. « Accès rapide » (façon Game8 : panneau gris, partie en cours
         assombrie) : liens vers les parties de la page ; les liens dont la
         partie n'existe pas sont retirés au chargement ;
-     2. « Tous les guides » : pastilles en deux niveaux, avec le MÊME moteur
-        que les « Comparatifs similaires » sous le tableau (mt_sim_ranked_ids) :
-        même type de produit (la page en tête), puis même catégorie ;
+     2. « Guides {type au pluriel} » : simple liste des guides du MÊME type de
+        produit (la page en tête), classés par le moteur des « Comparatifs
+        similaires » (mt_sim_ranked_ids) ; le reste de la catégorie est dans
+        « Autres guides {catégorie} », colonne de droite (Samuel, 2026-10-05) ;
      3. « Les modèles analysés » : les 10 mieux notés des avis détaillés
         (noms en double retirés), lien vers leur avis dans la page (#test-…),
         sinon vers leur page produit si l'ID ≥ 250 000, sinon sans lien.
@@ -26,10 +27,9 @@
    Listes mises en cache 12 h (transients), clé = page + date de modification.
    ===================================================================== */
 $MT_SIDE_ACCES     = true;  // « Accès rapide »
-$MT_SIDE_GUIDES    = true;  // « Tous les guides »
+$MT_SIDE_GUIDES    = true;  // « Guides {type au pluriel} »
 $MT_SIDE_MODELES   = true;  // « Les modèles analysés »
 $MT_SIDE_MAX       = 10;    // guides du même type au plus (en plus de la page)
-$MT_SIDE_MAX_CAT   = 8;     // guides de la même catégorie (2e niveau) au plus
 $MT_SIDE_MAX_MOD   = 10;    // modèles analysés au plus
 
 /* ---------------------------------------------------------------------
@@ -111,52 +111,32 @@ if ( $MT_SIDE_ACCES ) {
   ), false, '', 'mt-side-acces' );
 }
 
-/* 2. Tous les guides : même classement que les « Comparatifs similaires » sous le tableau, en deux niveaux de pastilles
-      (même type de produit, la page courante en tête ; puis les autres guides de la catégorie) */
+/* 2. Guides du même type de produit : même classement que les « Comparatifs similaires » (la page courante en tête) */
 if ( $MT_SIDE_GUIDES ) {
-  $mt_sp_g = mt_side_cache( $mt_sp, 'guides2', function () use ( $mt_sp, $MT_SIDE_MAX, $MT_SIDE_MAX_CAT ) {
+  $mt_sp_g = mt_side_cache( $mt_sp, 'guides3', function () use ( $mt_sp, $MT_SIDE_MAX ) {
     $prod = get_the_terms( $mt_sp, 'post-type-produit' );
     $mien = is_array( $prod ) ? array_map( function ( $t ) { return (int) $t->term_id; }, $prod ) : array();
+    if ( empty( $mien ) ) { return array(); }
     if ( function_exists( 'mt_sim_ranked_ids' ) ) {
-      $ids = mt_sim_ranked_ids( $mt_sp, array( 'max' => $MT_SIDE_MAX + $MT_SIDE_MAX_CAT + 10 ) );
+      $ids = mt_sim_ranked_ids( $mt_sp, array( 'max' => $MT_SIDE_MAX + 10 ) );
     } else {
-      $ids = empty( $mien ) ? array() : get_posts( array(
-        'post_type' => 'comparatif', 'post_status' => 'publish', 'posts_per_page' => 40, 'fields' => 'ids', 'no_found_rows' => true,
-        'tax_query' => array( array( 'taxonomy' => 'post-type-produit', 'terms' => $mien ) ),
-      ) );
+      $ids = get_posts( array( 'post_type' => 'comparatif', 'post_status' => 'publish', 'posts_per_page' => 40, 'fields' => 'ids', 'no_found_rows' => true,
+                               'tax_query' => array( array( 'taxonomy' => 'post-type-produit', 'terms' => $mien ) ) ) );
     }
-    $lab  = function ( $id ) { return function_exists( 'mt_sim_label' ) ? (string) mt_sim_label( $id, '' ) : mt_side_label( get_the_title( $id ) ); };
-    $type = array( array( 't' => $lab( $mt_sp ), 'u' => '', 'cur' => true ) );
-    $cat  = array();
+    $lab = function ( $id ) { return function_exists( 'mt_sim_label' ) ? (string) mt_sim_label( $id, '' ) : mt_side_label( get_the_title( $id ) ); };
+    $out = array( array( 't' => $lab( $mt_sp ), 'u' => '', 'cur' => true ) );
     foreach ( (array) $ids as $id ) {
       $id = (int) $id;
-      if ( $id === $mt_sp ) { continue; }
-      $pt   = get_the_terms( $id, 'post-type-produit' );
-      $meme = is_array( $pt ) && array_intersect( $mien, array_map( function ( $t ) { return (int) $t->term_id; }, $pt ) );
-      if ( $meme && count( $type ) <= $MT_SIDE_MAX ) { $type[] = array( 't' => $lab( $id ), 'u' => (string) get_permalink( $id ) ); }
-      elseif ( ! $meme && count( $cat ) < $MT_SIDE_MAX_CAT ) { $cat[] = array( 't' => $lab( $id ), 'u' => (string) get_permalink( $id ) ); }
+      if ( $id === $mt_sp || count( $out ) > $MT_SIDE_MAX ) { continue; }
+      $pt = get_the_terms( $id, 'post-type-produit' );
+      if ( is_array( $pt ) && array_intersect( $mien, array_map( function ( $t ) { return (int) $t->term_id; }, $pt ) ) ) {
+        $out[] = array( 't' => $lab( $id ), 'u' => (string) get_permalink( $id ) );
+      }
     }
-    return array( 'type' => $type, 'cat' => $cat );
+    return count( $out ) > 1 ? $out : array();  // la page seule ne sert à rien
   } );
-  $mt_sp_pill = function ( $l ) {
-    $h = '';
-    foreach ( $l as $it ) {
-      $h .= ! empty( $it['cur'] ) ? '<li class="mt-side-cur" aria-current="page"><span>' . esc_html( $it['t'] ) . '</span></li>'
-                                  : '<li><a href="' . esc_url( $it['u'] ) . '">' . esc_html( $it['t'] ) . '</a></li>';
-    }
-    return '<ul class="mt-side-pills">' . $h . '</ul>';
-  };
-  $mt_sp_type = $mt_sp_g['type'] ?? array();
-  $mt_sp_cat  = $mt_sp_g['cat'] ?? array();
-  if ( count( $mt_sp_type ) + count( $mt_sp_cat ) > 1 ) {
-    $mt_sp_c  = mt_side_cat( $mt_sp );
-    $mt_sp_cn = $mt_sp_c ? html_entity_decode( (string) $mt_sp_c->name, ENT_QUOTES, 'UTF-8' ) : '';
-    $mt_sp_html .= '<nav class="mt-side-bloc mt-side-guides" aria-label="Tous les guides"><p class="mt-side-h">Tous les guides</p>'
-      . '<p class="mt-side-sous">' . esc_html( $mt_sp_plur !== '' ? mb_strtoupper( mb_substr( $mt_sp_plur, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_sp_plur, 1, null, 'UTF-8' ) : 'Même type' ) . '</p>'
-      . $mt_sp_pill( $mt_sp_type )
-      . ( $mt_sp_cat ? '<p class="mt-side-sous">' . esc_html( $mt_sp_cn !== '' ? 'Autres guides ' . mb_strtolower( $mt_sp_cn, 'UTF-8' ) : 'Dans la même catégorie' ) . '</p>' . $mt_sp_pill( $mt_sp_cat ) : '' )
-      . '</nav>';
-  }
+  $mt_sp_titre = $mt_sp_plur !== '' ? 'Guides ' . mb_strtolower( $mt_sp_plur, 'UTF-8' ) : 'Tous les guides';
+  $mt_sp_html .= mt_side_bloc( $mt_sp_titre, $mt_sp_g, false, '', 'mt-side-guides' );
 }
 
 /* 3. Les modèles analysés : les 10 mieux notés des avis détaillés, sans nom en double */

@@ -21,8 +21,10 @@
         bloc masqué, jamais de classement partiel ;
      5. « Mis à jour récemment » : les 5 derniers comparatifs modifiés de la
         catégorie (le 1er avec une grande image, les autres en vignette) ;
-     8. « Dans la même catégorie » : comparatifs principaux des autres types
-        de produit de la catégorie, avec une petite image ;
+     8. « Autres guides {catégorie} » : les guides de la catégorie qui ne
+        sont pas du même type de produit (ceux-là sont dans la colonne de
+        gauche), 20 au plus, avec une petite image, classés comme les
+        « Comparatifs similaires » (mt_sim_ranked_ids) ;
      9. « Questions fréquentes » : 5 questions de la rédaction, avec un lien
         vers leur réponse dans la FAQ de la page.
    Honnêteté : « plus consultés » seulement avec de vrais clics, jamais de
@@ -30,10 +32,10 @@
    ===================================================================== */
 $MT_SIDE_CONSULTES = true;           // 4. « Les plus consultés en {catégorie} »
 $MT_SIDE_RECENTS   = true;           // 5. « Mis à jour récemment »
-$MT_SIDE_CATEGORIE = true;           // 8. « Dans la même catégorie »
+$MT_SIDE_CATEGORIE = true;           // 8. « Autres guides {catégorie} »
 $MT_SIDE_FAQ       = true;           // 9. « Questions fréquentes »
 $MT_SIDE_PAGE_CLICS = 'mt-clics-28j'; // slug de la page privée des clics Google (JSON {"id du comparatif": clics sur 28 jours})
-$MT_SIDE_MAX       = 10;             // liens au plus par bloc
+$MT_SIDE_MAX_CAT   = 20;             // « Autres guides {catégorie} » : guides au plus
 
 /* ---------------------------------------------------------------------
    Aides communes aux deux colonnes (copie IDENTIQUE dans multi-colonne-gauche
@@ -137,28 +139,32 @@ if ( $MT_SIDE_RECENTS && $mt_sd_cat ) {
   $mt_sd_html .= mt_side_bloc( 'Mis à jour récemment', $mt_sd_l, false, '', 'mt-side-recents' );
 }
 
-/* 8. Dans la même catégorie : comparatifs principaux (sans attribut) des autres types de produit, avec une petite image */
+/* 8. Autres guides de la catégorie (hors même type de produit, déjà à gauche), même classement que les « Comparatifs similaires » */
 if ( $MT_SIDE_CATEGORIE && $mt_sd_cat ) {
-  $mt_sd_l = mt_side_cache( $mt_sd, 'categorie2', function () use ( $mt_sd, $mt_sd_cat, $mt_sd_lien, $mt_sd_img, $MT_SIDE_MAX ) {
+  $mt_sd_l = mt_side_cache( $mt_sd, 'categorie3', function () use ( $mt_sd, $mt_sd_cat, $mt_sd_img, $MT_SIDE_MAX_CAT ) {
     $prod = get_the_terms( $mt_sd, 'post-type-produit' );
     $mien = is_array( $prod ) ? array_map( function ( $t ) { return (int) $t->term_id; }, $prod ) : array();
-    $ids  = get_posts( array( 'post_type' => 'comparatif', 'post_status' => 'publish', 'posts_per_page' => 80, 'fields' => 'ids', 'no_found_rows' => true,
-                              'cat' => (int) $mt_sd_cat->term_id, 'orderby' => 'title', 'order' => 'ASC' ) );
-    $out = array(); $vus = array();
+    if ( function_exists( 'mt_sim_ranked_ids' ) ) {
+      $ids = mt_sim_ranked_ids( $mt_sd, array( 'max' => $MT_SIDE_MAX_CAT + 60 ) );  // marge : les guides du même type (jusqu'à 60) passent en premier
+    } else {
+      $ids = get_posts( array( 'post_type' => 'comparatif', 'post_status' => 'publish', 'posts_per_page' => 80, 'fields' => 'ids', 'no_found_rows' => true,
+                               'cat' => (int) $mt_sd_cat->term_id, 'orderby' => 'title', 'order' => 'ASC' ) );
+    }
+    $lab = function ( $id ) { return function_exists( 'mt_sim_label' ) ? (string) mt_sim_label( $id, '' ) : mt_side_label( get_the_title( $id ) ); };
+    $out = array();
     foreach ( (array) $ids as $id ) {
       $id = (int) $id;
-      if ( $id === $mt_sd || count( $out ) >= $MT_SIDE_MAX ) { continue; }
-      $attr = get_the_terms( $id, 'post-type-attribut' );
-      if ( is_array( $attr ) && ! empty( $attr ) ) { continue; }  // sous-comparatif : pas un type voisin
-      $pt   = get_the_terms( $id, 'post-type-produit' );
-      $tid  = is_array( $pt ) && ! empty( $pt ) ? (int) $pt[0]->term_id : 0;
-      if ( ! $tid || in_array( $tid, $mien, true ) || isset( $vus[ $tid ] ) ) { continue; }
-      $vus[ $tid ] = true;
-      $out[] = $mt_sd_lien( $id, '', $mt_sd_img( $id, 'thumbnail' ) );
+      if ( $id === $mt_sd || count( $out ) >= $MT_SIDE_MAX_CAT ) { continue; }
+      $pt = get_the_terms( $id, 'post-type-produit' );
+      if ( $mien && is_array( $pt ) && array_intersect( $mien, array_map( function ( $t ) { return (int) $t->term_id; }, $pt ) ) ) { continue; }  // même type : colonne de gauche
+      $cats = array_map( function ( $c ) { return (int) $c->term_id; }, (array) get_the_category( $id ) );
+      if ( ! in_array( (int) $mt_sd_cat->term_id, $cats, true ) ) { continue; }  // le moteur prend aussi la catégorie parente
+      $out[] = array( 't' => $lab( $id ), 'u' => (string) get_permalink( $id ), 'img' => $mt_sd_img( $id, 'thumbnail' ) );
     }
     return $out;
   } );
-  $mt_sd_html .= mt_side_bloc( 'Dans la même catégorie', $mt_sd_l, false, '', 'mt-side-cat' );
+  $mt_sd_cn = html_entity_decode( (string) $mt_sd_cat->name, ENT_QUOTES, 'UTF-8' );
+  $mt_sd_html .= mt_side_bloc( $mt_sd_cn !== '' ? 'Autres guides ' . mb_strtolower( $mt_sd_cn, 'UTF-8' ) : 'Dans la même catégorie', $mt_sd_l, false, '', 'mt-side-cat' );
 }
 
 /* 9. Questions fréquentes : 5 questions de la rédaction, lien vers leur réponse dans la FAQ de la page */

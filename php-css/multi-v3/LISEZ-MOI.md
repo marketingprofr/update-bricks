@@ -20,8 +20,8 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 | 6 | Questions fréquentes (FAQ) | `multi-v3-6-faq.code.php` | `multi-v3-6-faq.css` |
 | 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` |
 | 8 | « Quel choix faire ? » (duels, par ex. « Climatiseur mobile ou climatiseur fixe ? ») | `multi-v3-8-choix.code.php` | `multi-v3-8-choix.css` |
-| 9 | **Nouveau** : colonne de gauche du guide d'achat (accès rapide, tous les guides du type, modèles analysés) | `multi-v3-9-colonne-gauche.code.php` | `multi-v3-9-colonne-gauche.css` |
-| 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés de la catégorie, mis à jour récemment, même catégorie, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | **vide** (le CSS des deux colonnes est dans le 9) |
+| 9 | **Nouveau** : colonne de gauche du guide d'achat (accès rapide, guides du même type, modèles analysés) | `multi-v3-9-colonne-gauche.code.php` | `multi-v3-9-colonne-gauche.css` |
+| 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés de la catégorie, mis à jour récemment, autres guides de la catégorie, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | **vide** (le CSS des deux colonnes est dans le 9) |
 
 Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat (sauf le bloc des duels, élément 8), les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
 
@@ -133,6 +133,14 @@ Puis, après la relecture de Samuel (CSS seulement, le HTML ne change pas) :
 - Mis à jour récemment : titre et date centrés en hauteur sur la vignette.
 
 À recoller : **9**, CSS seulement.
+
+## Guides du type à gauche, autres guides de la catégorie à droite (5 octobre)
+
+Le bloc « Tous les guides » mélangeait deux niveaux et répétait le bloc « Dans la même catégorie » de droite. Désormais (demande de Samuel) :
+- à gauche, **« Guides climatiseurs mobiles »** (le type du comparatif) : les guides du même type, 10 au plus, la page en cours en tête, en simple liste grise comme le « Guide Index » de Game8, sans bleu au survol ;
+- à droite, **« Autres guides climatisation »** (la catégorie) : tout le reste de la catégorie, 20 au plus, avec une petite image.
+
+Les deux blocs suivent le classement des « Comparatifs similaires » sous le tableau. À recoller : **9**, Code et CSS ; **10**, Code seulement.
 
 ## CSS sans commentaires (5 octobre)
 

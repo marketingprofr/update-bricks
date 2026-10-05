@@ -2,13 +2,13 @@
 /* Colonnes gauche et droite de la partie guide d'achat (modèle Game8). Page multi-comparatif du faux site :
    hero gauche (aides), résumé du top 5, avis détaillés, puis le conteneur du guide comme dans Bricks
    (.brxe-container > .brxe-code colonne gauche + .brxe-block guide et FAQ + .brxe-code colonne droite).
-   Usage : php run-colonnes.php ; CLICS=1 crée la page privée mt-clics-28j (clics Google de 4 comparatifs), CLICS=invalide la crée illisible ;
+   Usage : php run-colonnes.php ; CLICS=1 crée la page privée mt-clics-28j (clics Google de 4 comparatifs), CLICS=invalide la crée illisible ; SIM=1 charge un faux moteur des « Comparatifs similaires » ;
    SANSFAQ=1 sans questions de la rédaction. Écrit out/colonnes.html (CSS compris) et affiche les blocs. */
 require __DIR__ . '/wp-stubs.php';
 if ( ! function_exists( 'remove_accents' ) ) { function remove_accents( $t ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $t ); } }
 if ( ! function_exists( 'get_transient' ) ) { function get_transient( $k ) { return $GLOBALS['TRANS'][ $k ] ?? false; } }
 if ( ! function_exists( 'set_transient' ) ) { function set_transient( $k, $v, $t ) { $GLOBALS['TRANS'][ $k ] = $v; return true; } }
-if ( ! function_exists( 'get_the_category' ) ) { function get_the_category( $id ) { $m = new stdClass; $m->term_id = 40; $m->name = 'Maison'; $c = new stdClass; $c->term_id = 41; $c->name = 'Climatisation'; return array( $m, $c ); } }
+if ( ! function_exists( 'get_the_category' ) ) { function get_the_category( $id ) { $m = new stdClass; $m->term_id = 40; $m->name = 'Maison'; $c = new stdClass; $c->term_id = 41; $c->name = 'Climatisation'; return ! empty( $GLOBALS['MAISON_SEULE'][ $id ] ) ? array( $m ) : array( $m, $c ); } }
 if ( ! function_exists( 'get_ancestors' ) ) { function get_ancestors( $id, $tax ) { return $id === 41 ? array( 40 ) : array(); } }
 if ( ! function_exists( 'get_the_modified_date' ) ) { function get_the_modified_date( $f = '', $id = 0 ) { return 'octobre 2026'; } }
 if ( ! function_exists( 'wpautop' ) ) { function wpautop( $s ) { return '<p>' . $s . '</p>'; } }
@@ -26,6 +26,15 @@ foreach ( array( 107 => array( 'comparatif-deshumidificateur', 'Les meilleurs d�
   $GLOBALS['TERMS'][ $i ] = array( 'post-type-produit' => tm( array( $c[2] => $c[3] ) ) );
 }
 $GLOBALS['P'][102]->post_status = 'publish';
+/* SIM=1 : le moteur des « Comparatifs similaires » est déjà chargé (cas du site : son élément est avant le guide).
+   Classement fictif : même type d'abord, puis la catégorie ; 111 est dans « Maison » seulement (catégorie parente). */
+if ( getenv( 'SIM' ) ) {
+  mkp( 111, 'comparatif', 'comparatif-aspirateur', 'Les meilleurs aspirateurs en 2026' );
+  $GLOBALS['TERMS'][111] = array( 'post-type-produit' => tm( array( 17 => 'Aspirateur' ) ) );
+  $GLOBALS['MAISON_SEULE'][111] = true;
+  function mt_sim_ranked_ids( $cur, $o = array() ) { return array_slice( array( 105, 102, 108, 111, 106, 110, 107, 109, 104 ), 0, (int) ( $o['max'] ?? 20 ) ); }
+  function mt_sim_label( $id, $f ) { return 'Sim ' . preg_replace( '/^Les meilleur(e?)s\s+/u', '', get_the_title( $id ) ); }
+}
 if ( getenv( 'CLICS' ) ) {
   mkp( 900, 'page', 'mt-clics-28j', 'Clics 28 jours', 'private' );
   $GLOBALS['P'][900]->post_content = getenv( 'CLICS' ) === 'invalide' ? '<p>{"102": 900</p>' : json_encode( array( '102' => 900, '106' => 400, '108' => 260, '104' => 120, '100' => 5000 ) );
@@ -59,11 +68,8 @@ $page = '<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="
 file_put_contents( __DIR__ . '/out/colonnes.html', $page );
 foreach ( array( 'GAUCHE' => $g, 'DROITE' => $d ) as $nom => $h ) {
   echo "== colonne $nom\n";
-  preg_match_all( '#<nav class="mt-side-bloc(?! mt-side-guides)[^"]*" aria-label="[^"]*"><p class="mt-side-h">(.*?)</p><(ol|ul) class="mt-side-list">(.*?)</\2>(.*?)</nav>#s', $h, $bl, PREG_SET_ORDER );
+  preg_match_all( '#<nav class="mt-side-bloc[^"]*" aria-label="[^"]*"><p class="mt-side-h">(.*?)</p><(ol|ul) class="mt-side-list">(.*?)</\2>(.*?)</nav>#s', $h, $bl, PREG_SET_ORDER );
   if ( ! $bl ) { echo "  (aucun bloc)\n"; }
-  if ( preg_match( '#<nav class="mt-side-bloc mt-side-guides".*?</nav>#s', $h, $gm ) ) {
-    echo '  Tous les guides : ', html_entity_decode( trim( preg_replace( '/\s+/', ' ', strip_tags( str_replace( array( '</a>', '</span>', '<p class="mt-side-sous">' ), array( ' | ', ' (page courante) | ', "\n     # " ), $gm[0] ) ) ) ), ENT_QUOTES, 'UTF-8' ), "\n";
-  }
   foreach ( $bl as $b ) {
     preg_match_all( '#<li([^>]*)>(.*?)</li>#s', $b[3], $li, PREG_SET_ORDER );
     echo '  ', html_entity_decode( $b[1] ), ' (', count( $li ), ( $b[2] === 'ol' ? ', numérotés' : '' ), ")\n";
