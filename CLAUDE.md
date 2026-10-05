@@ -1035,6 +1035,20 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Replis : « S sources spécialisées » ; sans critères « selon ses caractéristiques, les avis des utilisateurs et notre
   propre évaluation » (pas de prix : certains comparatifs portent sur des choses gratuites) ; sans chiffres de l'encadré, ancienne réponse. Proposition de l'instance FAQ (« Nous avons noté sur 10
   les N … ») refusée par Samuel. Puce 2 de l'encadré : « <b>Nous avons noté</b> les … sur k critères principaux (…) ».
+  Puis repli sans critères : « selon ses caractéristiques, les avis des utilisateurs et notre propre évaluation ».
+- **Colonnes du guide d'achat, modèle Game8 (Samuel via la Coordination, 2026-10-05)** : v2/multi-colonne-gauche.code.php et
+  v2/multi-colonne-droite.code.php (éléments 9 et 10), CSS commun v2/multi-colonnes.css (collé dans les deux). Placés dans le
+  conteneur Bricks du guide (#brxe-hnpoyu en ligne), avant et après le bloc du guide (#brxe-yasoqe) ; la grille vient du
+  CSS (`.brxe-container:has(> .brxe-code > .mt-side…)`, !important car Bricks règle display/width par ID) : 220 | 1fr | 280
+  dès 1200 px, droite sous le guide de 992 à 1199, masquées dessous. Gauche collante (sticky, hauteur = écran, défilement
+  interne) : Accès rapide (liens absents retirés APRÈS DOMContentLoaded : le guide vient après la colonne ; lien actif par
+  IntersectionObserver), Tous les guides du type (même post-type-produit, principal d'abord, 10 max), Modèles analysés
+  (plan['tests'] + mt_top_infos, tri par note, #test-… sinon page produit si ID ≥ 250 000). Droite : plus consultés de la
+  catégorie et populaires du site (meta `mltv5_clics_28j` > 0, sinon masqués), mis à jour récemment (post_modified), de
+  saison (get_field('mltv5_de_saison','option')), même catégorie (principaux sans attribut des autres types), questions
+  fréquentes (5 de la rédaction, #faq-…, ≥ 3). Titres en p.mt-side-h, <nav aria-label>. Cache transients 12 h (clé =
+  page + date de modification). Banc : outils/tests/run-colonnes.php (le stub get_posts ignore tax/meta/tri). Poids : ~8 Ko
+  de HTML + 4,7 Ko de CSS par élément.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),

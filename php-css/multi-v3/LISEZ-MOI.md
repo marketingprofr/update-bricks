@@ -20,6 +20,8 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 | 6 | Questions fréquentes (FAQ) | `multi-v3-6-faq.code.php` | `multi-v3-6-faq.css` |
 | 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` |
 | 8 | « Quel choix faire ? » (duels, par ex. « Climatiseur mobile ou climatiseur fixe ? ») | `multi-v3-8-choix.code.php` | `multi-v3-8-choix.css` |
+| 9 | **Nouveau** : colonne de gauche du guide d'achat (accès rapide, tous les guides du type, modèles analysés) | `multi-v3-9-colonne-gauche.code.php` | `multi-v3-9-colonne-gauche.css` |
+| 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés, mis à jour récemment, populaires, de saison, même catégorie, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | `multi-v3-10-colonne-droite.css` (le même que le 9) |
 
 Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat (sauf le bloc des duels, élément 8), les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
 
@@ -90,6 +92,20 @@ Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 Si tu n'avais collé que la toute première version, recolle aussi :
 - **5**, CSS seulement (débordement mobile) ;
 - **6**, Code et CSS (ancres des questions).
+
+## Colonnes du guide d'achat (éléments 9 et 10, depuis le 5 octobre)
+
+Sur le modèle de Game8 : une colonne à gauche et une à droite autour du guide d'achat. Pour les mettre en place, dans le modèle (ou le modèle Section) qui contient le guide :
+1. Dans le panneau Structure, repérez le **conteneur** qui contient le **bloc** du guide (ce bloc contient le guide d'achat, les types, les duels, les marques, les astuces, « Pourquoi acheter » et la FAQ).
+2. Dans ce conteneur, ajoutez un élément **Code** juste **avant** le bloc : collez `multi-v3-9-colonne-gauche.code.php` (onglet Code) et `multi-v3-9-colonne-gauche.css` (onglet CSS).
+3. Ajoutez un élément **Code** juste **après** le bloc : collez `multi-v3-10-colonne-droite.code.php` et `multi-v3-10-colonne-droite.css` (le même CSS que le 9 : chaque colonne marche aussi seule).
+4. Activez l'exécution du code pour ces deux éléments et validez la signature si Bricks la demande.
+
+Le CSS transforme lui-même le conteneur en 3 colonnes (220 px | guide | 280 px dès 1 200 px ; la colonne de droite passe sous le guide entre 992 et 1 199 px ; colonnes masquées en dessous) : aucun réglage Bricks à changer. Chaque bloc se règle en haut de son fichier (`true` / `false`) pour retirer ce qui ne sert pas.
+
+Deux blocs restent masqués tant qu'il manque leurs données :
+- « Les plus consultés en … » et « Les comparatifs populaires » : il faut le champ numérique `mltv5_clics_28j` (clics Google sur 28 jours) sur les comparatifs, rempli par l'Architecture ;
+- « De saison » : il faut un champ ACF de relation `mltv5_de_saison` sur une page d'options, avec 3 à 6 comparatifs.
 
 ## CSS des éléments 1 et 2 : dans le bandeau (depuis le 5 octobre)
 
@@ -168,4 +184,4 @@ Les fichiers de ce dossier sont des **copies exactes** des fichiers de référen
 - `choix` (duels), partagé avec le V1 ;
 - `hero-encart` et `faq`, partagés avec le V1.
 
-Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 16 fichiers.
+Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 20 fichiers.

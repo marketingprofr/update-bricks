@@ -14,6 +14,8 @@ BLOCS = [
     ('6-faq', 'faq.code.php', 'faq.css'),
     ('7-tableau', 'v2/multi-tableau.code.php', 'v2/multi-tableau.css'),  # ajouté le 2026-10-04 (3 produits par sous-comparatif)
     ('8-choix', 'choix.code.php', 'choix.css'),  # ajouté le 2026-10-05 (titres d'option en H3)
+    ('9-colonne-gauche', 'v2/multi-colonne-gauche.code.php', 'v2/multi-colonnes.css'),  # 2026-10-05, colonnes du guide (Game8)
+    ('10-colonne-droite', 'v2/multi-colonne-droite.code.php', 'v2/multi-colonnes.css'),
 ]
 ecarts = 0
 for nom, php, css in BLOCS:
