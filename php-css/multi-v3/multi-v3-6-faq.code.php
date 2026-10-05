@@ -416,7 +416,7 @@ if ( ! empty( $prods ) ) {
         . 'Nous avons ensuite men&eacute; nos propres recherches et donn&eacute; &agrave; chaque ' . esc_html( $m_sing ) . ' une note sur 10, '
         . ( $m_k > 0
             ? 'selon ' . ( $m_k > 1 ? $m_k . ' crit&egrave;res principaux' : 'un crit&egrave;re principal' ) . ' (' . esc_html( preg_replace( '/, ([^,]+)$/u', ' et $1', $m_crit ) ) . ').'
-            : 'selon ses caract&eacute;ristiques, son rapport qualit&eacute;-prix et les avis des acheteurs.' );
+            : 'selon ses caract&eacute;ristiques, les avis des utilisateurs et notre propre &eacute;valuation.' ); // sans prix possible (Samuel, 2026-10-05)
     $upd = get_the_modified_date( 'F Y', $page_id );
     $p2 = ( $m_n > $nbp
         ? 'Enfin, nous avons retenu les ' . $nbp . ' meilleur' . ( ( $fem || stripos( (string) $tv( 'masculinsfeminins' ), 'meilleures' ) !== false ) ? 'e' : '' ) . 's pour ce classement. '

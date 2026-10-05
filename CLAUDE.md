@@ -1032,8 +1032,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Elles nous ont permis d'identifier N {pluriel} parmi les plus populaires. Nous avons ensuite mené nos propres recherches
   et donné à chaque {singulier} une note sur 10, selon k critères principaux (… et …). » / « Enfin, nous avons retenu les T
   meilleur(e)s pour ce classement. Aucune marque ne paie pour y figurer, et ce comparatif a été mis à jour en {mois}. »
-  Replis : « S sources spécialisées » ; sans critères « selon ses caractéristiques, son rapport qualité-prix et les avis
-  des acheteurs » ; sans chiffres de l'encadré, ancienne réponse. Proposition de l'instance FAQ (« Nous avons noté sur 10
+  Replis : « S sources spécialisées » ; sans critères « selon ses caractéristiques, les avis des utilisateurs et notre
+  propre évaluation » (pas de prix : certains comparatifs portent sur des choses gratuites) ; sans chiffres de l'encadré, ancienne réponse. Proposition de l'instance FAQ (« Nous avons noté sur 10
   les N … ») refusée par Samuel. Puce 2 de l'encadré : « <b>Nous avons noté</b> les … sur k critères principaux (…) ».
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
