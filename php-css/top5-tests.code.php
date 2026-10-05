@@ -565,16 +565,9 @@ foreach ( $products as $it ) {
     );
   }
 
-  $cust_r = mt5_num( $it['cust_rating'] );
-  $cust_c = (int) preg_replace( '/[^0-9]/', '', (string) $it['cust_count'] );
-  if ( $cust_r > 0 && $cust_c > 0 ) {
-    $ld['aggregateRating'] = array(
-      '@type'       => 'AggregateRating',
-      'ratingValue' => number_format( $cust_r, 1, '.', '' ),
-      'bestRating'  => '5',
-      'reviewCount' => $cust_c,
-    );
-  }
+  /* Pas d'aggregateRating : les notes clients viennent d'Amazon, et Google interdit les notes reprises d'autres sites
+     (« Ratings must be sourced directly from users », documentation des review snippets du 2026-09-08). Elles restent
+     affichées sur la page (accord de Samuel, 2026-10-05). */
 
   $offer_count = count( $it['offer_urls'] );
   if ( $it['prix'] > 0 && $offer_count > 1 ) {
@@ -607,6 +600,13 @@ foreach ( $products as $it ) {
     );
   }
 
+  if ( ! isset( $ld['review'] ) && ! isset( $ld['offers'] ) ) {
+    /* Sans note de la rédaction ni offre, Google refuse le Product (il exige review, aggregateRating ou offers) :
+       l'élément de liste garde seulement l'adresse de la fiche */
+    $u = get_permalink( $it['pid'] );
+    if ( $u ) { $ld_items[] = array( '@type' => 'ListItem', 'position' => (int) $it['pos'], 'url' => $u ); }
+    continue;
+  }
   $ld_items[] = array(
     '@type'    => 'ListItem',
     'position' => (int) $it['pos'],

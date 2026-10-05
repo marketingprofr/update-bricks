@@ -93,6 +93,10 @@ Si tu n'avais collé que la toute première version, recolle aussi :
 - **5**, CSS seulement (débordement mobile) ;
 - **6**, Code et CSS (ancres des questions).
 
+## Données structurées sans note Amazon (5 octobre)
+
+Les Product du JSON-LD n'ont plus d'`aggregateRating` : c'étaient les notes clients d'Amazon, et Google interdit les notes reprises d'autres sites. Elles restent affichées sur la page. Chaque Product garde la note de la rédaction et les offres ; un produit sans l'une ni l'autre n'est plus décrit (la liste garde son adresse). À recoller : **5**, Code seulement.
+
 ## Colonnes du guide d'achat (éléments 9 et 10, depuis le 5 octobre)
 
 Sur le modèle de Game8 : une colonne à gauche et une à droite autour du guide d'achat. Pour les mettre en place, dans le modèle (ou le modèle Section) qui contient le guide :

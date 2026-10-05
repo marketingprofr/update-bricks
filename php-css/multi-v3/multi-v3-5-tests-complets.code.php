@@ -1003,7 +1003,9 @@ $head_p  = 'Nous pr&eacute;sentons ici les ' . (int) $nb . ' ' . $mt_plur . ' de
    Données structurées (JSON-LD)
    - Chaque produit testé = UNE entité Product, @id stable
      ({URL de l'avis}#product), mêmes règles que le V1 (Offer si 1 offre,
-     AggregateOffer sinon, brand renseigné, Review de la rédaction).
+     AggregateOffer sinon, brand renseigné, Review de la rédaction ; pas
+     d'aggregateRating, notes clients d'Amazon). Sans review ni offers, pas
+     de Product : l'ItemList garde alors l'adresse de la fiche.
    - Chaque encart (principal + sous-comparatifs) = une ItemList qui
      référence les produits par @id (au-delà de la limite de tests : url).
    --------------------------------------------------------------------- */
@@ -1038,16 +1040,9 @@ foreach ( $products as $it ) {
     );
   }
 
-  $cust_r = mt5_num( $it['cust_rating'] );
-  $cust_c = (int) preg_replace( '/[^0-9]/', '', (string) $it['cust_count'] );
-  if ( $cust_r > 0 && $cust_c > 0 ) {
-    $ld['aggregateRating'] = array(
-      '@type'       => 'AggregateRating',
-      'ratingValue' => number_format( $cust_r, 1, '.', '' ),
-      'bestRating'  => '5',
-      'reviewCount' => $cust_c,
-    );
-  }
+  /* Pas d'aggregateRating : les notes clients viennent d'Amazon, et Google interdit les notes reprises d'autres sites
+     (« Ratings must be sourced directly from users », documentation des review snippets du 2026-09-08). Elles restent
+     affichées sur la page (accord de Samuel, 2026-10-05). */
 
   $offer_count = count( $it['offer_urls'] );
   if ( $it['prix'] > 0 && $offer_count > 1 ) {
@@ -1079,6 +1074,7 @@ foreach ( $products as $it ) {
       'referenceQuantity' => array( '@type' => 'QuantitativeValue', 'value' => 1, 'unitCode' => ( mt_prix_unite( $it['pid'] ) === 'an' ? 'ANN' : 'MON' ) ),
     );
   }
+  if ( ! isset( $ld['review'] ) && ! isset( $ld['offers'] ) ) { continue; }  // Google exige review, aggregateRating ou offers
   $ld_products[ $it['pid'] ] = $ld;
 }
 

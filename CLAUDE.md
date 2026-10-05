@@ -1054,6 +1054,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   dans la catégorie ou le type. Source des clics de « Les plus consultés » à décider (pas de champ par comparatif ; piste :
   une option WordPress ID → clics remplie par l'Architecture). Votes FeedbackWP (rmp_vote_count) inutilisables : 190 à 340
   votes et 4,6 à 4,9 de moyenne sur 10 comparatifs tirés au hasard le 2026-10-05 (pas un signal de popularité).
+- **JSON-LD sans aggregateRating (accord de Samuel, 2026-10-05, demande de l'instance Technique)** : multi-tests et top5-tests
+  n'émettent plus la note clients Amazon (règle Google des review snippets : « Ratings must be sourced directly from
+  users ») ; affichage inchangé. Product sans review ni offers : pas de nœud (V2 : l'ItemList met l'URL de la fiche ; V1 :
+  ListItem avec url). L'AggregateRating de FeedbackWP (CreativeWorkSeries) n'est pas de nous. Les fiches /avis/ n'ont aucun
+  JSON-LD (vérifié sur 3 fiches).
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
