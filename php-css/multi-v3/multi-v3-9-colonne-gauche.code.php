@@ -22,8 +22,8 @@
      3. « Les modèles analysés » : les 10 mieux notés des avis détaillés
         (noms en double retirés), lien vers leur avis dans la page (#test-…),
         sinon vers leur page produit si l'ID ≥ 250 000, sinon sans lien.
-   La colonne entière reste collée en haut de l'écran pendant la lecture du
-   guide (hauteur limitée à l'écran, défilement interne si besoin).
+   La colonne défile avec la page, sans barre de défilement à elle (Samuel,
+   2026-10-05 : la colonne collée avec défilement interne n'était pas utile).
    Listes mises en cache 12 h (transients), clé = page + date de modification.
    ===================================================================== */
 $MT_SIDE_ACCES     = true;  // « Accès rapide »

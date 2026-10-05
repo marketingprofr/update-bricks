@@ -1079,6 +1079,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Puis (Samuel, « 20 ça fait beaucoup ») : droite coupée en « Guides {catégorie} » (sans post-type-attribut, vignettes,
   classe mt-side-cat) et « Guides spécialisés » (avec attribut, liste + flèche ›, classe mt-side-precis), 10 max chacun
   ($MT_SIDE_MAX_CAT), clé categorie4, max moteur 2×10+60 ; bloc masqué sous 2 liens.
+  Puis (Samuel) : plus de sticky ni de défilement interne sur la colonne de gauche (seule à en avoir ; 992 px de haut
+  pour 860 px d'écran, d'où une barre) : elle défile avec la page. L'Accès rapide garde son lien actif (visible en haut).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
