@@ -32,7 +32,11 @@ if ( getenv( 'SIM' ) ) {
   mkp( 111, 'comparatif', 'comparatif-aspirateur', 'Les meilleurs aspirateurs en 2026' );
   $GLOBALS['TERMS'][111] = array( 'post-type-produit' => tm( array( 17 => 'Aspirateur' ) ) );
   $GLOBALS['MAISON_SEULE'][111] = true;
-  function mt_sim_ranked_ids( $cur, $o = array() ) { return array_slice( array( 105, 102, 108, 111, 106, 110, 107, 109, 104 ), 0, (int) ( $o['max'] ?? 20 ) ); }
+  mkp( 112, 'comparatif', 'comparatif-ventilateur-pas-cher', 'Les meilleurs ventilateurs pas chers en 2026' );
+  $GLOBALS['TERMS'][112] = array( 'post-type-produit' => tm( array( 12 => 'Ventilateur' ) ), 'post-type-attribut' => tm( array( 25 => 'Pas cher' ) ) );
+  mkp( 113, 'comparatif', 'comparatif-climatiseur-daikin', 'Les meilleurs climatiseurs Daikin en 2026' );
+  $GLOBALS['TERMS'][113] = array( 'post-type-produit' => tm( array( 18 => 'Climatiseur fixe' ) ), 'post-type-attribut' => tm( array( 26 => 'Daikin' ) ) );
+  function mt_sim_ranked_ids( $cur, $o = array() ) { return array_slice( array( 105, 102, 108, 111, 112, 106, 110, 113, 107, 109, 104 ), 0, (int) ( $o['max'] ?? 20 ) ); }
   function mt_sim_label( $id, $f ) { return 'Sim ' . preg_replace( '/^Les meilleur(e?)s\s+/u', '', get_the_title( $id ) ); }
 }
 if ( getenv( 'CLICS' ) ) {

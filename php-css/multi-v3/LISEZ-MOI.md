@@ -21,7 +21,7 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 | 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` |
 | 8 | « Quel choix faire ? » (duels, par ex. « Climatiseur mobile ou climatiseur fixe ? ») | `multi-v3-8-choix.code.php` | `multi-v3-8-choix.css` |
 | 9 | **Nouveau** : colonne de gauche du guide d'achat (accès rapide, guides du même type, modèles analysés) | `multi-v3-9-colonne-gauche.code.php` | `multi-v3-9-colonne-gauche.css` |
-| 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés de la catégorie, mis à jour récemment, autres guides de la catégorie, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | **vide** (le CSS des deux colonnes est dans le 9) |
+| 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés de la catégorie, mis à jour récemment, guides de la catégorie et guides spécialisés, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | **vide** (le CSS des deux colonnes est dans le 9) |
 
 Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat (sauf le bloc des duels, élément 8), les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
 
@@ -141,6 +141,12 @@ Le bloc « Tous les guides » mélangeait deux niveaux et répétait le bloc « 
 - à droite, **« Autres guides climatisation »** (la catégorie) : tout le reste de la catégorie, 20 au plus, avec une petite image.
 
 Les deux blocs suivent le classement des « Comparatifs similaires » sous le tableau. À recoller : **9**, Code et CSS ; **10**, Code seulement.
+
+Puis, 20 guides dans un bloc étant trop gros (Samuel), la droite est coupée en deux blocs de 10 au plus :
+- **« Guides climatisation »** : les guides principaux des autres types (sans attribut), avec une petite image ;
+- **« Guides spécialisés »** : les guides plus précis (prix, marque, usage…), en simple liste avec une flèche.
+
+Un bloc qui n'aurait qu'un seul lien n'est pas affiché. À recoller : **9**, CSS seulement ; **10**, Code seulement.
 
 ## CSS sans commentaires (5 octobre)
 

@@ -1076,6 +1076,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   seule). Droite = « Autres guides {catégorie} » (classe mt-side-cat, vignettes) : mt_sim_ranked_ids(max 80, car les
   guides du même type passent en premier) moins le même type, filtré sur la catégorie la plus précise (le moteur prend
   aussi la parente), 20 max, clé categorie3. Plus de p.mt-side-sous ni ul.mt-side-pills. Banc : SIM=1 (faux moteur).
+  Puis (Samuel, « 20 ça fait beaucoup ») : droite coupée en « Guides {catégorie} » (sans post-type-attribut, vignettes,
+  classe mt-side-cat) et « Guides spécialisés » (avec attribut, liste + flèche ›, classe mt-side-precis), 10 max chacun
+  ($MT_SIDE_MAX_CAT), clé categorie4, max moteur 2×10+60 ; bloc masqué sous 2 liens.
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
