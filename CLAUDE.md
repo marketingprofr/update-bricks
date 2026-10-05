@@ -1015,6 +1015,12 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   tailles dans un ResizeObserver (après la mise en page), plus de lecture synchrone ni d'écoute load ; intro mesurée
   seulement sur mobile (matchMedia 767 px). CLS de l'encadré : Bricks imprime le CSS d'un élément Code JUSTE APRÈS son
   HTML (8 Ko après pour les éléments 1 et 2, 102 Ko après pour le top 5) : affichage sans style puis réarrangement.
+- **Modèle commun à tous les comparatifs (Samuel, 2026-10-05)** : encart « L'essentiel » seulement avec ≥ 3 vraies
+  questions de la rédaction (`count( $items ) < 3` → rien ; les premières vraies du répéteur, quel que soit le nombre de
+  questions automatiques). `$MT_PHOTO_HERO = 'auto'` : sans encart, photo après l'intro (alt propre, eager, sizes 800px)
+  et `$GLOBALS['mt_photo_place'] = 'hero'` ; l'encadré (rendu après) n'affiche alors pas la sienne. Banc : 0/2 vraies
+  questions → photo dans le hero ; 3/4 → encart + photo dans l'encadré ; « no featured » → aucune photo. Climatiseur
+  mobile : 7 vraies questions en ligne le 2026-10-05 (FAQ refaite par l'instance FAQ).
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),

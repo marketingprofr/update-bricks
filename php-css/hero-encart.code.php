@@ -223,7 +223,8 @@ if ( $MT_ENCADRE_REEL ) {
   /* Image mise en avant en tête de l'encadré (sans le badge « Meilleurtest »). Chargée en priorité : sur ordinateur, elle
      est dans le premier écran. Alt = le type de produit (« Climatiseurs mobiles ») : l'image n'a pas d'alt, et Rank Math
      en ajoutait un numéroté (« … 1 », title « … 10 »). */
-  if ( $MT_PHOTO_ENCADRE && ! has_term( array( 'no-featured', 'no featured', 'nofeatured' ), 'post_tag', $this_id ) ) {
+  /* Pas ici si le hero (élément 1, rendu avant) l'a déjà affichée : comparatif sans encart « L'essentiel » (Samuel, 2026-10-05) */
+  if ( $MT_PHOTO_ENCADRE && ( $GLOBALS['mt_photo_place'] ?? 'encadre' ) !== 'hero' && ! has_term( array( 'no-featured', 'no featured', 'nofeatured' ), 'post_tag', $this_id ) ) {
       $mt_alt = trim( (string) $tp );
       $mt_alt = $mt_alt !== '' ? mb_strtoupper( mb_substr( $mt_alt, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_alt, 1, null, 'UTF-8' ) : '';
       /* Taille moyenne par défaut (Samuel, 2026-10-04 : « il n'y a pas de petites économies ») : un écran classique

@@ -80,6 +80,8 @@ Puis, dans les duels, les titres d'option (« Climatiseur mobile », « Climatis
 
 Puis les scripts de l'intro (« Afficher la suite ») et de l'encadré collant ne mesurent plus rien pendant le chargement (recalculs forcés relevés par PageSpeed), sans changement visible : **1**, Code ; **2**, Code.
 
+Puis, pour que ce modèle serve à tous les comparatifs : l'encart « L'essentiel » n'apparaît qu'avec au moins 3 vraies questions de la rédaction dans la FAQ ; sans encart, la photo revient dans le hero, après l'intro, au lieu d'être en haut de l'encadré : **1**, Code ; **2**, Code.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -109,8 +111,8 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 | 1 | `$MT_AUTEUR_SOUS_H1` | `true` | Ligne auteur et date juste sous le titre. |
 | 1 | `$MT_REPONSE_INTRO` | `true` | L'intro commence par une phrase à part, par exemple « Sur les 55 climatiseurs mobiles que nous avons analysés, Midea PortaSplit 12000 BTU (9,0/10) est le meilleur en 2026, devant … », puis vient le texte de la rédaction. |
 | 1 | `$MT_PASTILLE_VERIFIE` | `false` | Plus de pastille « Vérifié le … » au-dessus du titre : la ligne auteur dit déjà qui a vérifié, et la date. `true` la remet. |
-| 1 | `$MT_PHOTO_HERO` | `false` | Plus de photo entre l'intro et l'encart « L'essentiel » : elle est en haut de l'encadré (réglage `$MT_PHOTO_ENCADRE` de l'élément 2). `true` la remet ici aussi. |
-| 2 | `$MT_PHOTO_ENCADRE` | `true` | Image mise en avant tout en haut de l'encadré, pleine largeur, chargée en priorité, alt « Climatiseurs mobiles ». Pas d'image si le comparatif a l'étiquette « no featured ». `false` = pas d'image. |
+| 1 | `$MT_PHOTO_HERO` | `'auto'` | La photo va après l'intro quand l'encart « L'essentiel » n'est pas affiché (moins de 3 vraies questions dans la FAQ) ; sinon elle est en haut de l'encadré. `true` = toujours après l'intro, `false` = jamais. |
+| 2 | `$MT_PHOTO_ENCADRE` | `true` | Image mise en avant en haut de l'encadré, quand l'élément 1 ne l'a pas déjà placée après l'intro. Chargée en priorité, alt « Climatiseurs mobiles ». Pas d'image avec l'étiquette « no featured ». `false` = jamais dans l'encadré. |
 | 1 | `$MT_INTRO_REPLIEE` | `true` | Sur téléphone, le texte de la rédaction est replié sur 3 lignes, avec « Afficher la suite » (puis « Masquer la suite »). Sur ordinateur, l'intro est entière, sans bouton. Le texte reste entier dans la page. Le lien se cache si l'intro tient sur 3 lignes. `false` = intro entière partout. |
 | 1 | `$MT_VERDICT_SOUS_H1` | `false` | L'ancien encart séparé « L'essentiel » (4 phrases) n'est plus affiché. |
 | 1 | `$MT_VOS_QUESTIONS` | `'apres_intro'` | Encart des questions juste après l'intro. `'sous_reponse'` le place sous la ligne auteur, `''` le retire. |

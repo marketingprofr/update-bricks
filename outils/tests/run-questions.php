@@ -41,7 +41,7 @@ echo 'blocs   : ', $v2 ? 'V2 (multi-hero-gauche + multi-resume)' : 'V1 (hero-gau
 $dans_hero = strpos( $h, 'mt-faq-mini' );
 $dans_res  = strpos( $r, 'mt-faq-mini' );
 if ( $dans_hero === false && $dans_res === false ) {
-  echo "place   : aucune (moins de 2 questions de la rédaction : pas d'encart)\n";
+  echo "place   : aucune (moins de 3 questions de la rédaction : pas d'encart)\n";
   $bloc = '';
 } elseif ( $pos === 'apres_intro' ) {
   $ph = strpos( $h, 'class="mt-photo"' );

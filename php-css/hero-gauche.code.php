@@ -11,8 +11,9 @@ $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (dema
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 $MT_PASTILLE_VERIFIE = false;  // pastille « Vérifié le … » au-dessus du titre : retirée le 2026-10-04 (demande de Samuel), la ligne
                                 // auteur sous le titre dit déjà qui a vérifié et la date ; true = pastille affichée
-$MT_PHOTO_HERO       = false;  // photo et badge entre l'intro et l'encart « L'essentiel » : la photo est passée en haut de l'encadré
-                                // « Pourquoi nous faire confiance » (élément 2, Samuel, 2026-10-04) ; true = photo ici aussi
+$MT_PHOTO_HERO       = 'auto'; // photo (image mise en avant) : 'auto' = ici, après l'intro, seulement quand l'encart « L'essentiel »
+                                // n'est pas affiché ; avec l'encart, elle est en haut de l'encadré (élément 2) (Samuel, 2026-10-05) ;
+                                // true = toujours ici ; false = jamais ici
 $MT_VOS_QUESTIONS    = 'apres_intro'; // encart des questions (questions de la FAQ, réponse d'une phrase) : 'apres_intro' = juste après
                                 // l'intro (disposition validée par Samuel, 2026-10-03), 'sous_reponse' = sous la ligne auteur,
                                 // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
@@ -463,7 +464,9 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
      (l'ordre de qualité, rangé par cette instance). Jamais les questions automatiques de la FAQ (« Quel budget
      prévoir… », « Comment bien choisir… », « Pourquoi faire confiance… ») : elles restent dans la FAQ.
      Sautées, car déjà dites plus haut : « Quel est le meilleur… », « meilleures marques », « meilleurs avis »,
-     « Comment avons-nous établi… ». Au moins 2 questions de la rédaction, sinon pas d'encart. */
+     « Comment avons-nous établi… ». Au moins 3 questions de la rédaction, sinon pas d'encart (Samuel, 2026-10-05 :
+     3 questions automatiques au plus + 3 vraies). Le nombre de questions automatiques ne compte pas : on prend toujours
+     les premières vraies questions du répéteur. */
   function mt_vos_questions( $page_id, $ids, $type_sing, $type_plur, $llm, $titre = 'Vos questions' ) {
     $nb_autos = 0;
     $ids      = array_slice( array_values( array_filter( array_map( 'intval', (array) $ids ) ) ), 0, 5 );
@@ -501,7 +504,7 @@ if ( ! function_exists( 'mt_vos_questions' ) ) {
       if ( $a !== '' ) { $redac[] = array( $q, $a ); }
     }
     $items = $redac;
-    if ( count( $items ) < 2 ) { return ''; }
+    if ( count( $items ) < 3 ) { return ''; }
     /* Chaque réponse courte mène à sa réponse complète dans la FAQ (« En savoir plus », ancre de la question, qui s'ouvre
        au clic) ; le lien du bas annonce le nombre de questions de la FAQ (automatiques + rédaction, mêmes règles que
        faq.code.php). Libellés choisis par Samuel le 2026-10-04 */
@@ -902,11 +905,18 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
       echo mt_intro_reco( $this_id, $top_avis_ids ?? array(), $type_de_produit_au_pluriel ?? '', $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '' );
   } ?></div>
 
-  <?php /* Photo entre l'intro et l'encart « L'essentiel » ; pas de photo si le comparatif a l'étiquette « no featured ».
-     Chargée en priorité (pas de lazy, fetchpriority high) : c'était l'élément le plus lent de la page sur mobile. */
-  if ( $MT_PHOTO_HERO && ! has_term( array( 'no-featured', 'no featured', 'nofeatured' ), 'post_tag', $this_id ) ) : ?>
+  <?php /* Photo : ici, après l'intro, quand il n'y a pas d'encart « L'essentiel » (pas assez de vraies questions dans la FAQ) ;
+     sinon en haut de l'encadré (élément 2), qui lit $GLOBALS['mt_photo_place'] pour ne pas l'afficher deux fois.
+     Pas de photo avec l'étiquette « no featured ». Chargée en priorité (pas de lazy, fetchpriority high). */
+  $mt_avec_encart = ( isset( $mt_vq ) && $mt_vq !== '' );
+  $mt_photo_ici   = ( $MT_PHOTO_HERO === true ) || ( $MT_PHOTO_HERO === 'auto' && ! $mt_avec_encart );
+  $GLOBALS['mt_photo_place'] = $mt_photo_ici ? 'hero' : 'encadre';
+  if ( $mt_photo_ici && ! has_term( array( 'no-featured', 'no featured', 'nofeatured' ), 'post_tag', $this_id ) ) :
+    $mt_alt_ph = trim( (string) ( $type_de_produit_au_pluriel ?? '' ) );  // alt propre (l'image n'en a pas : Rank Math sortait « … 1 »)
+    $mt_alt_ph = $mt_alt_ph !== '' ? mb_strtoupper( mb_substr( $mt_alt_ph, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_alt_ph, 1, null, 'UTF-8' ) : '';
+  ?>
   <div class="mt-photo">
-    <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img', 'loading'=>'eager', 'fetchpriority'=>'high', 'decoding'=>'async')); ?>
+    <?php echo get_the_post_thumbnail($this_id, 'large', array('class'=>'mt-photo-img', 'alt'=>$mt_alt_ph, 'title'=>$mt_alt_ph, 'loading'=>'eager', 'fetchpriority'=>'high', 'decoding'=>'async', 'sizes'=>'(max-width: 767px) calc(100vw - 32px), 800px')); ?>
     <?php if ($post_type === 'comparatif') {
         echo '<img class="mt-badge" src="https://meilleurtest.fr/wp-content/uploads/2026/07/badge-mt3.png" alt="" width="360" height="223" loading="eager" decoding="async" style="position:absolute;top:0;left:0;max-width:130px;height:auto;">';
     } ?>
