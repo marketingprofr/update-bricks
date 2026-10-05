@@ -1060,8 +1060,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   + ul.mt-side-pills en 2 niveaux via mt_sim_ranked_ids (repli get_posts) : même type (page courante li.mt-side-cur en
   pastille pleine) puis « Autres guides {catégorie} » (8 max). Modèles = 10 max, dédoublonnés par nom, note « 9,0 » en
   pastille. Droite : cadre + filet primary en haut, icônes en masque SVG (--mt-side-ico sur .mt-side-h::before) ; plus
-  consultés = carrés numérotés ; récents = 1re grande image (medium, 16/9) puis vignettes 72×54 + date seule (j F Y,
-  clé de cache recents3) ; même catégorie = vignettes 40×40 ; FAQ = bulle « ? ». De 992 à 1199 px, la droite passe en
+  consultés = carrés numérotés ; récents = 1re grande image (medium, 16/9, vraies width/height via
+  wp_get_attachment_image_src, clés 'img_w'/'img_h' de mt_side_bloc, demande de la Technique) puis vignettes 72×54
+  + date seule (j F Y, clé de cache recents4) ; même catégorie = vignettes 40×40 ; FAQ = bulle « ? ». De 992 à 1199 px, la droite passe en
   colonnes de journal (columns: 240px, pas de trou sous les blocs courts).
   Clics (contrat accepté par l'Architecture) : page privée slug `mt-clics-28j`, post_content = JSON {"ID": clics} (clés
   numériques, comparatifs publiés seulement, ~60 Ko, mise à jour hebdomadaire, post_modified = fraîcheur). Lue par

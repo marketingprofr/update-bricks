@@ -69,13 +69,13 @@ if ( ! function_exists( 'mt_side_cat' ) ) {
   }
 }
 if ( ! function_exists( 'mt_side_bloc' ) ) {
-  /* Un bloc de liens : titre en <p>, liste ; $items = [ [ 't' => texte, 'u' => lien, 'm' => mention, 'img' => vignette,
-     'cur' => page courante ] ] ; $classe = mise en forme propre au bloc ; liste vide → rien */
+  /* Un bloc de liens : titre en <p>, liste ; $items = [ [ 't' => texte, 'u' => lien, 'm' => mention, 'img' => vignette
+     (56×56, sinon 'img_w' et 'img_h'), 'cur' => page courante ] ] ; $classe = mise en forme propre au bloc ; liste vide → rien */
   function mt_side_bloc( $titre, $items, $num = false, $apres = '', $classe = '' ) {
     if ( empty( $items ) ) { return ''; }
     $li = '';
     foreach ( $items as $it ) {
-      $txt = ( ( $it['img'] ?? '' ) !== '' ? '<img class="mt-side-img" src="' . esc_url( $it['img'] ) . '" alt="" width="56" height="56" loading="lazy" decoding="async">' : '' )
+      $txt = ( ( $it['img'] ?? '' ) !== '' ? '<img class="mt-side-img" src="' . esc_url( $it['img'] ) . '" alt="" width="' . (int) ( $it['img_w'] ?? 56 ) . '" height="' . (int) ( $it['img_h'] ?? 56 ) . '" loading="lazy" decoding="async">' : '' )
            . '<span class="mt-side-t">' . str_replace( ' ?', "\u{00A0}?", esc_html( $it['t'] ) ) . '</span>'
            . ( ( $it['m'] ?? '' ) !== '' ? '<span class="mt-side-m">' . esc_html( $it['m'] ) . '</span>' : '' );
       if ( ( $it['u'] ?? '' ) !== '' && empty( $it['cur'] ) ) { $li .= '<li><a href="' . esc_url( $it['u'] ) . '">' . $txt . '</a></li>'; }

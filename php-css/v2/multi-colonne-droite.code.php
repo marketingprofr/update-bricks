@@ -72,13 +72,13 @@ if ( ! function_exists( 'mt_side_cat' ) ) {
   }
 }
 if ( ! function_exists( 'mt_side_bloc' ) ) {
-  /* Un bloc de liens : titre en <p>, liste ; $items = [ [ 't' => texte, 'u' => lien, 'm' => mention, 'img' => vignette,
-     'cur' => page courante ] ] ; $classe = mise en forme propre au bloc ; liste vide → rien */
+  /* Un bloc de liens : titre en <p>, liste ; $items = [ [ 't' => texte, 'u' => lien, 'm' => mention, 'img' => vignette
+     (56×56, sinon 'img_w' et 'img_h'), 'cur' => page courante ] ] ; $classe = mise en forme propre au bloc ; liste vide → rien */
   function mt_side_bloc( $titre, $items, $num = false, $apres = '', $classe = '' ) {
     if ( empty( $items ) ) { return ''; }
     $li = '';
     foreach ( $items as $it ) {
-      $txt = ( ( $it['img'] ?? '' ) !== '' ? '<img class="mt-side-img" src="' . esc_url( $it['img'] ) . '" alt="" width="56" height="56" loading="lazy" decoding="async">' : '' )
+      $txt = ( ( $it['img'] ?? '' ) !== '' ? '<img class="mt-side-img" src="' . esc_url( $it['img'] ) . '" alt="" width="' . (int) ( $it['img_w'] ?? 56 ) . '" height="' . (int) ( $it['img_h'] ?? 56 ) . '" loading="lazy" decoding="async">' : '' )
            . '<span class="mt-side-t">' . str_replace( ' ?', "\u{00A0}?", esc_html( $it['t'] ) ) . '</span>'
            . ( ( $it['m'] ?? '' ) !== '' ? '<span class="mt-side-m">' . esc_html( $it['m'] ) . '</span>' : '' );
       if ( ( $it['u'] ?? '' ) !== '' && empty( $it['cur'] ) ) { $li .= '<li><a href="' . esc_url( $it['u'] ) . '">' . $txt . '</a></li>'; }
@@ -117,13 +117,20 @@ if ( $MT_SIDE_CONSULTES && $mt_sd_cat ) {
 
 /* 5. Mis à jour récemment dans la catégorie : le 1er avec une grande image, les autres en vignette */
 if ( $MT_SIDE_RECENTS && $mt_sd_cat ) {
-  $mt_sd_l = mt_side_cache( $mt_sd, 'recents3', function () use ( $mt_sd, $mt_sd_cat, $mt_sd_lien, $mt_sd_img ) {
+  $mt_sd_l = mt_side_cache( $mt_sd, 'recents4', function () use ( $mt_sd, $mt_sd_cat, $mt_sd_lien, $mt_sd_img ) {
     $ids = get_posts( array( 'post_type' => 'comparatif', 'post_status' => 'publish', 'posts_per_page' => 6, 'fields' => 'ids', 'no_found_rows' => true,
                              'cat' => (int) $mt_sd_cat->term_id, 'orderby' => 'modified', 'order' => 'DESC', 'post__not_in' => array( $mt_sd ) ) );
     $ids = array_slice( array_values( array_diff( array_map( 'intval', (array) $ids ), array( $mt_sd ) ) ), 0, 5 );
     $l = array();
     foreach ( $ids as $i => $id ) {
-      $l[] = $mt_sd_lien( $id, date_i18n( 'j F Y', (int) get_post_modified_time( 'U', true, $id ) ), $mt_sd_img( $id, $i === 0 ? 'medium' : 'thumbnail' ) );
+      $it = $mt_sd_lien( $id, date_i18n( 'j F Y', (int) get_post_modified_time( 'U', true, $id ) ), $mt_sd_img( $id, $i === 0 ? 'medium' : 'thumbnail' ) );
+      if ( $i === 0 && $it['img'] !== '' ) {
+        /* la 1re s'affiche en grand (toute la largeur du bloc, ~250 px) : ses vraies dimensions, pas 56×56 */
+        $src = function_exists( 'wp_get_attachment_image_src' ) && function_exists( 'get_post_thumbnail_id' ) ? wp_get_attachment_image_src( (int) get_post_thumbnail_id( $id ), 'medium' ) : false;
+        $it['img_w'] = $src ? (int) $src[1] : 300;
+        $it['img_h'] = $src ? (int) $src[2] : 169;
+      }
+      $l[] = $it;
     }
     return $l;
   } );
