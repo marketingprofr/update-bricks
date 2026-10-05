@@ -82,6 +82,8 @@ Puis les scripts de l'intro (« Afficher la suite ») et de l'encadré collant n
 
 Puis, pour que ce modèle serve à tous les comparatifs : l'encart « L'essentiel » n'apparaît qu'avec au moins 3 vraies questions de la rédaction dans la FAQ ; sans encart, la photo revient dans le hero, après l'intro, au lieu d'être en haut de l'encadré : **1**, Code ; **2**, Code.
 
+Puis la réponse « Comment avons-nous établi ce classement ? » suit l'ordre du travail (sources consultées, produits identifiés, recherches et note sur les critères principaux, produits retenus), et la puce 2 de l'encadré commence par « **Nous avons noté** les climatiseurs mobiles… » : **2**, Code ; **6**, Code.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 
@@ -132,7 +134,7 @@ Sur GitHub, chaque fichier s'ouvre avec un bouton « Copier » (icône de deux c
 | 2 | `$MT_TXT_AFFILIATION` | `''` | Plus de phrase d'affiliation dans l'encadré : elle va dans le bandeau du header (voir plus bas). |
 | 2 | `$MT_SIGNALEMENT` | `true` | Ligne « Une erreur, ou un produit remplacé par un nouveau modèle ? Prévenez-nous. » vers `/signaler-une-erreur/`, sous « Découvrez notre méthodologie… ». |
 | 4 | `$MT_POINT_VIGILANCE` | `true` | Point de vigilance juste avant le top 5. Seuls les types de produit dont les champs sont remplis l'affichent : pour l'instant, le climatiseur mobile. |
-| 6 | `$MT_METHODO_ENCADRE` | `true` | « Comment avons-nous établi ce classement ? » reprend les chiffres de l'encadré. |
+| 6 | `$MT_METHODO_ENCADRE` | `true` | « Comment avons-nous établi ce classement ? » reprend les chiffres, les sources et les critères de l'encadré, dans l'ordre du travail : « Nous avons d'abord consulté 27 sources, dont … Elles nous ont permis d'identifier 55 climatiseurs mobiles parmi les plus populaires. Nous avons ensuite mené nos propres recherches et donné à chaque climatiseur mobile une note sur 10, selon 4 critères principaux (…). Enfin, nous avons retenu les 5 meilleurs pour ce classement. … » |
 
 Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet Code, puis enregistrez.
 

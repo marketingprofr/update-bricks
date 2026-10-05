@@ -200,7 +200,8 @@ if ( $MT_ENCADRE_REEL ) {
        avons noté les climatiseurs mobiles sur 4 critères principaux (…) » ; « 1 critère principal » ; type vide ou
        trop long : « les produits » (même repli que les cases) */
     $mt_k       = count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $mt_courts ) ) ) );
-    $mt_puces[] = '<b>Pour établir le classement</b>, nous avons noté les ' . esc_html( ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' ) )
+    /* « Nous avons noté » en gras, sans « Pour établir le classement » (Samuel, 2026-10-05) */
+    $mt_puces[] = '<b>Nous avons noté</b> les ' . esc_html( ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' ) )
                 . ' sur ' . $mt_k . ( $mt_k > 1 ? ' critères principaux' : ' critère principal' ) . ' (' . esc_html( $mt_courts ) . ').';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }

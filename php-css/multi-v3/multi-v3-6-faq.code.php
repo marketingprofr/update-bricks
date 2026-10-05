@@ -391,10 +391,41 @@ if ( ! empty( $prods ) ) {
 
   /* --- Slot 3 : méthodologie (stats si dispo, sinon générique) --------- */
   $bits = array();
-  if ( $MT_METHODO_ENCADRE ) {
+  $a3   = '';
+  $ec   = ( isset( $GLOBALS['mt_encadre_chiffres'] ) && is_array( $GLOBALS['mt_encadre_chiffres'] ) ) ? $GLOBALS['mt_encadre_chiffres'] : array();
+  if ( $MT_METHODO_ENCADRE && ! empty( $ec['n'] ) ) {
+    /* Réponse dans l'ordre du travail (Samuel, 2026-10-05) : sources consultées, produits identifiés, recherches et note
+       sur les critères principaux, produits retenus. Mêmes chiffres, sources et critères que l'encadré ; pas de deux-points.
+       « Nous avons d'abord consulté 27 sources, dont … Elles nous ont permis d'identifier 55 climatiseurs mobiles parmi les
+       plus populaires. Nous avons ensuite mené nos propres recherches et donné à chaque climatiseur mobile une note sur 10,
+       selon 4 critères principaux (… et …). » puis « Enfin, nous avons retenu les 5 meilleurs pour ce classement. Aucune
+       marque ne paie pour y figurer, et ce comparatif a été mis à jour en octobre 2026. » */
+    $m_src  = (string) ( $ec['sources'] ?? '' );
+    $m_src  = $m_src === '' ? '' : ( $m_src[0] === '~' ? 'environ ' . substr( $m_src, 1 ) : $m_src );
+    $m_phr  = trim( rtrim( (string) ( function_exists( 'get_field' ) ? get_field( 'mltv5_phrase_sources', $page_id ) : '' ), ". \t\n" ) );
+    $m_nom  = esc_html( (string) ( $ec['nom'] ?? 'produits' ) );
+    $m_crit = function_exists( 'mt_criteres_courts' ) ? (string) mt_criteres_courts( $page_id ) : '';
+    $m_k    = $m_crit !== '' ? count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $m_crit ) ) ) ) : 0;
+    $m_sing = trim( (string) $type_sing );
+    $m_sing = ( $m_sing !== '' && strlen( $m_sing ) < 22 ) ? mb_strtolower( $m_sing, 'UTF-8' ) : 'produit';
+    $m_n    = (int) $ec['n'];
+    $p1 = ( $m_src !== ''
+        ? 'Nous avons d&rsquo;abord consult&eacute; ' . esc_html( $m_src ) . ' sources' . ( $m_phr !== '' ? ', dont ' . esc_html( $m_phr ) : ' sp&eacute;cialis&eacute;es' ) . '. '
+          . 'Elles nous ont permis d&rsquo;identifier ' . $m_n . ' ' . $m_nom . ' parmi les plus populaires. '
+        : 'Nous avons d&rsquo;abord identifi&eacute; ' . $m_n . ' ' . $m_nom . ' parmi les plus populaires. ' )
+        . 'Nous avons ensuite men&eacute; nos propres recherches et donn&eacute; &agrave; chaque ' . esc_html( $m_sing ) . ' une note sur 10, '
+        . ( $m_k > 0
+            ? 'selon ' . ( $m_k > 1 ? $m_k . ' crit&egrave;res principaux' : 'un crit&egrave;re principal' ) . ' (' . esc_html( preg_replace( '/, ([^,]+)$/u', ' et $1', $m_crit ) ) . ').'
+            : 'selon ses caract&eacute;ristiques, son rapport qualit&eacute;-prix et les avis des acheteurs.' );
+    $upd = get_the_modified_date( 'F Y', $page_id );
+    $p2 = ( $m_n > $nbp
+        ? 'Enfin, nous avons retenu les ' . $nbp . ' meilleur' . ( ( $fem || stripos( (string) $tv( 'masculinsfeminins' ), 'meilleures' ) !== false ) ? 'e' : '' ) . 's pour ce classement. '
+        : 'Enfin, nous avons class&eacute; ces ' . $m_nom . ' selon leur note. ' )
+        . 'Aucune marque ne paie pour y figurer' . ( $upd ? ', et ce comparatif a &eacute;t&eacute; mis &agrave; jour en ' . esc_html( $upd ) : '' ) . '.';
+    $a3 = '<p>' . $p1 . '</p><p>' . $p2 . '</p>';
+  } elseif ( $MT_METHODO_ENCADRE ) {
     /* Chiffres publiés par l'encadré (même N avec le +5, mêmes sources, mêmes avis ou « plus de 200 », mêmes mots) ;
        pas d'heures (chiffre fictif) ; un morceau de phrase disparaît quand sa donnée manque */
-    $ec = ( isset( $GLOBALS['mt_encadre_chiffres'] ) && is_array( $GLOBALS['mt_encadre_chiffres'] ) ) ? $GLOBALS['mt_encadre_chiffres'] : array();
     if ( ! empty( $ec['n'] ) ) { $bits[] = 'analys&eacute; ' . (int) $ec['n'] . ' ' . esc_html( $ec['nom'] ); }
     if ( ( $ec['sources'] ?? '' ) !== '' ) {
       $bits[] = 'consult&eacute; ' . ( $ec['sources'][0] === '~' ? 'environ ' . esc_html( substr( $ec['sources'], 1 ) ) : esc_html( $ec['sources'] ) ) . ' sources';
@@ -415,6 +446,7 @@ if ( ! empty( $prods ) ) {
     if ( $s_src  !== '' ) { $bits[] = 'consult&eacute; ' . esc_html( $s_src ) . ' sources'; }
     if ( $s_heu  !== '' ) { $bits[] = 'pass&eacute; ' . esc_html( $s_heu ) . ' heures &agrave; les analyser'; }
   }
+  if ( $a3 === '' ) {  // ancienne réponse, si l'encadré n'a pas publié ses chiffres (ou réglage coupé)
   if ( ! empty( $bits ) ) {
     $a3 = '<p>Pour &eacute;tablir ce classement, notre &eacute;quipe a ' . mt_faq_join_et( $bits ) . '.</p>';
   } else {
@@ -423,6 +455,7 @@ if ( ! empty( $prods ) ) {
   $upd = get_the_modified_date( 'F Y', $page_id );
   $a3 .= '<p>Concr&egrave;tement, chaque produit est &eacute;valu&eacute; sur ses caract&eacute;ristiques, son rapport qualit&eacute;-prix et la synth&egrave;se des retours d&rsquo;utilisateurs, puis re&ccedil;oit une note sur 10 qui d&eacute;termine sa place dans la s&eacute;lection. Aucun placement n&rsquo;est sponsoris&eacute;&nbsp;: les marques n&rsquo;interviennent jamais dans nos choix.'
       . ( $upd ? ' Derni&egrave;re mise &agrave; jour de ce comparatif&nbsp;: ' . esc_html( $upd ) . '.' : '' ) . '</p>';
+  }
   $autos[] = array( 'q' => 'Comment avons-nous &eacute;tabli ce classement&nbsp;?', 'a' => $a3 );
 }
 
