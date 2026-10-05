@@ -476,7 +476,7 @@ if ( $MT_POINT_VIGILANCE ) { echo mt_point_vigilance( get_the_ID() ); }
   </div>
 <?php endif; ?>
 
-  <p class="t5-disclosure">Liens commerciaux : Meilleurtest peut percevoir une commission sur les achats effectu&eacute;s via ces liens, sans impact sur le prix ni sur nos verdicts.</p>
+  <p class="t5-disclosure">Pour rappel, Meilleurtest peut toucher une commission si vous achetez via ces liens, sans surco&ucirc;t pour vous et sans effet sur nos classements.</p>
 </div>
 
 <?php

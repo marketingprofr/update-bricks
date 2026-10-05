@@ -1006,6 +1006,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   bloc de vote resserré (sélecteurs Rate My Post renforcés : marges 10 px autour du widget, 4 px sous les étoiles) →
   encadré 946. NB : le CSS des éléments Code est imprimé dans le body, après un <style> injecté dans le head : pour
   simuler un changement en ligne, ajouter le <style> en fin de body.
+  Mention d'affiliation sous les produits (t5-disclosure, V1 et multi ; Samuel, 2026-10-05) : « Pour rappel, Meilleurtest
+  peut toucher une commission si vous achetez via ces liens, sans surcoût pour vous et sans effet sur nos classements. »
+  « Prévenez-nous » reste dans l'encadré (déconseillé de remplacer la mention d'affiliation, Samuel d'accord).
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),

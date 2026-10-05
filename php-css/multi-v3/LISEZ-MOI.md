@@ -73,6 +73,8 @@ Puis, pour la vitesse : l'image de l'encadré en taille moyenne sur les écrans 
 
 Puis le bloc « Avis des lecteurs » de l'encadré est resserré (14 px de moins sur ordinateur) : **2**, CSS seulement.
 
+Puis la mention sous les produits devient « Pour rappel, Meilleurtest peut toucher une commission si vous achetez via ces liens, sans surcoût pour vous et sans effet sur nos classements. » : **4**, Code seulement.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 

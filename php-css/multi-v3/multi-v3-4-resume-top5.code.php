@@ -885,7 +885,8 @@ $display_min   = ( $real_count < 10 ) ? max( 0.1, $all_avis['min'] - 0.5 ) : $al
 $display_max   = $all_avis['max'];
 
 $is_multi   = $plan && $plan['is_multi'];
-$disclosure = '<p class="t5-disclosure">Liens commerciaux : Meilleurtest peut percevoir une commission sur les achats effectu&eacute;s via ces liens, sans impact sur le prix ni sur nos verdicts.</p>';
+/* Mention d'affiliation sous les produits, formulée plus naturellement (Samuel, 2026-10-05 ; même idée que le bandeau du header) */
+$disclosure = '<p class="t5-disclosure">Pour rappel, Meilleurtest peut toucher une commission si vous achetez via ces liens, sans surco&ucirc;t pour vous et sans effet sur nos classements.</p>';
 $names_line = function ( $list ) {
   return esc_html( implode( ' - ', array_map( function( $p ) { return ( $p['brand'] !== '' ? $p['brand'] . ' ' : '' ) . $p['name']; }, $list ) ) );
 };
