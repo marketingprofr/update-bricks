@@ -1064,6 +1064,10 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   wp_get_attachment_image_src, clés 'img_w'/'img_h' de mt_side_bloc, demande de la Technique) puis vignettes 72×54
   + date seule (j F Y, clé de cache recents4) ; même catégorie = vignettes 40×40 ; FAQ = bulle « ? ». De 992 à 1199 px, la droite passe en
   colonnes de journal (columns: 240px, pas de trou sous les blocs courts).
+  Relecture de Samuel (CSS seul) : Accès rapide SANS panneau (tuiles grey-l-3, actif black-l-5) ; Tous les guides en
+  liste simple façon « Guide Index » de Game8 (les pastilles ul.mt-side-pills jugées « très laides », classe gardée) ;
+  icônes en currentColor (pas de bleu) ; droite : cadre grey-l-4, séparateurs grey-l-2 d'un bord à l'autre (padding sur
+  les li, pas sur le cadre) ; récents : grille 1fr auto auto 1fr pour centrer titre + date sur la vignette.
   Clics (contrat accepté par l'Architecture) : page privée slug `mt-clics-28j`, post_content = JSON {"ID": clics} (clés
   numériques, comparatifs publiés seulement, ~60 Ko, mise à jour hebdomadaire, post_modified = fraîcheur). Lue par
   get_page_by_path ; absente, vide ou illisible → bloc masqué (jamais de classement partiel). Création de la page par

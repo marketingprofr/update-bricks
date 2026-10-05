@@ -125,6 +125,15 @@ Depuis le 5 octobre au soir, chaque bloc a sa propre mise en forme (inspirée de
 
 À recoller : **9**, Code et CSS ; **10**, Code seulement.
 
+Puis, après la relecture de Samuel (CSS seulement, le HTML ne change pas) :
+- Accès rapide sans panneau autour, juste les tuiles gris clair ;
+- Tous les guides en simple liste de liens, comme le « Guide Index » de Game8, la page en cours sur fond gris ;
+- icônes de la couleur du titre, plus en bleu ;
+- colonne de droite plus proche de Game8 : cadre à peine visible, séparations nettes entre les éléments, d'un bord à l'autre ;
+- Mis à jour récemment : titre et date centrés en hauteur sur la vignette.
+
+À recoller : **9**, CSS seulement.
+
 ## CSS des éléments 1 et 2 : dans le bandeau (depuis le 5 octobre)
 
 Bricks imprime l'onglet CSS d'un élément Code juste après son contenu, au milieu de la page : pendant le chargement, le hero et l'encadré s'affichaient un instant sans mise en forme, puis se réarrangeaient (décalage mesuré par PageSpeed). Le CSS des éléments natifs, lui, est rassemblé dans la tête de la page. Depuis le 5 octobre (idée de Samuel) :
