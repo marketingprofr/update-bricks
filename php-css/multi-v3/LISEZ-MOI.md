@@ -12,8 +12,8 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 
 | N° | Élément Code du modèle (Bricks) | Onglet **Code** | Onglet **CSS** |
 |---|---|---|---|
-| 1 | Hero, colonne de gauche (titre, ligne auteur, « L'essentiel », « Vos questions », intro) | `multi-v3-1-hero-gauche.code.php` | `multi-v3-1-hero-gauche.css` |
-| 2 | Hero, colonne de droite (encadré « Pourquoi nous faire confiance ») | `multi-v3-2-encadre-confiance.code.php` | `multi-v3-2-encadre-confiance.css` |
+| 1 | Hero, colonne de gauche (titre, ligne auteur, intro, encart « L'essentiel », photo si pas d'encart) | `multi-v3-1-hero-gauche.code.php` | `multi-v3-1-hero-gauche.css` → **dans le CSS personnalisé du bandeau** (voir plus bas) |
+| 2 | Hero, colonne de droite (encadré « Pourquoi nous faire confiance ») | `multi-v3-2-encadre-confiance.code.php` | `multi-v3-2-encadre-confiance.css` → **dans le CSS personnalisé du bandeau** (voir plus bas) |
 | 3 | Sommaire | `multi-v3-3-sommaire.code.php` | `multi-v3-3-sommaire.css` |
 | 4 | Résumé du top 5 et sections des sous-comparatifs | `multi-v3-4-resume-top5.code.php` | `multi-v3-4-resume-top5.css` |
 | 5 | Tests complets | `multi-v3-5-tests-complets.code.php` | `multi-v3-5-tests-complets.css` |
@@ -88,6 +88,14 @@ Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 Si tu n'avais collé que la toute première version, recolle aussi :
 - **5**, CSS seulement (débordement mobile) ;
 - **6**, Code et CSS (ancres des questions).
+
+## CSS des éléments 1 et 2 : dans le bandeau (depuis le 5 octobre)
+
+Bricks imprime l'onglet CSS d'un élément Code juste après son contenu, au milieu de la page : pendant le chargement, le hero et l'encadré s'affichaient un instant sans mise en forme, puis se réarrangeaient (décalage mesuré par PageSpeed). Le CSS des éléments natifs, lui, est rassemblé dans la tête de la page. Depuis le 5 octobre (idée de Samuel) :
+- le contenu complet de `multi-v3-1-hero-gauche.css` puis de `multi-v3-2-encadre-confiance.css` est collé, à la suite, dans le CSS personnalisé de l'élément Texte du bandeau d'affiliation du modèle (Style → CSS) ;
+- les onglets CSS des éléments 1 et 2 restent **vides** (sinon les règles seraient en double).
+
+Quand l'un de ces deux fichiers CSS change, on recolle les deux fichiers, à la suite, dans le bandeau.
 
 ## Pas à pas
 

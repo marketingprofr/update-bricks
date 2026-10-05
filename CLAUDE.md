@@ -1021,6 +1021,13 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   et `$GLOBALS['mt_photo_place'] = 'hero'` ; l'encadré (rendu après) n'affiche alors pas la sienne. Banc : 0/2 vraies
   questions → photo dans le hero ; 3/4 → encart + photo dans l'encadré ; « no featured » → aucune photo. Climatiseur
   mobile : 7 vraies questions en ligne le 2026-10-05 (FAQ refaite par l'instance FAQ).
+- **CSS des éléments 1 et 2 dans le bandeau (Samuel, 2026-10-05)** : multi-v3-1-hero-gauche.css + multi-v3-2-encadre-
+  confiance.css collés dans le CSS personnalisé de l'élément Texte natif du bandeau d'affiliation (dans le modèle V3, pas
+  dans l'en-tête) → compilé par Bricks dans la tête (bricks-frontend-inline-inline-css) ; onglets CSS des éléments 1 et 2
+  vides. Vérifié en ligne : plus aucune règle .mt-card / .mt-lede-texte dans le corps ; décalages de l'encadré (0,018) et
+  de l'intro (0,014) disparus en chargement lent (4× CPU). Reste 0,35 venant de l'en-tête (menu : un LI et un P qui
+  disparaissent, section décalée de 18 px), hors des blocs Code. À CHAQUE livraison touchant ces CSS : dire de recoller
+  les deux fichiers dans le bandeau.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
