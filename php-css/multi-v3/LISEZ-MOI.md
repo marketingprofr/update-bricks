@@ -95,7 +95,7 @@ Si tu n'avais collé que la toute première version, recolle aussi :
 
 ## Cartes du top 5 dans une colonne étroite (5 octobre)
 
-Quand le sommaire est affiché à côté (écrans de 900 à 1 200 px environ), la note et le bouton passent sous le texte du produit au lieu de l'écraser. À recoller : **4**, CSS seulement.
+Quand le sommaire est affiché à côté (écrans de 900 à 1 200 px environ), la carte garde sa forme habituelle, avec une colonne étroite à droite : la note (score et pastille sur une ligne) au-dessus du bouton. À recoller : **4**, CSS seulement.
 
 ## Données structurées sans note Amazon (5 octobre)
 

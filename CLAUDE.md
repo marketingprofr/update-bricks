@@ -1060,10 +1060,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   ListItem avec url). L'AggregateRating de FeedbackWP (CreativeWorkSeries) n'est pas de nous. Les fiches /avis/ n'ont aucun
   JSON-LD (vérifié sur 3 fiches).
 - **Top 5 dans une colonne étroite (Samuel, 2026-10-05)** : `.mt-top5 .t5-list { container-type: inline-size }` +
-  `@media (min-width: 768px) { @container (max-width: 820px) {…} }` : note et bouton sous le texte, image gardée. Il faut
+  `@media (min-width: 768px) { @container (max-width: 820px) {…} }` : colonne de droite de 172 px, note (score + pastille
+  sur une ligne) au-dessus du bouton, image gardée (1re version « note et bouton sous le texte » jugée laide par Samuel). Il faut
   `.mt-top5 { align-self: stretch }` : le bloc Bricks parent (#brxe-nznhgs) est en align-items flex-start, la liste prenait
-  sa largeur de son contenu et la containment la rétrécissait (822 au lieu de 954 px). Mesuré en ligne : texte 149 → 505 px
-  à 1 000 px, 246 → 602 px à 1 100 px ; inchangé à 1 440 et sur mobile.
+  sa largeur de son contenu et la containment la rétrécissait (822 au lieu de 954 px). Mesuré en ligne : texte 149 → 313 px
+  à 1 000 px, 246 → 410 px à 1 100 px ; inchangé à 1 440, 900 px et sur mobile.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
