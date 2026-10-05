@@ -18,9 +18,10 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 | 4 | Résumé du top 5 et sections des sous-comparatifs | `multi-v3-4-resume-top5.code.php` | `multi-v3-4-resume-top5.css` |
 | 5 | Tests complets | `multi-v3-5-tests-complets.code.php` | `multi-v3-5-tests-complets.css` |
 | 6 | Questions fréquentes (FAQ) | `multi-v3-6-faq.code.php` | `multi-v3-6-faq.css` |
-| 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` (inchangé) |
+| 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` |
+| 8 | « Quel choix faire ? » (duels, par ex. « Climatiseur mobile ou climatiseur fixe ? ») | `multi-v3-8-choix.code.php` | `multi-v3-8-choix.css` |
 
-Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat, les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
+Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat (sauf le bloc des duels, élément 8), les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
 
 ## Si le modèle V3 est déjà collé
 
@@ -74,6 +75,8 @@ Puis, pour la vitesse : l'image de l'encadré en taille moyenne sur les écrans 
 Puis le bloc « Avis des lecteurs » de l'encadré est resserré (14 px de moins sur ordinateur) : **2**, CSS seulement.
 
 Puis la mention sous les produits devient « Pour rappel, Meilleurtest peut toucher une commission si vous achetez via ces liens, sans surcoût pour vous et sans effet sur nos classements. » : **4**, Code seulement.
+
+Puis, dans les duels, les titres d'option (« Climatiseur mobile », « Climatiseur fixe ») passent de H4 en H3, sans changement visible : **8**, Code seulement (dans le modèle où se trouve ce bloc, par exemple le modèle Section du guide d'achat).
 
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
@@ -148,6 +151,7 @@ Pour couper une fonction, passez son réglage à `false` (ou `''`) dans l'onglet
 
 Les fichiers de ce dossier sont des **copies exactes** des fichiers de référence :
 - `v2/multi-hero-gauche`, `v2/multi-sommaire`, `v2/multi-resume`, `v2/multi-tests`, `v2/multi-tableau` ;
+- `choix` (duels), partagé avec le V1 ;
 - `hero-encart` et `faq`, partagés avec le V1.
 
-Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 14 fichiers.
+Toute modification se fait dans le fichier de référence. Ensuite, on lance `python outils/verifier-multi-v3.py --recopier`, puis la même commande sans option, qui doit répondre « identique » pour les 16 fichiers.

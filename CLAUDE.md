@@ -1009,6 +1009,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Mention d'affiliation sous les produits (t5-disclosure, V1 et multi ; Samuel, 2026-10-05) : « Pour rappel, Meilleurtest
   peut toucher une commission si vous achetez via ces liens, sans surcoût pour vous et sans effet sur nos classements. »
   « Prévenez-nous » reste dans l'encadré (déconseillé de remplacer la mention d'affiliation, Samuel d'accord).
+  Duels (choix.code.php, élément 8 du dossier V3) : titres d'option `h3.mt-duel-ch` au lieu de h4 (saut H2 → H4 relevé par
+  jev-seo Rust, demande de la Coordination, 2026-10-05) ; styles calculés identiques vérifiés en ligne (1440 et 375 px).
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
