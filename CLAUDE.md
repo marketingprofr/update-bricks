@@ -1037,7 +1037,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   les N … ») refusée par Samuel. Puce 2 de l'encadré : « <b>Nous avons noté</b> les … sur k critères principaux (…) ».
   Puis repli sans critères : « selon ses caractéristiques, les avis des utilisateurs et notre propre évaluation ».
 - **Colonnes du guide d'achat, modèle Game8 (Samuel via la Coordination, 2026-10-05)** : v2/multi-colonne-gauche.code.php et
-  v2/multi-colonne-droite.code.php (éléments 9 et 10), CSS commun v2/multi-colonnes.css (collé dans les deux). Placés dans le
+  v2/multi-colonne-droite.code.php (éléments 9 et 10), CSS commun v2/multi-colonnes.css collé UNE fois, dans le 9 (onglet CSS
+  du 10 vide, demande de l'instance Technique ; « De saison » aussi en cache, aucune lecture hors transient). Placés dans le
   conteneur Bricks du guide (#brxe-hnpoyu en ligne), avant et après le bloc du guide (#brxe-yasoqe) ; la grille vient du
   CSS (`.brxe-container:has(> .brxe-code > .mt-side…)`, !important car Bricks règle display/width par ID) : 220 | 1fr | 280
   dès 1200 px, droite sous le guide de 992 à 1199, masquées dessous. Gauche collante (sticky, hauteur = écran, défilement

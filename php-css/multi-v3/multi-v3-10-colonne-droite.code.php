@@ -6,6 +6,8 @@
 
    Où le coller : un élément Code placé JUSTE APRÈS le bloc du guide d'achat,
    dans le même conteneur que la colonne de gauche (multi-colonne-gauche).
+   Onglet CSS VIDE : le CSS des deux colonnes (multi-colonnes.css) est collé
+   une seule fois, dans l'élément de la colonne de gauche.
    Entre 992 et 1199 px, cette colonne passe sous le guide ; masquée sur mobile.
 
    Blocs (titres en <p class="mt-side-h">, pas de titre HTML) ; un bloc sans
@@ -134,14 +136,18 @@ if ( $MT_SIDE_POPULAIRES ) {
   $mt_sd_html .= mt_side_bloc( 'Les comparatifs populaires', $mt_sd_l, true );
 }
 
-/* 7. De saison : liste choisie par Samuel (champ d'options), 6 au plus */
+/* 7. De saison : liste choisie par Samuel (champ d'options), 6 au plus ; en cache comme les autres listes */
 if ( $MT_SIDE_SAISON && function_exists( 'get_field' ) ) {
-  $mt_sd_s = get_field( $MT_SIDE_CHAMP_SAISON, 'option' );
-  $mt_sd_l = array();
-  foreach ( array_slice( is_array( $mt_sd_s ) ? $mt_sd_s : array(), 0, 6 ) as $p ) {
-    $id = is_object( $p ) ? (int) $p->ID : (int) $p;
-    if ( $id && $id !== $mt_sd && get_post_status( $id ) === 'publish' ) { $mt_sd_l[] = $mt_sd_lien( $id ); }
-  }
+  $mt_sd_l = mt_side_cache( 0, 'saison', function () use ( $mt_sd_lien, $MT_SIDE_CHAMP_SAISON ) {
+    $s = get_field( $MT_SIDE_CHAMP_SAISON, 'option' );
+    $l = array();
+    foreach ( array_slice( is_array( $s ) ? $s : array(), 0, 6 ) as $p ) {
+      $id = is_object( $p ) ? (int) $p->ID : (int) $p;
+      if ( $id && get_post_status( $id ) === 'publish' ) { $l[] = array( 'id' => $id ) + $mt_sd_lien( $id ); }
+    }
+    return $l;
+  } );
+  $mt_sd_l = array_values( array_filter( $mt_sd_l, function ( $x ) use ( $mt_sd ) { return (int) $x['id'] !== $mt_sd; } ) );
   $mt_sd_html .= mt_side_bloc( 'De saison', $mt_sd_l );
 }
 

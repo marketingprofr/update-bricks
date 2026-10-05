@@ -15,11 +15,13 @@ BLOCS = [
     ('7-tableau', 'v2/multi-tableau.code.php', 'v2/multi-tableau.css'),  # ajouté le 2026-10-04 (3 produits par sous-comparatif)
     ('8-choix', 'choix.code.php', 'choix.css'),  # ajouté le 2026-10-05 (titres d'option en H3)
     ('9-colonne-gauche', 'v2/multi-colonne-gauche.code.php', 'v2/multi-colonnes.css'),  # 2026-10-05, colonnes du guide (Game8)
-    ('10-colonne-droite', 'v2/multi-colonne-droite.code.php', 'v2/multi-colonnes.css'),
+    ('10-colonne-droite', 'v2/multi-colonne-droite.code.php', None),  # onglet CSS vide : le CSS est dans l'élément 9
 ]
 ecarts = 0
 for nom, php, css in BLOCS:
     for src, ext in ((php, '.code.php'), (css, '.css')):
+        if src is None:
+            continue
         copie = P / 'multi-v3' / f'multi-v3-{nom}{ext}'
         if '--recopier' in sys.argv:
             shutil.copyfile(P / src, copie)

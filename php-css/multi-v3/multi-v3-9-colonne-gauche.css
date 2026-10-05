@@ -1,8 +1,9 @@
 /* =====================================================================
    MEILLEURTEST — Partie guide d'achat : colonnes de gauche et de droite
    (modèle Game8, demande de Samuel du 2026-10-05).
-   MÊME fichier dans l'onglet CSS des deux éléments Code (colonne gauche et
-   colonne droite) : chacun fonctionne aussi seul.
+   Collé UNE SEULE FOIS, dans l'onglet CSS de l'élément de la colonne de
+   gauche ; l'onglet CSS de la colonne de droite reste vide (si l'on retire
+   la colonne de gauche, recoller ce fichier dans la colonne de droite).
    La grille s'applique au conteneur Bricks qui contient ces colonnes et le
    bloc du guide (sélecteur :has, aucun réglage Bricks à changer) :
      ≥ 1200 px : 220 px | guide | 280 px ;
