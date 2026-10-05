@@ -148,8 +148,6 @@ Puis, 20 guides dans un bloc étant trop gros (Samuel), la droite est coupée en
 
 Un bloc qui n'aurait qu'un seul lien n'est pas affiché. À recoller : **9**, CSS seulement ; **10**, Code seulement.
 
-Enfin, la colonne de gauche n'est plus collée en haut de l'écran avec sa propre barre de défilement : elle défile avec la page (Samuel). À recoller : **9**, CSS seulement.
-
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

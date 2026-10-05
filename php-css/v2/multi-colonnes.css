@@ -16,10 +16,11 @@
   .brxe-container:has(> .brxe-code > .mt-side) { display: grid !important; grid-template-columns: minmax(0, 1fr); column-gap: 32px; row-gap: 32px; align-items: start; }
   .brxe-container:has(> .brxe-code > .mt-side) > .brxe-block { width: auto !important; max-width: none !important; min-width: 0; margin: 0 !important; grid-row: 1; }
   .brxe-container:has(> .brxe-code > .mt-side) > .brxe-code:not(:has(> .mt-side)) { display: none; }
-  /* Colonne de gauche : défile avec la page, sans barre de défilement à elle (Samuel, 2026-10-05) */
+  /* Colonne de gauche : collée en haut de l'écran pendant toute la lecture du guide */
   .brxe-container:has(> .brxe-code > .mt-side-gauche) { grid-template-columns: 220px minmax(0, 1fr); }
   .brxe-container:has(> .brxe-code > .mt-side-gauche) > .brxe-block { grid-column: 2; }
-  .brxe-container > .brxe-code:has(> .mt-side-gauche) { grid-column: 1; grid-row: 1; }
+  .brxe-container > .brxe-code:has(> .mt-side-gauche) { grid-column: 1; grid-row: 1; align-self: stretch; }
+  .mt-side-gauche { position: sticky; top: 20px; max-height: calc(100vh - 40px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 4px; }
   /* Colonne de droite entre 992 et 1199 px : sous le guide, blocs en colonnes de journal (pas de trou sous les blocs courts) */
   .brxe-container:has(> .brxe-code > .mt-side-gauche) > .brxe-code:has(> .mt-side-droite) { grid-column: 2; grid-row: 2; }
   .mt-side-droite { columns: 240px; column-gap: 24px; }
