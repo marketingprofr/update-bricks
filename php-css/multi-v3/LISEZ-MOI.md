@@ -93,6 +93,10 @@ Si tu n'avais collé que la toute première version, recolle aussi :
 - **5**, CSS seulement (débordement mobile) ;
 - **6**, Code et CSS (ancres des questions).
 
+## Cartes du top 5 dans une colonne étroite (5 octobre)
+
+Quand le sommaire est affiché à côté (écrans de 900 à 1 200 px environ), la note et le bouton passent sous le texte du produit au lieu de l'écraser. À recoller : **4**, CSS seulement.
+
 ## Données structurées sans note Amazon (5 octobre)
 
 Les Product du JSON-LD n'ont plus d'`aggregateRating` : c'étaient les notes clients d'Amazon, et Google interdit les notes reprises d'autres sites. Elles restent affichées sur la page. Chaque Product garde la note de la rédaction et les offres ; un produit sans l'une ni l'autre n'est plus décrit (la liste garde son adresse). À recoller : **5**, Code seulement.
