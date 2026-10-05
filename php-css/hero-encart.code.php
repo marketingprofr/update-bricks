@@ -309,8 +309,11 @@ if ( $MT_ENCADRE_REEL ) {
 <script>(function(){
   /* L'encadré ne reste collant (sticky) que s'il tient dans la hauteur de l'écran : avec l'image, il dépasse souvent
      768 à 900 px, et son bas (avis des lecteurs) serait caché pendant tout le défilement */
-  var c=document.querySelector('.mt-card'); if(!c){return;}
-  function f(){ c.classList.toggle('mt-card-collant', c.offsetHeight + 40 <= window.innerHeight); }
-  f(); window.addEventListener('load',f); window.addEventListener('resize',f);
-  if('ResizeObserver' in window){ new ResizeObserver(f).observe(c); }
+  /* Hauteur lue dans un ResizeObserver (après la mise en page) : aucun recalcul forcé pendant le chargement
+     (PageSpeed, 2026-10-05). Sans ResizeObserver, l'encadré n'est simplement pas collant. */
+  var c=document.querySelector('.mt-card'); if(!c||!('ResizeObserver' in window)){return;}
+  var h=0;
+  function f(){ c.classList.toggle('mt-card-collant', h > 0 && h + 40 <= window.innerHeight); }
+  new ResizeObserver(function(e){ var b=e[0].borderBoxSize; h = b ? ( b[0] || b ).blockSize : e[0].contentRect.height; f(); }).observe(c);
+  window.addEventListener('resize', f);
 })();</script>

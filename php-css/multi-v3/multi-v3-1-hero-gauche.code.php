@@ -1337,13 +1337,14 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   }
   if ( $MT_INTRO_REPLIEE && trim( wp_strip_all_tags( $mt_intro_html ) ) !== '' ) {
       /* Texte de la rédaction entier dans le HTML ; replié sur 3 lignes sur mobile seulement (CSS). Le bouton ouvre et
-         referme ; il se cache quand le texte n'est pas coupé (ordinateur, ou intro de 3 lignes au plus). */
+         referme ; sur mobile, il se cache si le texte n'est pas coupé (intro de 3 lignes au plus). La mesure se fait dans
+         un ResizeObserver, après la mise en page : aucun recalcul forcé pendant le chargement (PageSpeed, 2026-10-05). */
       echo '<div class="mt-lede-texte" id="mt-lede-texte">' . $mt_intro_html . '</div>'
          . '<button type="button" class="mt-lede-suite" aria-expanded="false" aria-controls="mt-lede-texte">Afficher la suite</button>'
          . '<script>(function(){var t=document.getElementById("mt-lede-texte"),b=t&&t.nextElementSibling;if(!b){return;}'
-         . 'function v(){if(!t.classList.contains("mt-ouvert")){b.hidden=t.scrollHeight<=t.clientHeight+2;}}'
          . 'b.addEventListener("click",function(){var o=t.classList.toggle("mt-ouvert");b.setAttribute("aria-expanded",o?"true":"false");b.textContent=o?"Masquer la suite":"Afficher la suite";});'
-         . 'v();window.addEventListener("load",v);window.addEventListener("resize",v);})();</script>';
+         . 'if(!("ResizeObserver" in window)){return;}var m=window.matchMedia("(max-width: 767px)");'
+         . 'new ResizeObserver(function(){if(m.matches&&!t.classList.contains("mt-ouvert")){b.hidden=t.scrollHeight<=t.clientHeight+2;}}).observe(t);})();</script>';
   } else {
       echo $mt_intro_html;
   }

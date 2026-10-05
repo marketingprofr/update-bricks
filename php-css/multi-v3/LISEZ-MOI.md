@@ -78,6 +78,8 @@ Puis la mention sous les produits devient « Pour rappel, Meilleurtest peut touc
 
 Puis, dans les duels, les titres d'option (« Climatiseur mobile », « Climatiseur fixe ») passent de H4 en H3, sans changement visible : **8**, Code seulement (dans le modèle où se trouve ce bloc, par exemple le modèle Section du guide d'achat).
 
+Puis les scripts de l'intro (« Afficher la suite ») et de l'encadré collant ne mesurent plus rien pendant le chargement (recalculs forcés relevés par PageSpeed), sans changement visible : **1**, Code ; **2**, Code.
+
 Si tu n'avais pas encore collé la version du 3 octobre au soir, recolle aussi :
 - **2**, Code seulement (durée de lecture retirée, phrase des critères).
 

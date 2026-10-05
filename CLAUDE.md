@@ -1011,6 +1011,10 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   « Prévenez-nous » reste dans l'encadré (déconseillé de remplacer la mention d'affiliation, Samuel d'accord).
   Duels (choix.code.php, élément 8 du dossier V3) : titres d'option `h3.mt-duel-ch` au lieu de h4 (saut H2 → H4 relevé par
   jev-seo Rust, demande de la Coordination, 2026-10-05) ; styles calculés identiques vérifiés en ligne (1440 et 375 px).
+  Recalculs forcés (PageSpeed ordinateur, 2026-10-05 : 83 ms encadré + 40 à 111 ms intro) : les deux scripts lisent les
+  tailles dans un ResizeObserver (après la mise en page), plus de lecture synchrone ni d'écoute load ; intro mesurée
+  seulement sur mobile (matchMedia 767 px). CLS de l'encadré : Bricks imprime le CSS d'un élément Code JUSTE APRÈS son
+  HTML (8 Ko après pour les éléments 1 et 2, 102 Ko après pour le top 5) : affichage sans style puis réarrangement.
   `$MT_PASTILLE_VERIFIE = false` : pastille `.mt-eyebrow` « Vérifié le … » au-dessus du H1 retirée (doublon de la ligne
   auteur « Rédigé et vérifié par …, responsable éditorial • Mis à jour le … » ; demande de Samuel du 2026-10-04).
   Phrase d'ouverture : lien marchand sur les 3 produits (Amazon si ASIN, sinon 1er lien marchand, sinon nom seul),
