@@ -12,13 +12,18 @@
 
    Blocs (titres en <p class="mt-side-h"> : pas de titre HTML, le plan de la
    page reste propre) :
+     0. « Meilleur climatiseur mobile » (titre accordé comme le sommaire) :
+        les sélections de la page, « En 2026 » puis une ligne par
+        sous-comparatif (« 9000 BTU », « Réversible »…), liens vers leur
+        partie (#ancre) ; seulement sur un multi-comparatif (Samuel,
+        2026-10-07) ;
      1. « Accès rapide » (façon Game8 : panneau gris, partie en cours
         assombrie) : liens vers les parties de la page ; les liens dont la
         partie n'existe pas sont retirés au chargement ;
      2. « Guides {type au pluriel} » : simple liste des guides du MÊME type de
         produit (la page en tête), classés par le moteur des « Comparatifs
         similaires » (mt_sim_ranked_ids) ; le reste de la catégorie est dans
-        « Autres guides {catégorie} », colonne de droite (Samuel, 2026-10-05) ;
+        « Guides {catégorie} » et « Guides spécialisés », colonne de droite ;
      3. « Les modèles analysés » : les 10 mieux notés des avis détaillés
         (noms en double retirés), lien vers leur avis dans la page (#test-…),
         sinon vers leur page produit si l'ID ≥ 250 000, sinon sans lien.
@@ -26,6 +31,7 @@
    guide (hauteur limitée à l'écran, défilement interne si besoin).
    Listes mises en cache 12 h (transients), clé = page + date de modification.
    ===================================================================== */
+$MT_SIDE_SELECTIONS = true; // « Meilleur {type} » : les sélections de la page (multi-comparatif seulement)
 $MT_SIDE_ACCES     = true;  // « Accès rapide »
 $MT_SIDE_GUIDES    = true;  // « Guides {type au pluriel} »
 $MT_SIDE_MODELES   = true;  // « Les modèles analysés »
@@ -94,6 +100,27 @@ $mt_sp      = (int) get_the_ID();
 $mt_sp_tv   = function_exists( 'get_all_template_variables' ) ? (array) get_all_template_variables( $mt_sp ) : array();
 $mt_sp_plur = trim( (string) ( $mt_sp_tv['type_de_produit_au_pluriel'] ?? '' ) );
 $mt_sp_html = '';
+
+/* 0. Les sélections de la page (comme le sommaire du haut) : « En {année} », puis chaque sous-comparatif */
+if ( $MT_SIDE_SELECTIONS && function_exists( 'mtv2_plan' ) ) {
+  $mt_sp_pl = mtv2_plan( $mt_sp );
+  if ( ! empty( $mt_sp_pl['is_multi'] ) ) {
+    $mt_sp_l = array( array( 't' => 'En ' . date_i18n( 'Y' ), 'u' => '#mt-top5-title' ) );
+    foreach ( (array) $mt_sp_pl['subs'] as $sb ) {
+      $lbl = trim( (string) $sb['label'] );
+      if ( $lbl === '' || (string) $sb['anchor'] === '' ) { continue; }
+      $mt_sp_l[] = array( 't' => mb_strtoupper( mb_substr( $lbl, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $lbl, 1, null, 'UTF-8' ), 'u' => '#' . $sb['anchor'] );
+    }
+    /* Titre accordé comme celui du sommaire : « le meilleur » → « Meilleur climatiseur mobile » */
+    $llm = trim( (string) ( $mt_sp_tv['lalalesmeilleur'] ?? '' ) );
+    $sng = trim( (string) ( $mt_sp_tv['type_de_produit_au_singulier'] ?? '' ) );
+    $adj = trim( preg_replace( '/^(le|la|les)\s+/iu', '', $llm ) );
+    $typ = preg_match( '/^les\s/iu', $llm ) ? $mt_sp_plur : ( $sng !== '' ? $sng : $mt_sp_plur );
+    $tit = $adj !== '' && $typ !== '' ? $adj . ' ' . $typ : ( $mt_sp_plur !== '' ? 'Meilleurs ' . $mt_sp_plur : 'Nos sélections' );
+    $tit = mb_strtoupper( mb_substr( $tit, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $tit, 1, null, 'UTF-8' );
+    if ( count( $mt_sp_l ) >= 2 ) { $mt_sp_html .= mt_side_bloc( $tit, $mt_sp_l, false, '', 'mt-side-selections' ); }
+  }
+}
 
 /* 1. Accès rapide (le script retire les liens dont la partie n'existe pas sur la page) */
 if ( $MT_SIDE_ACCES ) {

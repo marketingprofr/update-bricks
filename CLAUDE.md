@@ -1079,6 +1079,10 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Puis (Samuel, « 20 ça fait beaucoup ») : droite coupée en « Guides {catégorie} » (sans post-type-attribut, vignettes,
   classe mt-side-cat) et « Guides spécialisés » (avec attribut, liste + flèche ›, classe mt-side-precis), 10 max chacun
   ($MT_SIDE_MAX_CAT), clé categorie4, max moteur 2×10+60 ; bloc masqué sous 2 liens.
+- **Bloc « sélections » en tête de la colonne de gauche (Samuel, 2026-10-07)** : mt_side_bloc classe mt-side-selections,
+  titre accordé comme multi-sommaire (lalalesmeilleur → « Meilleur climatiseur mobile »), « En {année} » → #mt-top5-title
+  puis mtv2_plan()['subs'] (label capitalisé → #anchor) ; seulement si is_multi et ≥ 2 lignes ; style = liste grise des
+  guides. Vérifié en ligne : les 9 ancres du sommaire de climatiseur mobile existent (#reversible … #16-000-btu).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.

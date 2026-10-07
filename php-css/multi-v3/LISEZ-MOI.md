@@ -20,7 +20,7 @@ Chaque élément Code du modèle a deux fichiers, avec le même numéro.
 | 6 | Questions fréquentes (FAQ) | `multi-v3-6-faq.code.php` | `multi-v3-6-faq.css` |
 | 7 | Tableau comparatif | `multi-v3-7-tableau.code.php` | `multi-v3-7-tableau.css` |
 | 8 | « Quel choix faire ? » (duels, par ex. « Climatiseur mobile ou climatiseur fixe ? ») | `multi-v3-8-choix.code.php` | `multi-v3-8-choix.css` |
-| 9 | **Nouveau** : colonne de gauche du guide d'achat (accès rapide, guides du même type, modèles analysés) | `multi-v3-9-colonne-gauche.code.php` | `multi-v3-9-colonne-gauche.css` |
+| 9 | **Nouveau** : colonne de gauche du guide d'achat (sélections de la page, accès rapide, guides du même type, modèles analysés) | `multi-v3-9-colonne-gauche.code.php` | `multi-v3-9-colonne-gauche.css` |
 | 10 | **Nouveau** : colonne de droite du guide d'achat (plus consultés de la catégorie, mis à jour récemment, guides de la catégorie et guides spécialisés, questions fréquentes) | `multi-v3-10-colonne-droite.code.php` | **vide** (le CSS des deux colonnes est dans le 9) |
 
 Les autres éléments Code du modèle ne changent pas. Il n'y a rien à coller pour eux, notamment pour le guide d'achat (sauf le bloc des duels, élément 8), les types, les marques, les astuces, « Pourquoi acheter », les comparatifs similaires et l'index des comparatifs.
@@ -147,6 +147,10 @@ Puis, 20 guides dans un bloc étant trop gros (Samuel), la droite est coupée en
 - **« Guides spécialisés »** : les guides plus précis (prix, marque, usage…), en simple liste avec une flèche.
 
 Un bloc qui n'aurait qu'un seul lien n'est pas affiché. À recoller : **9**, CSS seulement ; **10**, Code seulement.
+
+## Sélections de la page en haut de la colonne de gauche (7 octobre)
+
+Demande de Samuel : en haut de la colonne de gauche, un bloc pour passer d'une sélection à l'autre, comme le sommaire du haut de page mais dans le style de la colonne (liste grise). Titre accordé comme le sommaire (« Meilleur climatiseur mobile »), puis « En 2026 » et une ligne par sous-comparatif (« Réversible », « 9000 BTU »…), chacune menant à sa partie de la page. Le bloc n'apparaît que sur un multi-comparatif. À recoller : **9**, Code et CSS.
 
 ## CSS sans commentaires (5 octobre)
 
