@@ -30,6 +30,11 @@
         attribut : prix, marque, usage…), en simple liste ;
      9. « Questions fréquentes » : 5 questions de la rédaction, avec un lien
         vers leur réponse dans la FAQ de la page.
+   Blocs « collés » ($MT_SIDE_COLLES, Samuel 2026-10-08) : placés à la fin
+   de la colonne, ils restent à l'écran pendant toute la lecture de l'article
+   (s'ils dépassent la hauteur de l'écran, ils défilent jusqu'à ce que leur
+   bas touche le bas de l'écran, puis restent là) ; les autres blocs
+   défilent avant eux.
    Honnêteté : « plus consultés » seulement avec de vrais clics, jamais de
    compteur inventé. Listes en cache 12 h (transients).
    ===================================================================== */
@@ -40,6 +45,8 @@ $MT_SIDE_PRECIS    = true;           // 8. « Guides spécialisés » (guides pl
 $MT_SIDE_FAQ       = true;           // 9. « Questions fréquentes »
 $MT_SIDE_PAGE_CLICS = 'mt-clics-28j'; // slug de la page privée des clics Google (JSON {"id du comparatif": clics sur 28 jours})
 $MT_SIDE_MAX_CAT   = 10;             // guides au plus dans chacun des deux blocs
+$MT_SIDE_COLLES    = array( 'top', 'cat' ); // blocs qui restent à l'écran, dans cet ordre : top = plus consultés, cat = Guides {catégorie},
+                                            // recents = Mis à jour récemment, precis = Guides spécialisés, faq = Questions fréquentes
 
 /* ---------------------------------------------------------------------
    Aides communes aux deux colonnes (copie IDENTIQUE dans multi-colonne-gauche
@@ -102,7 +109,7 @@ if ( ! function_exists( 'mt_side_bloc' ) ) {
 $mt_sd      = (int) get_the_ID();
 $mt_sd_cat  = mt_side_cat( $mt_sd );
 $mt_sd_nom  = $mt_sd_cat ? mb_strtolower( html_entity_decode( (string) $mt_sd_cat->name, ENT_QUOTES, 'UTF-8' ), 'UTF-8' ) : '';
-$mt_sd_html = '';
+$mt_sd_b    = array();  // blocs, dans l'ordre de la colonne ; les blocs collés passent à la fin
 $mt_sd_img  = function ( $id, $taille ) { $u = function_exists( 'get_the_post_thumbnail_url' ) ? get_the_post_thumbnail_url( $id, $taille ) : ''; return $u ? (string) $u : ''; };
 $mt_sd_lien = function ( $id, $m = '', $img = '' ) { return array( 't' => mt_side_label( get_the_title( $id ) ), 'u' => (string) get_permalink( $id ), 'm' => $m, 'img' => $img ); };
 
@@ -118,7 +125,7 @@ if ( $MT_SIDE_CONSULTES && $mt_sd_cat ) {
     arsort( $l );
     return array_map( $mt_sd_lien, array_slice( array_keys( $l ), 0, 5 ) );
   } );
-  $mt_sd_html .= mt_side_bloc( 'Les plus consultés en ' . $mt_sd_nom, $mt_sd_l, true, '', 'mt-side-top' );
+  $mt_sd_b['top'] = mt_side_bloc( 'Les plus consultés en ' . $mt_sd_nom, $mt_sd_l, true, '', 'mt-side-top' );
 }
 
 /* 5. Mis à jour récemment dans la catégorie : le 1er avec une grande image, les autres en vignette */
@@ -140,7 +147,7 @@ if ( $MT_SIDE_RECENTS && $mt_sd_cat ) {
     }
     return $l;
   } );
-  $mt_sd_html .= mt_side_bloc( 'Mis à jour récemment', $mt_sd_l, false, '', 'mt-side-recents' );
+  $mt_sd_b['recents'] = mt_side_bloc( 'Mis à jour récemment', $mt_sd_l, false, '', 'mt-side-recents' );
 }
 
 /* 8. Guides de la catégorie (hors même type de produit, déjà à gauche), même classement que les « Comparatifs similaires » :
@@ -176,11 +183,11 @@ if ( ( $MT_SIDE_CATEGORIE || $MT_SIDE_PRECIS ) && $mt_sd_cat ) {
   $mt_sd_cn = html_entity_decode( (string) $mt_sd_cat->name, ENT_QUOTES, 'UTF-8' );
   if ( $MT_SIDE_CATEGORIE ) {
     $l = (array) ( $mt_sd_g['princ'] ?? array() );
-    if ( count( $l ) >= 2 ) { $mt_sd_html .= mt_side_bloc( $mt_sd_cn !== '' ? 'Guides ' . mb_strtolower( $mt_sd_cn, 'UTF-8' ) : 'Dans la même catégorie', $l, false, '', 'mt-side-cat' ); }  // un seul lien : pas de bloc
+    if ( count( $l ) >= 2 ) { $mt_sd_b['cat'] = mt_side_bloc( $mt_sd_cn !== '' ? 'Guides ' . mb_strtolower( $mt_sd_cn, 'UTF-8' ) : 'Dans la même catégorie', $l, false, '', 'mt-side-cat' ); }  // un seul lien : pas de bloc
   }
   if ( $MT_SIDE_PRECIS ) {
     $l = (array) ( $mt_sd_g['precis'] ?? array() );
-    if ( count( $l ) >= 2 ) { $mt_sd_html .= mt_side_bloc( 'Guides spécialisés', $l, false, '', 'mt-side-precis' ); }
+    if ( count( $l ) >= 2 ) { $mt_sd_b['precis'] = mt_side_bloc( 'Guides spécialisés', $l, false, '', 'mt-side-precis' ); }
   }
 }
 
@@ -199,13 +206,32 @@ if ( $MT_SIDE_FAQ && function_exists( 'mt_faq_read' ) && function_exists( 'mt_fa
     $mt_sd_l[] = array( 't' => $q, 'u' => '#' . mt_faq_ancre( $q ) );
   }
   if ( count( $mt_sd_l ) >= 3 ) {
-    $mt_sd_html .= mt_side_bloc( 'Questions fréquentes', $mt_sd_l, false, '<p class="mt-side-plus"><a href="#partie-faq">Toutes les questions</a></p>', 'mt-side-faq' );
+    $mt_sd_b['faq'] = mt_side_bloc( 'Questions fréquentes', $mt_sd_l, false, '<p class="mt-side-plus"><a href="#partie-faq">Toutes les questions</a></p>', 'mt-side-faq' );
   }
 }
+
+/* Les blocs qui défilent, puis les blocs collés, regroupés à la fin */
+$mt_sd_html  = '';
+$mt_sd_colle = '';
+foreach ( $mt_sd_b as $k => $h ) { if ( ! in_array( $k, (array) $MT_SIDE_COLLES, true ) ) { $mt_sd_html .= $h; } }
+foreach ( (array) $MT_SIDE_COLLES as $k ) { $mt_sd_colle .= $mt_sd_b[ $k ] ?? ''; }
+if ( $mt_sd_colle !== '' ) { $mt_sd_html .= '<div class="mt-side-colle">' . $mt_sd_colle . '</div>'; }
 
 if ( $mt_sd_html !== '' ) :
 ?>
 <aside class="mt-side mt-side-droite" aria-label="Découvrir d’autres comparatifs">
 <?php echo $mt_sd_html; ?>
 </aside>
+<?php if ( $mt_sd_colle !== '' ) : ?>
+<script>(function(){
+  /* Blocs collés : s'ils tiennent dans l'écran, ils restent en haut ; sinon ils défilent jusqu'à ce que leur bas touche
+     le bas de l'écran. Leur hauteur est suivie par ResizeObserver : aucune mesure pendant le défilement. */
+  var c = document.querySelector('.mt-side-droite .mt-side-colle');
+  if (!c || !window.ResizeObserver) return;
+  var h = 0;
+  function maj(){ c.style.setProperty('--mt-colle-top', Math.min(20, window.innerHeight - h - 20) + 'px'); }
+  new ResizeObserver(function(e){ var b = e[0].borderBoxSize; h = b && b[0] ? b[0].blockSize : e[0].contentRect.height; maj(); }).observe(c);
+  window.addEventListener('resize', maj, { passive: true });
+})();</script>
+<?php endif; ?>
 <?php endif; ?>

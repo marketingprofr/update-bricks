@@ -31,19 +31,23 @@
   /* Le tableau comparatif reprend toute la largeur, par-dessus les colonnes : la règle vise le tableau lui-même, où qu'il
      soit dans la colonne principale (bloc direct du conteneur, ou bloc à l'intérieur d'une colonne principale) ; largeur
      explicite, sinon, dans un bloc Bricks (flex), le tableau prend sa largeur naturelle (plus de 4 000 px) */
-  .brxe-container:has(> .brxe-code > .mt-side) .mt-cmp-root { position: relative; z-index: 3; background: var(--at-white); box-sizing: border-box; min-width: 0; max-width: none; }
+  .brxe-container:has(> .brxe-code > .mt-side) .mt-cmp-root { position: relative; z-index: 3; background: var(--at-white); box-sizing: border-box; min-width: 0; max-width: none; padding-top: 40px; padding-bottom: 32px; }  /* bande blanche au-dessus du titre et sous le tableau (Samuel, 2026-10-08) */
   .brxe-container:has(> .brxe-code > .mt-side-gauche) .mt-cmp-root { width: calc(100% + 252px); margin-left: -252px !important; }
   /* Colonne de droite entre 992 et 1199 px : à la fin du contenu, blocs en colonnes de journal (pas de trou sous les blocs courts) */
   .brxe-container > .brxe-code:has(> .mt-side-droite) { margin-top: 32px; }
   .mt-side-droite { columns: 240px; column-gap: 24px; }
   .mt-side-droite .mt-side-bloc { break-inside: avoid; }
+  .mt-side-colle { display: contents; }
 }
 @media (min-width: 1200px) {
   .brxe-container:has(> .brxe-code > .mt-side-droite) { padding-right: 312px !important; }
   .brxe-container > .brxe-code:has(> .mt-side-droite) { position: absolute; top: 0; bottom: 0; right: 0; width: 280px; margin: 0; }
   .brxe-container:has(> .brxe-code > .mt-side-droite) .mt-cmp-root { width: calc(100% + 312px); margin-right: -312px !important; }
   .brxe-container:has(> .brxe-code > .mt-side-gauche):has(> .brxe-code > .mt-side-droite) .mt-cmp-root { width: calc(100% + 564px); }
-  .mt-side-droite { columns: auto; }
+  .mt-side-droite { columns: auto; height: 100%; }
+  /* Blocs collés (à la fin de la colonne) : restent à l'écran jusqu'à la fin de l'article ; le haut est calculé par le
+     script de la colonne (20 px, ou moins si les blocs dépassent l'écran) */
+  .mt-side-colle { display: block; position: sticky; top: var(--mt-colle-top, 20px); }
 }
 @media (max-width: 991px) {
   .brxe-code:has(> .mt-side) { display: none; }

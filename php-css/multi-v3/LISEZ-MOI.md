@@ -169,6 +169,13 @@ Structure cible dans Bricks :
 
 Le tableau garde toute la largeur et passe par-dessus les colonnes (fond opaque) ; elles réapparaissent après lui.
 
+Puis (Samuel) :
+- une bande blanche de 40 px au-dessus du titre du tableau et de 32 px sous le tableau, pour qu'il apparaisse proprement par-dessus les colonnes ;
+- colonne de droite : « Les plus consultés » et « Guides climatisation » sont regroupés à la fin de la colonne et restent à l'écran pendant toute la lecture (s'ils dépassent l'écran, leur bas reste visible) ; les autres blocs défilent avant eux. Réglage `$MT_SIDE_COLLES` en haut du fichier 10 ;
+- avis détaillés dans la colonne centrale étroite : image sur un bon tiers, verdict sur le reste en 17,5 px ; encart de note sur une ligne, « Très bien » sous la note, bouton à droite sur une ligne. Mobile inchangé.
+
+À recoller : **9**, CSS ; **10**, Code ; **5**, CSS.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.
