@@ -12,7 +12,7 @@
 
    Blocs (titres en <p class="mt-side-h"> : pas de titre HTML, le plan de la
    page reste propre) :
-     0. « Classement » : les sélections de la page, « Palmarès 2026 » puis
+     0. « Classements » : les sélections de la page, « Palmarès 2026 » puis
         une ligne par
         sous-comparatif (« 9000 BTU », « Réversible »…), liens vers leur
         partie (#ancre) ; seulement sur un multi-comparatif (Samuel,
@@ -31,7 +31,7 @@
    guide (hauteur limitée à l'écran, défilement interne si besoin).
    Listes mises en cache 12 h (transients), clé = page + date de modification.
    ===================================================================== */
-$MT_SIDE_SELECTIONS = true; // « Classement » : les sélections de la page (multi-comparatif seulement)
+$MT_SIDE_SELECTIONS = true; // « Classements » : les sélections de la page (multi-comparatif seulement)
 $MT_SIDE_ACCES     = true;  // « Accès rapide »
 $MT_SIDE_GUIDES    = true;  // « Guides {type au pluriel} »
 $MT_SIDE_MODELES   = true;  // « Modèles analysés »
@@ -111,7 +111,8 @@ if ( $MT_SIDE_SELECTIONS && function_exists( 'mtv2_plan' ) ) {
       if ( $lbl === '' || (string) $sb['anchor'] === '' ) { continue; }
       $mt_sp_l[] = array( 't' => mb_strtoupper( mb_substr( $lbl, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $lbl, 1, null, 'UTF-8' ), 'u' => '#' . $sb['anchor'] );
     }
-    if ( count( $mt_sp_l ) >= 2 ) { $mt_sp_html .= mt_side_bloc( 'Classement', $mt_sp_l, false, '', 'mt-side-selections' ); }
+    /* Au moins le palmarès et un sous-comparatif, donc toujours plusieurs classements : titre au pluriel (Samuel, 2026-10-08) */
+    if ( count( $mt_sp_l ) >= 2 ) { $mt_sp_html .= mt_side_bloc( 'Classements', $mt_sp_l, false, '', 'mt-side-selections' ); }
   }
 }
 

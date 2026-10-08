@@ -154,6 +154,8 @@ Demande de Samuel : en haut de la colonne de gauche, un bloc pour passer d'une s
 
 Puis (Samuel, 8 octobre) : ce bloc s'appelle « Classement », sa première ligne « Palmarès 2026 » ; « Les modèles analysés » devient « Modèles analysés ». À recoller : **9**, Code seulement.
 
+Puis : « Classements » au pluriel (il y a toujours au moins le palmarès et une sélection) et une flamme comme icône de « Les plus consultés ». À recoller : **9**, Code et CSS.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

@@ -1085,6 +1085,7 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   guides. Vérifié en ligne : les 9 ancres du sommaire de climatiseur mobile existent (#reversible … #16-000-btu).
   Puis (Samuel, 2026-10-08) : titre « Classement » (plus d'accord façon sommaire), 1re ligne « Palmarès {année} » ;
   « Modèles analysés » sans article ; « Guides {type pluriel} » gardé tel quel (Samuel l'a confirmé).
+  Puis « Classements » au pluriel (bloc affiché seulement à ≥ 2 lignes) ; icône flamme pour .mt-side-top (Samuel).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
