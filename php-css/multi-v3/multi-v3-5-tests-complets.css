@@ -173,7 +173,9 @@
     .ed-a-figure .ph-verdict { font-size: 17.5px; line-height: 1.6; padding-left: 18px; }
     .ed-a-buy { flex-wrap: nowrap; }
     .ed-a-buy .note-block, .ed-a-buy .cust-block { padding: 14px 16px; }
-    .ed-a-buy .r-line, .ed-a-buy .cust-line { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .ed-a-buy.has-pro .r-line { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .ed-a-buy .cust-block { flex: 0 1 auto; min-width: 0; }
+    .ed-a-buy .cust-line { flex-wrap: wrap; gap: 2px 8px; }
     .ed-a-buy .pro-block { flex: 1 1 0; padding: 14px 16px; }
     .ed-a-buy .pro-line { font-size: 13px; }
     .ed-a-buy .cta-block { flex: 0 0 auto; min-width: 0; margin-left: auto; padding: 14px 16px; }

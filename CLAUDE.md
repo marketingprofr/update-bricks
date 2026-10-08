@@ -1106,6 +1106,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   nowrap). Mesuré en ligne : image 249 / texte 407 px à 1440, mobile identique.
   Correctif : la borne basse 600 px excluait l'écran de Samuel (colonne centrale 586-592 px vers 1200 px) ; la requête
   est désormais @media (min-width: 761px) { @container (max-width: 860px) } (mobile empilé en dessous). Testé 800 à 1440.
+  Puis (Samuel, encart trop haut) : mention sous la note seulement avec un point fort (.ed-a-buy.has-pro) ; avec avis
+  clients, note + mention et 4,3 + étoiles + nombre d'avis sur une ligne (cust-line flex-wrap en secours) : 79 px au
+  lieu de 119 px de haut.
   À faire : citation des avis détaillés trop étroite à 656 px ; colonne de droite seulement en haut (à décider).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
