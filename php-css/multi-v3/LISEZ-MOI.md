@@ -176,6 +176,12 @@ Puis (Samuel) :
 
 À recoller : **9**, CSS ; **10**, Code ; **5**, CSS.
 
+## Encadré : « En plus de nos propres analyses » (8 octobre)
+
+Choix de Samuel du 6 octobre (via la Coordination) : la puce 1 de l'encadré commence par « **En plus de nos propres analyses**, nous avons consulté 27 sources, dont… » au lieu de « Pour réaliser ce comparatif… », qui laissait croire à une simple compilation de sources (Jev : travail d'analyse propre 0,97 contre 0,85). À recoller : **2**, Code seulement. Même fichier pour le modèle V1.
+
+Colonne de droite, même jour (demande de la Coordination) : le classement « Les plus consultés » se met à jour dès que la page des clics change (chaque lundi), et un bloc vide n'est plus gardé que 1 h. À recoller : **9** et **10**, Code.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

@@ -59,7 +59,7 @@ if ( ! function_exists( 'mt_side_cache' ) ) {
     $v = function_exists( 'get_transient' ) ? get_transient( $k ) : false;
     if ( is_array( $v ) ) { return $v; }
     $v = (array) $fn();
-    if ( function_exists( 'set_transient' ) ) { set_transient( $k, $v, 12 * 3600 ); }
+    if ( function_exists( 'set_transient' ) ) { set_transient( $k, $v, empty( $v ) ? 3600 : 12 * 3600 ); }  // un résultat vide n'est gardé qu'1 h
     return $v;
   }
 }
@@ -115,7 +115,13 @@ $mt_sd_lien = function ( $id, $m = '', $img = '' ) { return array( 't' => mt_sid
 
 /* 4. Les plus consultés de la catégorie : vrais clics Google sur 28 jours (page privée mt-clics-28j), sinon rien */
 if ( $MT_SIDE_CONSULTES && $mt_sd_cat ) {
-  $mt_sd_l = mt_side_cache( $mt_sd, 'consultes', function () use ( $mt_sd, $mt_sd_cat, $mt_sd_lien, $MT_SIDE_PAGE_CLICS ) {
+  /* Clé du cache liée à la version de la page de clics (mise à jour chaque lundi) : nouveau classement dès sa mise à jour
+     (demande de la Coordination, 2026-10-06) ; requête légère sur la seule date, pas sur les 60 Ko du contenu */
+  global $wpdb;
+  $mt_sd_cv = ( isset( $wpdb ) && is_object( $wpdb ) && method_exists( $wpdb, 'get_var' ) )
+    ? (string) $wpdb->get_var( $wpdb->prepare( "SELECT post_modified_gmt FROM {$wpdb->posts} WHERE post_name = %s AND post_type = 'page' LIMIT 1", $MT_SIDE_PAGE_CLICS ) )
+    : '';
+  $mt_sd_l = mt_side_cache( $mt_sd, 'consultes|' . $mt_sd_cv, function () use ( $mt_sd, $mt_sd_cat, $mt_sd_lien, $MT_SIDE_PAGE_CLICS ) {
     $pg = function_exists( 'get_page_by_path' ) ? get_page_by_path( $MT_SIDE_PAGE_CLICS, OBJECT, 'page' ) : null;
     $clics = $pg ? json_decode( trim( (string) $pg->post_content ), true ) : null;
     if ( ! is_array( $clics ) || empty( $clics ) ) { return array(); }  // données absentes ou illisibles : bloc masqué

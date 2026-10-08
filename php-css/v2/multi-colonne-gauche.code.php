@@ -49,7 +49,7 @@ if ( ! function_exists( 'mt_side_cache' ) ) {
     $v = function_exists( 'get_transient' ) ? get_transient( $k ) : false;
     if ( is_array( $v ) ) { return $v; }
     $v = (array) $fn();
-    if ( function_exists( 'set_transient' ) ) { set_transient( $k, $v, 12 * 3600 ); }
+    if ( function_exists( 'set_transient' ) ) { set_transient( $k, $v, empty( $v ) ? 3600 : 12 * 3600 ); }  // un résultat vide n'est gardé qu'1 h
     return $v;
   }
 }

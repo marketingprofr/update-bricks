@@ -1110,6 +1110,12 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   clients, note + mention et 4,3 + étoiles + nombre d'avis sur une ligne (cust-line flex-wrap en secours) : 79 px au
   lieu de 119 px de haut.
   À faire : citation des avis détaillés trop étroite à 656 px ; colonne de droite seulement en haut (à décider).
+- **Demandes de la Coordination du 2026-10-06, faites le 2026-10-08** (session Templates fermée à l'envoi ; lues sur
+  wp-avis/coordination-audits-jev.md, lignes « À FAIRE PAR TEMPLATES ») : (1) puce 1 de l'encadré « <b>En plus de nos
+  propres analyses</b>, nous avons consulté N sources, dont … » (choix de Samuel ; hero-encart, V1 et multi) ; (2) clé du
+  cache « consultes » = 'consultes|' + post_modified_gmt de la page mt-clics-28j (requête $wpdb sur la seule date), et
+  mt_side_cache garde un résultat vide 1 h au lieu de 12 h (aide commune, copie identique dans les 2 colonnes).
+  Penser à relire ce tableau à chaque reprise de session.
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
