@@ -1116,6 +1116,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   cache « consultes » = 'consultes|' + post_modified_gmt de la page mt-clics-28j (requête $wpdb sur la seule date), et
   mt_side_cache garde un résultat vide 1 h au lieu de 12 h (aide commune, copie identique dans les 2 colonnes).
   Penser à relire ce tableau à chaque reprise de session.
+- **Duels empilés partout (Samuel, 2026-10-08)** : choix.css, .mt-duel-grid en 1 colonne sur toutes les largeurs (avant
+  1fr auto 1fr), .mt-duel-vs padding 8px 0, grille bornée à 700 px avec titre/intro/verdict ; règle .single devenue
+  inutile (retirée). 1440 px en ligne : options 285 × 767 → 656 × 360 px.
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
