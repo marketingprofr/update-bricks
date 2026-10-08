@@ -156,6 +156,19 @@ Puis (Samuel, 8 octobre) : ce bloc s'appelle « Classement », sa première lign
 
 Puis : « Classements » au pluriel (il y a toujours au moins le palmarès et une sélection) et une flamme comme icône de « Les plus consultés ». À recoller : **9**, Code et CSS.
 
+## Colonnes sur tout l'article (8 octobre, en préparation)
+
+Samuel veut les colonnes le long de tout l'article (résumés, avis détaillés, tableau, guide), sans HTML en double. Le CSS du **9** le permet désormais, et donne exactement la même page tant que la structure Bricks n'a pas changé (vérifié sur la page en ligne et sur le banc).
+
+Structure cible dans Bricks :
+- une seule Section, un seul Conteneur, qui contient dans l'ordre : l'élément Code de gauche (9), le bloc des résumés et avis détaillés, le bloc du tableau, le bloc du guide, l'élément Code de droite (10) ;
+- les trois blocs peuvent rester des modèles de type Section, insérés par des éléments « Modèle », mais **sans** élément Section ni Conteneur à l'intérieur : la racine de chaque modèle est un simple **Bloc** ;
+- le bloc du sommaire (à gauche des résumés, déjà masqué sur mobile) est retiré : « Classements » et « Accès rapide » le remplacent ;
+- les réglages de largeur posés dans Bricks pour l'ancienne mise en page (bloc du guide en « calc(100% - 220px) », conteneur en ligne avec 56 px d'écart) sont à retirer ;
+- les espacements entre les trois blocs se règlent dans Bricks (marges des blocs), puisque les sections ne les donnent plus.
+
+Le tableau garde toute la largeur et passe par-dessus les colonnes (fond opaque) ; elles réapparaissent après lui.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

@@ -1086,6 +1086,15 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Puis (Samuel, 2026-10-08) : titre « Classement » (plus d'accord façon sommaire), 1re ligne « Palmarès {année} » ;
   « Modèles analysés » sans article ; « Guides {type pluriel} » gardé tel quel (Samuel l'a confirmé).
   Puis « Classements » au pluriel (bloc affiché seulement à ≥ 2 lignes) ; icône flamme pour .mt-side-top (Samuel).
+- **Colonnes sur tout l'article (Samuel, 2026-10-08)** : multi-colonnes.css passe de la grille à des colonnes posées
+  dans les marges intérieures du conteneur (padding 252 / 312 px, .brxe-code en absolute top/bottom 0, aside sticky
+  dedans) ; le contenu (1..n blocs) s'écoule au milieu ; le bloc qui contient .mt-cmp-root reprend toute la largeur
+  (marges négatives, z-index 3, fond --at-white) et cache les colonnes ; .mt-cmp-root min-width 0 (sinon, dans un bloc
+  flex, le tableau prend sa largeur naturelle de 4 150 px) ; box-sizing border-box forcé. 992-1199 : droite statique à
+  la fin. Même rendu qu'avant sur la structure actuelle (mesuré en ligne et au banc). Structure cible : 1 Section >
+  1 Conteneur > [Code 9, bloc résumés+avis, bloc tableau, bloc guide, Code 10], modèles insérés sans Section ni
+  Conteneur internes ; sommaire (#brxe-moezpf, desktop seulement) retiré. Simulation : scratchpad simu_article.py.
+  À faire : citation des avis détaillés trop étroite à 656 px ; colonne de droite seulement en haut (à décider).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
