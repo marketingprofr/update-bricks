@@ -152,6 +152,8 @@ Un bloc qui n'aurait qu'un seul lien n'est pas affiché. À recoller : **9**, CS
 
 Demande de Samuel : en haut de la colonne de gauche, un bloc pour passer d'une sélection à l'autre, comme le sommaire du haut de page mais dans le style de la colonne (liste grise). Titre accordé comme le sommaire (« Meilleur climatiseur mobile »), puis « En 2026 » et une ligne par sous-comparatif (« Réversible », « 9000 BTU »…), chacune menant à sa partie de la page. Le bloc n'apparaît que sur un multi-comparatif. À recoller : **9**, Code et CSS.
 
+Puis (Samuel, 8 octobre) : ce bloc s'appelle « Classement », sa première ligne « Palmarès 2026 » ; « Les modèles analysés » devient « Modèles analysés ». À recoller : **9**, Code seulement.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

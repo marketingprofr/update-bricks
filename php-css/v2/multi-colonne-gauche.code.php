@@ -12,8 +12,8 @@
 
    Blocs (titres en <p class="mt-side-h"> : pas de titre HTML, le plan de la
    page reste propre) :
-     0. « Meilleur climatiseur mobile » (titre accordé comme le sommaire) :
-        les sélections de la page, « En 2026 » puis une ligne par
+     0. « Classement » : les sélections de la page, « Palmarès 2026 » puis
+        une ligne par
         sous-comparatif (« 9000 BTU », « Réversible »…), liens vers leur
         partie (#ancre) ; seulement sur un multi-comparatif (Samuel,
         2026-10-07) ;
@@ -24,17 +24,17 @@
         produit (la page en tête), classés par le moteur des « Comparatifs
         similaires » (mt_sim_ranked_ids) ; le reste de la catégorie est dans
         « Guides {catégorie} » et « Guides spécialisés », colonne de droite ;
-     3. « Les modèles analysés » : les 10 mieux notés des avis détaillés
+     3. « Modèles analysés » : les 10 mieux notés des avis détaillés
         (noms en double retirés), lien vers leur avis dans la page (#test-…),
         sinon vers leur page produit si l'ID ≥ 250 000, sinon sans lien.
    La colonne entière reste collée en haut de l'écran pendant la lecture du
    guide (hauteur limitée à l'écran, défilement interne si besoin).
    Listes mises en cache 12 h (transients), clé = page + date de modification.
    ===================================================================== */
-$MT_SIDE_SELECTIONS = true; // « Meilleur {type} » : les sélections de la page (multi-comparatif seulement)
+$MT_SIDE_SELECTIONS = true; // « Classement » : les sélections de la page (multi-comparatif seulement)
 $MT_SIDE_ACCES     = true;  // « Accès rapide »
 $MT_SIDE_GUIDES    = true;  // « Guides {type au pluriel} »
-$MT_SIDE_MODELES   = true;  // « Les modèles analysés »
+$MT_SIDE_MODELES   = true;  // « Modèles analysés »
 $MT_SIDE_MAX       = 10;    // guides du même type au plus (en plus de la page)
 $MT_SIDE_MAX_MOD   = 10;    // modèles analysés au plus
 
@@ -105,20 +105,13 @@ $mt_sp_html = '';
 if ( $MT_SIDE_SELECTIONS && function_exists( 'mtv2_plan' ) ) {
   $mt_sp_pl = mtv2_plan( $mt_sp );
   if ( ! empty( $mt_sp_pl['is_multi'] ) ) {
-    $mt_sp_l = array( array( 't' => 'En ' . date_i18n( 'Y' ), 'u' => '#mt-top5-title' ) );
+    $mt_sp_l = array( array( 't' => 'Palmarès ' . date_i18n( 'Y' ), 'u' => '#mt-top5-title' ) );
     foreach ( (array) $mt_sp_pl['subs'] as $sb ) {
       $lbl = trim( (string) $sb['label'] );
       if ( $lbl === '' || (string) $sb['anchor'] === '' ) { continue; }
       $mt_sp_l[] = array( 't' => mb_strtoupper( mb_substr( $lbl, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $lbl, 1, null, 'UTF-8' ), 'u' => '#' . $sb['anchor'] );
     }
-    /* Titre accordé comme celui du sommaire : « le meilleur » → « Meilleur climatiseur mobile » */
-    $llm = trim( (string) ( $mt_sp_tv['lalalesmeilleur'] ?? '' ) );
-    $sng = trim( (string) ( $mt_sp_tv['type_de_produit_au_singulier'] ?? '' ) );
-    $adj = trim( preg_replace( '/^(le|la|les)\s+/iu', '', $llm ) );
-    $typ = preg_match( '/^les\s/iu', $llm ) ? $mt_sp_plur : ( $sng !== '' ? $sng : $mt_sp_plur );
-    $tit = $adj !== '' && $typ !== '' ? $adj . ' ' . $typ : ( $mt_sp_plur !== '' ? 'Meilleurs ' . $mt_sp_plur : 'Nos sélections' );
-    $tit = mb_strtoupper( mb_substr( $tit, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $tit, 1, null, 'UTF-8' );
-    if ( count( $mt_sp_l ) >= 2 ) { $mt_sp_html .= mt_side_bloc( $tit, $mt_sp_l, false, '', 'mt-side-selections' ); }
+    if ( count( $mt_sp_l ) >= 2 ) { $mt_sp_html .= mt_side_bloc( 'Classement', $mt_sp_l, false, '', 'mt-side-selections' ); }
   }
 }
 
@@ -166,7 +159,7 @@ if ( $MT_SIDE_GUIDES ) {
   $mt_sp_html .= mt_side_bloc( $mt_sp_titre, $mt_sp_g, false, '', 'mt-side-guides' );
 }
 
-/* 3. Les modèles analysés : les 10 mieux notés des avis détaillés, sans nom en double */
+/* 3. Modèles analysés : les 10 mieux notés des avis détaillés, sans nom en double */
 if ( $MT_SIDE_MODELES ) {
   $mt_sp_plan = function_exists( 'mtv2_plan' ) ? mtv2_plan( $mt_sp ) : null;
   $mt_sp_ids  = $mt_sp_plan ? (array) $mt_sp_plan['tests'] : (array) ( $mt_sp_tv['top_avis_ids'] ?? array() );
@@ -192,7 +185,7 @@ if ( $MT_SIDE_MODELES ) {
     $mt_sp_items[] = array( 't' => $p['t'], 'u' => $u, 'm' => $p['s'] > 0 ? number_format( $p['s'], 1, ',', '' ) : '' );
     if ( count( $mt_sp_items ) >= $MT_SIDE_MAX_MOD ) { break; }
   }
-  $mt_sp_html .= mt_side_bloc( 'Les modèles analysés', $mt_sp_items, true, '', 'mt-side-modeles' );
+  $mt_sp_html .= mt_side_bloc( 'Modèles analysés', $mt_sp_items, true, '', 'mt-side-modeles' );
 }
 
 if ( $mt_sp_html !== '' ) :
