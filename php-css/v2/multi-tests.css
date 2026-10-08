@@ -230,17 +230,20 @@
    encart de note sur une seule ligne : la mention (« Très bien ») passe sous la note, le point fort prend la place libre,
    le bouton reste à droite. */
 .ed-a { container-type: inline-size; }
-@container (min-width: 600px) and (max-width: 860px) {
-  .ed-a-figure .ph { min-height: 0; }
-  .ed-a-figure .ph-img { flex: 0 0 38%; padding: 22px; }
-  .ed-a-figure .ph-img img { width: 100%; height: auto; max-height: 230px; }
-  .ed-a-figure .ph-info { padding: 26px 28px 26px 22px; }
-  .ed-a-figure .ph-verdict { font-size: 17.5px; line-height: 1.6; padding-left: 18px; }
-  .ed-a-buy { flex-wrap: nowrap; }
-  .ed-a-buy .note-block, .ed-a-buy .cust-block { padding: 14px 16px; }
-  .ed-a-buy .r-line, .ed-a-buy .cust-line { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .ed-a-buy .pro-block { flex: 1 1 0; padding: 14px 16px; }
-  .ed-a-buy .pro-line { font-size: 13px; }
-  .ed-a-buy .cta-block { flex: 0 0 auto; min-width: 0; margin-left: auto; padding: 14px 16px; }
-  .ed-a-buy .cta { padding: 11px 14px; font-size: 13.5px; white-space: nowrap; }
+@media (min-width: 761px) {  /* sous 761 px, la mise en page mobile (empilée) s'applique ; au-dessus, aucune largeur minimale :
+                               la colonne centrale peut descendre sous 600 px (592 px mesurés chez Samuel) */
+  @container (max-width: 860px) {
+    .ed-a-figure .ph { min-height: 0; }
+    .ed-a-figure .ph-img { flex: 0 0 38%; padding: 22px; }
+    .ed-a-figure .ph-img img { width: 100%; height: auto; max-height: 230px; }
+    .ed-a-figure .ph-info { padding: 26px 28px 26px 22px; }
+    .ed-a-figure .ph-verdict { font-size: 17.5px; line-height: 1.6; padding-left: 18px; }
+    .ed-a-buy { flex-wrap: nowrap; }
+    .ed-a-buy .note-block, .ed-a-buy .cust-block { padding: 14px 16px; }
+    .ed-a-buy .r-line, .ed-a-buy .cust-line { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .ed-a-buy .pro-block { flex: 1 1 0; padding: 14px 16px; }
+    .ed-a-buy .pro-line { font-size: 13px; }
+    .ed-a-buy .cta-block { flex: 0 0 auto; min-width: 0; margin-left: auto; padding: 14px 16px; }
+    .ed-a-buy .cta { padding: 11px 14px; font-size: 13.5px; white-space: nowrap; }
+  }
 }

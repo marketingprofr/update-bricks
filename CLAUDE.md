@@ -1104,6 +1104,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   sticky ait la hauteur de l'article ; display: contents de 992 à 1199. multi-tests.css : .ed-a container-type
   inline-size + @container (600-860 px) : .ph-img 38 %, verdict 17,5 px, encart note en ligne (r-line en colonne, cta
   nowrap). Mesuré en ligne : image 249 / texte 407 px à 1440, mobile identique.
+  Correctif : la borne basse 600 px excluait l'écran de Samuel (colonne centrale 586-592 px vers 1200 px) ; la requête
+  est désormais @media (min-width: 761px) { @container (max-width: 860px) } (mobile empilé en dessous). Testé 800 à 1440.
   À faire : citation des avis détaillés trop étroite à 656 px ; colonne de droite seulement en haut (à décider).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
