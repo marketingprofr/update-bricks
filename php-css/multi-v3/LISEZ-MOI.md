@@ -156,12 +156,12 @@ Puis (Samuel, 8 octobre) : ce bloc s'appelle « Classement », sa première lign
 
 Puis : « Classements » au pluriel (il y a toujours au moins le palmarès et une sélection) et une flamme comme icône de « Les plus consultés ». À recoller : **9**, Code et CSS.
 
-## Colonnes sur tout l'article (8 octobre, en préparation)
+## Colonnes sur tout l'article (8 octobre)
 
 Samuel veut les colonnes le long de tout l'article (résumés, avis détaillés, tableau, guide), sans HTML en double. Le CSS du **9** le permet désormais, et donne exactement la même page tant que la structure Bricks n'a pas changé (vérifié sur la page en ligne et sur le banc).
 
 Structure cible dans Bricks :
-- une seule Section, un seul Conteneur, qui contient dans l'ordre : l'élément Code de gauche (9), le bloc des résumés et avis détaillés, le bloc du tableau, le bloc du guide, l'élément Code de droite (10) ;
+- une seule Section, un seul Conteneur, qui contient dans l'ordre : l'élément Code de gauche (9), un Bloc « colonne principale », l'élément Code de droite (10) ; la colonne principale contient les modèles des résumés et avis détaillés, du tableau et du guide (structure choisie par Samuel ; les trois modèles directement dans le conteneur marchent aussi) ;
 - les trois blocs peuvent rester des modèles de type Section, insérés par des éléments « Modèle », mais **sans** élément Section ni Conteneur à l'intérieur : la racine de chaque modèle est un simple **Bloc** ;
 - le bloc du sommaire (à gauche des résumés, déjà masqué sur mobile) est retiré : « Classements » et « Accès rapide » le remplacent ;
 - les réglages de largeur posés dans Bricks pour l'ancienne mise en page (bloc du guide en « calc(100% - 220px) », conteneur en ligne avec 56 px d'écart) sont à retirer ;

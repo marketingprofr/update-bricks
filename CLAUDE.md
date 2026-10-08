@@ -1094,6 +1094,10 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   la fin. Même rendu qu'avant sur la structure actuelle (mesuré en ligne et au banc). Structure cible : 1 Section >
   1 Conteneur > [Code 9, bloc résumés+avis, bloc tableau, bloc guide, Code 10], modèles insérés sans Section ni
   Conteneur internes ; sommaire (#brxe-moezpf, desktop seulement) retiré. Simulation : scratchpad simu_article.py.
+  Samuel a choisi (et mis en ligne) 1 Conteneur > [Code 9, Bloc colonne principale > modèles, Code 10] : la règle
+  « > :has(.mt-cmp-root) » prenait alors TOUTE la colonne principale (pleine largeur par-dessus les colonnes) ; la règle
+  vise désormais .mt-cmp-root lui-même, à toute profondeur, avec une largeur explicite calc(100% + 252/312/564 px).
+  Le modèle inséré sort dans un div.brxe-template (enveloppe de l'élément Modèle de Bricks).
   À faire : citation des avis détaillés trop étroite à 656 px ; colonne de droite seulement en haut (à décider).
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
