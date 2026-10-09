@@ -402,7 +402,8 @@ if ( ! empty( $prods ) ) {
        marque ne paie pour y figurer, et ce comparatif a été mis à jour en octobre 2026. » */
     $m_src  = (string) ( $ec['sources'] ?? '' );
     $m_src  = $m_src === '' ? '' : ( $m_src[0] === '~' ? 'environ ' . substr( $m_src, 1 ) : $m_src );
-    $m_phr  = trim( rtrim( (string) ( function_exists( 'get_field' ) ? get_field( 'mltv5_phrase_sources', $page_id ) : '' ), ". \t\n" ) );
+    /* La phrase peut contenir des liens vers les sources (encadré, décision de Samuel du 2026-10-09) : ici, texte seul */
+    $m_phr  = trim( rtrim( html_entity_decode( wp_strip_all_tags( (string) ( function_exists( 'get_field' ) ? get_field( 'mltv5_phrase_sources', $page_id ) : '' ) ), ENT_QUOTES, 'UTF-8' ), ". \t\n" ) );
     $m_nom  = esc_html( (string) ( $ec['nom'] ?? 'produits' ) );
     $m_crit = function_exists( 'mt_criteres_courts' ) ? (string) mt_criteres_courts( $page_id ) : '';
     $m_k    = $m_crit !== '' ? count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $m_crit ) ) ) ) : 0;

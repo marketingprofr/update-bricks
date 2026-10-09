@@ -1119,16 +1119,15 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
 - **Duels empilés partout (Samuel, 2026-10-08)** : choix.css, .mt-duel-grid en 1 colonne sur toutes les largeurs (avant
   1fr auto 1fr), .mt-duel-vs padding 8px 0, grille bornée à 700 px avec titre/intro/verdict ; règle .single devenue
   inutile (retirée). 1440 px en ligne : options 285 × 767 → 656 × 360 px.
-- **Sources liées dans l'encadré (décision de Samuel du 2026-10-09, format convenu avec Architecture ; PAS ENCORE CODÉ)** :
-  pas de liste de 27 liens ni de section « Nos sources » ; dans la puce 1 de hero-encart (« En plus de nos propres
-  analyses, nous avons consulté N sources, dont … »), chaque nom de publication de mltv5_phrase_sources présent dans le
-  champ mltv5_sources_liste devient un lien. Champ = zone de texte ACF (REST activé, créée par Samuel), JSON UTF-8 brut :
-  [{"nom","titre","url","archive"|null,"type":"publication"}], 0 à 5 entrées par guide (890 guides sans), une par
-  publication. nom = chaîne EXACTE de la phrase (article compris : « l'ADEME », « le ministère de l'Économie ») ;
-  correspondance à l'identique, mot entier, noms les plus longs d'abord, 1re entrée si doublon. Lien vers archive si non
-  null, sinon url ; target _blank, rel noopener (pas de nofollow : liens éditoriaux), classe nodip ; title = titre, vide
-  si titre vide, « (copie archivée) » ajouté pour archive.org. Reddit, YouTube, « des sites français » sans lien. JSON
-  vide ou illisible → phrase sans lien. Coder quand Architecture aura rempli une dizaine de comparatifs (elle prévient).
+- **Sources liées dans l'encadré (Samuel, 2026-10-09 ; CODÉ, commit suivant)** : PAS de nouveau champ (le JSON
+  mltv5_sources_liste proposé par Coordination/Architecture est abandonné : Samuel veut UN champ, le texte affiché avec ses
+  liens). Architecture écrit dans mltv5_phrase_sources la même phrase, avec <a href title> autour des noms de
+  publications (0 à 5 : jusqu'à 4 internationales + un grand site français ; Reddit, YouTube, « des sites français » sans
+  lien ; archive.org → title « … (copie archivée) » ; pas de title si titre inconnu). Code : mt_phrase_sources_html()
+  dans hero-encart (wp_kses a[href,title] puis ajout class="nodip" target="_blank" rel="noopener", pas de nofollow) ;
+  faq.code.php retire les balises (wp_strip_all_tags + html_entity_decode) pour la réponse méthodologie et son JSON-LD.
+  Architecture écrit seulement avec l'oui de Samuel dans sa session, après contrôle des 15 247 adresses ; elle prévient
+  avec une dizaine de comparatifs remplis pour vérification en ligne.
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
   de Templates : garder, et aligner le V1 (Product imbriqués dans les ListItem) sur le V3 (Product à la racine, ItemList

@@ -186,6 +186,10 @@ Colonne de droite, même jour (demande de la Coordination) : le classement « Le
 
 « Quel choix faire ? » : les deux options sont désormais l'une sous l'autre, le badge VS entre les deux, sur toutes les largeurs (Samuel : côte à côte, les colonnes étaient trop étroites, même en pleine page). Options bornées à 700 px comme le titre et le verdict. Mesuré en ligne à 1440 px : chaque option passe de 285 × 767 px à 656 × 360 px. À recoller : **8**, CSS seulement (même fichier pour le modèle V1).
 
+## Liens vers les sources dans l'encadré (9 octobre)
+
+Décision de Samuel : un seul champ, celui de la phrase des sources (mltv5_phrase_sources). Architecture y écrira la même phrase, avec un lien sur le nom de chaque publication citée (jusqu'à 4 sites internationaux et un grand site français) vers la page consultée pour ce guide. Reddit, YouTube et « des sites français » restent sans lien. L'encadré affiche ces liens (nouvel onglet, jamais d'affiliation) ; la réponse « Comment avons-nous établi ce classement ? » de la FAQ garde le texte seul. Tant que la phrase n'a pas de lien, rien ne change à l'écran. À recoller : **2**, Code ; **6**, Code.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

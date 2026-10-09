@@ -92,6 +92,18 @@ if ( ! function_exists( 'mt_criteres_courts' ) ) {
     return count( $mt_lib ) >= 3 ? implode( ', ', array_slice( $mt_lib, 0, 4 ) ) : '';
   }
 }
+if ( ! function_exists( 'mt_phrase_sources_html' ) ) {
+  /* Phrase des sources (champ mltv5_phrase_sources, écrit par Architecture) : elle peut contenir des liens vers les pages
+     consultées, autour des noms des publications (décision de Samuel du 2026-10-09 : un seul champ, le texte affiché avec
+     ses liens, pas de liste à part). Seules les balises <a href title> sont gardées ; chaque lien ouvre un nouvel onglet,
+     sans affiliation (classe nodip, que redir.js ne réécrit pas) et sans nofollow (liens éditoriaux). */
+  function mt_phrase_sources_html( $s ) {
+    $s = wp_kses( (string) $s, array( 'a' => array( 'href' => true, 'title' => true ) ) );
+    return preg_replace_callback( '/<a\s([^>]*)>/i', function ( $m ) {
+      return '<a ' . trim( $m[1] ) . ' class="nodip" target="_blank" rel="noopener">';
+    }, $s );
+  }
+}
 if ( ! function_exists( 'mt_encadre_mots' ) ) {
   function mt_encadre_mots( $html ) {
     $t = trim( html_entity_decode( wp_strip_all_tags( (string) $html ), ENT_QUOTES, 'UTF-8' ) );
@@ -193,7 +205,7 @@ if ( $MT_ENCADRE_REEL ) {
        remplace « Pour réaliser ce comparatif », qui laissait croire à une simple compilation de sources (choix de Samuel
        du 2026-10-06, via la Coordination ; Jev « travail d'analyse propre » 0,97 contre 0,85) */
     $mt_src_txt = ( $mt_src_aff[0] === '~' ) ? 'environ ' . substr( $mt_src_aff, 1 ) : $mt_src_aff;
-    $mt_puces[] = '<b>En plus de nos propres analyses</b>, nous avons consulté ' . esc_html( $mt_src_txt ) . ' sources, dont ' . esc_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
+    $mt_puces[] = '<b>En plus de nos propres analyses</b>, nous avons consulté ' . esc_html( $mt_src_txt ) . ' sources, dont ' . mt_phrase_sources_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
   /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
   $mt_courts = mt_criteres_courts( $this_id );
