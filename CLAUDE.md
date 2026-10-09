@@ -1123,7 +1123,7 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   mltv5_sources_liste proposé par Coordination/Architecture est abandonné : Samuel veut UN champ, le texte affiché avec ses
   liens). Architecture écrit dans mltv5_phrase_sources la même phrase, avec <a href title> autour des noms de
   publications (0 à 5 : jusqu'à 4 internationales + un grand site français ; Reddit, YouTube, « des sites français » sans
-  lien ; archive.org → title « … (copie archivée) » ; pas de title si titre inconnu). Code : mt_phrase_sources_html()
+  lien ; plus aucune copie archive.org (Samuel) : adresse morte = nom sans lien ; pas de title si titre inconnu). Code : mt_phrase_sources_html()
   dans hero-encart (wp_kses a[href,title] puis ajout class="nodip" target="_blank" rel="noopener", pas de nofollow) ;
   faq.code.php retire les balises (wp_strip_all_tags + html_entity_decode) pour la réponse méthodologie et son JSON-LD.
   Architecture écrit seulement avec l'oui de Samuel dans sa session, après contrôle des 15 247 adresses ; elle prévient
