@@ -190,6 +190,10 @@ Colonne de droite, même jour (demande de la Coordination) : le classement « Le
 
 Décision de Samuel : un seul champ, celui de la phrase des sources (mltv5_phrase_sources). Architecture y écrira la même phrase, avec un lien sur le nom de chaque publication citée (jusqu'à 4 sites internationaux et un grand site français) vers la page consultée pour ce guide. Reddit, YouTube et « des sites français » restent sans lien. L'encadré affiche ces liens (nouvel onglet, jamais d'affiliation) ; la réponse « Comment avons-nous établi ce classement ? » de la FAQ garde le texte seul. Tant que la phrase n'a pas de lien, rien ne change à l'écran. À recoller : **2**, Code ; **6**, Code.
 
+## Nom de Samuel relié à sa biographie (9 octobre)
+
+La biographie de Samuel est en ligne (page À propos, section #samuel-petit). Dans la ligne auteur, son nom renvoie maintenant à cette section (souligné discret). Rank Math décrit l'auteur dans les données structurées sans adresse ni biographie : le petit code `rank-math-person-bio.php` (WPCodeBox, PHP, « Frontend ») ajoute la biographie du compte de chaque rédacteur, et pour Samuel l'adresse de sa section et sa fonction « Fondateur et responsable éditorial ». À recoller : **1**, Code ; CSS du bandeau (fichier 1 puis fichier 2) ; nouveau code WPCodeBox.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

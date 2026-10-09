@@ -6,6 +6,7 @@ $MT_REPONSE_INTRO    = true;   // l'intro commence par une phrase à part : « S
 $MT_INTRO_REPLIEE    = true;   // mobile : texte de la rédaction replié sur 3 lignes, puis « Afficher la suite » ; ordinateur : intro entière (Samuel, 2026-10-04) ; false = intro entière partout
 $MT_VERDICT_SOUS_H1  = false;  // ancien encart séparé « L'essentiel en 30 secondes » sous la ligne auteur (remplacé par la réponse en tête de l'intro)
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
+$MT_VERIFIE_PAR_BIO  = '/a-propos/#samuel-petit'; // biographie du responsable éditorial (page À propos, en ligne le 2026-10-09) ; '' = nom sans lien
 $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (demande de Samuel) ; false = juste après « L'essentiel »
                                 // (test Jev : ouverture 0,82 sous le titre, 0,91 après « L'essentiel »)
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
@@ -819,7 +820,10 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   ?>
   </h1>
 
-  <?php /* Ligne auteur et date : préparée ici, affichée sous le titre ou juste après « L'essentiel » ($MT_AUTEUR_SOUS_H1) */
+  <?php /* Ligne auteur et date : préparée ici, affichée sous le titre ou juste après « L'essentiel » ($MT_AUTEUR_SOUS_H1).
+     Le nom du responsable éditorial renvoie à sa biographie (demande seo-aeo de la Coordination, 2026-10-09). */
+  $mt_vp_nom = '<b>' . esc_html( $MT_VERIFIE_PAR ) . '</b>';
+  if ( ( $MT_VERIFIE_PAR_BIO ?? '' ) !== '' ) { $mt_vp_nom = '<a class="mt-byline-bio" href="' . esc_url( home_url( $MT_VERIFIE_PAR_BIO ) ) . '">' . $mt_vp_nom . '</a>'; }
   ob_start(); ?>
   <div class="mt-byline">
     <?php if (!empty($author_avatar_id ?? '')) {
@@ -827,7 +831,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
     } ?>
     <span class="mt-byline-text">
       <?php if ( $MT_VERIFIE_PAR !== '' && trim( (string) ( $author ?? '' ) ) === $MT_VERIFIE_PAR ) { ?>
-      <span>Rédigé et vérifié par <b><?php echo esc_html( $MT_VERIFIE_PAR ); ?></b>, responsable éditorial</span>
+      <span>Rédigé et vérifié par <?php echo $mt_vp_nom; ?>, responsable éditorial</span>
       <?php } else { ?>
       <span>Par <b><?php echo esc_html($author ?? ''); ?></b></span>
       <?php if ( $MT_VERIFIE_PAR !== '' ) {
@@ -836,7 +840,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
           $mt_vp = preg_split( '/\s+/u', trim( $MT_VERIFIE_PAR ), 2 );
           $mt_vp_court = count( $mt_vp ) === 2 ? mb_substr( $mt_vp[0], 0, 1, 'UTF-8' ) . '. ' . $mt_vp[1] : $MT_VERIFIE_PAR; ?>
       <span class="mt-dot">&bull;</span>
-      <span class="mt-verif" data-court="<?php echo esc_attr( 'Vérifié par ' . $mt_vp_court . ', resp. éditorial' ); ?>">Vérifié par <b><?php echo esc_html( $MT_VERIFIE_PAR ); ?></b>, responsable éditorial</span>
+      <span class="mt-verif" data-court="<?php echo esc_attr( 'Vérifié par ' . $mt_vp_court . ', resp. éditorial' ); ?>">Vérifié par <?php echo $mt_vp_nom; ?>, responsable éditorial</span>
       <?php } } ?>
       <span class="mt-dot">&bull;</span>
       <span>Mis à jour le <?php echo $mod; ?></span>

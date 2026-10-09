@@ -19,6 +19,8 @@
 
 .mt-byline { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--at-grey); margin: 0 0 20px; }
 .mt-byline b { color: var(--at-black-l-1); font-weight: 600; }
+.mt-byline a.mt-byline-bio { color: inherit; text-decoration: underline; text-decoration-color: var(--at-grey-l-2); text-underline-offset: 3px; }
+.mt-byline a.mt-byline-bio:hover { text-decoration-color: currentColor; }
 .mt-byline .mt-dot { color: var(--at-grey-l-1); }
 .mt-byline-text { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; }
 .mt-avatar { display: inline-flex; flex: none; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; }

@@ -1128,6 +1128,13 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   faq.code.php retire les balises (wp_strip_all_tags + html_entity_decode) pour la réponse méthodologie et son JSON-LD.
   Architecture écrit seulement avec l'oui de Samuel dans sa session, après contrôle des 15 247 adresses ; elle prévient
   avec une dizaine de comparatifs remplis pour vérification en ligne.
+- **Bio de Samuel (seo-aeo, Coordination 2026-10-09 ; bio en ligne par Architecture)** : $MT_VERIFIE_PAR_BIO =
+  '/a-propos/#samuel-petit' dans hero-gauche (V1) et v2/multi-hero-gauche (V3) ; nom = <a class="mt-byline-bio"> autour du
+  <b>, dans les deux formes de la ligne auteur (CSS : soulignement grey-l-2). Sur mobile, la forme courte (data-court,
+  ::after) n'est pas cliquable : seule la forme « Rédigé et vérifié par » l'est. Person du JSON-LD = celui de Rank Math
+  (@id …#author, sans url ni description) : snippet WPCodeBox php-css/rank-math-person-bio.php (filtre
+  rank_math/json_ld, priorité 99) : description = bio du compte (tous rédacteurs), url + jobTitle « Fondateur et
+  responsable éditorial » pour le compte 1. Testé hors WordPress (stubs).
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
   de Templates : garder, et aligner le V1 (Product imbriqués dans les ListItem) sur le V3 (Product à la racine, ItemList
