@@ -173,7 +173,7 @@
 /* Liste étroite (colonne centrale entre les colonnes latérales, tablette), d'après la largeur de la LISTE et non de l'écran.
    Mise en page choisie par Samuel le 2026-10-12 parmi 9 propositions (la « F ») : un bandeau en tête de carte avec le rang
    et la mention à gauche, la note (et les avis clients) à droite ; au milieu, l'image et le texte, qui gagne toute la
-   largeur restante ; en bas, le bouton à la taille de son texte, aligné sur le nom, sans flèche. Avant : note et bouton dans une colonne de
+   largeur restante ; en bas, le bouton à la taille de son texte, centré, sans flèche. Avant : note et bouton dans une colonne de
    172 px à droite, le texte n'avait plus que ~160 px à 536 px de large. Réservée aux listes de 700 px et moins.
    Sélecteurs renforcés (.mt-top5 .t5-list …) pour passer devant les règles des tablettes (max-width: 880px). */
 .mt-top5 .t5-list { container-type: inline-size; }
@@ -192,7 +192,7 @@
   }
   /* Liste étroite (700 px et moins : colonne centrale entre les deux colonnes latérales) : proposition F */
   @container (max-width: 700px) {
-    .mt-top5 .t5-list .t5-card { grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "banner banner" "media body" ". buy"; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: center; }
+    .mt-top5 .t5-list .t5-card { grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "banner banner" "media body" "buy buy"; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: center; }
     .mt-top5 .t5-list .t5-rnum { display: none; }
     .mt-top5 .t5-list .t5-banner { grid-area: banner; display: flex; align-items: center; gap: 10px; min-height: 46px; margin: 0; padding: 10px 104px 10px 20px; background: var(--accent-soft); border-bottom: 1px solid var(--line-2); font-size: 12.5px; font-weight: 700; color: var(--accent); }
     .mt-top5 .t5-list .t5-banner .b-label { flex: 1; min-width: 0; line-height: 1.15; }  /* trop long : retour à la ligne serré, centré verticalement avec le rang et la note (Samuel, après essai des « … ») */
@@ -208,8 +208,8 @@
     .mt-top5 .t5-list .t5-media { display: block; grid-area: media; margin: 16px 0 0 20px; }
     .mt-top5 .t5-list .t5-body { grid-area: body; margin-top: 16px; padding: 0 20px 0 0; }
     .mt-top5 .t5-list .t5-pc { flex-direction: column; }
-    .mt-top5 .t5-list .t5-buy { grid-area: buy; justify-self: start; min-width: 0; width: auto; margin: 14px 20px 0 0; text-align: left; }
-    .mt-top5 .t5-list .t5-cta { width: auto; padding: 10px 22px; white-space: nowrap; }  /* à la taille du texte, aligné sur le nom (Samuel : pleine largeur trop grand) */
+    .mt-top5 .t5-list .t5-buy { grid-area: buy; justify-self: center; min-width: 0; width: auto; margin: 14px 20px 0; text-align: center; }
+    .mt-top5 .t5-list .t5-cta { width: auto; padding: 10px 22px; white-space: nowrap; }  /* à la taille du texte, centré dans la carte (Samuel : pleine largeur trop grand) */
     .mt-top5 .t5-list .t5-cta .arr { display: none; }
   }
 }
