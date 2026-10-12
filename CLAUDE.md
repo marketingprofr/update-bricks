@@ -1154,6 +1154,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   largeur sans flèche. 701-820 px : ancienne forme (colonne de 172 px). Sélecteurs .mt-top5 .t5-list … pour passer
   devant les règles tablette (max-width: 880px, .t5-item.t5-no-cust …). Mention du bandeau = celle du mobile (« Le
   choix de la rédaction » pour chaque rang, change avec le tri).
+  Puis (Samuel, option 1 parmi 2) : multi-resume.code.php → b-label = « Le choix de la rédaction » pour pos 1, sinon
+  $it['label'] (verdict), avec title ; li.t5-b-verdict + data-verdict ; le script de tri met pos 1 = libellé du tri,
+  sinon data-verdict, et bascule t5-b-verdict. CSS F : .t5-item.t5-b-verdict .t5-label masqué, .t5-ed .tag et .t5-cust
+  masqués, b-label nowrap + ellipsis, padding droit du bandeau 104 px (place de la note). Bandeau masqué hors F
+  (mobile, tablette) : rien n'y change.
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
   de Templates : garder, et aligner le V1 (Product imbriqués dans les ListItem) sur le V3 (Product à la racine, ItemList

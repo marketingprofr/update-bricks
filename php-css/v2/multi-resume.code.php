@@ -761,9 +761,12 @@ if ( ! function_exists( 'mtv2_resume_list' ) ) {
 <?php foreach ( $products as $it ) :
   $href = $plan ? mtv2_product_href( $it['pid'], $plan ) : '#produit-n-' . $it['pos'];
 ?>
-    <li class="t5-item<?php echo ( trim( (string) $it['cust_rating'] ) === '' ? ' t5-no-cust' : '' ); ?>" data-rank="<?php echo esc_attr( $it['pos'] ); ?>" data-price="<?php echo esc_attr( $it['price_num'] ); ?>" data-rating="<?php echo esc_attr( $it['rating_num'] ); ?>" data-modified="<?php echo esc_attr( $it['modified'] ); ?>">
+    <?php /* Bandeau (carte en colonne étroite) : le n°1 est « Le choix de la rédaction », les suivants portent leur verdict,
+             alors retiré du corps de la carte (classe t5-b-verdict) ; le tri met à jour les deux (Samuel, 2026-10-12) */
+          $mt_b_verdict = ( (int) $it['pos'] > 1 && $it['label'] !== '' ); ?>
+    <li class="t5-item<?php echo ( trim( (string) $it['cust_rating'] ) === '' ? ' t5-no-cust' : '' ) . ( $mt_b_verdict ? ' t5-b-verdict' : '' ); ?>" data-verdict="<?php echo esc_attr( $it['label'] ); ?>" data-rank="<?php echo esc_attr( $it['pos'] ); ?>" data-price="<?php echo esc_attr( $it['price_num'] ); ?>" data-rating="<?php echo esc_attr( $it['rating_num'] ); ?>" data-modified="<?php echo esc_attr( $it['modified'] ); ?>">
       <article class="t5-card<?php if ( $can_edit ) { if ( $it['tag_disco'] ) { echo ' t5-admin-disco'; } elseif ( $it['tag_oos'] ) { echo ' t5-admin-oos'; } } ?>"><?php if ( $can_edit && ( $it['tag_oos'] || $it['tag_disco'] ) ) : ?><span class="t5-admin-tag"><?php echo $it['tag_disco'] ? 'DISCO' : 'OOS'; ?></span><?php endif; ?>
-        <p class="t5-banner"><span class="b-num">N&deg;<?php echo $it['pos']; ?></span> <span class="b-label">Le choix de la r&eacute;daction</span></p>
+        <p class="t5-banner"><span class="b-num">N&deg;<?php echo $it['pos']; ?></span> <?php $mt_b_lbl = (int) $it['pos'] === 1 ? 'Le choix de la rédaction' : (string) $it['label']; ?><span class="b-label" title="<?php echo esc_attr( $mt_b_lbl ); ?>"><?php echo esc_html( $mt_b_lbl ); ?></span></p>
         <span class="t5-rnum" aria-hidden="true"><?php echo $it['pos']; ?></span>
         <div class="t5-media">
           <div class="ph">
@@ -1013,7 +1016,9 @@ add_action( 'wp_footer', function () {
         var bnum = c.querySelector('.t5-banner .b-num');
         if (bnum) bnum.textContent = 'N°' + pos;
         var blabel = c.querySelector('.t5-banner .b-label');
-        if (blabel) blabel.textContent = banner;
+        var verdict = c.getAttribute('data-verdict') || '';
+        if (blabel) { blabel.textContent = pos === 1 ? banner : verdict; blabel.title = blabel.textContent; }  // n°1 : libellé du tri ; les autres : leur verdict (texte complet au survol, s'il est coupé)
+        c.classList.toggle('t5-b-verdict', pos > 1 && verdict !== '');
         var rnum = c.querySelector('.t5-rnum');
         if (rnum) rnum.textContent = pos;
       });
