@@ -69,6 +69,12 @@
 .mt-top5 .t5-label { font-size: 14px; font-weight: 700; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-tagline { font-size: 13px; font-weight: 600; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-summary { display: none; }
+@media (min-width: 768px) {
+  .mt-top5 .t5-body:not(:has(.t5-pc)) .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+}
+@media (max-width: 767px) {
+  .mt-top5 .t5-list > li .t5-body:not(:has(.t5-pc)) .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; grid-column: 1; grid-row: 3; margin: 6px 0 14px 12px; padding: 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+}
 .mt-top5 .t5-readmore { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
 .mt-top5 .t5-readmore:hover { border-color: var(--accent); }
 .mt-top5 .t5-rm-score { display: none; }
@@ -141,7 +147,7 @@
     .mt-top5 .t5-cta { padding: 10px 12px; }
   }
   @container (max-width: 700px) {
-    .mt-top5 .t5-list .t5-card { grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "banner banner" "media body" "buy buy"; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: center; }
+    .mt-top5 .t5-list .t5-card { grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "banner banner" "media body" ". buy"; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: center; }
     .mt-top5 .t5-list .t5-rnum { display: none; }
     .mt-top5 .t5-list .t5-banner { grid-area: banner; display: flex; align-items: center; gap: 10px; min-height: 46px; margin: 0; padding: 10px 104px 10px 20px; background: var(--accent-soft); border-bottom: 1px solid var(--line-2); font-size: 12.5px; font-weight: 700; color: var(--accent); }
     .mt-top5 .t5-list .t5-banner .b-label { flex: 1; min-width: 0; line-height: 1.15; }
@@ -156,8 +162,8 @@
     .mt-top5 .t5-list .t5-media { display: block; grid-area: media; margin: 16px 0 0 20px; }
     .mt-top5 .t5-list .t5-body { grid-area: body; margin-top: 16px; padding: 0 20px 0 0; }
     .mt-top5 .t5-list .t5-pc { flex-direction: column; }
-    .mt-top5 .t5-list .t5-buy { grid-area: buy; min-width: 0; width: auto; margin: 16px 20px 0; }
-    .mt-top5 .t5-list .t5-cta { width: 100%; padding: 12px 18px; }
+    .mt-top5 .t5-list .t5-buy { grid-area: buy; justify-self: start; min-width: 0; width: auto; margin: 14px 20px 0 0; text-align: left; }
+    .mt-top5 .t5-list .t5-cta { width: auto; padding: 10px 22px; white-space: nowrap; }
     .mt-top5 .t5-list .t5-cta .arr { display: none; }
   }
 }

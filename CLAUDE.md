@@ -1158,7 +1158,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   $it['label'] (verdict), avec title ; li.t5-b-verdict + data-verdict ; le script de tri met pos 1 = libellé du tri,
   sinon data-verdict, et bascule t5-b-verdict. CSS F : .t5-item.t5-b-verdict .t5-label masqué, .t5-ed .tag et .t5-cust
   masqués, b-label line-height 1.15 (retour à la ligne : l'ellipsis essayée a été refusée par Samuel), padding droit du
-  bandeau 104 px (place de la note). Bandeau masqué hors F
+  bandeau 104 px (place de la note). Bouton : zone ". buy" (colonne du texte), justify-self start, largeur du texte.
+  Sans .t5-pc : .t5-body:not(:has(.t5-pc)) .t5-summary affiché, line-clamp 4 (≥ 768 ; et ≤ 767 placé grid-column 1 /
+  row 3, marges et non padding sinon la 5e ligne déborde du clamp). Bandeau masqué hors F
   (mobile, tablette) : rien n'y change.
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
