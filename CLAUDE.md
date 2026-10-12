@@ -1128,6 +1128,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   faq.code.php retire les balises (wp_strip_all_tags + html_entity_decode) pour la réponse méthodologie et son JSON-LD.
   Architecture écrit seulement avec l'oui de Samuel dans sa session, après contrôle des 15 247 adresses ; elle prévient
   avec une dizaine de comparatifs remplis pour vérification en ligne.
+  FAIT : vérifié en ligne sur 37750 (4 liens nodip/_blank/noopener, FAQ et JSON-LD sans adresse) ; puis Architecture a
+  écrit toutes les phrases (3 923 comparatifs publiés, 13 358 liens ; journal backups/phrases-sources-liens-2026-10-09.jsonl
+  côté Architecture). Visibles seulement sur les pages passées en V3 ; anomalie → la signaler à Architecture avec l'ID.
 - **Bio de Samuel (seo-aeo, Coordination 2026-10-09 ; bio en ligne par Architecture)** : $MT_VERIFIE_PAR_BIO =
   '/a-propos/#samuel-petit' dans hero-gauche (V1) et v2/multi-hero-gauche (V3) ; nom = <a class="mt-byline-bio"> autour du
   <b>, dans les deux formes de la ligne auteur (CSS : soulignement grey-l-2). Sur mobile, la forme courte (data-court,
