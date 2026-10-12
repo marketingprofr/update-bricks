@@ -1138,6 +1138,15 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   (@id …#author, sans url ni description) : snippet WPCodeBox php-css/rank-math-person-bio.php (filtre
   rank_math/json_ld, priorité 99) : description = bio du compte (tous rédacteurs), url + jobTitle « Fondateur et
   responsable éditorial » pour le compte 1. Testé hors WordPress (stubs).
+- **Vérification des 4 premières pages V3 (2026-10-12 : 36572 drap coton, 40626 poussette Lorelli, 36755 assurance auto,
+  36668 pompe à chaleur ; script scratchpad check_v3_pages.py)** : corrigés → case « mots » dès 1 000 (au lieu de 8 000) ;
+  .mt-sc-cell:last-child:nth-child(odd) pleine ligne ; .mt-card-photo aspect-ratio 16/9 + img object-fit cover ;
+  décompte des critères = explode(',') (encadré + FAQ ; l'ancien découpage sur « et » comptait « taille et poids » pour 2) ;
+  mt_minuscule_type() (copie identique hero-gauche V1/V3, hero-encart, colonne gauche) remplace mb_strtolower du type :
+  initiale seulement, sigle intact ; criteres.css : .mt-guide container-type + @container (max-width: 860px) empile
+  l'en-tête texte/photo. Hors code : conteneur à 1 100 px sur ces pages car le style de thème Bricks (AT : .brxe-container
+  max-width var(--at-site-box-max-width), .brxe-section padding, tailles h1-h6) ne s'applique qu'à climatiseur mobile →
+  conditions du style de thème à élargir (Samuel). Titres forcés (pompe à chaleur, assurance auto) = données Architecture.
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
   de Templates : garder, et aligner le V1 (Product imbriqués dans les ListItem) sur le V3 (Product à la racine, ItemList

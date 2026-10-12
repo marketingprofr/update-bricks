@@ -132,7 +132,11 @@
 .mt-guide .breakout { max-width: none; }
 
 /* === Responsive === */
-@media (max-width: 991px) {
+/* En-tête avec image : texte et image l'un sous l'autre dès que le guide est étroit, que ce soit l'écran (mobile,
+   tablette) ou la colonne centrale entre les deux colonnes latérales (Samuel, 2026-10-12 : le texte n'avait plus que
+   ~120 px de large à côté de l'image) ; requête de conteneur = largeur réelle du guide */
+.mt-guide { container-type: inline-size; }
+@container (max-width: 860px) {
   .mt-guide-lead { grid-template-columns: 1fr; gap: 24px; }
   .mt-guide-fig { max-width: 560px; }
 }

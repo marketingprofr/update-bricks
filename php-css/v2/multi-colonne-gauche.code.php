@@ -74,6 +74,18 @@ if ( ! function_exists( 'mt_side_cat' ) ) {
     return $best;
   }
 }
+if ( ! function_exists( 'mt_minuscule_type' ) ) {
+  /* Type de produit dans une phrase : minuscule à l'initiale seulement (« Poussettes Lorelli » → « poussettes Lorelli »),
+     le reste tel quel (noms de marque) ; un premier mot tout en capitales (sigle « VTT ») reste intact.
+     Copie IDENTIQUE dans hero-gauche (V1 et V3), hero-encart et la colonne de gauche. */
+  function mt_minuscule_type( $s ) {
+    $s = trim( (string) $s );
+    if ( $s === '' ) { return ''; }
+    $mot = preg_split( '/\s+/u', $s, 2 )[0];
+    if ( mb_strlen( $mot, 'UTF-8' ) > 1 && mb_strtoupper( $mot, 'UTF-8' ) === $mot ) { return $s; }
+    return mb_strtolower( mb_substr( $s, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $s, 1, null, 'UTF-8' );
+  }
+}
 if ( ! function_exists( 'mt_side_bloc' ) ) {
   /* Un bloc de liens : titre en <p>, liste ; $items = [ [ 't' => texte, 'u' => lien, 'm' => mention, 'img' => vignette
      (56×56, sinon 'img_w' et 'img_h'), 'cur' => page courante ] ] ; $classe = mise en forme propre au bloc ; liste vide → rien */
@@ -156,7 +168,7 @@ if ( $MT_SIDE_GUIDES ) {
     }
     return count( $out ) > 1 ? $out : array();  // la page seule ne sert à rien
   } );
-  $mt_sp_titre = $mt_sp_plur !== '' ? 'Guides ' . mb_strtolower( $mt_sp_plur, 'UTF-8' ) : 'Tous les guides';
+  $mt_sp_titre = $mt_sp_plur !== '' ? 'Guides ' . mt_minuscule_type( $mt_sp_plur ) : 'Tous les guides';
   $mt_sp_html .= mt_side_bloc( $mt_sp_titre, $mt_sp_g, false, '', 'mt-side-guides' );
 }
 

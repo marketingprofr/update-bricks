@@ -406,7 +406,7 @@ if ( ! empty( $prods ) ) {
     $m_phr  = trim( rtrim( html_entity_decode( wp_strip_all_tags( (string) ( function_exists( 'get_field' ) ? get_field( 'mltv5_phrase_sources', $page_id ) : '' ) ), ENT_QUOTES, 'UTF-8' ), ". \t\n" ) );
     $m_nom  = esc_html( (string) ( $ec['nom'] ?? 'produits' ) );
     $m_crit = function_exists( 'mt_criteres_courts' ) ? (string) mt_criteres_courts( $page_id ) : '';
-    $m_k    = $m_crit !== '' ? count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $m_crit ) ) ) ) : 0;
+    $m_k    = $m_crit !== '' ? count( array_filter( array_map( 'trim', explode( ',', $m_crit ) ) ) ) : 0;  // virgules seulement (comme l'encadré)
     $m_sing = trim( (string) $type_sing );
     $m_sing = ( $m_sing !== '' && strlen( $m_sing ) < 22 ) ? mb_strtolower( $m_sing, 'UTF-8' ) : 'produit';
     $m_n    = (int) $ec['n'];

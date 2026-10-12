@@ -92,6 +92,18 @@ if ( ! function_exists( 'mt_criteres_courts' ) ) {
     return count( $mt_lib ) >= 3 ? implode( ', ', array_slice( $mt_lib, 0, 4 ) ) : '';
   }
 }
+if ( ! function_exists( 'mt_minuscule_type' ) ) {
+  /* Type de produit dans une phrase : minuscule à l'initiale seulement (« Poussettes Lorelli » → « poussettes Lorelli »),
+     le reste tel quel (noms de marque) ; un premier mot tout en capitales (sigle « VTT ») reste intact.
+     Copie IDENTIQUE dans hero-gauche (V1 et V3), hero-encart et la colonne de gauche. */
+  function mt_minuscule_type( $s ) {
+    $s = trim( (string) $s );
+    if ( $s === '' ) { return ''; }
+    $mot = preg_split( '/\s+/u', $s, 2 )[0];
+    if ( mb_strlen( $mot, 'UTF-8' ) > 1 && mb_strtoupper( $mot, 'UTF-8' ) === $mot ) { return $s; }
+    return mb_strtolower( mb_substr( $s, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $s, 1, null, 'UTF-8' );
+  }
+}
 if ( ! function_exists( 'mt_phrase_sources_html' ) ) {
   /* Phrase des sources (champ mltv5_phrase_sources, écrit par Architecture) : elle peut contenir des liens vers les pages
      consultées, autour des noms des publications (décision de Samuel du 2026-10-09 : un seul champ, le texte affiché avec
@@ -141,7 +153,7 @@ if ( $MT_ENCADRE_REEL ) {
   if ( $mt_src_aff !== '' ) { $mt_cases[] = array( $ic_layers, $mt_src_aff, 'sources consultées' ); }
 
   /* Case 2 : produits analysés = même N que le title (+5 si < 10) */
-  $mt_lbl_n = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits analysés' : mb_strtolower( $tp, 'UTF-8' ) . ' analysé' . $mt_e . 's';
+  $mt_lbl_n = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits analysés' : mt_minuscule_type( $tp ) . ' analysé' . $mt_e . 's';
   $mt_cases[] = array( $ic_tablet, $mt_display_count, $mt_lbl_n );
 
   /* Case 3 : avis étudiés (champ de la page, hors valeur par défaut 597), sinon réglage $MT_AVIS_REPLI,
@@ -161,11 +173,12 @@ if ( $MT_ENCADRE_REEL ) {
   } elseif ( $mt_avis >= $MT_SEUIL_AVIS_CL ) {
     $mt_cases[] = array( $ic_chat, number_format( $mt_avis, 0, ',', "\xE2\x80\xAF" ), 'avis clients recensés' );
   } elseif ( $mt_top ) {
-    $mt_lbl_t = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits retenus' : mb_strtolower( $tp, 'UTF-8' ) . ' retenu' . $mt_e . 's';
+    $mt_lbl_t = ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits retenus' : mt_minuscule_type( $tp ) . ' retenu' . $mt_e . 's';
     $mt_cases[] = array( $ic_chat, count( $mt_top ), $mt_lbl_t );
   }
 
-  /* Case 4 : mots du contenu (introduction, guide d'achat, tests complets) ; affichée à partir de 8 000 */
+  /* Case 4 : mots du contenu (introduction, guide d'achat, tests complets) ; affichée à partir de 1 000 (8 000 jusqu'au
+     2026-10-12 : la case manquait sur les petits guides, 2 500 à 6 000 mots ; Samuel veut les 4 cases) */
   $mt_mots = mt_encadre_mots( $introduction ?? '' );
   foreach ( $mt_aff as $pid ) { $mt_mots += mt_encadre_mots( get_post_field( 'post_content', $pid ) ) + mt_encadre_mots( get_field( 'mltv5_resume_produit', $pid ) ); }
   foreach ( array( 'criteres', 'types', 'marques', 'astuces', 'raisons', 'faq' ) as $mt_part ) {
@@ -174,7 +187,7 @@ if ( $MT_ENCADRE_REEL ) {
       foreach ( mt_encadre_textes( get_fields( $mt_aid ) ) as $t ) { $mt_mots += mt_encadre_mots( $t ); }
     }
   }
-  if ( $mt_mots >= 8000 ) { $mt_cases[] = array( $ic_book, number_format( $mt_mots, 0, ',', "\xE2\x80\xAF" ), 'mots dans ce guide' ); }
+  if ( $mt_mots >= 1000 ) { $mt_cases[] = array( $ic_book, number_format( $mt_mots, 0, ',', "\xE2\x80\xAF" ), 'mots dans ce guide' ); }
 
   /* Ordre validé par Samuel : mots · sources · produits analysés · avis étudiés (tri stable) */
   $mt_rang = function ( $c ) {
@@ -213,9 +226,9 @@ if ( $MT_ENCADRE_REEL ) {
     /* Phrase choisie par Samuel (2026-10-04, voix active, plus d'accord à faire) : « Pour établir le classement, nous
        avons noté les climatiseurs mobiles sur 4 critères principaux (…) » ; « 1 critère principal » ; type vide ou
        trop long : « les produits » (même repli que les cases) */
-    $mt_k       = count( array_filter( array_map( 'trim', preg_split( '/\s*,\s*|\s+et\s+/u', $mt_courts ) ) ) );
+    $mt_k       = count( array_filter( array_map( 'trim', explode( ',', $mt_courts ) ) ) );  // virgules seulement : « taille et poids de l'enfant » = 1 critère
     /* « Nous avons noté » en gras, sans « Pour établir le classement » (Samuel, 2026-10-05) */
-    $mt_puces[] = '<b>Nous avons noté</b> les ' . esc_html( ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mb_strtolower( $tp, 'UTF-8' ) )
+    $mt_puces[] = '<b>Nous avons noté</b> les ' . esc_html( ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mt_minuscule_type( $tp ) )
                 . ' sur ' . $mt_k . ( $mt_k > 1 ? ' critères principaux' : ' critère principal' ) . ' (' . esc_html( $mt_courts ) . ').';
   }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }

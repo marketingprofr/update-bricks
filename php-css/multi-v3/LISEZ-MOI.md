@@ -194,6 +194,16 @@ Décision de Samuel : un seul champ, celui de la phrase des sources (mltv5_phras
 
 La biographie de Samuel est en ligne (page À propos, section #samuel-petit). Dans la ligne auteur, son nom renvoie maintenant à cette section (souligné discret). Rank Math décrit l'auteur dans les données structurées sans adresse ni biographie : le petit code `rank-math-person-bio.php` (WPCodeBox, PHP, « Frontend ») ajoute la biographie du compte de chaque rédacteur, et pour Samuel l'adresse de sa section et sa fonction « Fondateur et responsable éditorial ». À recoller : **1**, Code ; CSS du bandeau (fichier 1 puis fichier 2) ; nouveau code WPCodeBox.
 
+## Premières pages passées en V3 (12 octobre)
+
+Draps en coton, poussettes Lorelli, assurance auto et pompe à chaleur passées en V3 par Samuel. Corrigé après vérification :
+- encadré : 4e case « mots dans ce guide » dès 1 000 mots (8 000 avant : elle manquait sur les petits guides) ; nombre impair de cases : la dernière prend toute la ligne ; photo dans un cadre 16/9 (une photo carrée faisait 376 px de haut) ;
+- « 5 critères principaux » pour 4 libellés (« taille et poids de l'enfant » comptait pour 2) : décompte sur les virgules seulement (encadré et FAQ) ;
+- noms de marque abîmés (« poussettes lorelli ») : le type de produit n'est plus mis entièrement en minuscules, seulement l'initiale ;
+- guide d'achat avec photo : texte et photo l'un sous l'autre quand le guide est étroit (criteres.css).
+Hors code : ces pages n'ont pas le style de thème de Bricks qui donne 1 220 px de large (elles restent à 1 100 px, avec des titres et des marges différents). À régler par Samuel dans les conditions du style de thème.
+À recoller : **1** Code ; **2** Code ; CSS du bandeau (fichier 1 puis 2) ; **6** Code ; **9** Code ; CSS de l'élément « Critères » du guide (criteres.css).
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

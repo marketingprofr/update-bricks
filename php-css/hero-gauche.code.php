@@ -236,6 +236,18 @@ if ( ! function_exists( 'mt_meta_auto' ) ) {
     return $meta;
   }
 }
+if ( ! function_exists( 'mt_minuscule_type' ) ) {
+  /* Type de produit dans une phrase : minuscule à l'initiale seulement (« Poussettes Lorelli » → « poussettes Lorelli »),
+     le reste tel quel (noms de marque) ; un premier mot tout en capitales (sigle « VTT ») reste intact.
+     Copie IDENTIQUE dans hero-gauche (V1 et V3), hero-encart et la colonne de gauche. */
+  function mt_minuscule_type( $s ) {
+    $s = trim( (string) $s );
+    if ( $s === '' ) { return ''; }
+    $mot = preg_split( '/\s+/u', $s, 2 )[0];
+    if ( mb_strlen( $mot, 'UTF-8' ) > 1 && mb_strtoupper( $mot, 'UTF-8' ) === $mot ) { return $s; }
+    return mb_strtolower( mb_substr( $s, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $s, 1, null, 'UTF-8' );
+  }
+}
 if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
   /* Ouverture juste sous le H1 (tests Jev du 2026-10-02, variante S2 de l'Architecture : ouverture
      0,95, confirmée sur deux tours) : « Réponse courte : A (9,0/10) est la meilleure X en 2026,
@@ -270,8 +282,8 @@ if ( ! function_exists( 'mt_verdict_ouverture' ) ) {
     $llm_t = mb_strtolower( trim( (string) $llm ), 'UTF-8' );
     $fem   = ( mb_strpos( $llm_t, 'meilleure' ) !== false );
     $pl    = ( mb_strpos( $llm_t, 'les ' ) === 0 );
-    $plur  = mb_strtolower( trim( (string) $type_plur ), 'UTF-8' );
-    $sing  = mb_strtolower( trim( (string) $type_sing ), 'UTF-8' );
+    $plur  = mt_minuscule_type( $type_plur );
+    $sing  = mt_minuscule_type( $type_sing );
     $an    = date_i18n( 'Y' );
     $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
 
@@ -555,8 +567,8 @@ if ( ! function_exists( 'mt_reponse_intro' ) ) {
     $llm_t = mb_strtolower( trim( (string) $llm ), 'UTF-8' );
     $fem   = ( mb_strpos( $llm_t, 'meilleure' ) !== false );
     $pl    = ( mb_strpos( $llm_t, 'les ' ) === 0 );
-    $plur  = mb_strtolower( trim( (string) $type_plur ), 'UTF-8' );
-    $sing  = mb_strtolower( trim( (string) $type_sing ), 'UTF-8' );
+    $plur  = mt_minuscule_type( $type_plur );
+    $sing  = mt_minuscule_type( $type_sing );
     $note  = function ( $p ) { return $p['score'] > 0 ? ' (' . number_format( $p['score'], 1, ',', '' ) . '/10)' : ''; };
     $lien  = $lien_de( $prods[0] ) . $note( $prods[0] );
     $fem   = ( $fem && $plur !== '' );  // type vide : « produits », au masculin
