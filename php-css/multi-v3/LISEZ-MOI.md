@@ -204,6 +204,10 @@ Draps en coton, poussettes Lorelli, assurance auto et pompe à chaleur passées 
 Hors code : ces pages n'ont pas le style de thème de Bricks qui donne 1 220 px de large (elles restent à 1 100 px, avec des titres et des marges différents). À régler par Samuel dans les conditions du style de thème.
 À recoller : **1** Code ; **2** Code ; CSS du bandeau (fichier 1 puis 2) ; **6** Code ; **9** Code ; CSS de l'élément « Critères » du guide (criteres.css).
 
+## Cartes du top 5 dans la colonne étroite : mise en page « F » (12 octobre)
+
+Choisie par Samuel parmi 9 propositions (fichier temporaire wp-avis/propositions-carte-top5.html). Quand la liste fait 700 px ou moins (colonne centrale entre les deux colonnes) : bandeau en tête de carte (« N°1 · Le choix de la rédaction » à gauche, note et avis clients à droite), image et texte au milieu, bouton sur toute la largeur en bas, sans flèche. Mesuré en ligne : texte du produit 158 → 406 px à 536 px de large, 278 → 526 px à 656 px. De 701 à 820 px (tablette) : forme habituelle, note et bouton à droite. Mobile inchangé. À recoller : **4**, CSS seulement.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

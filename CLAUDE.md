@@ -1147,6 +1147,13 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   l'en-tête texte/photo. Hors code : conteneur à 1 100 px sur ces pages car le style de thème Bricks (AT : .brxe-container
   max-width var(--at-site-box-max-width), .brxe-section padding, tailles h1-h6) ne s'applique qu'à climatiseur mobile →
   conditions du style de thème à élargir (Samuel). Titres forcés (pompe à chaleur, assurance auto) = données Architecture.
+- **Carte du top 5 « F » (Samuel, 2026-10-12, parmi 9 propositions ; scratchpad build_propositions.py + props_suite.py,
+  fichier wp-avis/propositions-carte-top5.html)** : multi-resume.css, @media (min-width: 768px) { @container (max-width:
+  700px) } : grille 92px | 1fr, zones "banner banner" "media body" "buy buy" ; .t5-banner affiché (rang + mention), la
+  note (.t5-ratings, .t5-aside en display: contents) posée dans la même zone, à droite ; .t5-rnum masqué ; bouton pleine
+  largeur sans flèche. 701-820 px : ancienne forme (colonne de 172 px). Sélecteurs .mt-top5 .t5-list … pour passer
+  devant les règles tablette (max-width: 880px, .t5-item.t5-no-cust …). Mention du bandeau = celle du mobile (« Le
+  choix de la rédaction » pour chaque rang, change avec le tri).
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
   de Templates : garder, et aligner le V1 (Product imbriqués dans les ListItem) sur le V3 (Product à la racine, ItemList

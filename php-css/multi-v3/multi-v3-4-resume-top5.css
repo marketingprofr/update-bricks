@@ -140,6 +140,24 @@
     .mt-top5 .t5-buy { min-width: 0; width: 100%; }
     .mt-top5 .t5-cta { padding: 10px 12px; }
   }
+  @container (max-width: 700px) {
+    .mt-top5 .t5-list .t5-card { grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "banner banner" "media body" "buy buy"; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: center; }
+    .mt-top5 .t5-list .t5-rnum { display: none; }
+    .mt-top5 .t5-list .t5-banner { grid-area: banner; display: flex; align-items: center; gap: 10px; min-height: 46px; margin: 0; padding: 10px 20px; background: var(--accent-soft); border-bottom: 1px solid var(--line-2); font-size: 12.5px; font-weight: 700; color: var(--accent); }
+    .mt-top5 .t5-list .t5-banner .b-num { display: inline-grid; place-items: center; min-width: 34px; height: 24px; padding: 0 8px; border-radius: 999px; background: var(--accent); color: var(--at-white); font-size: 12px; }
+    .mt-top5 .t5-list .t5-aside { display: contents; }
+    .mt-top5 .t5-list .t5-ratings { grid-area: banner; justify-self: end; align-self: center; z-index: 1; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px 14px; min-width: 0; margin: 0 20px 0 0; text-align: left; }
+    .mt-top5 .t5-list .t5-ratings .r-lbl { display: none; }
+    .mt-top5 .t5-list .t5-item .t5-ed .r-line { display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 8px; }
+    .mt-top5 .t5-list .t5-ed .n { font-size: 20px; }
+    .mt-top5 .t5-list .t5-cust { margin: 0; font-size: 12px; }
+    .mt-top5 .t5-list .t5-media { display: block; grid-area: media; margin: 16px 0 0 20px; }
+    .mt-top5 .t5-list .t5-body { grid-area: body; margin-top: 16px; padding: 0 20px 0 0; }
+    .mt-top5 .t5-list .t5-pc { flex-direction: column; }
+    .mt-top5 .t5-list .t5-buy { grid-area: buy; min-width: 0; width: auto; margin: 16px 20px 0; }
+    .mt-top5 .t5-list .t5-cta { width: 100%; padding: 12px 18px; }
+    .mt-top5 .t5-list .t5-cta .arr { display: none; }
+  }
 }
 @media (max-width: 767px) {
   .mt-top5 .t5-bar { display: none; }
