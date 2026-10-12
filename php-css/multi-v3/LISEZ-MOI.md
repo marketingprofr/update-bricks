@@ -214,7 +214,7 @@ Smartphone (Samuel) : la note (et sa mention) à droite, sous l'image ; « Lire 
 
 ## Encadré et colonne de gauche : deux retouches (12 octobre)
 
-- **Encadré « Pourquoi nous faire confiance »** : la puce « **Nous avons noté** les … sur N critères principaux » passe en premier, celle des sources (« En plus de nos propres analyses, nous avons consulté … ») en second. Nos analyses d'abord, les sources au second plan. La formulation de la puce des sources est en test chez la Coordination. À recoller : **2**, Code seulement. Même fichier pour le modèle V1.
+- **Encadré « Pourquoi nous faire confiance »** : la puce « **Nous avons noté** les … sur N critères principaux » passe en premier, celle des sources (« En plus de nos propres analyses, nous avons consulté … ») en second. Nos analyses d'abord, les sources au second plan. Testé par la Coordination avec Jev sur 11 formulations : « En plus de nos propres analyses » reste la meilleure (0,91 pour « vrai travail d'analyse », 0,79 pour « Nous avons cherché des informations complémentaires »). Rien d'autre à changer. À recoller : **2**, Code seulement. Même fichier pour le modèle V1.
 - **Colonne de gauche** : le bloc « Modèles analysés » prend le nom du type, comme la case de l'encadré (« Huiles d'olive analysées », « Assurances auto analysées »). Type vide ou trop long : « Produits analysés ». À recoller : **9**, Code seulement.
 
 ## CSS sans commentaires (5 octobre)
