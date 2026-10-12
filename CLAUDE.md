@@ -1161,7 +1161,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   bandeau 104 px (place de la note). Bouton : zone ". buy" (colonne du texte), justify-self start, largeur du texte.
   Résumé TOUJOURS à la place des points (Samuel, 2026-10-12) : .t5-body:has(.t5-summary) .t5-pc masqué ; .t5-summary
   line-clamp 4 (≥ 768 ; ≤ 767 placé grid-column 1 / row 3, marges et non padding sinon la 5e ligne déborde du clamp) ;
-  sans résumé, les points restent. Mesuré : 29/29 cartes de climatiseur mobile avec résumé, aucun débordement. Bandeau masqué hors F
+  sans résumé, les points restent. Mesuré : 29/29 cartes de climatiseur mobile avec résumé, aucun débordement.
+  Puis le PHP n'écrit ul.t5-pc que si $it['summary'] est vide (Samuel a relevé que ce n'était que du CSS : texte caché
+  lu par Google et Jev) ; la règle CSS :has reste en garde-fou. Banc : wp-stubs a maintenant home_url(). Bandeau masqué hors F
   (mobile, tablette) : rien n'y change.
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition

@@ -82,6 +82,7 @@ function maybe_unserialize( $v ) { $u = @unserialize( $v ); return $u === false 
 function get_all_template_variables( $id ) { global $TV; return $TV[ $id ] ?? array(); }
 function get_field( $k, $id = null ) { global $ACF; $id = $id ?? ( $GLOBALS['post']->ID ?? 0 ); return $ACF[ $id ][ $k ] ?? null; }
 function get_permalink( $p = 0 ) { $p = get_post( $p ?: $GLOBALS['CUR'] ); return $p ? 'https://www.meilleurtest.fr/' . $p->post_name . '/' : false; }
+if ( ! function_exists( 'home_url' ) ) { function home_url( $p = '' ) { return 'https://www.meilleurtest.fr' . $p; } }
 function sanitize_title( $s ) { $s = strtolower( trim( $s ) ); $s = preg_replace( '/[^a-z0-9]+/', '-', $s ); return trim( $s, '-' ); }
 function wpautop( $s ) { $ps = preg_split( '/\n\s*\n/', trim( $s ) ); return '<p>' . implode( "</p>\n<p>", $ps ) . "</p>\n"; }
 function wp_kses_post( $s ) { return $s; }
