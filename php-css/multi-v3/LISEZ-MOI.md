@@ -208,7 +208,7 @@ Hors code : ces pages n'ont pas le style de thème de Bricks qui donne 1 220 px 
 
 Choisie par Samuel parmi 9 propositions (fichier temporaire wp-avis/propositions-carte-top5.html). Quand la liste fait 700 px ou moins (colonne centrale entre les deux colonnes) : bandeau en tête de carte (« N°1 · Le choix de la rédaction » à gauche, note et avis clients à droite), image et texte au milieu, bouton sur toute la largeur en bas, sans flèche. Mesuré en ligne : texte du produit 158 → 406 px à 536 px de large, 278 → 526 px à 656 px. De 701 à 820 px (tablette) : forme habituelle, note et bouton à droite. Mobile inchangé. À recoller : **4**, CSS seulement.
 
-Puis (Samuel, option 1) : le bandeau du n°1 dit « Le choix de la rédaction », celui des suivants porte leur verdict (« La meilleure pompe à chaleur haut de gamme »), qui n'est alors plus répété sous le nom ; à droite, la note seule (ni « Très bien », ni note Amazon). Verdict trop long : coupé avec « … » (texte complet au survol). Le tri garde la logique (le 1er prend le libellé du tri). À recoller : **4**, Code et CSS.
+Puis (Samuel, option 1) : le bandeau du n°1 dit « Le choix de la rédaction », celui des suivants porte leur verdict (« La meilleure pompe à chaleur haut de gamme »), qui n'est alors plus répété sous le nom ; à droite, la note seule (ni « Très bien », ni note Amazon). Verdict trop long : retour à la ligne serré (interligne 1,15), centré verticalement avec le rang et la note (les « … » essayés d'abord ne plaisaient pas à Samuel). Le tri garde la logique (le 1er prend le libellé du tri). À recoller : **4**, Code et CSS.
 
 ## CSS sans commentaires (5 octobre)
 

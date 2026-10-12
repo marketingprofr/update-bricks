@@ -1157,7 +1157,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   Puis (Samuel, option 1 parmi 2) : multi-resume.code.php → b-label = « Le choix de la rédaction » pour pos 1, sinon
   $it['label'] (verdict), avec title ; li.t5-b-verdict + data-verdict ; le script de tri met pos 1 = libellé du tri,
   sinon data-verdict, et bascule t5-b-verdict. CSS F : .t5-item.t5-b-verdict .t5-label masqué, .t5-ed .tag et .t5-cust
-  masqués, b-label nowrap + ellipsis, padding droit du bandeau 104 px (place de la note). Bandeau masqué hors F
+  masqués, b-label line-height 1.15 (retour à la ligne : l'ellipsis essayée a été refusée par Samuel), padding droit du
+  bandeau 104 px (place de la note). Bandeau masqué hors F
   (mobile, tablette) : rien n'y change.
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
