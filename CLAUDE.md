@@ -1174,6 +1174,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **Double soulignement des sources (Samuel, 2026-10-12)** : .mt-sc-liste a { text-decoration: underline } + le
+  border-bottom de .link-black (div.mt-sc-process) = deux traits ; règle retirée de hero-encart.code.css, les liens
+  prennent le style link-black (noir, un trait) comme les autres liens de l'encadré.
 - **Colonne de gauche : « {Type} analysés » (Samuel, 2026-10-12)** : « Modèles analysés » n'allait pas aux assurances ni
   aux huiles d'olive. Titre = type au pluriel, initiale en capitale, « analysées » si masculinsfeminins = Meilleures ;
   type vide ou strlen ≥ 22 → « Produits analysés » (même règle que la case de l'encadré).
