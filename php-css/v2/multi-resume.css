@@ -89,13 +89,15 @@
 .mt-top5 .t5-label { font-size: 14px; font-weight: 700; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-tagline { font-size: 13px; font-weight: 600; color: var(--accent); margin: 0 0 6px; }
 .mt-top5 .t5-summary { display: none; }
-/* Produit sans points forts ni faibles : son résumé à la place, sur 4 lignes au plus (Samuel, 2026-10-12) ; la carte
-   mobile a sa propre grille, d'où la seconde règle */
+/* Résumé du produit à la place des points forts et faibles, sur 4 lignes au plus (décision de Samuel, 2026-10-12 :
+   « le résumé, c'est toujours mieux ») ; un produit sans résumé garde ses points forts et faibles. La carte mobile a sa
+   propre grille, d'où la seconde règle (marges et non padding, sinon la 5e ligne déborde du clamp) */
+.mt-top5 .t5-body:has(.t5-summary) .t5-pc { display: none; }
 @media (min-width: 768px) {
-  .mt-top5 .t5-body:not(:has(.t5-pc)) .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+  .mt-top5 .t5-body .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
 }
 @media (max-width: 767px) {
-  .mt-top5 .t5-list > li .t5-body:not(:has(.t5-pc)) .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; grid-column: 1; grid-row: 3; margin: 6px 0 14px 12px; padding: 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+  .mt-top5 .t5-list > li .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; grid-column: 1; grid-row: 3; margin: 6px 0 14px 12px; padding: 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
 }
 .mt-top5 .t5-readmore { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
 .mt-top5 .t5-readmore:hover { border-color: var(--accent); }
