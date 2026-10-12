@@ -1163,7 +1163,10 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   line-clamp 4 (≥ 768 ; ≤ 767 placé grid-column 1 / row 3, marges et non padding sinon la 5e ligne déborde du clamp) ;
   sans résumé, les points restent. Mesuré : 29/29 cartes de climatiseur mobile avec résumé, aucun débordement.
   Puis le PHP n'écrit ul.t5-pc que si $it['summary'] est vide (Samuel a relevé que ce n'était que du CSS : texte caché
-  lu par Google et Jev) ; la règle CSS :has reste en garde-fou. Banc : wp-stubs a maintenant home_url(). Bandeau masqué hors F
+  lu par Google et Jev) ; la règle CSS :has reste en garde-fou. Banc : wp-stubs a maintenant home_url().
+  Smartphone (≤ 767, Samuel) : .t5-aside display: contents ; .t5-ratings colonne 2 / rangée 3 sous l'image (média
+  rangées 1-2), .t5-ed affichée (note + mention, sans « Notre note ») ; .t5-rm-wrap colonne 1 / rangée 4 en simple
+  lien (plus de pilule ni de .t5-rm-score) ; .t5-buy rangée 5 pleine largeur. Bandeau masqué hors F
   (mobile, tablette) : rien n'y change.
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
