@@ -211,6 +211,7 @@ if ( $MT_ENCADRE_REEL ) {
   /* Puces sous les cases (liste SANS intitulés, choix de Samuel du 2026-10-02 ; les intitulés n'ont aucun effet
      mesurable sur Jev), à la place de la phrase générique */
   $mt_puces = array();
+  $mt_puce_sources = '';  // placée APRÈS « Nous avons noté » : nos analyses d'abord, les sources au second plan (Samuel, 2026-10-12)
   $mt_phrase = trim( (string) get_field( $MT_CHAMP_PHRASE_SOURCES, $this_id ) );
   if ( $mt_phrase !== '' && $mt_src_aff !== '' ) {
     /* Phrases complètes, à la 1re personne du pluriel (demande de Samuel, 2026-10-03), avec une entrée en gras qui
@@ -218,7 +219,7 @@ if ( $MT_ENCADRE_REEL ) {
        remplace « Pour réaliser ce comparatif », qui laissait croire à une simple compilation de sources (choix de Samuel
        du 2026-10-06, via la Coordination ; Jev « travail d'analyse propre » 0,97 contre 0,85) */
     $mt_src_txt = ( $mt_src_aff[0] === '~' ) ? 'environ ' . substr( $mt_src_aff, 1 ) : $mt_src_aff;
-    $mt_puces[] = '<b>En plus de nos propres analyses</b>, nous avons consulté ' . esc_html( $mt_src_txt ) . ' sources, dont ' . mt_phrase_sources_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
+    $mt_puce_sources = '<b>En plus de nos propres analyses</b>, nous avons consulté ' . esc_html( $mt_src_txt ) . ' sources, dont ' . mt_phrase_sources_html( rtrim( $mt_phrase, ". \t\n" ) ) . '.';
   }
   /* Libellés courts des critères : fonction mt_criteres_courts() ci-dessus (partagée avec l'encart « Vos questions ») */
   $mt_courts = mt_criteres_courts( $this_id );
@@ -231,6 +232,7 @@ if ( $MT_ENCADRE_REEL ) {
     $mt_puces[] = '<b>Nous avons noté</b> les ' . esc_html( ( strlen( $tp ) >= 22 || $tp === '' ) ? 'produits' : mt_minuscule_type( $tp ) )
                 . ' sur ' . $mt_k . ( $mt_k > 1 ? ' critères principaux' : ' critère principal' ) . ' (' . esc_html( $mt_courts ) . ').';
   }
+  if ( $mt_puce_sources !== '' ) { $mt_puces[] = $mt_puce_sources; }
   if ( $MT_TXT_AFFILIATION !== '' ) { $mt_puces[] = $MT_TXT_AFFILIATION; }
   if ( $MT_SIGNALEMENT ) {
     /* La page d'origine est transmise au formulaire (identifiant + adresse), sans donnée personnelle */

@@ -1168,6 +1168,13 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   rangées 1-2), .t5-ed affichée (note + mention, sans « Notre note ») ; .t5-rm-wrap colonne 1 / rangée 4 en simple
   lien (plus de pilule ni de .t5-rm-score) ; .t5-buy rangée 5 pleine largeur. Bandeau masqué hors F
   (mobile, tablette) : rien n'y change.
+- **Encadré : puce des sources en second (Samuel, 2026-10-12)** : hero-encart.code.php construit $mt_puce_sources et
+  l'ajoute APRÈS « Nous avons noté » (nos analyses d'abord). Samuel : les sites américains n'ont pas de sens pour des
+  produits propres au marché français ; piste « Nous avons cherché des informations complémentaires… » ; ~10 formulations
+  confiées à la Coordination (Jev). Faute de mieux, l'ordre seul suffit.
+- **Colonne de gauche : « {Type} analysés » (Samuel, 2026-10-12)** : « Modèles analysés » n'allait pas aux assurances ni
+  aux huiles d'olive. Titre = type au pluriel, initiale en capitale, « analysées » si masculinsfeminins = Meilleures ;
+  type vide ou strlen ≥ 22 → « Produits analysés » (même règle que la case de l'encadré).
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
   seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
   de Templates : garder, et aligner le V1 (Product imbriqués dans les ListItem) sur le V3 (Product à la racine, ItemList

@@ -212,6 +212,11 @@ Puis (Samuel, option 1) : le bandeau du n°1 dit « Le choix de la rédaction »
 
 Smartphone (Samuel) : la note (et sa mention) à droite, sous l'image ; « Lire l'avis complet » en simple lien comme sur ordinateur, plus en bouton ; le bouton d'achat reste en bas sur toute la largeur. À recoller : **4**, CSS. Le tri garde la logique (le 1er prend le libellé du tri). À recoller : **4**, Code et CSS.
 
+## Encadré et colonne de gauche : deux retouches (12 octobre)
+
+- **Encadré « Pourquoi nous faire confiance »** : la puce « **Nous avons noté** les … sur N critères principaux » passe en premier, celle des sources (« En plus de nos propres analyses, nous avons consulté … ») en second. Nos analyses d'abord, les sources au second plan. La formulation de la puce des sources est en test chez la Coordination. À recoller : **2**, Code seulement. Même fichier pour le modèle V1.
+- **Colonne de gauche** : le bloc « Modèles analysés » prend le nom du type, comme la case de l'encadré (« Huiles d'olive analysées », « Assurances auto analysées »). Type vide ou trop long : « Produits analysés ». À recoller : **9**, Code seulement.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.

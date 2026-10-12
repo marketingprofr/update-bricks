@@ -24,7 +24,7 @@
         produit (la page en tête), classés par le moteur des « Comparatifs
         similaires » (mt_sim_ranked_ids) ; le reste de la catégorie est dans
         « Guides {catégorie} » et « Guides spécialisés », colonne de droite ;
-     3. « Modèles analysés » : les 10 mieux notés des avis détaillés
+     3. « {Type} analysés » : les 10 mieux notés des avis détaillés
         (noms en double retirés), lien vers leur avis dans la page (#test-…),
         sinon vers leur page produit si l'ID ≥ 250 000, sinon sans lien.
    La colonne entière reste collée en haut de l'écran pendant la lecture du
@@ -34,7 +34,7 @@
 $MT_SIDE_SELECTIONS = true; // « Classements » : les sélections de la page (multi-comparatif seulement)
 $MT_SIDE_ACCES     = true;  // « Accès rapide »
 $MT_SIDE_GUIDES    = true;  // « Guides {type au pluriel} »
-$MT_SIDE_MODELES   = true;  // « Modèles analysés »
+$MT_SIDE_MODELES   = true;  // « {Type} analysés »
 $MT_SIDE_MAX       = 10;    // guides du même type au plus (en plus de la page)
 $MT_SIDE_MAX_MOD   = 10;    // modèles analysés au plus
 
@@ -172,7 +172,7 @@ if ( $MT_SIDE_GUIDES ) {
   $mt_sp_html .= mt_side_bloc( $mt_sp_titre, $mt_sp_g, false, '', 'mt-side-guides' );
 }
 
-/* 3. Modèles analysés : les 10 mieux notés des avis détaillés, sans nom en double */
+/* 3. {Type} analysés : les 10 mieux notés des avis détaillés, sans nom en double */
 if ( $MT_SIDE_MODELES ) {
   $mt_sp_plan = function_exists( 'mtv2_plan' ) ? mtv2_plan( $mt_sp ) : null;
   $mt_sp_ids  = $mt_sp_plan ? (array) $mt_sp_plan['tests'] : (array) ( $mt_sp_tv['top_avis_ids'] ?? array() );
@@ -198,7 +198,13 @@ if ( $MT_SIDE_MODELES ) {
     $mt_sp_items[] = array( 't' => $p['t'], 'u' => $u, 'm' => $p['s'] > 0 ? number_format( $p['s'], 1, ',', '' ) : '' );
     if ( count( $mt_sp_items ) >= $MT_SIDE_MAX_MOD ) { break; }
   }
-  $mt_sp_html .= mt_side_bloc( 'Modèles analysés', $mt_sp_items, true, '', 'mt-side-modeles' );
+  /* Titre d'après le type, comme la case de l'encadré (« Huiles d'olive analysées », « Assurances auto analysées ») :
+     « Modèles » n'allait pas aux assurances ni aux aliments (Samuel, 2026-10-12) ; type vide ou long : « Produits analysés » */
+  $mt_sp_fem = ( ( $mt_sp_tv['masculinsfeminins'] ?? '' ) === 'Meilleures' );
+  $mt_sp_tm  = ( strlen( $mt_sp_plur ) >= 22 || $mt_sp_plur === '' )
+             ? 'Produits analysés'
+             : mb_strtoupper( mb_substr( $mt_sp_plur, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $mt_sp_plur, 1, null, 'UTF-8' ) . ' analysé' . ( $mt_sp_fem ? 'e' : '' ) . 's';
+  $mt_sp_html .= mt_side_bloc( $mt_sp_tm, $mt_sp_items, true, '', 'mt-side-modeles' );
 }
 
 if ( $mt_sp_html !== '' ) :
