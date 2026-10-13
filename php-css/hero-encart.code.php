@@ -243,9 +243,8 @@ if ( $MT_ENCADRE_REEL ) {
        2026-10-04 : paragraphe juste sous « Découvrez notre méthodologie… » (choix de Samuel) */
     $mt_signalement = '<p class="mt-sc-signalement">Une erreur, ou un produit remplacé par un nouveau modèle&nbsp;? <a href="' . esc_url( $mt_url_sig ) . '" class="mt-signaler" rel="nofollow">Prévenez-nous</a>.</p>';
   }
-  /* Engagement d'indépendance, signé : à part, sous la liste. Texte choisi par Samuel le 2026-10-04 (« nos classements »,
-     « des offres » au pluriel : l'offre ne visait pas ce comparatif) */
-  $mt_citation = '<p class="mt-sc-citation">Aucune marque ne peut payer pour figurer dans nos classements. J\'ai refusé des offres publicitaires allant jusqu\'à 20&nbsp;000&nbsp;€ pour garantir l\'indépendance du site.<span class="mt-sc-signature">Samuel Petit, responsable éditorial</span></p>';
+  /* Plus de citation signée (« J'ai refusé des offres… ») : retirée par Samuel le 2026-10-14 (encadré plus haut que le
+     hero ; elle va sur la page « Nos engagements ») */
 }
 ?>
 <div class="mt-card">
@@ -318,7 +317,6 @@ if ( $MT_ENCADRE_REEL ) {
   <?php if ( $MT_ENCADRE_REEL && ! empty( $mt_puces ) ) : ?>
     <div class="mt-sc-process link-black">
       <ul class="mt-sc-liste"><?php foreach ( $mt_puces as $mt_p ) : ?><li><?php echo $mt_p; ?></li><?php endforeach; ?></ul>
-      <?php echo $mt_citation ?? ''; ?>
       <p>Découvrez <a href="/notre-methode/">notre méthodologie</a> et <a href="/notre-engagement/">nos engagements</a> qualité.</p>
       <?php echo $mt_signalement ?? ''; ?>
     </div>

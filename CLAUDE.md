@@ -1174,6 +1174,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **Encadré confiance plus court (Samuel, 2026-10-14, via la Coordination)** : $mt_citation retirée de hero-encart (et
+  ses règles CSS) ; votes : .mt-sc-vote 12/12 au lieu de 14/14, .mt-sc-vote-h margin-bottom 2 + line-height 1.3, li des
+  étoiles en display: flex (rangée 22 px au lieu de 25), .mt-sc-note margin-top 2. Mesuré à 1366 px (injection) :
+  −137 px partout ; écart encadré − hero : drap coton +145 → +8, yaourts −14, VPN −55, gants −72, matelas −74,
+  climatiseur −135, banque −133. Photo de l'encadré non touchée (accord de Samuel nécessaire).
 - **Catégories à 60 comparatifs par page (Samuel, 2026-10-13, audit seo-technical de la Coordination : 27 % des
   comparatifs à ≤ 3 clics)** : category.code.php $CAT_PER_PAGE 12 → 60 ET fix-category-pagination.php (WPCodeBox)
   posts_per_page 60 sur la requête principale des catégories. Sans le second, WordPress compte ses pages au réglage

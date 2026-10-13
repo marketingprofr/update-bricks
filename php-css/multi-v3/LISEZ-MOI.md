@@ -228,6 +228,15 @@ Accord de Samuel le 13 octobre, après les tests de la Coordination (Jev, franç
 
 À recoller : **6**, Code seulement. Même fichier pour le modèle V1.
 
+## Encadré confiance plus court : citation retirée, votes resserrés (14 octobre)
+
+Demande de Samuel : l'encadré de droite dépassait le hero de gauche sur plusieurs comparatifs.
+- La citation signée (« Aucune marque ne peut payer… J'ai refusé des offres… ») est retirée de l'encadré. Elle ira sur la page « Nos engagements » (Architecture).
+- Le bloc des votes est resserré : moins d'espace sous « Avis des lecteurs » et au-dessus de « Votre note nous aide… » (92 → 77 px).
+- Gain mesuré à 1366 px : 137 px sur chaque page. L'encadré n'est plus plus haut que le hero, sauf drap coton (+8 px au lieu de +145).
+
+À recoller : **2**, onglet Code ET CSS du bandeau (fichier 2). Même fichier pour le modèle V1.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.
