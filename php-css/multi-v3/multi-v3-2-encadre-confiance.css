@@ -24,6 +24,7 @@
   margin: 0;
 	font-family: "Source Serif 4",serif;
   font-size: var(--at-text--xs);
+  line-height: 1.5;
 }
 .mt-sc-liste { margin: 0 !important; padding: 0 0 14px !important; border-bottom: 1px solid var(--at-grey-l-3); list-style: none !important; display: flex; flex-direction: column; gap: 9px; }
 .mt-sc-liste li { position: relative; margin: 0 !important; padding: 0 0 0 16px !important; list-style: none !important; font-family: Inter, "Helvetica Neue", system-ui, sans-serif; font-size: 13px; line-height: 1.5; color: var(--at-black-l-2); }

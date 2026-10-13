@@ -1179,6 +1179,7 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   étoiles en display: flex (rangée 22 px au lieu de 25), .mt-sc-note margin-top 2. Mesuré à 1366 px (injection) :
   −137 px partout ; écart encadré − hero : drap coton +145 → +8, yaourts −14, VPN −55, gants −72, matelas −74,
   climatiseur −135, banque −133. Photo de l'encadré non touchée (accord de Samuel nécessaire).
+  Puis .mt-sc-process p line-height 1.5 (comme les puces ; 22 px hérités avant) : −8 px, drap coton 781 / 781.
 - **Catégories à 60 comparatifs par page (Samuel, 2026-10-13, audit seo-technical de la Coordination : 27 % des
   comparatifs à ≤ 3 clics)** : category.code.php $CAT_PER_PAGE 12 → 60 ET fix-category-pagination.php (WPCodeBox)
   posts_per_page 60 sur la requête principale des catégories. Sans le second, WordPress compte ses pages au réglage

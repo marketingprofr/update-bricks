@@ -235,6 +235,8 @@ Demande de Samuel : l'encadré de droite dépassait le hero de gauche sur plusie
 - Le bloc des votes est resserré : moins d'espace sous « Avis des lecteurs » et au-dessus de « Votre note nous aide… » (92 → 77 px).
 - Gain mesuré à 1366 px : 137 px sur chaque page. L'encadré n'est plus plus haut que le hero, sauf drap coton (+8 px au lieu de +145).
 
+Puis « Découvrez notre méthodologie… » et « Une erreur… Prévenez-nous » prennent l'interligne de la liste à puces (1,5 au lieu de 22 px) : encore −8 px, drap coton à égalité avec le hero. À recoller : CSS du bandeau (fichier 2).
+
 À recoller : **2**, onglet Code ET CSS du bandeau (fichier 2). Même fichier pour le modèle V1.
 
 ## CSS sans commentaires (5 octobre)
