@@ -312,7 +312,7 @@ if ( ! empty( $prods ) ) {
   } elseif ( $nbp === 2 ) {
     $a1 .= 'Juste derri&egrave;re arrive ' . $pod( $prods[1] ) . '. ';
   }
-  $a1 .= 'Le &laquo;&nbsp;meilleur&nbsp;&raquo; choix reste toutefois celui qui correspond &agrave; votre usage et &agrave; votre budget&nbsp;: un produit un peu moins bien class&eacute; peut tr&egrave;s bien &ecirc;tre plus adapt&eacute; &agrave; votre situation. Pour trancher, parcourez nos <a href="#produit-n-1">avis d&eacute;taill&eacute;s</a> et le <a href="#partie-tableau-comparatif">tableau comparatif</a>, un peu plus haut sur cette page.</p>';
+  $a1 .= 'Le meilleur choix reste toutefois celui qui correspond &agrave; votre usage et &agrave; votre budget&nbsp;: un produit un peu moins bien class&eacute; peut tr&egrave;s bien &ecirc;tre plus adapt&eacute; &agrave; votre situation. Pour trancher, parcourez nos <a href="#produit-n-1">avis d&eacute;taill&eacute;s</a> et le <a href="#partie-tableau-comparatif">tableau comparatif</a>, un peu plus haut sur cette page.</p>';
   $autos[] = array( 'q' => $q1, 'a' => $a1 );
 
   /* --- Q « marques » : marques distinctes du classement (ordre de rang,
