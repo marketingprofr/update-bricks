@@ -21,7 +21,8 @@
    --------------------------------------------------------------------- */
 $CAT_POST_TYPES = array( 'comparatif', 'liste' ); // CPT affichés dans l'archive
 $CAT_TAXONOMY   = 'category';                     // taxonomie d'archive (WP standard)
-$CAT_PER_PAGE   = 12;                             // cartes par page (4 col × 3)
+$CAT_PER_PAGE   = 60;                             // cartes par page (4 col × 15) ; MÊME valeur dans fix-category-pagination.php
+                                                  // (60 au lieu de 12 : plus de comparatifs à 3 clics de l'accueil, Samuel 2026-10-13)
 $CAT_VIEWS_META = 'iawp_total_views';             // meta vues (Independent Analytics)
 $CAT_TYPE_LABELS = array( 'comparatif' => 'Comparatif', 'liste' => 'Liste' );
 

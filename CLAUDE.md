@@ -1174,6 +1174,13 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **Catégories à 60 comparatifs par page (Samuel, 2026-10-13, audit seo-technical de la Coordination : 27 % des
+  comparatifs à ≤ 3 clics)** : category.code.php $CAT_PER_PAGE 12 → 60 ET fix-category-pagination.php (WPCodeBox)
+  posts_per_page 60 sur la requête principale des catégories. Sans le second, WordPress compte ses pages au réglage
+  « Lecture » (10) : constaté le 13/10, /maison/page/147/ à 175/ répondaient 200 avec une grille vide (« page 150 sur
+  1 »). Limite connue : si (N − 1) est un multiple de 60, la dernière page de la requête principale ne contient que le
+  guide à la une (exclu de la grille) et s'affiche vide. Poids : /maison/ 259 Ko de HTML (53 Ko compressé), ~1 Ko par
+  carte, images déjà en loading=lazy.
 - **FAQ Q1 « Quel est le meilleur … ? » (Samuel, 2026-10-13, via la Coordination ; wp-avis/audit-snippets-2026-10-13)** :
   1re phrase « {Le meilleur / La meilleure} {type} de notre comparatif est X, noté(e) N/10 (« label ») » ; pluriel →
   type au singulier, sinon « Le n°1 » ; $llm vide → « le meilleur {nom} » (comme la question). mt_faq_minuscule() :
