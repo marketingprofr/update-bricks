@@ -1197,9 +1197,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   aux huiles d'olive. Titre = type au pluriel, initiale en capitale, « analysées » si masculinsfeminins = Meilleures ;
   type vide ou strlen ≥ 22 → « Produits analysés » (même règle que la case de l'encadré).
 - **ItemList du JSON-LD des tests complets** : retrait demandé par la Technique le 2026-10-08 puis SUSPENDU (Coordination :
-  seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel attendue ; proposition
-  de Templates : garder, et aligner le V1 (Product imbriqués dans les ListItem) sur le V3 (Product à la racine, ItemList
-  par @id).
+  seul signal de classement pour Bing ; Technique sans objection à les garder). Décision de Samuel le 2026-10-13 : « ne
+  pas y toucher pour l'instant » → garder les ItemList tels quels, NI retrait NI alignement du V1 sur le V3.
 - **CSS à coller SANS commentaires (Technique + Samuel, 2026-10-05)** : outils/verifier-multi-v3.py écrit les .css de
   multi-v3 via sans_commentaires() (retire /* */ hors chaînes, lignes vides, blancs de fin) ; références inchangées.
   Équivalence vérifiée : CSSStyleSheet.replaceSync dans Chrome, mêmes cssText règle par règle pour les 9 CSS.
