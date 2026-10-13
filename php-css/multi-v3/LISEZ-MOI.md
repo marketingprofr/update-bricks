@@ -233,6 +233,8 @@ Accord de Samuel le 13 octobre, après les tests de la Coordination (Jev, franç
 - Le bouton de tri « Avis des clients » devient « Avis », et « Trier par » est un peu plus petit. Dans la colonne centrale (656 px), la barre tient sur une ligne avec « Comment nous évaluons » : 48 px de haut au lieu de 86 sur matelas.
 - Sous le titre : « Scores de 5,8 à 9,2 sur 177 produits analysés. » La durée (« en 12 ans ») est retirée, et « analysés » s'affiche maintenant pour tous les comparatifs, pas seulement au-delà de 50 produits.
 
+- Sous la liste : « Voir le classement complet : afficher les 177 produits analysés » (au lieu de « testés »), et le titre du classement déplié « Classement complet des matelas analysés » (« analysées » au féminin).
+
 À recoller : **4**, onglet Code ET onglet CSS. Même changement dans `top5-resume.code.php` pour le modèle V1.
 
 ## Cartes du top 5 : lien à droite du bouton, plus de grands blancs sur téléphone (14 octobre)

@@ -1177,6 +1177,8 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
 - **Barre de tri et phrase des scores (Samuel, 2026-10-14)** : bouton « Avis » (au lieu de « Avis des clients »), .lbl
   11 px / 0.05em : une ligne à 656 px (matelas 86 → 48 px). .t5-range : « … sur N produits analysés. » sans « en N ans »,
   « analysés » pour tout N (avant : seulement N > 50 avec la durée). V3 (multi-resume) et V1 (top5-resume).
+  Classement complet : « afficher les N produits analysés » et « Classement complet des {type} analysé(e)s » (féminin
+  si masculinsfeminins = Meilleures) au lieu de « testés » (Samuel : « analysés », comme le title).
 - **Carte du top 5, 2026-10-14 (Samuel)** : F (@container ≤ 700) passe en grille 92px | auto | 1fr, lignes bandeau / nom
   / verdict / résumé (1fr) / bouton ; .t5-body en display: contents ; .t5-rm-wrap colonne 3 ligne 5, flex centré,
   min-height 42 px (hauteur du bouton), sans flèche ; .t5-merchants width 0 + min-width 100 % (ne pas élargir la
