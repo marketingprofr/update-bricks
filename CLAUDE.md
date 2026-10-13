@@ -1175,10 +1175,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
 - **Titres forcés du 2026-10-02 (Samuel, 2026-10-13 : « ok, corrige »)** : posés par Architecture sur 10 comparatifs,
-  retrait prévu dès le title automatique, fait seulement sur 37750. Demandé à Architecture : vider 36755 et 36668 (V3).
-  Les 7 autres (36696, 36636, 37814, 37220, 36753, 36778, 37112) sont en V1, dont le title en ligne est encore l'ancien
-  format « Les 5 meilleur(e)s … | Test par Meilleurtest » (moins bien noté que les titres forcés) : les vider à leur
-  passage en V3. À rappeler lors de la bascule de tous les comparatifs.
+  retrait prévu dès le title automatique, fait seulement sur 37750. Samuel : vider les 9 maintenant (36755, 36668,
+  36696, 36636, 37814, 37220, 36753, 36778, 37112), même si les 7 pages V1 affichent l'ancien format jusqu'à la
+  transition. Demandé à Architecture le 2026-10-13.
 - **Double soulignement des sources (Samuel, 2026-10-12)** : .mt-sc-liste a { text-decoration: underline } + le
   border-bottom de .link-black (div.mt-sc-process) = deux traits ; règle retirée de hero-encart.code.css, les liens
   prennent le style link-black (noir, un trait) comme les autres liens de l'encadré.
