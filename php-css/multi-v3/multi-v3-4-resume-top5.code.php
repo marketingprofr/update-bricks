@@ -746,7 +746,7 @@ if ( ! function_exists( 'mtv2_resume_list' ) ) {
       <button type="button" class="t5-tab" aria-pressed="false" data-sort="price"><span class="ico" aria-hidden="true">&euro;</span> Prix</button>
       <?php endif; ?>
       <?php if ( $show_rating ) : ?>
-      <button type="button" class="t5-tab" aria-pressed="false" data-sort="rating"><span class="ico" aria-hidden="true">&#9829;</span> Avis des clients</button>
+      <button type="button" class="t5-tab" aria-pressed="false" data-sort="rating"><span class="ico" aria-hidden="true">&#9829;</span> Avis</button>
       <?php endif; ?>
       <?php if ( $show_recent ) : ?>
       <button type="button" class="t5-tab" aria-pressed="false" data-sort="recent"><span class="ico" aria-hidden="true">&#8635;</span> Le plus r&eacute;cent</button>
@@ -910,7 +910,7 @@ if ( $MT_POINT_VIGILANCE ) { echo mt_point_vigilance( get_the_ID() ); }
     <div>
       <h2 class="t5-h2" id="mt-top5-title"><?php echo $head_title; ?></h2>
 <?php if ( $show_range ) : ?>
-      <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $display_min, 1, ',', '' ) ); ?> &agrave; <?php echo esc_html( number_format( $display_max, 1, ',', '' ) ); ?> sur <?php echo (int) $display_count; ?> produits</b><?php if ( $display_count > 50 ) { $mt_years = (int) date_i18n('Y') - 2014; echo ' analys&eacute;s en ' . $mt_years . '&nbsp;ans'; } ?>.<?php if ( $show_ranking ) : ?> Classement complet disponible sous notre s&eacute;lection.<?php else : ?> Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.<?php endif; ?></p>
+      <p class="t5-range">Scores de <b><?php echo esc_html( number_format( $display_min, 1, ',', '' ) ); ?> &agrave; <?php echo esc_html( number_format( $display_max, 1, ',', '' ) ); ?> sur <?php echo (int) $display_count; ?> produits</b> analys&eacute;s<?php /* sans « en 12 ans » (Samuel, 2026-10-14 : la durée n'apporte rien) */ ?>.<?php if ( $show_ranking ) : ?> Classement complet disponible sous notre s&eacute;lection.<?php else : ?> Seuls les <?php echo $nb; ?> meilleurs figurent dans notre s&eacute;lection.<?php endif; ?></p>
 <?php endif; ?>
 <?php if ( current_user_can( 'edit_posts' ) ) : ?>
       <p class="t5-admin-debug" style="margin:6px 0 0;font-size:11px;color:#888;font-style:italic"><?php echo $names_line( $products ); ?></p>

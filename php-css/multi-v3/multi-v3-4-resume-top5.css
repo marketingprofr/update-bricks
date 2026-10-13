@@ -29,7 +29,7 @@
   background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px;
   box-shadow: 0 1px 2px rgba(20,24,29,.03);
 }
-.mt-top5 .t5-bar .lbl { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+.mt-top5 .t5-bar .lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
 .mt-top5 .t5-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
 .mt-top5 .t5-tab {
   display: inline-flex; align-items: center; gap: 7px;

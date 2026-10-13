@@ -1174,6 +1174,9 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **Barre de tri et phrase des scores (Samuel, 2026-10-14)** : bouton « Avis » (au lieu de « Avis des clients »), .lbl
+  11 px / 0.05em : une ligne à 656 px (matelas 86 → 48 px). .t5-range : « … sur N produits analysés. » sans « en N ans »,
+  « analysés » pour tout N (avant : seulement N > 50 avec la durée). V3 (multi-resume) et V1 (top5-resume).
 - **Carte du top 5, 2026-10-14 (Samuel)** : F (@container ≤ 700) passe en grille 92px | auto | 1fr, lignes bandeau / nom
   / verdict / résumé (1fr) / bouton ; .t5-body en display: contents ; .t5-rm-wrap colonne 3 ligne 5, flex centré,
   min-height 42 px (hauteur du bouton), sans flèche ; .t5-merchants width 0 + min-width 100 % (ne pas élargir la
