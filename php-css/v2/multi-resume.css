@@ -93,10 +93,10 @@
    « le résumé, c'est toujours mieux ») ; un produit sans résumé garde ses points forts et faibles. La carte mobile a sa
    propre grille, d'où la seconde règle (marges et non padding, sinon la 5e ligne déborde du clamp) */
 .mt-top5 .t5-body:has(.t5-summary) .t5-pc { display: none; }
-@media (min-width: 768px) {
+@container (min-width: 460px) {
   .mt-top5 .t5-body .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
 }
-@media (max-width: 767px) {
+@container (max-width: 459px) {
   .mt-top5 .t5-list > li .t5-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; grid-column: 1; grid-row: 3; margin: 6px 0 14px 12px; padding: 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
 }
 .mt-top5 .t5-readmore { display: inline-flex; align-items: center; gap: 5px; margin-top: 9px; font-size: 12px; font-weight: 600; color: var(--accent); border-bottom: 1px solid transparent; transition: border-color .15s; }
@@ -172,28 +172,14 @@
   .mt-top5 .t5-item.t5-no-cust .t5-ratings { text-align: center; }
   .mt-top5 .t5-item.t5-no-cust .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 }
-/* Liste étroite (colonne centrale entre les colonnes latérales, tablette), d'après la largeur de la LISTE et non de l'écran.
-   Mise en page choisie par Samuel le 2026-10-12 parmi 9 propositions (la « F ») : un bandeau en tête de carte avec le rang
-   et la mention à gauche, la note (et les avis clients) à droite ; au milieu, l'image et le texte, qui gagne toute la
-   largeur restante ; en bas, le bouton à la taille de son texte, aligné sur le nom, sans flèche. Avant : note et bouton dans une colonne de
-   172 px à droite, le texte n'avait plus que ~160 px à 536 px de large. Réservée aux listes de 700 px et moins.
+/* Liste de 460 à 820 px (colonne centrale entre les colonnes latérales, tablette, grand téléphone), d'après la largeur de
+   la LISTE et non de l'écran. Mise en page choisie par Samuel le 2026-10-12 parmi 9 propositions (la « F ») : un bandeau
+   en tête de carte avec le rang et la mention à gauche, la note à droite ; au milieu, l'image et le texte ; en bas, le
+   bouton à la taille de son texte et « Lire l'avis complet » à sa droite. Depuis le 2026-10-14, elle remplace aussi
+   l'ancienne forme des listes de 701 à 820 px et la carte téléphone au-dessus de 460 px.
    Sélecteurs renforcés (.mt-top5 .t5-list …) pour passer devant les règles des tablettes (max-width: 880px). */
 .mt-top5 .t5-list { container-type: inline-size; }
-@media (min-width: 768px) {
-  /* Liste moyenne (701 à 820 px : tablette, une seule colonne latérale) : forme habituelle, note et bouton dans une
-     colonne de 172 px à droite (2026-10-05) */
-  @container (max-width: 820px) {
-    .mt-top5 .t5-card { grid-template-columns: 30px 92px minmax(0, 1fr) 172px; grid-template-areas: "rnum media body aside"; gap: 0 16px; align-items: center; }
-    .mt-top5 .t5-media { display: block; }
-    .mt-top5 .t5-aside { flex-direction: column; align-items: stretch; justify-content: center; gap: 12px; width: auto; padding: 0; margin: 0; border: 0; }
-    .mt-top5 .t5-ratings { min-width: 0; text-align: center; }
-    .mt-top5 .t5-ed .r-line { flex-direction: row; justify-content: center; align-items: center; gap: 8px; }
-    .mt-top5 .t5-cust { margin-top: 6px; }
-    .mt-top5 .t5-buy { min-width: 0; width: 100%; }
-    .mt-top5 .t5-cta { padding: 10px 12px; }
-  }
-  /* Liste étroite (700 px et moins : colonne centrale entre les deux colonnes latérales) : proposition F */
-  @container (max-width: 700px) {
+@container (min-width: 460px) and (max-width: 820px) {
     /* Lignes : bandeau, nom, verdict, résumé (1fr : l'image n'écarte jamais le nom du résumé), bouton + « Lire l'avis
        complet » ; colonnes : image, bouton (à sa taille), lien (Samuel, 2026-10-14 : le lien à droite du bouton) */
     .mt-top5 .t5-list .t5-card { grid-template-columns: 92px auto minmax(0, 1fr); grid-template-rows: auto auto auto 1fr auto; grid-template-areas: none; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: start; }
@@ -224,10 +210,14 @@
     .mt-top5 .t5-list .t5-admin-tag { top: auto; bottom: 8px; }  /* pastille OOS / DISCO (connecté seulement) : plus sur la note */
     .mt-top5 .t5-list .t5-cta { width: auto; padding: 10px 22px; white-space: nowrap; }  /* à la taille du texte, aligné sur le nom (Samuel : pleine largeur trop grand) */
     .mt-top5 .t5-list .t5-cta .arr { display: none; }
-  }
 }
 @media (max-width: 767px) {
   .mt-top5 .t5-bar { display: none; }
+}
+/* Carte « téléphone » (image et note à droite, bouton sur toute la largeur) : seulement pour une liste de moins de
+   460 px. Au-dessus, même sur un écran de moins de 768 px, c'est la carte F (Samuel, 2026-10-14 : la carte téléphone
+   à 700 px de large était bien moins belle que la F, pour une taille presque identique) */
+@container (max-width: 459px) {
   .mt-top5 .t5-rnum { display: none; }
 
   .mt-top5 .t5-name { font-size: 13px; }

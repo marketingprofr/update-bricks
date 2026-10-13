@@ -233,6 +233,7 @@ Accord de Samuel le 13 octobre, après les tests de la Coordination (Jev, franç
 - **Colonne centrale étroite** (mise en page « F ») : « Lire l'avis complet » passe à droite du bouton d'achat, en lien texte sans flèche, centré sur la hauteur du bouton. Les cartes perdent 25 px.
 - **Téléphones et écrans de 600 à 767 px** : le nom, le verdict et le résumé ne sont plus écartés par la hauteur de l'image (jusqu'à 48 et 54 px de blanc à 740 px). L'image et la note restent à droite.
 - La pastille OOS / DISCO, visible seulement connecté, ne cache plus la note.
+- Puis (Samuel) : la carte téléphone (image et note à droite, bouton sur toute la largeur) n'est plus utilisée que pour une liste de moins de 460 px, soit les vrais téléphones. De 460 à 820 px de liste, quel que soit l'écran, c'est la carte avec le bouton et le lien côte à côte. Au-delà, la carte pleine page ne change pas.
 
 À recoller : **4**, onglet CSS.
 

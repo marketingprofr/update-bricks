@@ -1181,6 +1181,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   lignes auto auto 1fr auto) : avant, l'image (25 % de large, carrée) étirait les lignes du nom et du verdict
   (48 et 54 px de blanc à 740 px). Mesuré : F −25 px par carte, lien centré sur le bouton (écart 0) ; 375-740 px :
   0 / 6 px entre nom, verdict et résumé ; aucun débordement.
+  Puis seuils sur la LISTE (container) et non l'écran : F = @container (min-width: 460px) and (max-width: 820px) à
+  tout écran (remplace l'ancienne forme 701-820 et la carte téléphone de 460 à 767 px d'écran) ; carte téléphone =
+  @container (max-width: 459px) (ex-@media ≤ 767, sauf .t5-bar masquée qui reste en @media) ; résumé : @container
+  ≥ 460 / ≤ 459. Testé 375 → 1500 px d'écran : téléphone jusqu'à 480 (liste 447), F de 500 à 800 et à 1100/1500,
+  pleine page à 900 (liste 857).
 - **Encadré confiance plus court (Samuel, 2026-10-14, via la Coordination)** : $mt_citation retirée de hero-encart (et
   ses règles CSS) ; votes : .mt-sc-vote 12/12 au lieu de 14/14, .mt-sc-vote-h margin-bottom 2 + line-height 1.3, li des
   étoiles en display: flex (rangée 22 px au lieu de 25), .mt-sc-note margin-top 2. Mesuré à 1366 px (injection) :
