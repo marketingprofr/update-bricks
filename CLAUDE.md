@@ -1174,6 +1174,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **FAQ Q1 « Quel est le meilleur … ? » (Samuel, 2026-10-13, via la Coordination ; wp-avis/audit-snippets-2026-10-13)** :
+  1re phrase « {Le meilleur / La meilleure} {type} de notre comparatif est X, noté(e) N/10 (« label ») » ; pluriel →
+  type au singulier, sinon « Le n°1 » ; $llm vide → « le meilleur {nom} » (comme la question). mt_faq_minuscule() :
+  minuscule à l'initiale si 2e lettre minuscule, sans autre capitale dans le 1er mot (Wi-Fi, iPhone), et pas la
+  marque du produit. Le reste de la réponse inchangé (Samuel tient aux atouts, au bémol, au podium).
 - **Titres forcés du 2026-10-02 (Samuel, 2026-10-13 : « ok, corrige »)** : posés par Architecture sur 10 comparatifs,
   retrait prévu dès le title automatique, fait seulement sur 37750. Samuel : vider les 9 maintenant (36755, 36668,
   36696, 36636, 37814, 37220, 36753, 36778, 37112), même si les 7 pages V1 affichent l'ancien format jusqu'à la

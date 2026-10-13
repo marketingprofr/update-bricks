@@ -86,6 +86,20 @@ if ( ! function_exists( 'mt_faq_join_et' ) ) {
     return implode( ', ', $items ) . ' et ' . $last;
   }
 }
+if ( ! function_exists( 'mt_faq_minuscule' ) ) {
+  /* Atout ou bémol au milieu d'une phrase : « Pas de perçage requis » → « pas de perçage requis », « Classe A++ » →
+     « classe A++ » ; intacts : sigle (« SEER »), mot à capitale interne (« Wi-Fi », « iPhone »), marque du produit */
+  function mt_faq_minuscule( $s, $marque = '' ) {
+    $s   = (string) $s;
+    $mot = preg_split( '/\s+/u', trim( $s ), 2 )[0];
+    if ( mb_strlen( $mot, 'UTF-8' ) < 2 ) { return $s; }
+    $deux = mb_substr( $mot, 1, 1, 'UTF-8' );
+    if ( $deux === mb_strtoupper( $deux, 'UTF-8' ) ) { return $s; }                       // 2e lettre pas en minuscule
+    if ( preg_match( '/\p{Lu}/u', mb_substr( $mot, 1, null, 'UTF-8' ) ) ) { return $s; }   // capitale plus loin dans le mot
+    if ( $marque !== '' && mb_strtolower( $mot, 'UTF-8' ) === mb_strtolower( preg_split( '/\s+/u', trim( $marque ), 2 )[0], 'UTF-8' ) ) { return $s; }
+    return mb_strtolower( mb_substr( $s, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $s, 1, null, 'UTF-8' );
+  }
+}
 if ( ! function_exists( 'mt5_points' ) ) {
   /* Lignes d'un repeater de points -> tableau de textes non vides. */
   function mt5_points( $field, $pid, $subkey ) {
@@ -265,17 +279,32 @@ if ( ! empty( $prods ) ) {
     $noun = $best_noun !== '' ? $best_noun : 'produit';
     $q1 = 'Quel est le meilleur ' . esc_html( $noun ) . '&nbsp;?';
   }
-  $a1 = '<p>Au terme de notre comparatif, c&rsquo;est <strong>' . esc_html( $p1['name'] ) . '</strong> qui se classe en t&ecirc;te de notre s&eacute;lection';
+  /* 1re phrase qui reprend la question (Samuel, 2026-10-13 ; Jev, français 0,91 → 0,96) : « Le meilleur climatiseur
+     mobile de notre comparatif est X, noté 9,0/10 (« Excellent »). » Question au pluriel : le type au singulier
+     (« La meilleure chaussure de running ») ; sans type au singulier : « Le n°1 de notre comparatif » */
+  if ( $llm === '' ) {
+    $sujet = 'le meilleur ' . ( $best_noun !== '' ? $best_noun : 'produit' ); $s_fem = false;
+  } elseif ( ! $plural ) {
+    $sujet = preg_replace( '/\s+/', ' ', trim( $llm . ' ' . $best_noun ) ); $s_fem = $fem;
+  } elseif ( $type_sing !== '' ) {
+    $sujet = ( $fem ? 'la meilleure ' : 'le meilleur ' ) . $type_sing; $s_fem = $fem;
+  } else {
+    $sujet = 'le n°1'; $s_fem = false;
+  }
+  $sujet = mb_strtoupper( mb_substr( $sujet, 0, 1, 'UTF-8' ), 'UTF-8' ) . mb_substr( $sujet, 1, null, 'UTF-8' );
+  $a1 = '<p>' . esc_html( $sujet ) . ' de notre comparatif est <strong>' . esc_html( $p1['name'] ) . '</strong>';
   if ( $p1['score'] > 0 ) {
-    $a1 .= ', avec une note de <strong>' . $note( $p1['score'] ) . '/10</strong>';
+    $a1 .= ', not&eacute;' . ( $s_fem ? 'e' : '' ) . ' <strong>' . $note( $p1['score'] ) . '/10</strong>';
     if ( $p1['label'] !== '' ) { $a1 .= ' (&laquo;&nbsp;' . esc_html( $p1['label'] ) . '&nbsp;&raquo;)'; }
   }
   $a1 .= '.';
+  /* Atouts et bémol en minuscule au milieu de la phrase (mt_faq_minuscule) */
+  $min1 = function ( $t ) use ( $p1 ) { return mt_faq_minuscule( $t, $p1['brand'] ); };
   if ( ! empty( $p1['pros'] ) ) {
-    $a1 .= ' Ses principaux atouts&nbsp;: ' . esc_html( mt_faq_join_et( $p1['pros'] ) ) . '.';
+    $a1 .= ' Ses principaux atouts&nbsp;: ' . esc_html( mt_faq_join_et( array_map( $min1, $p1['pros'] ) ) ) . '.';
   }
   if ( ! empty( $p1['cons'] ) ) {
-    $a1 .= ' Son principal b&eacute;mol&nbsp;: ' . esc_html( $p1['cons'][0] ) . '.';
+    $a1 .= ' Son principal b&eacute;mol&nbsp;: ' . esc_html( $min1( $p1['cons'][0] ) ) . '.';
   }
   $a1 .= '</p><p>';
   if ( $nbp >= 3 ) {

@@ -218,6 +218,16 @@ Smartphone (Samuel) : la note (et sa mention) à droite, sous l'image ; « Lire 
 - **Liens des sources soulignés deux fois** : la règle qui soulignait les liens de la liste s'ajoutait au trait déjà posé par la classe `link-black` de l'encadré. Règle retirée : les sources ont maintenant le même trait unique que « notre méthodologie » et « Prévenez-nous ». À recoller : **2**, onglet CSS du bandeau (fichier 2).
 - **Colonne de gauche** : le bloc « Modèles analysés » prend le nom du type, comme la case de l'encadré (« Huiles d'olive analysées », « Assurances auto analysées »). Type vide ou trop long : « Produits analysés ». À recoller : **9**, Code seulement.
 
+## FAQ : réponse « Quel est le meilleur … ? » (13 octobre)
+
+Accord de Samuel le 13 octobre, après les tests de la Coordination (Jev, français 0,91 → 0,96 sur climatiseur mobile et 0,84 → 0,89 sur assurance auto).
+- La réponse commence par reprendre la question : « Le meilleur climatiseur mobile de notre comparatif est **Midea PortaSplit 12000 BTU**, noté **9,0/10** (« Excellent »). » Elle remplace « Au terme de notre comparatif, c'est … qui se classe en tête… ».
+- « notée » au féminin (« La meilleure assurance auto… »). Question au pluriel : le type au singulier (« La meilleure chaussure de running… »), ou « Le n°1 de notre comparatif » s'il manque.
+- Atouts et bémol en minuscule au milieu de la phrase (« pas de perçage requis », « classe A++ »). Restent intacts les sigles (« SEER »), « Wi-Fi » et la marque du produit.
+- Le reste ne change pas : atouts, bémol, podium et les deux phrases de fin.
+
+À recoller : **6**, Code seulement. Même fichier pour le modèle V1.
+
 ## CSS sans commentaires (5 octobre)
 
 Les fichiers CSS à coller n'ont plus de commentaires : Bricks imprimait ces explications dans chaque page, pour rien (suggestion de l'instance Technique). Les règles sont exactement les mêmes (vérifié en faisant lire les deux versions par Chrome). Rien à recoller exprès : chaque CSS s'allègera la prochaine fois qu'il sera recollé pour une autre raison. Le CSS du **9** est déjà dans ce cas.
