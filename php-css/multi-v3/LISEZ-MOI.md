@@ -228,6 +228,14 @@ Accord de Samuel le 13 octobre, après les tests de la Coordination (Jev, franç
 
 À recoller : **6**, Code seulement. Même fichier pour le modèle V1.
 
+## Cartes du top 5 : lien à droite du bouton, plus de grands blancs sur téléphone (14 octobre)
+
+- **Colonne centrale étroite** (mise en page « F ») : « Lire l'avis complet » passe à droite du bouton d'achat, en lien texte sans flèche, centré sur la hauteur du bouton. Les cartes perdent 25 px.
+- **Téléphones et écrans de 600 à 767 px** : le nom, le verdict et le résumé ne sont plus écartés par la hauteur de l'image (jusqu'à 48 et 54 px de blanc à 740 px). L'image et la note restent à droite.
+- La pastille OOS / DISCO, visible seulement connecté, ne cache plus la note.
+
+À recoller : **4**, onglet CSS.
+
 ## Encadré confiance plus court : citation retirée, votes resserrés (14 octobre)
 
 Demande de Samuel : l'encadré de droite dépassait le hero de gauche sur plusieurs comparatifs.

@@ -1174,6 +1174,13 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **Carte du top 5, 2026-10-14 (Samuel)** : F (@container ≤ 700) passe en grille 92px | auto | 1fr, lignes bandeau / nom
+  / verdict / résumé (1fr) / bouton ; .t5-body en display: contents ; .t5-rm-wrap colonne 3 ligne 5, flex centré,
+  min-height 42 px (hauteur du bouton), sans flèche ; .t5-merchants width 0 + min-width 100 % (ne pas élargir la
+  colonne du bouton) ; .t5-admin-tag en bas. Mobile (≤ 767) : .t5-body redevient un bloc (colonne 1, lignes 1 à 3,
+  lignes auto auto 1fr auto) : avant, l'image (25 % de large, carrée) étirait les lignes du nom et du verdict
+  (48 et 54 px de blanc à 740 px). Mesuré : F −25 px par carte, lien centré sur le bouton (écart 0) ; 375-740 px :
+  0 / 6 px entre nom, verdict et résumé ; aucun débordement.
 - **Encadré confiance plus court (Samuel, 2026-10-14, via la Coordination)** : $mt_citation retirée de hero-encart (et
   ses règles CSS) ; votes : .mt-sc-vote 12/12 au lieu de 14/14, .mt-sc-vote-h margin-bottom 2 + line-height 1.3, li des
   étoiles en display: flex (rangée 22 px au lieu de 25), .mt-sc-note margin-top 2. Mesuré à 1366 px (injection) :

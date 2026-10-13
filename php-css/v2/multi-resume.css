@@ -194,23 +194,34 @@
   }
   /* Liste étroite (700 px et moins : colonne centrale entre les deux colonnes latérales) : proposition F */
   @container (max-width: 700px) {
-    .mt-top5 .t5-list .t5-card { grid-template-columns: 92px minmax(0, 1fr); grid-template-areas: "banner banner" "media body" ". buy"; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: center; }
+    /* Lignes : bandeau, nom, verdict, résumé (1fr : l'image n'écarte jamais le nom du résumé), bouton + « Lire l'avis
+       complet » ; colonnes : image, bouton (à sa taille), lien (Samuel, 2026-10-14 : le lien à droite du bouton) */
+    .mt-top5 .t5-list .t5-card { grid-template-columns: 92px auto minmax(0, 1fr); grid-template-rows: auto auto auto 1fr auto; grid-template-areas: none; gap: 0 16px; padding: 0 0 16px; overflow: hidden; align-items: start; }
     .mt-top5 .t5-list .t5-rnum { display: none; }
-    .mt-top5 .t5-list .t5-banner { grid-area: banner; display: flex; align-items: center; gap: 10px; min-height: 46px; margin: 0; padding: 10px 104px 10px 20px; background: var(--accent-soft); border-bottom: 1px solid var(--line-2); font-size: 12.5px; font-weight: 700; color: var(--accent); }
+    .mt-top5 .t5-list .t5-banner { grid-area: auto; grid-column: 1 / -1; grid-row: 1; display: flex; align-items: center; gap: 10px; min-height: 46px; margin: 0; padding: 10px 104px 10px 20px; background: var(--accent-soft); border-bottom: 1px solid var(--line-2); font-size: 12.5px; font-weight: 700; color: var(--accent); }
     .mt-top5 .t5-list .t5-banner .b-label { flex: 1; min-width: 0; line-height: 1.15; }  /* trop long : retour à la ligne serré, centré verticalement avec le rang et la note (Samuel, après essai des « … ») */
     .mt-top5 .t5-list .t5-banner .b-num { flex: none;  display: inline-grid; place-items: center; min-width: 34px; height: 24px; padding: 0 8px; border-radius: 999px; background: var(--accent); color: var(--at-white); font-size: 12px; }
     .mt-top5 .t5-list .t5-aside { display: contents; }
-    .mt-top5 .t5-list .t5-ratings { grid-area: banner; justify-self: end; align-self: center; z-index: 1; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px 14px; min-width: 0; margin: 0 20px 0 0; text-align: left; }
+    .mt-top5 .t5-list .t5-ratings { grid-area: auto; grid-column: 1 / -1; grid-row: 1; justify-self: end; align-self: center; z-index: 1; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px 14px; min-width: 0; margin: 0 20px 0 0; text-align: left; }
     .mt-top5 .t5-list .t5-ratings .r-lbl { display: none; }
     .mt-top5 .t5-list .t5-item .t5-ed .r-line { display: flex; flex-direction: row; justify-content: flex-end; align-items: center; gap: 8px; }
     .mt-top5 .t5-list .t5-ed .n { font-size: 20px; }
     /* Bandeau : la note seule (ni mention « Très bien », ni note Amazon) ; verdict dans le bandeau = plus dans le corps */
     .mt-top5 .t5-list .t5-ed .tag, .mt-top5 .t5-list .t5-cust { display: none; }
     .mt-top5 .t5-list .t5-item.t5-b-verdict .t5-label { display: none; }
-    .mt-top5 .t5-list .t5-media { display: block; grid-area: media; margin: 16px 0 0 20px; }
-    .mt-top5 .t5-list .t5-body { grid-area: body; margin-top: 16px; padding: 0 20px 0 0; }
+    .mt-top5 .t5-list .t5-media { display: block; grid-area: auto; grid-column: 1; grid-row: 2 / 5; align-self: center; margin: 16px 0 0 20px; }
+    .mt-top5 .t5-list .t5-body { display: contents; }
+    .mt-top5 .t5-list .t5-name { grid-column: 2 / -1; grid-row: 2; margin: 16px 20px 2px 0; }
+    .mt-top5 .t5-list .t5-label { grid-column: 2 / -1; grid-row: 3; margin-right: 20px; }
+    .mt-top5 .t5-list .t5-summary, .mt-top5 .t5-list .t5-pc { grid-column: 2 / -1; grid-row: 4; margin-right: 20px; }
     .mt-top5 .t5-list .t5-pc { flex-direction: column; }
-    .mt-top5 .t5-list .t5-buy { grid-area: buy; justify-self: start; min-width: 0; width: auto; margin: 14px 20px 0 0; text-align: left; }
+    .mt-top5 .t5-list .t5-buy { grid-area: auto; grid-column: 2; grid-row: 5; justify-self: start; min-width: 0; width: auto; margin: 14px 0 0; text-align: left; }
+    .mt-top5 .t5-list .t5-merchants { width: 0; min-width: 100%; }  /* « ou sur … » ne fait pas élargir la colonne du bouton */
+    /* « Lire l'avis complet » : lien texte sans flèche, centré sur la hauteur du bouton (42 px) */
+    .mt-top5 .t5-list .t5-rm-wrap { grid-column: 3; grid-row: 5; align-self: start; display: flex; align-items: center; min-height: 42px; margin: 14px 20px 0 4px; }
+    .mt-top5 .t5-list .t5-readmore { margin-top: 0; font-size: 13px; }
+    .mt-top5 .t5-list .t5-readmore .arr { display: none; }
+    .mt-top5 .t5-list .t5-admin-tag { top: auto; bottom: 8px; }  /* pastille OOS / DISCO (connecté seulement) : plus sur la note */
     .mt-top5 .t5-list .t5-cta { width: auto; padding: 10px 22px; white-space: nowrap; }  /* à la taille du texte, aligné sur le nom (Samuel : pleine largeur trop grand) */
     .mt-top5 .t5-list .t5-cta .arr { display: none; }
   }
@@ -288,16 +299,21 @@
   }
   /* Smartphone (Samuel, 2026-10-12) : la note à droite, sous l'image (plus dans le lien) ; « Lire l'avis complet » en
      simple lien, comme sur ordinateur, et non plus en bouton ; le bouton d'achat reste en bas sur toute la largeur */
-  .mt-top5 .t5-list > li .t5-media { grid-row: 1 / 3; }
+  /* Le texte (nom, verdict, résumé, lien) redevient un seul bloc à gauche, sur toute la hauteur : l'image et la note, à
+     droite, n'étirent plus ses lignes (grands blancs entre le nom, le verdict et le résumé dès que l'image est haute,
+     écrans de 600 à 767 px ; Samuel, 2026-10-14) */
+  .mt-top5 .t5-list > li .t5-card { grid-template-rows: auto auto 1fr auto; }
+  .mt-top5 .t5-list > li .t5-body { display: block; grid-column: 1; grid-row: 1 / 4; min-width: 0; }
+  .mt-top5 .t5-list > li .t5-media { grid-row: 1; }
   .mt-top5 .t5-list > li .t5-aside { display: contents; }
-  .mt-top5 .t5-list > li .t5-ratings { grid-column: 2; grid-row: 3; align-self: start; min-width: 0; margin: 0; padding: 0 12px 10px; text-align: center; }
+  .mt-top5 .t5-list > li .t5-ratings { grid-column: 2; grid-row: 2; align-self: start; min-width: 0; margin: 0; padding: 0 12px 10px; text-align: center; }
   .mt-top5 .t5-list > li .t5-ed { display: block; }
   .mt-top5 .t5-list > li .t5-ed .r-lbl { display: none; }
   .mt-top5 .t5-list > li .t5-item .t5-ed .r-line, .mt-top5 .t5-list > li .t5-ed .r-line { display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .mt-top5 .t5-list > li .t5-ed .n { font-size: 20px; }
   .mt-top5 .t5-list > li .t5-ed .tag { font-size: 9px; padding: 2px 6px; }
-  .mt-top5 .t5-list > li .t5-buy { grid-column: 1 / -1; grid-row: 5; padding: 0 12px 12px; }
-  .mt-top5 .t5-list > li .t5-rm-wrap { grid-column: 1; grid-row: 4; width: auto; padding: 0 0 12px 12px; }
+  .mt-top5 .t5-list > li .t5-buy { grid-column: 1 / -1; grid-row: 4; padding: 0 12px 12px; }
+  .mt-top5 .t5-list > li .t5-rm-wrap { width: auto; padding: 0 0 12px 12px; }
   .mt-top5 .t5-list > li .t5-rm-wrap .t5-readmore { display: inline-flex; justify-content: flex-start; width: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; font-size: 13px; font-weight: 600; }
   .mt-top5 .t5-list > li .t5-rm-wrap .t5-readmore:hover { background: none; text-decoration: underline; }
   .mt-top5 .t5-list > li .t5-rm-score { display: none; }
