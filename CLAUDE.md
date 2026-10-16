@@ -1174,6 +1174,12 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **Note clients > 5 (Samuel, 2026-10-16, Search Console « note hors plage »)** : Miele G 5812 SC (comparatif-lave-
+  vaisselle-pose-libre) a mltv5_score_avis_clients = 9.5 (saisi sur 10). Cause GSC : l'ancien V1 (avant 7ee3e72) mettait
+  un aggregateRating bestRating 5. Le V3 n'a plus d'aggregateRating (vérifié en ligne : 5 notes /10, toutes dans la
+  plage). Garde ajoutée juste après chaque lecture de $cust_rating (multi-resume, multi-tests, multi-tableau, et V1
+  top5-resume, top5-tests, tableau-comparatif) : > 5 → '' ; FAQ 'crate' > 5 → 0. Banc : 9,5 visible 2 fois avant, 0
+  après ; 4,3 toujours affiché. Liste des fiches > 5 demandée à Architecture (lecture), corrections avec l'accord de Samuel.
 - **Barre de tri et phrase des scores (Samuel, 2026-10-14)** : bouton « Avis » (au lieu de « Avis des clients »), .lbl
   11 px / 0.05em : une ligne à 656 px (matelas 86 → 48 px). .t5-range : « … sur N produits analysés. » sans « en N ans »,
   « analysés » pour tout N (avant : seulement N > 50 avec la durée). V3 (multi-resume) et V1 (top5-resume).

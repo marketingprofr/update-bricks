@@ -649,6 +649,7 @@ if ( ! function_exists( 'mtv2_resume_collect' ) ) {
 
       /* Note clients (champs ACF du produit) */
       $cust_rating = trim( (string) get_field( $cfg['cust_rating'], $pid ) );
+      if ( (float) str_replace( ',', '.', $cust_rating ) > 5 ) { $cust_rating = ''; }  // note sur 10 saisie dans le champ sur 5 (Miele G 5812 SC : 9,5) : rien plutôt qu'une note fausse (Samuel, 2026-10-16)
       $cust_count  = trim( (string) get_field( $cfg['cust_count'], $pid ) );
 
       /* Points + / - (max 2 / 1) */

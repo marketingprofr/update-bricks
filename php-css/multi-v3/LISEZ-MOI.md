@@ -228,6 +228,14 @@ Accord de Samuel le 13 octobre, après les tests de la Coordination (Jev, franç
 
 À recoller : **6**, Code seulement. Même fichier pour le modèle V1.
 
+## Note clients au-dessus de 5 : plus affichée (16 octobre)
+
+Search Console a signalé une note hors plage sur lave-vaisselle pose libre. Le Miele G 5812 SC a 9,5 dans le champ des notes clients, qui est sur 5 : la note a été saisie sur 10. L'ancien modèle l'envoyait à Google « sur 5 ». Le nouveau ne l'envoie plus, mais la carte affichait « ★ 9,5 ».
+- Une note clients au-dessus de 5 n'est plus affichée nulle part (résumé du top 5, avis détaillés, tableau, FAQ). Le produit s'affiche comme s'il n'avait pas de note clients.
+- La correction des données revient à l'Architecture, avec l'accord de Samuel.
+
+À recoller : **4**, **5**, **6** et **7**, onglet Code seulement. Mêmes changements dans les fichiers V1.
+
 ## Barre de tri sur une ligne, « en 12 ans » retiré (14 octobre)
 
 - Le bouton de tri « Avis des clients » devient « Avis », et « Trier par » est un peu plus petit. Dans la colonne centrale (656 px), la barre tient sur une ligne avec « Comment nous évaluons » : 48 px de haut au lieu de 86 sur matelas.

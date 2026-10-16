@@ -212,7 +212,7 @@ if ( ! empty( $ids ) ) {
       'brand'  => $brand,
       'score'  => $score,
       'price'  => mt5_num( get_field( 'mltv5_prix_indicatif', $pid ) ),
-      'crate'  => mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ),
+      'crate'  => ( mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ) > 5 ) ? 0 : mt5_num( get_field( 'mltv5_score_avis_clients', $pid ) ),  // note sur 10 saisie par erreur : ignorée (2026-10-16)
       'ccount' => (int) preg_replace( '/[^0-9]/', '', (string) get_field( 'mltv5_nombre_avis_clients', $pid ) ),
       'label'  => function_exists( 'get_acf_score_label' ) ? trim( (string) get_acf_score_label() ) : '',
       'pros'   => array_slice( mt5_points( 'mltv5_points_positifs_produit', $pid, 'mltv5_point_positif' ), 0, 3 ),

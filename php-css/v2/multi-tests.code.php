@@ -696,6 +696,7 @@ foreach ( $ids as $pid ) {
 
   /* Note clients */
   $cust_rating = trim( (string) get_field( $TT_CUST_RATING_FIELD, $pid ) );
+  if ( (float) str_replace( ',', '.', $cust_rating ) > 5 ) { $cust_rating = ''; }  // note sur 10 saisie dans le champ sur 5 (Miele G 5812 SC : 9,5) : rien plutôt qu'une note fausse (Samuel, 2026-10-16)
   $cust_count  = trim( (string) get_field( $TT_CUST_COUNT_FIELD, $pid ) );
 
   /* Points + / - (répéteurs) */
