@@ -1174,6 +1174,11 @@ Mode d'emploi pour Samuel : `php-css/multi-v3/LISEZ-MOI.md` (tableau élément �
   testées par la Coordination (Jev, 1 passage, assurance auto + climatiseur mobile) : la formulation actuelle reste la
   meilleure (« vrai travail d'analyse » 0,91 contre 0,79 pour la piste de Samuel). Cohérence basse sur l'assurance auto
   (0,41 à 0,48) due aux sources américaines citées, pas à la phrase : Coordination + Architecture.
+- **Haut de page 2026-10-21 (Samuel : −30 à 40 % de clics depuis la phrase-réponse, questions en haut inutiles)** :
+  multi-hero-gauche : $MT_REPONSE_INTRO false, $MT_SHOW_INTRO_RECO false, $MT_VOS_QUESTIONS '', $MT_PHOTO_HERO false
+  (photo dans l'encadré), $MT_SHOW_QUICK_PICKS true. mt_quick_picks réécrit au format de l'ancien site (Wayback
+  2025-04-23) : « Notre sélection » + ol « {Meilleur(e) type en année | verdict get_default_product_label} : <strong>nom
+  </strong> ➔ Voir notre avis » (#test-… ou #produit-n-k). Pas encore fait : sommaire mobile collant (proposé).
 - **Note clients > 5 (Samuel, 2026-10-16, Search Console « note hors plage »)** : Miele G 5812 SC (comparatif-lave-
   vaisselle-pose-libre) a mltv5_score_avis_clients = 9.5 (saisi sur 10). Cause GSC : l'ancien V1 (avant 7ee3e72) mettait
   un aggregateRating bestRating 5. Le V3 n'a plus d'aggregateRating (vérifié en ligne : 5 notes /10, toutes dans la

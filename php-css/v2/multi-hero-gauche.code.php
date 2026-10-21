@@ -14,10 +14,10 @@
    Sans sous-comparatif : H1 et titre SEO V1 inchangés.
    Moteur multi-comparatif inclus dans ce bloc (aucun snippet WPCodeBox).
    ===================================================================== */
-$MT_SHOW_QUICK_PICKS = false;
+$MT_SHOW_QUICK_PICKS = true;   // « Notre sélection : » liste numérotée des 5 produits, comme sur l'ancien site (Samuel, 2026-10-21 : la phrase-réponse a coûté 30 à 40 % des clics)
 $MT_SHOW_BOLD_INTRO  = false;
-$MT_SHOW_INTRO_RECO  = true;
-$MT_REPONSE_INTRO    = true;   // l'intro commence par une phrase à part : « Sur les N … que nous avons analysés, n°1 (note) est le meilleur en 2026, devant … » (Samuel, 2026-10-04)
+$MT_SHOW_INTRO_RECO  = false;  // phrase « X est le meilleur… Si vous cherchez moins cher… » : remplacée par la liste (2026-10-21)
+$MT_REPONSE_INTRO    = false;  // retirée le 2026-10-21 (Samuel : perte de clics) ; l'intro commence par une phrase à part : « Sur les N … que nous avons analysés, n°1 (note) est le meilleur en 2026, devant … » (Samuel, 2026-10-04)
 $MT_INTRO_REPLIEE    = true;   // mobile : texte de la rédaction replié sur 3 lignes, puis « Afficher la suite » ; ordinateur : intro entière (Samuel, 2026-10-04) ; false = intro entière partout
 $MT_VERDICT_SOUS_H1  = false;  // ancien encart séparé « L'essentiel en 30 secondes » sous la ligne auteur (remplacé par la réponse en tête de l'intro)
 $MT_VERIFIE_PAR      = 'Samuel Petit'; // ligne auteur « Vérifié par …, responsable éditorial » (validé par Samuel) ; '' = pas de ligne
@@ -27,10 +27,10 @@ $MT_AUTEUR_SOUS_H1   = true;   // ligne auteur et date juste sous le titre (dema
 $MT_H1_EGAL_TITLE    = true;   // sans titre forcé, le H1 reprend le title automatique (validé par Samuel)
 $MT_PASTILLE_VERIFIE = false;  // pastille « Vérifié le … » au-dessus du titre : retirée le 2026-10-04 (demande de Samuel), la ligne
                                 // auteur sous le titre dit déjà qui a vérifié et la date ; true = pastille affichée
-$MT_PHOTO_HERO       = 'auto'; // photo (image mise en avant) : 'auto' = ici, après l'intro, seulement quand l'encart « L'essentiel »
+$MT_PHOTO_HERO       = false;  // 2026-10-21 : la photo reste en haut de l'encadré de droite, même sans encart de questions ; avant : 'auto' // photo (image mise en avant) : 'auto' = ici, après l'intro, seulement quand l'encart « L'essentiel »
                                 // n'est pas affiché ; avec l'encart, elle est en haut de l'encadré (élément 2) (Samuel, 2026-10-05) ;
                                 // true = toujours ici ; false = jamais ici
-$MT_VOS_QUESTIONS    = 'apres_intro'; // encart des questions (questions de la FAQ, réponse d'une phrase) : 'apres_intro' = juste après
+$MT_VOS_QUESTIONS    = '';     // encart de questions retiré le 2026-10-21 (Samuel : n'aide pas les lecteurs, gêne la lecture) ; avant : 'apres_intro' // encart des questions (questions de la FAQ, réponse d'une phrase) : 'apres_intro' = juste après
                                 // l'intro (disposition validée par Samuel, 2026-10-03), 'sous_reponse' = sous la ligne auteur,
                                 // 'avant_top5' = juste avant le top 5 ; '' = pas d'encart
 $MT_TITRE_QUESTIONS  = 'L’essentiel en 30 secondes'; // titre de l'encart des questions (préféré par Samuel à « Vos questions ») ; '' = sans titre
@@ -991,45 +991,36 @@ if ( ! function_exists( 'mt_reponse_intro' ) ) {
 }
 
 if ( ! function_exists( 'mt_quick_picks' ) ) {
-  function mt_quick_picks( $ids, $max = 5 ) {
+  /* « Notre sélection » comme sur l'ancien site (copie de l'Internet Archive, avril 2025), remis le 2026-10-21 à la place
+     de la phrase-réponse (Samuel : 30 à 40 % de clics en moins) : « 1. Meilleur climatiseur mobile en 2026 : Midea
+     PortaSplit 12000 BTU ➔ Voir notre avis », puis le verdict de chaque produit (même libellé que les cartes du top 5).
+     Le lien mène à l'avis détaillé de la page. */
+  function mt_quick_picks( $ids, $max = 5, $page_id = 0, $type_sing = '', $llm = '' ) {
     $ids = array_values( array_filter( array_map( 'intval', (array) $ids ) ) );
     if ( empty( $ids ) ) { return ''; }
-    $tag  = 'mlt00-21';
-    $items = array();
-    foreach ( array_slice( $ids, 0, $max ) as $i => $pid ) {
+    $plan = ( $page_id && function_exists( 'mtv2_plan' ) ) ? mtv2_plan( $page_id ) : null;
+    $fem  = ( mb_strpos( mb_strtolower( (string) $llm, 'UTF-8' ), 'meilleure' ) !== false );
+    $ts   = trim( (string) $type_sing );
+    $li   = '';
+    $rang = 0;
+    foreach ( array_slice( $ids, 0, $max ) as $pid ) {
       if ( get_post_status( $pid ) !== 'publish' ) { continue; }
+      $rang++;
       $forced = trim( (string) get_field( 'mltv5_forcer_affichage_du_titre', $pid ) );
       $brand  = trim( (string) get_field( 'mltv5_marque_du_produit', $pid ) );
       $model  = trim( (string) get_field( 'mltv5_modele_du_produit', $pid ) );
-      if ( $forced !== '' ) { $name = $forced; }
-      else { $name = $model !== '' ? trim( $brand . ' ' . $model ) : get_the_title( $pid ); }
-      $asin = trim( (string) get_field( 'mltv5_asin_amazon', $pid ) );
-      $url  = '';
-      if ( $asin !== '' ) {
-        $url = 'https://www.amazon.fr/dp/' . rawurlencode( $asin ) . '?tag=' . $tag;
+      $name   = $forced !== '' ? $forced : ( $model !== '' ? trim( $brand . ' ' . $model ) : (string) get_the_title( $pid ) );
+      if ( $rang === 1 && $ts !== '' ) {
+        $lbl = ( $fem ? 'Meilleure ' : 'Meilleur ' ) . $ts . ' en ' . date_i18n( 'Y' );
       } else {
-        for ( $j = 1; $j <= 3; $j++ ) {
-          $u = trim( (string) get_field( 'mltv5_lien_du_produit_' . $j, $pid ) );
-          if ( $u !== '' && strpos( $u, 'http' ) === 0 ) { $url = $u; break; }
-        }
+        $lbl = function_exists( 'get_default_product_label' ) ? trim( (string) get_default_product_label( $pid, get_field( 'mltv5_score_recent', $pid ) ) ) : '';
       }
-      $items[] = array( 'rank' => $i + 1, 'name' => $name, 'url' => $url );
+      $ancre = ( $plan && isset( $plan['test_set'][ $pid ] ) && function_exists( 'mtv2_test_anchor' ) ) ? '#' . mtv2_test_anchor( $pid ) : '#produit-n-' . $rang;
+      $li .= '<li>' . ( $lbl !== '' ? esc_html( $lbl ) . '&nbsp;: ' : '' ) . '<strong>' . esc_html( $name ) . '</strong> '
+           . '<a class="mt-pick-r" href="' . esc_attr( $ancre ) . '">&#10132;&nbsp;Voir notre avis</a></li>';
     }
-    if ( empty( $items ) ) { return ''; }
-    $out = '<p class="mt-picks-intro"><strong>Notre s&eacute;lection&nbsp;:</strong></p>';
-    $out .= '<ol class="mt-picks">';
-    foreach ( $items as $it ) {
-      $out .= '<li>';
-      if ( $it['url'] !== '' ) {
-        $out .= '<a href="' . esc_url( $it['url'] ) . '" target="_blank" rel="nofollow sponsored noopener">' . esc_html( $it['name'] ) . '</a>';
-      } else {
-        $out .= esc_html( $it['name'] );
-      }
-      $out .= ' <a class="mt-pick-r" href="#produit-n-' . (int) $it['rank'] . '">(avis)</a>';
-      $out .= '</li>';
-    }
-    $out .= '</ol>';
-    return $out;
+    if ( $li === '' ) { return ''; }
+    return '<p class="mt-picks-intro"><strong>Notre s&eacute;lection</strong></p><ol class="mt-picks">' . $li . '</ol>';
   }
 }
 
@@ -1392,7 +1383,7 @@ if ( ! function_exists( 'mt_bold_intro' ) ) {
   <?php if ( ! empty( $mt_vq_apres_intro ) ) { echo $mt_vq_apres_intro; } /* encart « Vos questions » réglé sur 'apres_intro' */ ?>
 
   <?php if ( $MT_SHOW_QUICK_PICKS && $post_type === 'comparatif' && ! empty( $top_avis_ids ) ) {
-    echo mt_quick_picks( $top_avis_ids );
+    echo mt_quick_picks( $top_avis_ids, 5, $this_id, $type_de_produit_au_singulier ?? '', $lalalesmeilleur ?? '' );
   } ?>
 
 </div>

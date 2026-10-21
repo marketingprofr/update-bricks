@@ -228,6 +228,15 @@ Accord de Samuel le 13 octobre, après les tests de la Coordination (Jev, franç
 
 À recoller : **6**, Code seulement. Même fichier pour le modèle V1.
 
+## Retour de « Notre sélection », phrase-réponse et encart de questions retirés (21 octobre)
+
+Samuel : la phrase « Sur les 55 climatiseurs mobiles que nous avons analysés, … est le meilleur en 2026, devant … » a coûté 30 à 40 % des clics par rapport à l'ancien site, et l'encart de questions en haut de page n'aide pas les lecteurs.
+- La phrase-réponse et l'encart « L'essentiel en 30 secondes » sont retirés.
+- À la place, la liste de l'ancien site (retrouvée sur l'Internet Archive, avril 2025) : « Notre sélection », puis « 1. Meilleur climatiseur mobile en 2026 : **Midea PortaSplit 12000 BTU** ➔ Voir notre avis », et pour les suivants leur verdict. Le lien mène à l'avis détaillé.
+- La photo reste en haut de l'encadré de droite.
+
+À recoller : **1**, onglet Code ET CSS du bandeau (fichier 1).
+
 ## Note clients au-dessus de 5 : plus affichée (16 octobre)
 
 Search Console a signalé une note hors plage sur lave-vaisselle pose libre. Le Miele G 5812 SC a 9,5 dans le champ des notes clients, qui est sur 5 : la note a été saisie sur 10. L'ancien modèle l'envoyait à Google « sur 5 ». Le nouveau ne l'envoie plus, mais la carte affichait « ★ 9,5 ».
